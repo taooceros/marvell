@@ -1,0 +1,18 @@
+# Card side of the host PCIe control path (MRV-19): octep_cp_agent, which the
+# host's octeon_ep (ens1) waits for. sdp1-0 gets 10.10.0.2/24 from
+# /etc/netplan/60-sdp1-0.yaml. Installed as
+# /etc/systemd/system/octep-cp-agent.service; restart with
+# `systemctl restart octep-cp-agent`, log with `journalctl -u octep-cp-agent`.
+[Unit]
+Description=OCTEON PCIe EP control-plane agent (host ens1 <-> sdp1-0)
+# sdp1-0 exists once the RVU AF is up, which the agent's SDP PFs talk to.
+Wants=sys-subsystem-net-devices-sdp1\x2d0.device
+After=sys-subsystem-net-devices-sdp1\x2d0.device
+
+[Service]
+Type=simple
+ExecStart=/root/octep_up.sh --foreground
+KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target

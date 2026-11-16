@@ -1,7 +1,10 @@
 #!/bin/sh
 # Bring up the PCIe EP control plane on CN106 (SDK13.26.10 firmware, kernel
 # 6.12.51, octep_cp_agent 26.10 VFIO build) so the host's octeon_ep driver can
-# attach. Run as root after every card boot. AGENT=/path overrides the binary.
+# attach. Runs at every card boot as octep-cp-agent.service
+# (`octep_up.sh --foreground`: the agent stays in the unit and logs to the
+# journal); by hand it starts the agent in the background. AGENT=/path
+# overrides the binary.
 #
 # Prerequisite (EBF, saved once): PCIe Configuration -> PCIe EP Security:
 #   A) Allow PCIe Host to Access Octeon Memory = 1
@@ -50,6 +53,9 @@ for d in $PEM $SDP0 $SDP1; do
     fi
 done
 
+if [ "${1:-}" = --foreground ]; then
+    exec "$AGENT" "$CFG" -- --sdp_rvu_pf $SDP0,$SDP1 --pem_dev $PEM
+fi
 nohup "$AGENT" "$CFG" -- \
     --sdp_rvu_pf $SDP0,$SDP1 --pem_dev $PEM > $LOG 2>&1 &
 sleep 3

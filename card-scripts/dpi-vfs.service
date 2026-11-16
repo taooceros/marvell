@@ -1,0 +1,13 @@
+# Card DPI DMA VFs 0000:06:00.1-.4 on vfio-pci at boot (MRV-19), for
+# inline_reflector --dma / --fetch-dma. Installed as
+# /etc/systemd/system/dpi-vfs.service.
+[Unit]
+Description=DPI DMA VFs 0000:06:00.1-.4 on vfio-pci
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/root/dpi_vfs_up.sh
+
+[Install]
+WantedBy=multi-user.target

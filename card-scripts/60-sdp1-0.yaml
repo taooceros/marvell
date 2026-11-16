@@ -1,0 +1,14 @@
+# Card end of the host PCIe control path (MRV-19): host ens1 10.10.0.1/24 <->
+# sdp1-0. Installed as /etc/netplan/60-sdp1-0.yaml (mode 600); never hand
+# sdp1-0 (0002:01:00.1) to DPDK, that cuts ssh.
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    sdp1-0:
+      dhcp4: false
+      dhcp6: false
+      accept-ra: false
+      addresses:
+        - 10.10.0.2/24
+      optional: true
