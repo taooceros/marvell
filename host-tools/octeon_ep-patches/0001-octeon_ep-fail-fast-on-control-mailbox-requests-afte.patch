@@ -1,0 +1,46 @@
+From 90db1e9c84da202e3cce0d457ea7c732ab2e16ec Mon Sep 17 00:00:00 2001
+From: Hongtao <hongtao_zhang@outlook.com>
+Date: Mon, 16 Nov 2026 23:13:03 +0000
+Subject: [PATCH] octeon_ep: fail fast on control mailbox requests after
+ heartbeat loss
+
+send_mbox_req() waits up to 8 s for the firmware's reply. Once the
+heartbeat is lost (the card rebooted or its control-plane agent died),
+octep_hb_timeout_task() turns the carrier off and no reply will come,
+yet every request still waits the full timeout. Several callers hold
+RTNL while they wait: ethtool get_link_ksettings (and with it the sysfs
+speed and duplex files), ethtool -S, MTU and MAC changes. Daemons that
+poll /sys/class/net/*/speed then keep RTNL busy back to back, and every
+other RTNL user on the host (RTM_GETLINK dumps such as getifaddrs() and
+ip link, IPv6 addrconf work) stalls for seconds at a time.
+
+Return -ENODEV right away while the heartbeat miss count is at or above
+the configured limit. A heartbeat resets the count, so requests go
+through again if the firmware comes back.
+---
+ drivers/octeon_ep/octep_ctrl_net.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/drivers/octeon_ep/octep_ctrl_net.c b/drivers/octeon_ep/octep_ctrl_net.c
+index 1ae55d4..4d293db 100644
+--- a/drivers/octeon_ep/octep_ctrl_net.c
++++ b/drivers/octeon_ep/octep_ctrl_net.c
+@@ -48,6 +48,15 @@ static int send_mbox_req(struct octep_device *oct,
+ {
+ 	int err, ret, cmd;
+ 
++	/* Firmware heartbeat lost (octep_hb_timeout_task turned the carrier
++	 * off): nobody will answer. Callers such as ethtool and the sysfs
++	 * speed/duplex files hold RTNL while they wait, so fail now instead
++	 * of stalling every RTNL user for the full timeout per request.
++	 */
++	if (oct->conf->fw_info.hb_miss_count &&
++	    atomic_read(&oct->hb_miss_cnt) >= oct->conf->fw_info.hb_miss_count)
++		return -ENODEV;
++
+ 	/* check if firmware is compatible for this request */
+ 	cmd = d->data.req.hdr.s.cmd;
+ 	if (octep_ctrl_net_h2f_cmd_versions[cmd] > oct->ctrl_mbox.max_fw_version ||
+-- 
+2.55.0
+
