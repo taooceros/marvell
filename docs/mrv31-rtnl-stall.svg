@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1010" viewBox="0 0 1200 1010" font-family="Noto Sans CJK SC, Droid Sans Fallback, DejaVu Sans, sans-serif">
+<defs><marker id="a-2563eb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker><marker id="a-ea580c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker><marker id="a-9333ea" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9333ea"/></marker><marker id="a-64748b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker><marker id="a-16a34a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker><marker id="a-dc2626" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker><marker id="a-0891b2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0891b2"/></marker><marker id="a-1f2328" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2328"/></marker><marker id="a-57606a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#57606a"/></marker><marker id="a-d0d7de" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d0d7de"/></marker><pattern id="hatch" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)"><rect width="10" height="10" fill="#16a34a" fill-opacity="0.08"/><rect width="4" height="10" fill="#16a34a" fill-opacity="0.45"/></pattern></defs>
+<rect width="1200" height="1010" fill="#ffffff"/>
+<text x="30" y="38" font-size="24" fill="#1f2328" text-anchor="start" font-weight="bold">MRV-31：卡重启后，EasyTier 为什么会掉线</text>
+<text x="30" y="78" font-size="17" fill="#9333ea" text-anchor="start" font-weight="bold">① 两条路都要同一把锁：RTNL（内核里全局的“网络配置锁”，同一时间只能一个人拿）</text>
+<rect x="30" y="96" width="210" height="64" rx="8" fill="#1f2328" fill-opacity="0.04" stroke="#1f2328" stroke-width="2"/>
+<text x="135" y="123.1" font-size="16" fill="#2563eb" text-anchor="middle" font-weight="normal">tern remote serve</text>
+<text x="135" y="144.1" font-size="16" fill="#ea580c" text-anchor="middle" font-weight="normal">mailstream daemon</text>
+<line x1="240" y1="128" x2="418" y2="128" stroke="#1f2328" stroke-width="2"  marker-end="url(#a-1f2328)"/>
+<text x="329" y="100" font-size="13" fill="#1f2328" text-anchor="middle" font-weight="normal">读 ens1 的速度</text>
+<text x="329" y="117" font-size="13" fill="#1f2328" text-anchor="middle" font-weight="normal">/sys/class/net/ens1/speed</text>
+<rect x="420" y="96" width="150" height="160" rx="8" fill="#9333ea" fill-opacity="0.12" stroke="#9333ea" stroke-width="2"/>
+<text x="495" y="160.6" font-size="16" fill="#1f2328" text-anchor="middle" font-weight="bold">RTNL 锁</text>
+<text x="495" y="181.6" font-size="16" fill="#1f2328" text-anchor="middle" font-weight="normal">一次只给一个人</text>
+<text x="495" y="202.6" font-size="16" fill="#1f2328" text-anchor="middle" font-weight="normal">其他人排队</text>
+<line x1="570" y1="128" x2="698" y2="128" stroke="#9333ea" stroke-width="2"  marker-end="url(#a-9333ea)"/>
+<text x="634" y="119" font-size="13" fill="#9333ea" text-anchor="middle" font-weight="normal">拿着锁去问驱动</text>
+<rect x="700" y="96" width="150" height="64" rx="8" fill="#1f2328" fill-opacity="0.04" stroke="#1f2328" stroke-width="2"/>
+<text x="775" y="133.6" font-size="16" fill="#1f2328" text-anchor="middle" font-weight="bold">octeon_ep 驱动</text>
+<line x1="850" y1="118" x2="958" y2="118" stroke="#1f2328" stroke-width="2"  marker-end="url(#a-1f2328)"/>
+<text x="904" y="109" font-size="13" fill="#1f2328" text-anchor="middle" font-weight="normal">控制邮箱请求</text>
+<line x1="958" y1="140" x2="852" y2="140" stroke="#dc2626" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#a-dc2626)"/>
+<text x="905" y="158" font-size="13" fill="#dc2626" text-anchor="middle" font-weight="normal">不回复</text>
+<rect x="960" y="96" width="210" height="64" rx="8" fill="#64748b" fill-opacity="0.1" stroke="#64748b" stroke-width="2"/>
+<text x="1065" y="123.1" font-size="16" fill="#1f2328" text-anchor="middle" font-weight="bold">卡</text>
+<text x="1065" y="144.1" font-size="16" fill="#dc2626" text-anchor="middle" font-weight="normal">21:10 重启后不再回复</text>
+<text x="775" y="186" font-size="15" fill="#dc2626" text-anchor="middle" font-weight="bold">驱动干等 8 秒才超时，这 8 秒里锁一直被占着</text>
+<rect x="30" y="196" width="210" height="60" rx="8" fill="#16a34a" fill-opacity="0.1" stroke="#16a34a" stroke-width="2"/>
+<text x="135" y="221.1" font-size="16" fill="#1f2328" text-anchor="middle" font-weight="bold">EasyTier</text>
+<text x="135" y="242.1" font-size="16" fill="#1f2328" text-anchor="middle" font-weight="normal">重连前要先列一遍网卡</text>
+<line x1="240" y1="226" x2="418" y2="226" stroke="#16a34a" stroke-width="2"  marker-end="url(#a-16a34a)"/>
+<text x="329" y="217" font-size="13" fill="#16a34a" text-anchor="middle" font-weight="normal">列网卡（同 ip link）</text>
+<text x="590" y="222" font-size="15" fill="#16a34a" text-anchor="start" font-weight="bold">锁被占 → 排队（线程 D 状态，rtnl_dumpit）→ 超过 2 秒连接时限 → 超时、断开</text>
+<text x="590" y="246" font-size="14" fill="#57606a" text-anchor="start" font-weight="normal">（重连只给 2 秒，排队就用完了）</text>
+<text x="30" y="288" font-size="14" fill="#57606a" text-anchor="start" font-weight="normal">要这把锁的：ip link / getifaddrs()（列网卡）、读 /sys/class/net/*/speed、ethtool、改地址和路由。不要的：/proc/net/dev（23:00 实测 0.003 s，同时 ip -br link 要 3–7 s）。</text>
+<text x="30" y="338" font-size="17" fill="#9333ea" text-anchor="start" font-weight="bold">② 实测时间线 23:06:36–23:07:10：tern 和 mailstream 轮流读 ens1 速度，锁几乎没有空闲</text>
+<rect x="150" y="352" width="22" height="14" rx="3" fill="#ea580c" stroke="#ea580c"/>
+<text x="178" y="364" font-size="13" fill="#1f2328" text-anchor="start" font-weight="normal">mailstream 拿着锁、等卡</text>
+<rect x="345" y="352" width="22" height="14" rx="3" fill="#2563eb" stroke="#2563eb"/>
+<text x="373" y="364" font-size="13" fill="#1f2328" text-anchor="start" font-weight="normal">tern 拿着锁、等卡</text>
+<rect x="515" y="352" width="22" height="14" rx="3" fill="url(#hatch)" stroke="#16a34a"/>
+<text x="543" y="364" font-size="13" fill="#1f2328" text-anchor="start" font-weight="normal">排队等锁</text>
+<line x1="622" y1="351" x2="622" y2="369" stroke="#16a34a" stroke-width="3"/>
+<text x="632" y="364" font-size="13" fill="#1f2328" text-anchor="start" font-weight="normal">开始一次重连</text>
+<text x="735" y="365" font-size="16" fill="#dc2626" font-weight="bold">✕</text>
+<text x="753" y="364" font-size="13" fill="#1f2328" text-anchor="start" font-weight="normal">这次重连的 2 秒时限到（报 timeout）</text>
+<line x1="150" y1="382" x2="150" y2="520" stroke="#d0d7de" stroke-width="1"/>
+<line x1="210" y1="382" x2="210" y2="520" stroke="#d0d7de" stroke-width="0.6"/>
+<line x1="270" y1="382" x2="270" y2="520" stroke="#d0d7de" stroke-width="1"/>
+<line x1="330" y1="382" x2="330" y2="520" stroke="#d0d7de" stroke-width="0.6"/>
+<line x1="390" y1="382" x2="390" y2="520" stroke="#d0d7de" stroke-width="1"/>
+<line x1="450" y1="382" x2="450" y2="520" stroke="#d0d7de" stroke-width="0.6"/>
+<line x1="510" y1="382" x2="510" y2="520" stroke="#d0d7de" stroke-width="1"/>
+<line x1="570" y1="382" x2="570" y2="520" stroke="#d0d7de" stroke-width="0.6"/>
+<line x1="630" y1="382" x2="630" y2="520" stroke="#d0d7de" stroke-width="1"/>
+<line x1="690" y1="382" x2="690" y2="520" stroke="#d0d7de" stroke-width="0.6"/>
+<line x1="750" y1="382" x2="750" y2="520" stroke="#d0d7de" stroke-width="1"/>
+<line x1="810" y1="382" x2="810" y2="520" stroke="#d0d7de" stroke-width="0.6"/>
+<line x1="870" y1="382" x2="870" y2="520" stroke="#d0d7de" stroke-width="1"/>
+<line x1="930" y1="382" x2="930" y2="520" stroke="#d0d7de" stroke-width="0.6"/>
+<line x1="990" y1="382" x2="990" y2="520" stroke="#d0d7de" stroke-width="1"/>
+<line x1="1050" y1="382" x2="1050" y2="520" stroke="#d0d7de" stroke-width="0.6"/>
+<line x1="1110" y1="382" x2="1110" y2="520" stroke="#d0d7de" stroke-width="1"/>
+<line x1="1170" y1="382" x2="1170" y2="520" stroke="#d0d7de" stroke-width="0.6"/>
+<line x1="150" y1="520" x2="1170" y2="520" stroke="#1f2328" stroke-width="1.5"/>
+<line x1="150" y1="520" x2="150" y2="527" stroke="#1f2328"/>
+<text x="150" y="543" font-size="13" fill="#57606a" text-anchor="middle" font-weight="normal">23:06:36</text>
+<line x1="270" y1="520" x2="270" y2="527" stroke="#1f2328"/>
+<text x="270" y="543" font-size="13" fill="#57606a" text-anchor="middle" font-weight="normal">:40</text>
+<line x1="390" y1="520" x2="390" y2="527" stroke="#1f2328"/>
+<text x="390" y="543" font-size="13" fill="#57606a" text-anchor="middle" font-weight="normal">:44</text>
+<line x1="510" y1="520" x2="510" y2="527" stroke="#1f2328"/>
+<text x="510" y="543" font-size="13" fill="#57606a" text-anchor="middle" font-weight="normal">:48</text>
+<line x1="630" y1="520" x2="630" y2="527" stroke="#1f2328"/>
+<text x="630" y="543" font-size="13" fill="#57606a" text-anchor="middle" font-weight="normal">:52</text>
+<line x1="750" y1="520" x2="750" y2="527" stroke="#1f2328"/>
+<text x="750" y="543" font-size="13" fill="#57606a" text-anchor="middle" font-weight="normal">:56</text>
+<line x1="870" y1="520" x2="870" y2="527" stroke="#1f2328"/>
+<text x="870" y="543" font-size="13" fill="#57606a" text-anchor="middle" font-weight="normal">23:07:00</text>
+<line x1="990" y1="520" x2="990" y2="527" stroke="#1f2328"/>
+<text x="990" y="543" font-size="13" fill="#57606a" text-anchor="middle" font-weight="normal">:04</text>
+<line x1="1110" y1="520" x2="1110" y2="527" stroke="#1f2328"/>
+<text x="1110" y="543" font-size="13" fill="#57606a" text-anchor="middle" font-weight="normal">:08</text>
+<text x="30" y="405" font-size="15" fill="#9333ea" text-anchor="start" font-weight="bold">RTNL 锁</text>
+<text x="30" y="423" font-size="13" fill="#57606a" text-anchor="start" font-weight="normal">被谁拿着</text>
+<text x="30" y="478" font-size="15" fill="#16a34a" text-anchor="start" font-weight="bold">EasyTier</text>
+<text x="30" y="496" font-size="13" fill="#57606a" text-anchor="start" font-weight="normal">的线程</text>
+<rect x="163.3" y="390" width="242.5" height="44" rx="5" fill="#ea580c"/>
+<text x="284.55" y="408" font-size="14" fill="#ffffff" text-anchor="middle" font-weight="bold">mailstream 读 ens1</text>
+<text x="284.55" y="427" font-size="13" fill="#ffffff" text-anchor="middle" font-weight="normal">8.15 s，卡不回</text>
+<rect x="416.79999999999995" y="390" width="242.79999999999995" height="44" rx="5" fill="#2563eb"/>
+<text x="538.1999999999999" y="408" font-size="14" fill="#ffffff" text-anchor="middle" font-weight="bold">tern 读 ens1</text>
+<text x="538.1999999999999" y="427" font-size="13" fill="#ffffff" text-anchor="middle" font-weight="normal">8.16 s，卡不回</text>
+<rect x="661.5999999999999" y="390" width="242.5000000000001" height="44" rx="5" fill="#ea580c"/>
+<text x="782.8499999999999" y="408" font-size="14" fill="#ffffff" text-anchor="middle" font-weight="bold">mailstream 读 ens1</text>
+<text x="782.8499999999999" y="427" font-size="13" fill="#ffffff" text-anchor="middle" font-weight="normal">8.15 s，卡不回</text>
+<rect x="906.1" y="390" width="245.80000000000007" height="44" rx="5" fill="#2563eb"/>
+<text x="1029" y="408" font-size="14" fill="#ffffff" text-anchor="middle" font-weight="bold">tern 读 ens1</text>
+<text x="1029" y="427" font-size="13" fill="#ffffff" text-anchor="middle" font-weight="normal">8.26 s，卡不回</text>
+<rect x="150" y="452" width="1020" height="36" rx="5" fill="url(#hatch)" stroke="#16a34a"/>
+<line x1="198" y1="446" x2="198" y2="492" stroke="#16a34a" stroke-width="3"/>
+<text x="258" y="477" font-size="20" fill="#dc2626" font-weight="bold" text-anchor="middle">✕</text>
+<line x1="444" y1="446" x2="444" y2="492" stroke="#16a34a" stroke-width="3"/>
+<text x="504" y="477" font-size="20" fill="#dc2626" font-weight="bold" text-anchor="middle">✕</text>
+<line x1="690" y1="446" x2="690" y2="492" stroke="#16a34a" stroke-width="3"/>
+<text x="750" y="477" font-size="20" fill="#dc2626" font-weight="bold" text-anchor="middle">✕</text>
+<line x1="936" y1="446" x2="936" y2="492" stroke="#16a34a" stroke-width="3"/>
+<text x="996" y="477" font-size="20" fill="#dc2626" font-weight="bold" text-anchor="middle">✕</text>
+<text x="660" y="508" font-size="13" fill="#16a34a" text-anchor="middle" font-weight="normal">排队等锁：25 秒的采样里，EasyTier 的几个线程每一次都卡在这里</text>
+<text x="30" y="576" font-size="15" fill="#1f2328" text-anchor="start" font-weight="bold">结果：EasyTier 连中心节点 128.208.6.6 的连接 21:30–23:14 断了 14 次；11-10 到 21:10 只断过 1 次。</text>
+<text x="30" y="598" font-size="13" fill="#57606a" text-anchor="start" font-weight="normal">（锁那一行按 0.1 s 采样各程序打开的 speed 文件画出；EasyTier 一行的“一直在排队”是实测，重连的位置按它日志里约 8.2 s 一次的节奏示意。）</text>
+<text x="30" y="646" font-size="17" fill="#0891b2" text-anchor="start" font-weight="bold">③ 修复后</text>
+<text x="30" y="684" font-size="15" fill="#0891b2" text-anchor="start" font-weight="bold">补丁：卡以后再重启或卡死时</text>
+<rect x="30" y="698" width="170" height="56" rx="8" fill="#1f2328" fill-opacity="0.04" stroke="#1f2328" stroke-width="2"/>
+<text x="115" y="731.25" font-size="15" fill="#1f2328" text-anchor="middle" font-weight="bold">读 ens1 速度</text>
+<line x1="200" y1="726" x2="268" y2="726" stroke="#1f2328" stroke-width="2"  marker-end="url(#a-1f2328)"/>
+<rect x="270" y="698" width="110" height="56" rx="8" fill="#9333ea" fill-opacity="0.12" stroke="#9333ea" stroke-width="2"/>
+<text x="325" y="731.25" font-size="15" fill="#1f2328" text-anchor="middle" font-weight="bold">RTNL 锁</text>
+<line x1="380" y1="726" x2="448" y2="726" stroke="#9333ea" stroke-width="2"  marker-end="url(#a-9333ea)"/>
+<rect x="450" y="698" width="270" height="56" rx="8" fill="#0891b2" fill-opacity="0.12" stroke="#0891b2" stroke-width="2"/>
+<text x="585" y="721.4" font-size="14" fill="#1f2328" text-anchor="middle" font-weight="bold">octeon_ep：卡的心跳已经丢了？</text>
+<text x="585" y="740.4" font-size="14" fill="#1f2328" text-anchor="middle" font-weight="normal">是 → 不发邮箱，立刻返回错误</text>
+<line x1="720" y1="726" x2="798" y2="726" stroke="#0891b2" stroke-width="2"  marker-end="url(#a-0891b2)"/>
+<text x="759" y="717" font-size="13" fill="#0891b2" text-anchor="middle" font-weight="normal">约 0 ms</text>
+<rect x="800" y="698" width="370" height="56" rx="8" fill="#16a34a" fill-opacity="0.1" stroke="#16a34a" stroke-width="2"/>
+<text x="985" y="721.4" font-size="14" fill="#1f2328" text-anchor="middle" font-weight="bold">锁马上释放</text>
+<text x="985" y="740.4" font-size="14" fill="#1f2328" text-anchor="middle" font-weight="normal">EasyTier 照常列网卡、照常连接</text>
+<text x="30" y="800" font-size="15" fill="#0891b2" text-anchor="start" font-weight="bold">reload 之后：卡正常，问一次 4–5 ms（23:35 实测，ip -br link 5 ms）</text>
+<rect x="30" y="814" width="170" height="56" rx="8" fill="#1f2328" fill-opacity="0.04" stroke="#1f2328" stroke-width="2"/>
+<text x="115" y="847.25" font-size="15" fill="#1f2328" text-anchor="middle" font-weight="bold">读 ens1 速度</text>
+<line x1="200" y1="842" x2="268" y2="842" stroke="#1f2328" stroke-width="2"  marker-end="url(#a-1f2328)"/>
+<rect x="270" y="814" width="110" height="56" rx="8" fill="#9333ea" fill-opacity="0.12" stroke="#9333ea" stroke-width="2"/>
+<text x="325" y="847.25" font-size="15" fill="#1f2328" text-anchor="middle" font-weight="bold">RTNL 锁</text>
+<line x1="380" y1="842" x2="448" y2="842" stroke="#9333ea" stroke-width="2"  marker-end="url(#a-9333ea)"/>
+<rect x="450" y="814" width="160" height="56" rx="8" fill="#1f2328" fill-opacity="0.04" stroke="#1f2328" stroke-width="2"/>
+<text x="530" y="847.25" font-size="15" fill="#1f2328" text-anchor="middle" font-weight="bold">octeon_ep 驱动</text>
+<line x1="610" y1="834" x2="698" y2="834" stroke="#1f2328" stroke-width="2"  marker-end="url(#a-1f2328)"/>
+<text x="654" y="825" font-size="13" fill="#1f2328" text-anchor="middle" font-weight="normal">邮箱请求</text>
+<line x1="698" y1="852" x2="612" y2="852" stroke="#0891b2" stroke-width="2"  marker-end="url(#a-0891b2)"/>
+<text x="655" y="870" font-size="13" fill="#0891b2" text-anchor="middle" font-weight="normal">4 ms 内回复</text>
+<rect x="700" y="814" width="170" height="56" rx="8" fill="#64748b" fill-opacity="0.1" stroke="#64748b" stroke-width="2"/>
+<text x="785" y="847.25" font-size="15" fill="#1f2328" text-anchor="middle" font-weight="bold">卡（reload 后）</text>
+<line x1="870" y1="842" x2="948" y2="842" stroke="#0891b2" stroke-width="2"  marker-end="url(#a-0891b2)"/>
+<rect x="950" y="814" width="220" height="56" rx="8" fill="#16a34a" fill-opacity="0.1" stroke="#16a34a" stroke-width="2"/>
+<text x="1060" y="837.4" font-size="14" fill="#1f2328" text-anchor="middle" font-weight="bold">锁只占几毫秒</text>
+<text x="1060" y="856.4" font-size="14" fill="#1f2328" text-anchor="middle" font-weight="normal">谁都感觉不到</text>
+<text x="30" y="920" font-size="15" fill="#1f2328" text-anchor="start" font-weight="bold">分工：reload 让卡重新回应，解决这一次；补丁保证以后卡再出问题时，主机不会被拖住。</text>
+<text x="30" y="948" font-size="14" fill="#57606a" text-anchor="start" font-weight="normal">另外：从 11-01 起每天都有的零星断线，是和家里几个节点之间的连接，在 octeon_ep 加载（11-10）之前就有，和这件事无关。</text>
+<text x="30" y="984" font-size="12" fill="#57606a" text-anchor="start" font-weight="normal">saturn · 2026-11-16 · 数据来自 /proc 采样、EasyTier 日志和 octeon_ep / Linux 6.17.7 源码</text>
+</svg>
