@@ -1,0 +1,3 @@
+# Build against the card kernel's build tree (the running 6.12 card kernel):
+#   make -C ~/dev/marvell/build-6.12 M=$PWD ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- modules
+obj-m := pem_wc.o

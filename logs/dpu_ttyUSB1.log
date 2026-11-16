@@ -1,0 +1,494 @@
+
+[1;32muart:~$ [mkernel uptime
+Uptime: 150094 ms
+[1;32muart:~$ [mdevmem 0x40424040 32 0x600A0000
+Using data width 32
+Writing value 0x600a0000
+[1;32muart:~$ [mdevmem 0x40424040 32
+Using data width 32
+Read value 0x505a0000
+[1;32muart:~$ [m[Jdevmem 0x40424040 32
+Using data width 32
+Read value 0x505a0000
+[1;32muart:~$ [m[Jdevmem 0x40424040 32
+Using data width 32
+Read value 0x505a0000
+[1;32muart:~$ [m[Jdevmem 0x40424040 32
+Using data width 32
+Read value 0x505a0000
+[1;32muart:~$ [m[Jdevmem 0x40424040 32
+Using data width 32
+Read value 0x505a0000
+[1;32muart:~$ [m[Jdevmem 0x40424040 32
+Using data width 32
+Read value 0x505a0000
+[1;32muart:~$ [m[Jdevmem 0x40424040 32
+Using data width 32
+Read value 0x505a0000
+[1;32muart:~$ [m[Jdevmem 0x40424040 32
+Using data width 32
+Read value 0x505a0000
+[1;32muart:~$ [m[Jdevmem 0x40424040 32
+Using data width 32
+Read value 0x505a0000
+[1;32muart:~$ [m[Jdevmem 0x40424040 32
+Using data width 32
+Read value 0x505a0000
+[1;32muart:~$ [m[Jdevmem 0x40424040 32
+Using data width 32
+Read value 0x505a0000
+[1;32muart:~$ [m[Jdevmem 0x40424040 32
+Using data width 32
+Read value 0x505a0000
+[1;32muart:~$ [m[Jdevmem 0x40424040 32
+Using data width 32
+Read value 0x505a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x60c63c08
+[1;32muart:~$ [mdevmem 0x40424004 32
+Using data width 32
+Read value 0x0
+[1;32muart:~$ [mdevmem 0x40424008 32
+Using data width 32
+Read value 0xa000000
+[1;32muart:~$ [m[Jdevmem 0x40424008 32
+Using data width 32
+Read value 0xa000000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x60c63c08
+[1;32muart:~$ [m[Jdevmem 0x40420040 32
+Using data width 32
+Read value 0x60c63c08
+[1;32muart:~$ [m[Jdevmem 0x40420040 32
+Using data width 32
+Read value 0x60c63c08
+[1;32muart:~$ [m[Jdevmem 0x40420040 32
+Using data width 32
+Read value 0x60c63c08
+[1;32muart:~$ [m[Jdevmem 0x40420040 32
+Using data width 32
+Read value 0x60c63c08
+[1;32muart:~$ [m[Jdevmem 0x40420040 32
+Using data width 32
+Read value 0x60c63c08
+[1;32muart:~$ [m[Jdevmem 0x40420040 32
+Using data width 32
+Read value 0x60c63c08
+[1;32muart:~$ [m[Jdevmem 0x40420040 32
+Using data width 32
+Read value 0x60c63c08
+[1;32muart:~$ [m[Jdevmem 0x40420040 32
+Using data width 32
+Read value 0x60c63c08
+[1;32muart:~$ [m[Jdevmem 0x40420040 32
+Using data width 32
+Read value 0x60c63c08
+[1;32muart:~$ [m[Jdevmem 0x40420040 32
+Using data width 32
+Read value 0x60c63c08
+[1;32muart:~$ [m[Jdevmem 0x40420040 32
+Using data width 32
+Read value 0x60c63c08
+[1;32muart:~$ [m[Jdevmem 0x40420040 32
+Using data width 32
+Read value 0x60c63c08
+[1;32muart:~$ [m[Jdevmem 0x40420040 32
+Using data width 32
+Read value 0x60c63c08
+[1;32muart:~$ [m[Jdevmem 0x40420040 32
+Using data width 32
+Read value 0x60c63c08
+[1;32muart:~$ [m[Jdevmem 0x40420040 32
+Using data width 32
+Read value 0x60c63c08
+[1;32muart:~$ [mdevmem 0x40420008 32
+Using data width 32
+Read value 0xa000000
+[1;32muart:~$ [mdevmem 0x40420004 32
+Using data width 32
+Read value 0x0
+[1;32muart:~$ [mdevmem 0x40420040 32 0x608A0000
+Using data width 32
+Writing value 0x608a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x608a0141
+[1;32muart:~$ [mdevmem 0x40420004 32
+Using data width 32
+Read value 0x800000
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x608E0000
+Using data width 32
+Writing value 0x608e0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x608e0dd1
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x600A0000
+Using data width 32
+Writing value 0x600a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x600bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x600E0000
+Using data width 32
+Writing value 0x600e0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x600fffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40424040 32 0x600A0000
+Using data width 32
+Writing value 0x600a0000
+[1;32muart:~$ [mdevmem 0x40424004 32
+Using data width 32
+Read value 0x0
+[1;32muart:~$ [mdevmem 0x40424040 32
+Using data width 32
+Read value 0x505a0000
+[1;32muart:~$ [mdevmem 0x40424024 32
+Using data width 32
+Read value 0xf0000102
+[1;32muart:~$ [mdevmem 0x40420040 32 0x610A0000
+Using data width 32
+Writing value 0x610a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x610bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x618A0000
+Using data width 32
+Writing value 0x618a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x618bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x620A0000
+Using data width 32
+Writing value 0x620a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x620bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x628A0000
+Using data width 32
+Writing value 0x628a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x628bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x630A0000
+Using data width 32
+Writing value 0x630a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x630bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x638A0000
+Using data width 32
+Writing value 0x638a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x638bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x640A0000
+Using data width 32
+Writing value 0x640a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x640bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x680A0000
+Using data width 32
+Writing value 0x680a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x680bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x6F8A0000
+Using data width 32
+Writing value 0x6f8a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x6f8bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40424044 32
+Using data width 32
+Read value 0x14e
+[1;32muart:~$ [mdevmem 0x40424040 32
+Using data width 32
+Read value 0x505a0000
+[1;32muart:~$ [mnet ping -c 3 -I 2 fe80::ac6d:6bff:fed2:1668
+PING fe80::ac6d:6bff:fed2:1668
+[1;32mPing timeout
+[m[8D[J[1;32muart:~$ [mnet ping -c 3 -I 2 fe80::ac6d:6bff:fed2:1668
+PING fe80::ac6d:6bff:fed2:1668
+[1;32mPing timeout
+[m[8D[J[1;32muart:~$ [m[8D[J[00:12:44.925,000] [0m<inf> eth_nxp_enet_mac: Link is down[0m
+[1;32muart:~$ [m[8D[J[1;32muart:~$ [m[8D[J[00:14:05.424,000] [0m<inf> eth_nxp_enet_mac: Link is up[0m
+[1;32muart:~$ [m[8D[J[1;32muart:~$ [m[8D[J[00:16:24.792,000] [0m<inf> eth_nxp_enet_mac: Link is down[0m
+[1;32muart:~$ [m[8D[J[1;32muart:~$ [m[8D[J[00:19:33.960,000] [0m<inf> eth_nxp_enet_mac: Link is up[0m
+[1;32muart:~$ [m[8D[J[1;32muart:~$ [mdevmem 0x40420040 32 0x648A0000
+Using data width 32
+Writing value 0x648a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x648bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x650A0000
+Using data width 32
+Writing value 0x650a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x650bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x658A0000
+Using data width 32
+Writing value 0x658a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x658bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x660A0000
+Using data width 32
+Writing value 0x660a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x660bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x668A0000
+Using data width 32
+Writing value 0x668a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x668bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x670A0000
+Using data width 32
+Writing value 0x670a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x670bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x678A0000
+Using data width 32
+Writing value 0x678a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x678bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x688A0000
+Using data width 32
+Writing value 0x688a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x688bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x690A0000
+Using data width 32
+Writing value 0x690a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x690bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x698A0000
+Using data width 32
+Writing value 0x698a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x698bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x6A0A0000
+Using data width 32
+Writing value 0x6a0a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x6a0bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x6A8A0000
+Using data width 32
+Writing value 0x6a8a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x6a8bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x6B0A0000
+Using data width 32
+Writing value 0x6b0a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x6b0bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x6B8A0000
+Using data width 32
+Writing value 0x6b8a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x6b8bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x6C0A0000
+Using data width 32
+Writing value 0x6c0a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x6c0bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x6C8A0000
+Using data width 32
+Writing value 0x6c8a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x6c8bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x6D0A0000
+Using data width 32
+Writing value 0x6d0a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x6d0bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x6D8A0000
+Using data width 32
+Writing value 0x6d8a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x6d8bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x6E0A0000
+Using data width 32
+Writing value 0x6e0a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x6e0bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x6E8A0000
+Using data width 32
+Writing value 0x6e8a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x6e8bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40420040 32 0x6F0A0000
+Using data width 32
+Writing value 0x6f0a0000
+[1;32muart:~$ [mdevmem 0x40420040 32
+Using data width 32
+Read value 0x6f0bffff
+[1;32muart:~$ [mdevmem 0x40420004 32 0x800000
+Using data width 32
+Writing value 0x800000
+[1;32muart:~$ [mdevmem 0x40424044 32 0x14c
+Using data width 32
+Writing value 0x14c
+[1;32muart:~$ [mdevmem 0x40424044 32
+Using data width 32
+Read value 0x14c
+[1;32muart:~$ [mdevmem 0x40424044 32 0x14e
+Using data width 32
+Writing value 0x14e
+[1;32muart:~$ [mdevmem 0x40424044 32
+Using data width 32
+Read value 0x14e
+[1;32muart:~$ [mdevmem 0x40424040 32 0x60060000
+Using data width 32
+Writing value 0x60060000
+[1;32muart:~$ [mdevmem 0x40424004 32
+Using data width 32
+Read value 0x0
+[1;32muart:~$ [mdevmem 0x40424040 32
+Using data width 32
+Read value 0x505a0000
+[1;32muart:~$ [mnet stats 2
+
+Interface 0x202c35e8 (Ethernet) [2]
+===================================
+IPv6 recv      0	sent	18	drop	0	forwarded	0
+IPv6 ND recv   0	sent	10	drop	2
+IPv6 MLD recv  0	sent	2	drop	0
+IPv4 recv      0	sent	0	drop	0	forwarded	0
+IP vhlerr      0	hblener	0	lblener	0
+IP fragerr     0	chkerr	0	protoer	0
+ICMP recv      0	sent	18	drop	0
+ICMP typeer    0	chkerr	0
+IGMP recv      0	sent	0	drop	0
+UDP recv       0	sent	0	drop	0
+UDP chkerr     0
+TCP bytes recv 0	sent	0	resent	0
+TCP seg recv   0	sent	0	drop	0
+TCP seg resent 0	chkerr	0	ackerr	0
+TCP seg rsterr 0	rst	0
+TCP conn drop  0	connrst	0
+TCP pkt drop   0
+Bytes received 0
+Bytes sent     976
+Processing err 0
+[1;32muart:~$ [m

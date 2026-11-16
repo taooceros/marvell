@@ -1,0 +1,9 @@
+[package]
+name = "dpdk"
+description = "Minimal safe layer over dpdk-sys for the testbed"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+dpdk-sys.workspace = true

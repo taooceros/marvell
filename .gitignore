@@ -1,0 +1,71 @@
+# Version control for ~/dev/marvell (jj, colocated git). Track what we write:
+# AGENTS.md, devenv.*, testbed/ sources, bench/, card-scripts/, card-kmod/
+# sources, host-tools/, docs/ sources, small logs and notes.
+
+# Upstream clones with their own git history (MarvellEmbeddedProcessors on GitHub).
+# marvell-dpdk/ carries uncommitted local octeon_ep changes; see AGENTS.md.
+/marvell-dpdk/
+/linux-marvell/
+/linux-marvell-6.6/
+/dao/
+/pcie_ep_octeon_host/
+/pcie_ep_octeon_target/
+
+# Build outputs and generated trees
+/build-6.12/
+/sysroot-card/
+/testbed/target/
+target/
+/.devenv/
+/.devenv.flake.nix
+/.direnv/
+/devenv.local.nix
+__pycache__/
+*.pyc
+
+# Kernel module build outputs (card-kmod/)
+*.o
+*.ko
+*.mod
+*.mod.c
+*.cmd
+Module.symvers
+modules.order
+
+# Prototype binaries built from bench/*.c
+/bench/dpdk_pingpong
+/bench/dpdk_reflector
+/bench/udp_blast
+/bench/udp_pingpong
+/bench/udp_echo
+
+# Firmware dumps and packages
+/fw-backup/
+/card-debs/
+*.bin
+*.deb
+
+# Vendor documents (the board user's guide is Marvell confidential under NDA)
+# and session dumps of them or of third-party sources
+/docs/*.pdf
+/docs/sdk*.txt
+/session-artifacts/*.read.log
+# Unpublished notes (originals of docs edited for the public repo; MRV-30)
+/docs/private/
+
+# Video build: dependencies, rendered output, synthesized audio
+# (docs/video/.gitignore has the details)
+node_modules/
+/docs/video/out/
+/docs/video/public/voice/
+*.mp4
+*.wav
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+*credentials*

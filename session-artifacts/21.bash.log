@@ -1,0 +1,31 @@
+for i in eth0 eth1 eth2 eth3 eth4 eth5 sdp1-0; do printf "%s " $i; ethtool -i $i | grep -E "^(driver|bus-info)" | tr "\n" " "; ethtool $i | grep -E "Speed|Link detected" | tr -d "\t" | tr "\n" " "; echo; done; echo ===; ls /<-i $i | grep -E "^(driver|bus-info)" | tr "\n" " "; ethtool $i | grep -E "Speed|Link detected" | tr -d "\t" | tr "\n" " "; echo; done; echo ===; ls /etc/netplan; cat                                                                                 /etc/netplan/*.yaml; echo ===; command -v octep_cp_agent; ls /usr/bin/*octep* /< tr -d "\t" | tr "\n" " "; echo; done; echo ===; ls /etc/netplan; cat /etc/netplan/*.yaml; echo ===; command -v octep_cp_agent; ls /usr/bin/*octep* /usr/local/bin/*o                                                                                ctep* 2>/dev/null; systemctl list-units --all --no-legend | grep -iE "octep|cp_a< echo ===; command -v octep_cp_agent; ls /usr/bin/*octep* /usr/local/bin/*octep* 2>/dev/null; systemctl list-units --all --no-legend | grep -iE "octep|cp_agent|dpdk"                                                                                
+eth0 driver: rvu-nicpf bus-info: 0002:02:00.0 Speed: Unknown! Link detected: no 
+eth1 driver: rvu-nicpf bus-info: 0002:03:00.0 Speed: Unknown! Link detected: no 
+eth2 driver: rvu-nicpf bus-info: 0002:04:00.0 Speed: Unknown! Link detected: no 
+eth3 driver: rvu-nicpf bus-info: 0002:05:00.0 Speed: Unknown! Link detected: no 
+eth4 driver: rvu-nicpf bus-info: 0002:06:00.0 Speed: 1000Mb/s Link detected: no 
+eth5 driver: rvu-nicpf bus-info: 0002:07:00.0 Speed: Unknown! Link detected: no 
+sdp1-0 driver: rvu-nicvf bus-info: 0002:01:00.1 Speed: 100000Mb/s Link detected: no 
+===
+default.yaml
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    eth0:
+      dhcp4: no
+      addresses:
+        - 192.168.3.41/24
+      routes:
+        - to: default
+          via: 192.168.3.1
+      nameservers:
+        addresses:
+          - 8.8.8.8
+          - 8.8.4.4
+
+===
+/usr/bin/octep_cp_agent
+ /usr/bin/octep_cp_agent   /usr/bin/octep_cp_agent-shared
+root@venus-marvell:~# 
+[matched]

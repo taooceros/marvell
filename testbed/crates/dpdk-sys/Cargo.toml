@@ -1,0 +1,11 @@
+[package]
+name = "dpdk-sys"
+description = "Raw bindings to the DPDK that pkg-config finds for the build target"
+links = "dpdk"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[build-dependencies]
+bindgen = { version = "0.72", features = ["experimental"] }
+cc = "1"
