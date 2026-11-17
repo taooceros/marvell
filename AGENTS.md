@@ -4,6 +4,8 @@ Host `saturn` (x86_64, Ubuntu 22.04, kernel 6.17) with an OCTEON 10 CN106xx `crb
 
 Work is tracked in Linear team **Marvell** (`MRV`, workspace `taooceros`): one Done issue per finished piece, open items as children of MRV-13 ("主机 ⇄ CN106 数据通路"). Add new results to the matching issue instead of creating duplicates.
 
+Knowledge shared with `~/dev/accel-datapath` (MOVDIR64B ordering and write path, uncore counters, uncore/core clocks, RDTSC/RDTSCP, batch/concurrency terms, closed-loop method, saturn's shared-host rules) lives in `~/dev/datapath-kb`; read its `AGENTS.md` and `README.md`. Put a new cross-project fact there with a source link; keep card-specific detail here.
+
 ## Linear
 
 - Identity: agents on saturn write to Linear as the agent app **saturn-omp**. `~/.omp/agent/mcp.json` takes its header from `~/.local/bin/linear-agent-token --header` (client-credentials token from `~/.config/linear/credentials`, renewed when under 5 days are left; `--restore` switches back to the personal API key), but a session started before that switch still talks to the MCP server as the user, and so do its subagents. Read through MCP; write with `linear-app` (`comment`, `state`, `describe`, `create`, `gql`; see `linear-app --help`), which always acts as saturn-omp. A comment posted as the user reads as a request from the user.
