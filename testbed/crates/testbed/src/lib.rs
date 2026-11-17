@@ -1,8 +1,10 @@
 //! Shared pieces of the host <-> card benchmarks: the ping-pong wire format,
-//! latency summaries, the closed-loop driver, and the BAR4 inline path.
+//! latency summaries, the closed-loop driver, the BAR4 inline path and the
+//! lease that guards it.
 
 pub mod closed_loop;
 pub mod inline;
+pub mod lease;
 pub mod mmio;
 
 use std::fmt;

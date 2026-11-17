@@ -18,10 +18,16 @@
 //!   reads, `--fetch-dma`) instead of having requests pushed through BAR4,
 //!   and takes its cells in order (`FETCH_RING_OFFSET`).
 //!
-//! The BAR4 slot and outbound regions are restored on exit.
+//! Hosts get the slot through a lease over TCP on the control path
+//! (`--control`, see `testbed::lease`): the reflector stores each run's nonce
+//! in the slot before granting it, and on exit takes the slot back from its
+//! holder (waiting for it to let go) before the slot and outbound regions
+//! are restored. A reflector killed with SIGKILL leaves them changed: the
+//! next start, or `--restore` alone, puts back the firmware defaults first.
 //!
 //! usage: inline_reflector -l CORES [EAL args] -- [--roles ring|source|fetch,...] [--dma DPI_VF,... | --store]
-//!        [--fetch-dma DPI_VF]   (run as root)
+//!        [--fetch-dma DPI_VF] [--control ADDR:PORT]   (run as root)
+//!        inline_reflector --restore
 
 #[cfg(not(target_arch = "aarch64"))]
 fn main() {
@@ -38,6 +44,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 mod imp {
     use std::collections::VecDeque;
     use std::error::Error;
+    use std::net::TcpListener;
     use std::sync::Arc;
     use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 
@@ -45,11 +52,13 @@ mod imp {
     use dpdk::{Burst, Eal, HostDir, HostDma, Mempool, Memzone, PcieFunction, Port, TxQueue, rdtsc};
     use testbed::inline::{
         CORES_OFFSET, Cell, DONE_OFFSET, FETCH_CELLS, FETCH_NEXT_OFFSET, FETCH_RING_OFFSET, FETCH_TRIGGER_OFFSET,
-        MAX_CORES, READY, READY_OFFSET, REPLY_CELLS, REPLY_NONE, REPLY_PULL, REPLY_RING_OFFSET, SLOT, SLOT_BYTES,
-        STREAM_CORES_OFFSET, STREAM_OFFSET, STREAM_RING_OFFSET, Slot, TAKEN_OFFSET, next_offset,
+        MAX_CORES, NONCE_OFFSET, READY, READY_OFFSET, REPLY_CELLS, REPLY_NONE, REPLY_PULL, REPLY_RING_OFFSET, SLOT,
+        SLOT_BYTES, STREAM_CORES_OFFSET, STREAM_OFFSET, STREAM_RING_OFFSET, Slot, TAKEN_OFFSET, next_offset,
     };
+    use testbed::lease;
     use testbed::mmio::{
-        Bar4Window, OUTBOUND_REGION_BYTES, OUTBOUND_REGIONS, OutboundWindow, store64_gathered, store64_head_last,
+        Bar4Window, OUTBOUND_REGION_BYTES, OUTBOUND_REGIONS, OutboundWindow, STORE_REGIONS, restore_defaults,
+        store64_gathered, store64_head_last,
     };
     use testbed::{Mac, write_request};
 
@@ -143,6 +152,14 @@ mod imp {
         /// copy (1 = one copy per reply).
         #[arg(long, default_value_t = BATCH as u32, value_parser = clap::value_parser!(u32).range(1..=BATCH as i64))]
         dma_coalesce: u32,
+        /// Address hosts ask for the slot on (TCP, card `sdp1-0`).
+        #[arg(long, default_value = lease::DEFAULT_ADDR)]
+        control: String,
+        /// Only put back what a reflector killed with SIGKILL left behind
+        /// (BAR4 slot 15, outbound regions 248-255), then exit. Needs no EAL
+        /// arguments.
+        #[arg(long)]
+        restore: bool,
     }
 
     /// Card-side timestamps for DMA replies (`--timing`), in counter ticks.
@@ -795,6 +812,9 @@ mod imp {
             if args.pem != 0 {
                 return Err("--store drives PEM0 only".into());
             }
+            if index >= STORE_REGIONS {
+                return Err(format!("--store takes one of the top {STORE_REGIONS} outbound regions per core").into());
+            }
             let region = OUTBOUND_REGIONS - 1 - index;
             let window = OutboundWindow::claim(region, args.host_pf, args.host_vf, args.store_wc)?;
             println!(
@@ -854,7 +874,52 @@ mod imp {
         Fetch { fetcher: Fetcher<'e>, writer: Option<RingWriter<'e>> },
     }
 
+    /// Other processes running an `inline_reflector*` binary.
+    fn other_reflectors() -> Vec<u32> {
+        let me = std::process::id();
+        let Ok(dir) = std::fs::read_dir("/proc") else { return Vec::new() };
+        dir.flatten()
+            .filter_map(|e| e.file_name().to_str()?.parse::<u32>().ok())
+            .filter(|&pid| pid != me)
+            .filter(|pid| {
+                let cmdline = std::fs::read(format!("/proc/{pid}/cmdline")).unwrap_or_default();
+                let argv0 = cmdline.split(|&b| b == 0).next().unwrap_or_default();
+                let name = argv0.rsplit(|&b| b == b'/').next().unwrap_or_default();
+                name.starts_with(b"inline_reflector")
+            })
+            .collect()
+    }
+
+    /// Before EAL: unless another reflector runs (it owns the slot), put
+    /// back what one killed with SIGKILL left changed.
+    fn recover(restore_only: bool) -> Result<(), Box<dyn Error>> {
+        let others = other_reflectors();
+        if !others.is_empty() {
+            return Err(format!(
+                "another inline_reflector runs (pid {others:?}): leaving BAR4 slot {SLOT} and the outbound regions alone"
+            )
+            .into());
+        }
+        let changed = restore_defaults(SLOT)?;
+        for c in &changed {
+            println!("inline_reflector: restored {c} (left by a reflector that did not exit cleanly)");
+        }
+        if restore_only && changed.is_empty() {
+            println!(
+                "inline_reflector: nothing to restore (BAR4 slot {SLOT} and outbound regions {}-{} hold their defaults)",
+                OUTBOUND_REGIONS - STORE_REGIONS,
+                OUTBOUND_REGIONS - 1
+            );
+        }
+        Ok(())
+    }
+
     pub fn main() -> Result<(), Box<dyn Error>> {
+        let restore_only = std::env::args().skip(1).any(|a| a == "--restore");
+        recover(restore_only)?;
+        if restore_only {
+            return Ok(());
+        }
         let (eal, app_args) = Eal::init(std::env::args())?;
         let args = Args::parse_from(app_args);
         let cores = eal.lcores();
@@ -878,6 +943,10 @@ mod imp {
         {
             return Err(format!("--fetch-chunk must divide {FETCH_CELLS}, and chunk x depth must fit in it").into());
         }
+        // Before any register changes: a busy or missing control address
+        // fails here.
+        let listener =
+            TcpListener::bind(&args.control).map_err(|e| format!("control address --control {}: {e}", args.control))?;
         let quit = Arc::new(AtomicBool::new(false));
         let q = quit.clone();
         ctrlc::set_handler(move || q.store(true, Ordering::Relaxed))?;
@@ -945,20 +1014,28 @@ mod imp {
         shared.control(FETCH_NEXT_OFFSET).store(1, Ordering::Relaxed);
         shared.control(READY_OFFSET).store(READY, Ordering::Release);
         println!(
-            "inline_reflector: BAR4 slot {SLOT} -> pa {pa:#x} (was {:#x}); roles {roles:?}; SDP replies to {} from {me}",
+            "inline_reflector: BAR4 slot {SLOT} -> pa {pa:#x} (was {:#x}); roles {roles:?}; SDP replies to {} from {me}; \
+             hosts lease the slot at {}",
             window.previous(),
-            args.peer
+            args.peer,
+            args.control
         );
 
-        let results = eal.on_each_lcore(plans, |_, plan| {
-            match plan {
-                Plan::Ring { index, stream, txq, writer } => serve_ring(&shared, index, stream, txq, writer),
-                Plan::Source { index, writer } => serve_source(&shared, index, writer),
-                Plan::Fetch { fetcher, writer } => serve_fetch(&shared, fetcher, writer),
-            }
-            .map_err(|e| e.to_string())
-        });
-        shared.control(READY_OFFSET).store(0, Ordering::Release);
+        let results = std::thread::scope(|scope| -> Result<_, Box<dyn Error>> {
+            let server = lease::serve(scope, listener, shared.control(NONCE_OFFSET))?;
+            let results = eal.on_each_lcore(plans, |_, plan| {
+                match plan {
+                    Plan::Ring { index, stream, txq, writer } => serve_ring(&shared, index, stream, txq, writer),
+                    Plan::Source { index, writer } => serve_source(&shared, index, writer),
+                    Plan::Fetch { fetcher, writer } => serve_fetch(&shared, fetcher, writer),
+                }
+                .map_err(|e| e.to_string())
+            });
+            shared.control(READY_OFFSET).store(0, Ordering::Release);
+            // The holder stops using the slot before it is restored below.
+            server.close();
+            Ok(results)
+        })?;
 
         let mut stats = Vec::with_capacity(cores);
         for (core, r) in results.into_iter().enumerate() {

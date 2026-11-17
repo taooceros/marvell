@@ -131,6 +131,13 @@ mod card {
     const BAR4_INDEX: usize = 0x700;
     pub const BAR4_SLOTS: usize = 16;
     pub const BAR4_SLOT_BYTES: usize = 4 << 20;
+    /// Where firmware (SDK13.26.10, EP mode) points slot `i`: card physical
+    /// `0xbfa000000 + i * 4 MiB`, the BAR4 space of SDP PF0 (slots 0-7; slot 7
+    /// = 0x2fef1, the octep control mailbox) and PF1 (slots 8-15; slot 15 =
+    /// 0x2ff71).
+    pub const fn bar4_firmware_entry(slot: usize) -> u64 {
+        ((0xb_fa00_0000 >> 22) + slot as u64) << 4 | 1
+    }
 
     /// One host BAR4 slot pointed at memory we own; the previous mapping is
     /// restored on drop.
@@ -169,6 +176,40 @@ mod card {
         }
     }
 
+    /// Put back what an `inline_reflector` that died without its cleanup
+    /// (`kill -9`) left behind: BAR4 slot `slot` to the firmware's entry, and
+    /// the outbound regions `--store` claims (the top [`STORE_REGIONS`]) to
+    /// zero, their EP-mode value. Single 64-bit accesses of those registers
+    /// only, each write read back. Returns a line per register it changed.
+    /// Only while no reflector runs: it would pull the slot from under one.
+    pub fn restore_defaults(slot: usize) -> io::Result<Vec<String>> {
+        assert!(slot < BAR4_SLOTS);
+        let csr = Mapping::new("/dev/mem", PEM0_CSR, 0x10000, true)?;
+        let mut changed = Vec::new();
+        let mut put = |name: String, reg: usize, value: u64| {
+            let was = csr.read_u64(reg);
+            if was == value {
+                return Ok(());
+            }
+            csr.write_u64(reg, value);
+            let now = csr.read_u64(reg);
+            if now != value {
+                return Err(io::Error::other(format!("{name} reads {now:#x} after writing {value:#x}")));
+            }
+            changed.push(format!("{name} {was:#x} -> {now:#x}"));
+            Ok(())
+        };
+        put(format!("BAR4_INDEX{slot}"), BAR4_INDEX + 8 * slot, bar4_firmware_entry(slot))?;
+        let geometry = csr.read_u64(CONST_ACC);
+        if geometry & 0xffff_ffff != (31 << 16 | OUTBOUND_REGIONS as u64) {
+            return Err(io::Error::other(format!("PEM0_CONST_ACC {geometry:#x}: not 256 regions of 2 GiB")));
+        }
+        for index in OUTBOUND_REGIONS - STORE_REGIONS..OUTBOUND_REGIONS {
+            put(format!("PEM0_REG_NORM_ACC{index}"), REG_NORM_ACC + 16 * index, 0)?;
+        }
+        Ok(changed)
+    }
+
     /// PEM0's outbound region table `PEM()_REG_NORM()_ACC(0..255)`: a core
     /// store to `OUTBOUND_BASE + i * 2 GiB + off` leaves PEM0 as a PCIe memory
     /// write to bus address `entry.BA << 31 | off`, issued as the function the
@@ -180,6 +221,9 @@ mod card {
     const OUTBOUND_BASE: u64 = 0x8800_0000_0000;
     pub const OUTBOUND_REGIONS: usize = 256;
     pub const OUTBOUND_REGION_BYTES: u64 = 1 << 31;
+    /// Outbound regions `inline_reflector --store` may claim, one per core
+    /// from the top: 248-255, the ones `pem_wc` maps.
+    pub const STORE_REGIONS: usize = 8;
 
     /// One outbound region of PEM0, owned for writes to the host; the entry's
     /// previous value is restored on drop. Only ever store through it: a load

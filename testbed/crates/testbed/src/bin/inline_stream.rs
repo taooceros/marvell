@@ -19,9 +19,12 @@
 //!   sends requests back to back, lcore 0 takes the replies the card writes
 //!   into the host ring; up to a reply ring's worth outstanding.
 //!
-//! Batch = 1 cell per MOVDIR64B. Start `inline_reflector` on the card first.
+//! Batch = 1 cell per MOVDIR64B. Start `inline_reflector` on the card first:
+//! the slot is used only under its lease (`--card`, `testbed::lease`), and a
+//! run stops when the reflector takes it back.
 //!
 //! usage: inline_stream -l CORES [EAL args] -- --dir h2c|c2h|bidir|split [--via movdir|fetch|both] [--cells N]
+//!        [--card ADDR:PORT]
 
 #[cfg(not(target_arch = "x86_64"))]
 fn main() {
@@ -45,10 +48,11 @@ mod imp {
     use testbed::Latency;
     use testbed::closed_loop::{Integrity, Replies};
     use testbed::inline::{
-        CORES_OFFSET, Cell, FETCH_CELLS, FETCH_NEXT_OFFSET, FETCH_RING_OFFSET, FETCH_TRIGGER_OFFSET, MAX_CORES, READY,
-        READY_OFFSET, REPLY_CELLS, REPLY_NONE, REPLY_RING_OFFSET, RING_CELLS, RingReplies, SLOT, SLOT_BYTES,
-        STREAM_CORES_OFFSET, STREAM_OFFSET, STREAM_RING_OFFSET, TAKEN_OFFSET, next_offset,
+        CORES_OFFSET, Cell, FETCH_CELLS, FETCH_NEXT_OFFSET, FETCH_RING_OFFSET, FETCH_TRIGGER_OFFSET, MAX_CORES,
+        REPLY_CELLS, REPLY_NONE, REPLY_RING_OFFSET, RING_CELLS, RingReplies, SLOT, STREAM_CORES_OFFSET, STREAM_OFFSET,
+        STREAM_RING_OFFSET, TAKEN_OFFSET, next_offset,
     };
+    use testbed::lease::{self, Lease, LeasedSlot};
     use testbed::mmio::{Mapping, has_movdir64b, movdir64b};
 
     #[derive(Clone, Copy, PartialEq, Eq, ValueEnum)]
@@ -115,11 +119,10 @@ mod imp {
         /// PF BAR4 (sysfs resource file; chowned by bench/host_dpdk_up.sh).
         #[arg(long, default_value = "/sys/bus/pci/devices/0000:99:00.0/resource4")]
         bar: String,
-    }
-
-    /// The card's slot of BAR4, mapped by this thread.
-    fn map_slot(args: &Args) -> Result<Mapping, Box<dyn Error>> {
-        Ok(Mapping::new(&args.bar, (SLOT * SLOT_BYTES) as u64, SLOT_BYTES, false)?)
+        /// The card reflector's lease address (TCP): BAR4 is mapped only after
+        /// it granted this run the slot.
+        #[arg(long, default_value = lease::DEFAULT_ADDR)]
+        card: String,
     }
 
     /// The earliest ring sequence a card ring core is still waiting for.
@@ -157,11 +160,14 @@ mod imp {
         if !has_movdir64b() {
             return Err("CPU lacks MOVDIR64B".into());
         }
-        let slot = map_slot(&args)?;
-        let cookie = slot.read_u64(READY_OFFSET);
-        if cookie != READY {
-            return Err(format!("BAR4 slot {SLOT} is not claimed by inline_reflector (cookie {cookie:#x}); not writing").into());
-        }
+        let lease = Lease::acquire(&args.card)?;
+        eprintln!(
+            "inline_stream: inline_reflector pid {} at {} granted BAR4 slot {SLOT} (nonce {:#018x})",
+            lease.reflector_pid(),
+            args.card,
+            lease.nonce()
+        );
+        let slot = lease.map_slot(&args.bar)?;
         let card = Card {
             ring_cores: slot.read_u64(CORES_OFFSET) as usize,
             stream_cores: slot.read_u64(STREAM_CORES_OFFSET) as usize,
@@ -176,7 +182,7 @@ mod imp {
 
     /// Host -> card: `--cells` cells, by MOVDIR64B from every lcore, through
     /// a fetch ring from one, or both at once.
-    fn h2c(eal: &Eal, args: &Args, slot: &Mapping, card: Card) -> Result<(), Box<dyn Error>> {
+    fn h2c(eal: &Eal, args: &Args, slot: &LeasedSlot, card: Card) -> Result<(), Box<dyn Error>> {
         let (n, hz) = (args.cells, eal.tsc_hz());
         match args.via {
             Via::Movdir => {
@@ -185,9 +191,10 @@ mod imp {
                 let base = card_next(slot, cores) - 1;
                 slot.write_u64(REPLY_RING_OFFSET, REPLY_NONE);
                 let start = rdtsc();
+                let lease = slot.lease();
                 let issued = eal.on_each_lcore(vec![(); senders as usize], |j, ()| {
-                    let slot = map_slot(args).map_err(|e| e.to_string())?;
-                    send_movdir(&slot, cores, base, n, j as u64, senders);
+                    let slot = lease.map_slot(&args.bar)?;
+                    send_movdir(&slot, cores, base, n, j as u64, senders)?;
                     Ok::<_, String>(rdtsc())
                 });
                 let mut last = start;
@@ -231,12 +238,13 @@ mod imp {
                 slot.write_u64(REPLY_RING_OFFSET, REPLY_NONE);
                 let ring = fetch_ring(eal, slot, false)?;
                 let start = rdtsc();
+                let lease = slot.lease();
                 let ends = eal.on_each_lcore(vec![(); senders as usize + 1], |j, ()| {
-                    let slot = map_slot(args).map_err(|e| e.to_string())?;
+                    let slot = lease.map_slot(&args.bar)?;
                     if j == 0 {
                         send_fetch(&slot, &ring, n_fetch, hz)?;
                     } else {
-                        send_movdir(&slot, cores, base, n_movdir, j as u64 - 1, senders);
+                        send_movdir(&slot, cores, base, n_movdir, j as u64 - 1, senders)?;
                         if j == 1 {
                             wait_ring_taken(&slot, cores, base + n_movdir, hz)?;
                         }
@@ -283,33 +291,40 @@ mod imp {
 
     /// MOVDIR64B cells `k = lane + 1, lane + 1 + lanes, ...` up to `n` into
     /// the card's BAR4 ring as ring sequence `base + k`.
-    fn send_movdir(slot: &Mapping, cores: usize, base: u64, n: u64, lane: u64, lanes: u64) {
+    fn send_movdir(slot: &LeasedSlot, cores: usize, base: u64, n: u64, lane: u64, lanes: u64) -> Result<(), String> {
         let mut allowed = 0;
         let mut k = lane + 1;
         while k <= n {
             let seq = base + k;
             // Cell `seq` overwrites `seq - RING_CELLS`, which must be taken.
             while seq >= allowed {
+                slot.check()?;
                 allowed = card_next(slot, cores) + RING_CELLS as u64;
             }
             let cell = Cell::new(seq, k, 1);
+            slot.check()?;
             // SAFETY: a 64 B-aligned cell inside the mapped slot; MOVDIR64B
             // support was checked.
             unsafe { movdir64b(slot.as_ptr().add(Cell::offset(seq)), &cell) };
             k += lanes;
         }
+        Ok(())
     }
 
     /// Wait (at most 1 s) until the card's ring cores took every cell up to
     /// ring sequence `last`.
-    fn wait_ring_taken(slot: &Mapping, cores: usize, last: u64, hz: u64) -> Result<(), String> {
+    fn wait_ring_taken(slot: &LeasedSlot, cores: usize, last: u64, hz: u64) -> Result<(), String> {
         let deadline = rdtsc() + hz;
-        while card_next(slot, cores) <= last {
+        loop {
+            slot.check()?;
+            let next = card_next(slot, cores);
+            if next > last {
+                return Ok(());
+            }
             if rdtsc() > deadline {
-                return Err(format!("card ring cores stopped at sequence {} of {last}", card_next(slot, cores) - 1));
+                return Err(format!("card ring cores stopped at sequence {} of {last}", next - 1));
             }
         }
-        Ok(())
     }
 
     /// A zeroed host ring of `cells` cells, aligned to its size (so it never
@@ -323,20 +338,25 @@ mod imp {
     }
 
     /// Clear a ring address word and give the card time to stop using the
-    /// ring before its memory goes.
-    fn withdraw(slot: &Mapping, word: usize) {
-        slot.write_u64(word, 0);
-        std::thread::sleep(Duration::from_millis(10));
+    /// ring before its memory goes (nothing once the lease has ended: the
+    /// card no longer serves the slot).
+    fn withdraw(slot: &LeasedSlot, word: usize) {
+        if !slot.revoked() {
+            slot.write_u64(word, 0);
+            std::thread::sleep(Duration::from_millis(10));
+        }
     }
 
     /// A host request ring for the card's fetch core, published once the
     /// fetch core has reset its state (it does so whenever the ring word
     /// changes), so the credit it publishes belongs to this ring.
     /// `triggered`: the fetch core reads only what doorbells publish.
-    fn fetch_ring<'e>(eal: &'e Eal, slot: &Mapping, triggered: bool) -> Result<Memzone<'e>, Box<dyn Error>> {
+    fn fetch_ring<'e>(eal: &'e Eal, slot: &LeasedSlot, triggered: bool) -> Result<Memzone<'e>, Box<dyn Error>> {
         let ring = host_ring(eal, "fetch_requests", FETCH_CELLS)?;
+        slot.check()?;
         slot.write_u64(FETCH_RING_OFFSET, 0);
         std::thread::sleep(Duration::from_millis(1));
+        slot.check()?;
         if slot.read_u64(FETCH_NEXT_OFFSET) != 1 {
             return Err("the card's fetch core did not reset (is there one?)".into());
         }
@@ -349,11 +369,12 @@ mod imp {
     /// Write requests `1..=n` into the fetch ring as fast as the card's
     /// credit allows, then wait (at most 1 s) until it took them all.
     /// Returns the TSC when the last one was written.
-    fn send_fetch(slot: &Mapping, ring: &Memzone, n: u64, hz: u64) -> Result<u64, String> {
+    fn send_fetch(slot: &LeasedSlot, ring: &Memzone, n: u64, hz: u64) -> Result<u64, String> {
         let mut allowed = 0;
         for k in 1..=n {
             // Request `k` overwrites `k - FETCH_CELLS`, which must be taken.
             while k >= allowed {
+                slot.check()?;
                 allowed = slot.read_u64(FETCH_NEXT_OFFSET) + FETCH_CELLS as u64;
             }
             // SAFETY: a 64 B-aligned cell of the ring memzone; only this
@@ -362,12 +383,16 @@ mod imp {
         }
         let written = rdtsc();
         let deadline = written + hz;
-        while slot.read_u64(FETCH_NEXT_OFFSET) <= n {
+        loop {
+            slot.check()?;
+            let next = slot.read_u64(FETCH_NEXT_OFFSET);
+            if next > n {
+                return Ok(written);
+            }
             if rdtsc() > deadline {
-                return Err(format!("card fetched only {} of {n}", slot.read_u64(FETCH_NEXT_OFFSET) - 1));
+                return Err(format!("card fetched only {} of {n}", next - 1));
             }
         }
-        Ok(written)
     }
 
     /// What [`send_hybrid`] sent.
@@ -385,7 +410,7 @@ mod imp {
     /// sequence `base + 1, ...`, each saying how much of the fetch ring is
     /// published. Wait (at most 1 s) until the card took everything.
     fn send_hybrid(
-        slot: &Mapping,
+        slot: &LeasedSlot,
         ring: &Memzone,
         base: u64,
         n: u64,
@@ -404,6 +429,7 @@ mod imp {
                 // Request `fetched` overwrites `fetched - FETCH_CELLS`, which
                 // must be taken.
                 while fetched >= fetch_allowed {
+                    slot.check()?;
                     fetch_allowed = slot.read_u64(FETCH_NEXT_OFFSET) + FETCH_CELLS as u64;
                 }
                 // SAFETY: a 64 B-aligned cell of the ring memzone; only this
@@ -412,36 +438,49 @@ mod imp {
             }
             for message in (k + 1..=k + carried).map(Some).chain((carried == 0).then_some(None)) {
                 doorbells += 1;
-                ring_doorbell(slot, base + doorbells, message.unwrap_or(0), fetched, &mut ring_allowed);
+                ring_doorbell(slot, base + doorbells, message.unwrap_or(0), fetched, &mut ring_allowed)?;
             }
             k += size;
         }
         let written = rdtsc();
         let deadline = written + hz;
-        while slot.read_u64(FETCH_NEXT_OFFSET) <= fetched || slot.read_u64(next_offset(0)) <= base + doorbells {
+        loop {
+            slot.check()?;
+            let (fetch_next, ring_next) = (slot.read_u64(FETCH_NEXT_OFFSET), slot.read_u64(next_offset(0)));
+            if fetch_next > fetched && ring_next > base + doorbells {
+                return Ok(Hybrid { inline: n - fetched, fetched, doorbells, written });
+            }
             if rdtsc() > deadline {
                 return Err(format!(
                     "card took {} of {fetched} fetched and {} of {doorbells} doorbells",
-                    slot.read_u64(FETCH_NEXT_OFFSET) - 1,
-                    slot.read_u64(next_offset(0)) - 1 - base
+                    fetch_next - 1,
+                    ring_next - 1 - base
                 ));
             }
         }
-        Ok(Hybrid { inline: n - fetched, fetched, doorbells, written })
     }
 
     /// MOVDIR64B doorbell `seq` into the BAR4 ring: it carries `message`
     /// (0 = none) and says the fetch ring is published up to `published`.
     /// `allowed` caches the ring credit.
-    fn ring_doorbell(slot: &Mapping, seq: u64, message: u64, published: u64, allowed: &mut u64) {
+    fn ring_doorbell(
+        slot: &LeasedSlot,
+        seq: u64,
+        message: u64,
+        published: u64,
+        allowed: &mut u64,
+    ) -> Result<(), String> {
         // Doorbell `seq` overwrites `seq - RING_CELLS`, which must be taken.
         while seq >= *allowed {
+            slot.check()?;
             *allowed = slot.read_u64(next_offset(0)) + RING_CELLS as u64;
         }
         let cell = Cell::doorbell(seq, message, published);
+        slot.check()?;
         // SAFETY: a 64 B-aligned cell inside the mapped slot; MOVDIR64B
         // support was checked.
         unsafe { movdir64b(slot.as_ptr().add(Cell::offset(seq)), &cell) };
+        Ok(())
     }
 
     /// A card -> host stream as this core took it.
@@ -458,8 +497,16 @@ mod imp {
 
     /// Start an `n`-cell card -> host stream into `ring` and take it in order,
     /// granting credit as it goes (or, with a lag, a ring's worth at a time).
-    fn take_stream(eal: &Eal, slot: &Mapping, ring: &Memzone, n: u64, cores: usize, lag_us: u64) -> Result<Taken, String> {
+    fn take_stream(
+        eal: &Eal,
+        slot: &LeasedSlot,
+        ring: &Memzone,
+        n: u64,
+        cores: usize,
+        lag_us: u64,
+    ) -> Result<Taken, String> {
         let hz = eal.tsc_hz();
+        slot.check()?;
         slot.write_u64(TAKEN_OFFSET, 0);
         // UC stores reach the card in order: credit before the length.
         slot.write_u64(STREAM_OFFSET, n);
@@ -470,6 +517,7 @@ mod imp {
         // With a lag: the end of the ring's worth being taken.
         let (mut round_end, mut reading) = (0, 0);
         while taken < n {
+            slot.check()?;
             if lag > 0 && taken == round_end {
                 slot.write_u64(TAKEN_OFFSET, taken);
                 published = taken;
@@ -497,23 +545,27 @@ mod imp {
                 first.get_or_insert(now);
                 last_progress = now;
             } else if now - last_progress > hz {
+                slot.check()?;
                 slot.write_u64(STREAM_OFFSET, 0);
                 return Err(format!("stream stalled after {taken} of {n} cells"));
             }
             if lag == 0 && taken - published >= REPLY_CELLS as u64 / 8 {
+                slot.check()?;
                 slot.write_u64(TAKEN_OFFSET, taken);
                 published = taken;
             }
         }
         let end = rdtsc_after_loads();
+        slot.check()?;
         slot.write_u64(STREAM_OFFSET, 0);
         Ok(Taken { bad, torn, late, first: first.unwrap_or(end), end, reading })
     }
 
     /// Card -> host: the card writes `--cells` cells, this core takes them.
-    fn c2h(eal: &Eal, args: &Args, slot: &Mapping, card: Card) -> Result<(), Box<dyn Error>> {
+    fn c2h(eal: &Eal, args: &Args, slot: &LeasedSlot, card: Card) -> Result<(), Box<dyn Error>> {
         let (n, cores, hz) = (args.cells, card.stream_cores()?, eal.tsc_hz());
         let ring = host_ring(eal, "stream_replies", REPLY_CELLS)?;
+        slot.check()?;
         slot.write_u64(STREAM_RING_OFFSET, ring.iova());
         if args.blast {
             return blast(eal, slot, &ring, n, cores);
@@ -538,7 +590,8 @@ mod imp {
 
     /// c2h `--blast`: the card writes `n` cells with no credit limit; sleep
     /// until every card core's last cell has landed, then report the rate.
-    fn blast(eal: &Eal, slot: &Mapping, ring: &Memzone, n: u64, cores: usize) -> Result<(), Box<dyn Error>> {
+    fn blast(eal: &Eal, slot: &LeasedSlot, ring: &Memzone, n: u64, cores: usize) -> Result<(), Box<dyn Error>> {
+        slot.check()?;
         slot.write_u64(TAKEN_OFFSET, u64::MAX);
         slot.write_u64(STREAM_OFFSET, n);
         let (hz, start) = (eal.tsc_hz(), rdtsc());
@@ -548,6 +601,7 @@ mod imp {
             unsafe { ring.as_ptr().add(Cell::reply_offset(k, cores)).cast::<u64>().read_volatile() == k }
         };
         while !last.clone().all(landed) {
+            slot.check()?;
             if rdtsc() - start > 30 * hz {
                 slot.write_u64(STREAM_OFFSET, 0);
                 return Err("blast did not finish within 30 s".into());
@@ -555,6 +609,7 @@ mod imp {
             std::thread::sleep(Duration::from_micros(100));
         }
         let end = rdtsc_after_loads();
+        slot.check()?;
         slot.write_u64(STREAM_OFFSET, 0);
         slot.write_u64(TAKEN_OFFSET, 0);
         withdraw(slot, STREAM_RING_OFFSET);
@@ -571,12 +626,13 @@ mod imp {
     }
 
     /// h2c on lcore 1 and c2h on lcore 0 at the same time.
-    fn bidir(eal: &Eal, args: &Args, slot: &Mapping, card: Card) -> Result<(), Box<dyn Error>> {
+    fn bidir(eal: &Eal, args: &Args, slot: &LeasedSlot, card: Card) -> Result<(), Box<dyn Error>> {
         if eal.lcores() != 2 {
             return Err("--dir bidir needs two lcores (c2h receiver, h2c sender)".into());
         }
         let (n, hz, stream_cores) = (args.cells, eal.tsc_hz(), card.stream_cores()?);
         let stream = host_ring(eal, "stream_replies", REPLY_CELLS)?;
+        slot.check()?;
         slot.write_u64(STREAM_RING_OFFSET, stream.iova());
         let (requests, ring_cores, base) = match args.via {
             Via::Movdir => {
@@ -594,8 +650,9 @@ mod imp {
             }
             Via::Both => return Err("--via both is for --dir h2c".into()),
         };
+        let lease = slot.lease();
         let legs = eal.on_each_lcore(vec![(); 2], |role, ()| {
-            let slot = map_slot(args).map_err(|e| e.to_string())?;
+            let slot = lease.map_slot(&args.bar)?;
             let start = rdtsc();
             if role == 0 {
                 let taken = take_stream(eal, &slot, &stream, n, stream_cores, 0)?;
@@ -603,7 +660,7 @@ mod imp {
             }
             match &requests {
                 None => {
-                    send_movdir(&slot, ring_cores, base, n, 0, 1);
+                    send_movdir(&slot, ring_cores, base, n, 0, 1)?;
                     wait_ring_taken(&slot, ring_cores, base + n, hz)?;
                 }
                 Some(ring) if args.via == Via::Hybrid => {
@@ -645,7 +702,7 @@ mod imp {
     /// must have a writer to reply with), read speculatively or, `--via
     /// hybrid`, when a doorbell rung every `--batch` requests (and before
     /// waiting for credit) says so.
-    fn split(eal: &Eal, args: &Args, slot: &Mapping, card: Card) -> Result<(), Box<dyn Error>> {
+    fn split(eal: &Eal, args: &Args, slot: &LeasedSlot, card: Card) -> Result<(), Box<dyn Error>> {
         if eal.lcores() != 2 {
             return Err("--dir split needs two lcores (receiver, sender)".into());
         }
@@ -654,6 +711,7 @@ mod imp {
         let batch = args.batch.max(1);
         let ring = host_ring(eal, "stream_replies", REPLY_CELLS)?;
         // The reply ring is published before the first request.
+        slot.check()?;
         slot.write_u64(REPLY_RING_OFFSET, ring.iova());
         let (requests, cores, base) = match args.via {
             Via::Movdir => {
@@ -674,9 +732,10 @@ mod imp {
         let doorbell_base = slot.read_u64(next_offset(0)) - 1;
         let received = AtomicU64::new(0);
         let hz = eal.tsc_hz();
+        let lease = slot.lease();
         let results = eal.on_each_lcore(vec![(); 2], |role, ()| {
             if role == 1 {
-                let slot = map_slot(args).map_err(|e| e.to_string())?;
+                let slot = lease.map_slot(&args.bar)?;
                 let (start, mut stalls) = (rdtsc(), 0u64);
                 let (mut doorbells, mut rung, mut ring_allowed) = (0u64, 0u64, 0u64);
                 for k in 1..=n {
@@ -687,15 +746,17 @@ mod imp {
                         // Requests not rung yet would never be read.
                         if hybrid && rung < k - 1 {
                             doorbells += 1;
-                            ring_doorbell(&slot, doorbell_base + doorbells, 0, k - 1, &mut ring_allowed);
+                            ring_doorbell(&slot, doorbell_base + doorbells, 0, k - 1, &mut ring_allowed)?;
                             rung = k - 1;
                         }
                         stalls += 1;
                         while k > received.load(Ordering::Acquire) + window {
+                            slot.check()?;
                             std::hint::spin_loop();
                         }
                     }
                     let cell = Cell::new(base + k, k, rdtsc());
+                    slot.check()?;
                     match &requests {
                         // SAFETY: as in `send_movdir`.
                         None => unsafe { movdir64b(slot.as_ptr().add(Cell::offset(base + k)), &cell) },
@@ -704,7 +765,7 @@ mod imp {
                     }
                     if hybrid && (k % batch == 0 || k == n) {
                         doorbells += 1;
-                        ring_doorbell(&slot, doorbell_base + doorbells, 0, k, &mut ring_allowed);
+                        ring_doorbell(&slot, doorbell_base + doorbells, 0, k, &mut ring_allowed)?;
                         rung = k;
                     }
                 }

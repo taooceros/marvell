@@ -17,10 +17,12 @@
 //! `(seq - 1) % n == i`, each in its own sequence order.
 //!
 //! Ring layout in the slot: cells `0..RING_CELLS`, then a three-cell control
-//! area: word 0 holds [`READY`] while the card owns the slot (the host checks
-//! it before writing), word 1 the number of card cores taking the ring, word
-//! 2 the host's reply choice (set before its first cell), words 4-5 the last
-//! pull reply, words 8.. the next sequence number each ring core expects, and
+//! area: word 0 holds [`READY`] while the card owns the slot, word 1 the
+//! number of card cores taking the ring, word 2 the host's reply choice (set
+//! before its first cell), words 4-5 the last pull reply, word 7 the nonce of
+//! the host run holding the lease ([`crate::lease`]: the host maps the slot
+//! only once the card granted it, and checks READY and its nonce here before
+//! writing), words 8.. the next sequence number each ring core expects, and
 //! words 16.. the card -> host stream and fetch words. A new host run
 //! continues from the smallest next sequence number instead of restarting at
 //! 1 (after a run that ended with unanswered cells, those cells' later
@@ -65,6 +67,9 @@ pub const DONE_OFFSET: usize = READY_OFFSET + 32;
 /// writes cell `k` only once `k <= taken + REPLY_CELLS`. `u64::MAX` lifts the
 /// limit (throughput measurement: the host reads nothing while it runs).
 pub const TAKEN_OFFSET: usize = READY_OFFSET + 48;
+/// Offset of the nonce of the host run holding the lease (0 = none): the
+/// card stores it before it answers that run's HELLO.
+pub const NONCE_OFFSET: usize = READY_OFFSET + 56;
 
 /// Offset of the next sequence number card core `core` expects.
 pub const fn next_offset(core: usize) -> usize {

@@ -5,9 +5,10 @@
 //! ring`; the card runs `inline_reflector --dma` (DPI engine) or `--store` (core
 //! stores through PEM outbound regions)), or pulled from card memory (`--reply
 //! pull`). Batch = 1, concurrency = `--window`. Start `inline_reflector` on the
-//! card first.
+//! card first: the slot is used only under its lease (`--card`,
+//! `testbed::lease`), and the run stops when the reflector takes it back.
 //!
-//! usage: inline_pingpong [EAL args] -- [--rounds N] [--window W] [--fence] [--reply sdp|ring|pull]
+//! usage: inline_pingpong [EAL args] -- [--rounds N] [--window W] [--fence] [--reply sdp|ring|pull] [--card ADDR:PORT]
 
 #[cfg(not(target_arch = "x86_64"))]
 fn main() {
@@ -31,9 +32,10 @@ mod imp {
     use testbed::closed_loop::{ClosedLoop, FrameReplies, Integrity, Outcome, Replies, Reply};
     use testbed::inline::{
         CORES_OFFSET, Cell, DONE_OFFSET, MAX_CORES, READY, READY_OFFSET, REPLY_CELLS, REPLY_PULL, REPLY_RING_OFFSET,
-        RING_CELLS, RingReplies, SLOT, SLOT_BYTES, next_offset,
+        RING_CELLS, RingReplies, SLOT, next_offset,
     };
-    use testbed::mmio::{Mapping, has_movdir64b, movdir64b, sfence};
+    use testbed::lease::{self, Lease, LeasedSlot};
+    use testbed::mmio::{has_movdir64b, movdir64b, sfence};
 
     const PORT: u16 = 0;
     const DESC: u16 = 2048;
@@ -66,6 +68,10 @@ mod imp {
         /// PF BAR4 (sysfs resource file; chowned by bench/host_dpdk_up.sh).
         #[arg(long, default_value = "/sys/bus/pci/devices/0000:99:00.0/resource4")]
         bar: String,
+        /// The card reflector's lease address (TCP): BAR4 is mapped only after
+        /// it granted this run the slot.
+        #[arg(long, default_value = lease::DEFAULT_ADDR)]
+        card: String,
         /// Instead of the ping-pong, time N uncached 8 B and 16 B reads of card
         /// DRAM through the slot (one PCIe round trip plus the card memory access).
         #[arg(long)]
@@ -89,11 +95,14 @@ mod imp {
         }
         const { assert!(1024 <= RING_CELLS && 1024 < REPLY_CELLS) };
 
-        let slot = Mapping::new(&args.bar, (SLOT * SLOT_BYTES) as u64, SLOT_BYTES, false)?;
-        let cookie = slot.read_u64(READY_OFFSET);
-        if cookie != READY {
-            return Err(format!("BAR4 slot {SLOT} is not claimed by inline_reflector (cookie {cookie:#x}); not writing").into());
-        }
+        let lease = Lease::acquire(&args.card)?;
+        eprintln!(
+            "inline_pingpong: inline_reflector pid {} at {} granted BAR4 slot {SLOT} (nonce {:#018x})",
+            lease.reflector_pid(),
+            args.card,
+            lease.nonce()
+        );
+        let slot = lease.map_slot(&args.bar)?;
         // Ring sequence numbers continue from the earliest cell a card core is
         // waiting for.
         let cores = slot.read_u64(CORES_OFFSET) as usize;
@@ -131,6 +140,7 @@ mod imp {
                 let ring = Memzone::reserve_contiguous(&eal, "inline_replies", bytes, socket, bytes as u32)?;
                 // SAFETY: the memzone is ours and that long.
                 unsafe { ring.as_ptr().write_bytes(0, bytes) };
+                slot.check()?;
                 slot.write_u64(REPLY_RING_OFFSET, ring.iova());
                 sfence(); // the ring address reaches the card before the first cell
                 let mut replies = RingReplies::new(&eal, &ring, base, cores);
@@ -140,7 +150,9 @@ mod imp {
                     ring.iova(),
                     replies.blocked()
                 );
-                slot.write_u64(REPLY_RING_OFFSET, 0);
+                if !slot.revoked() {
+                    slot.write_u64(REPLY_RING_OFFSET, 0);
+                }
                 // Let any reply still in flight (to a request counted lost) land
                 // before the ring is unmapped.
                 std::thread::sleep(Duration::from_millis(10));
@@ -152,7 +164,9 @@ mod imp {
                 sfence();
                 let delay = eal.tsc_hz() * args.pull_delay_ns / 1_000_000_000;
                 let outcome = drive(&eal, &args, &slot, base, &mut PullReplies { slot: &slot, next: 1, delay, armed: true });
-                slot.write_u64(REPLY_RING_OFFSET, 0);
+                if !slot.revoked() {
+                    slot.write_u64(REPLY_RING_OFFSET, 0);
+                }
                 outcome?
             }
         };
@@ -169,9 +183,10 @@ mod imp {
 
     /// Uncached reads of the control cell: the cost of one host -> card ->
     /// host round trip through PEM to card memory.
-    fn probe_reads(eal: &Eal, slot: &Mapping, n: u64) -> Result<(), Box<dyn Error>> {
+    fn probe_reads(eal: &Eal, slot: &LeasedSlot, n: u64) -> Result<(), Box<dyn Error>> {
         let (mut narrow, mut wide) = (Vec::with_capacity(n as usize), Vec::with_capacity(n as usize));
         for _ in 0..n {
+            slot.check()?;
             let t0 = rdtsc_after_loads();
             let cookie = slot.read_u64(READY_OFFSET);
             let t1 = rdtsc_after_loads();
@@ -191,7 +206,7 @@ mod imp {
     /// Pull mode: poll the card's last-reply word pair `(tag, tsc)` with one
     /// 16 B uncached read per poll.
     struct PullReplies<'s> {
-        slot: &'s Mapping,
+        slot: &'s LeasedSlot<'s>,
         next: u64,
         /// TSC ticks to wait before the first read after a request.
         delay: u64,
@@ -209,6 +224,9 @@ mod imp {
                 }
                 self.armed = false;
             }
+            if self.slot.revoked() {
+                return 0; // the closed loop stops at its next request
+            }
             let [tag, tsc] = self.slot.read_16(DONE_OFFSET);
             let at = rdtsc_after_loads();
             if tag < self.next {
@@ -224,12 +242,13 @@ mod imp {
     fn drive(
         eal: &Eal,
         args: &Args,
-        slot: &Mapping,
+        slot: &LeasedSlot,
         base: u64,
         replies: &mut impl Replies,
     ) -> Result<Outcome, Box<dyn Error>> {
         let run = ClosedLoop { rounds: args.rounds, window: args.window, warmup: args.warmup };
         run.run(eal, replies, |seq, tsc| {
+            slot.check()?;
             let mut cell = Cell::new(base + seq, seq, tsc);
             if args.corrupt_every.is_some_and(|n| seq.is_multiple_of(n)) {
                 cell.payload[0] ^= 1;
