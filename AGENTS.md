@@ -4,6 +4,8 @@ Host `saturn` (x86_64, Ubuntu 22.04, kernel 6.17) with an OCTEON 10 CN106xx `crb
 
 Work is tracked in Linear team **Marvell** (`MRV`, workspace `taooceros`): one Done issue per finished piece, open items as children of MRV-13 ("主机 ⇄ CN106 数据通路"). Add new results to the matching issue instead of creating duplicates.
 
+Focus (MRV-49, 2026-11-17): the direct paths through BAR4 and MMIO (host MOVDIR64B into card memory; card core stores, write-combining stores and DPI writes into host memory) are the subject now. SDP is good enough as it stands: no new SDP-only experiments or tuning; SDP stays as a reference line in comparisons and as the control path. When an experiment or review proposes SDP work, say so on the issue and leave it in Backlog.
+
 Knowledge shared with `~/dev/accel-datapath` (MOVDIR64B ordering and write path, uncore counters, uncore/core clocks, RDTSC/RDTSCP, batch/concurrency terms, closed-loop method, saturn's shared-host rules) lives in `~/dev/datapath-kb`; read its `AGENTS.md` and `README.md`. Put a new cross-project fact there with a source link; keep card-specific detail here.
 
 ## Linear
