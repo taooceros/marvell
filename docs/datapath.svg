@@ -2,7 +2,11 @@
   <!-- MRV-13 overview. The paths between host and card and the headline number of each:
        requests (host to card) by one-direction throughput, replies (card to host) by W=1 round-trip p50.
        Dashed = the receiver comes and reads it (fetch: card reads the host's ring; pull: host reads card memory).
-       Numbers: docs/video/data/FACTS.md; 64 B, batch 1, host uncore pinned. Details live in the MRV-13 text. -->
+       Numbers: runs of 2026-11-17 with the uncore pinned at 2.2 GHz and the host core at 3.9 GHz, one host core and
+       one card core: MOVDIR64B and fetch from logs/mrv24-2026-11-17 (R01, R20); W=1 SDP, DPI DMA and pull from
+       logs/mrv26-2026-11-17; W=1 card-core store from logs/mrv17-2026-11-17 and logs/mrv26-2026-11-17. The SDP
+       doorbell rate is the 2026-11-10 baseline (docs/video/data/FACTS.md, before the uncore pin). 64 B, batch 1.
+       Details live in the MRV-13 text. -->
   <defs>
     <marker id="head-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
       <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2563eb"/>
@@ -13,7 +17,7 @@
   </defs>
   <rect width="960" height="530" fill="white"/>
   <text x="30" y="42" font-size="22" font-weight="bold" fill="#0f172a">主机 ⇄ 卡：每条通路有多快</text>
-  <text x="30" y="68" font-size="14" fill="#64748b">64 B，批大小 1，uncore 固定</text>
+  <text x="30" y="68" font-size="14" fill="#64748b">64 B，批大小 1</text>
 
   <!-- lanes -->
   <g fill="#f1f5f9">
@@ -39,8 +43,8 @@
   </g>
   <g font-size="20" font-weight="bold" fill="#0f172a" text-anchor="end">
     <text x="766" y="156">8.36 <tspan font-size="13" font-weight="normal" fill="#64748b">M/s</tspan></text>
-    <text x="766" y="200">112 <tspan font-size="13" font-weight="normal" fill="#64748b">M/s</tspan></text>
-    <text x="766" y="244">187–189 <tspan font-size="13" font-weight="normal" fill="#64748b">M/s</tspan></text>
+    <text x="766" y="200">113.6 <tspan font-size="13" font-weight="normal" fill="#64748b">M/s</tspan></text>
+    <text x="766" y="244">187.6 <tspan font-size="13" font-weight="normal" fill="#64748b">M/s</tspan></text>
   </g>
 
   <!-- replies: card to host, W=1 round trip -->
@@ -59,8 +63,8 @@
   </g>
   <g font-size="20" font-weight="bold" fill="#0f172a" text-anchor="end">
     <text x="766" y="338">2.40 <tspan font-size="13" font-weight="normal" fill="#64748b">µs</tspan></text>
-    <text x="766" y="382">1.33 <tspan font-size="13" font-weight="normal" fill="#64748b">µs</tspan></text>
+    <text x="766" y="382">1.31 <tspan font-size="13" font-weight="normal" fill="#64748b">µs</tspan></text>
     <text x="766" y="426">0.90 <tspan font-size="13" font-weight="normal" fill="#64748b">µs</tspan></text>
-    <text x="766" y="470">0.84 <tspan font-size="13" font-weight="normal" fill="#64748b">µs</tspan></text>
+    <text x="766" y="470">0.83 <tspan font-size="13" font-weight="normal" fill="#64748b">µs</tspan></text>
   </g>
 </svg>
