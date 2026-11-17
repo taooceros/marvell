@@ -25,5 +25,6 @@
   <path class="c2h" d="M710,375 H270" marker-end="url(#c)"/><text class="lc" x="310" y="367">C 卡核直写（WC）：W=1 0.90 µs，4 核 177.6 M/s</text>
   <path class="c2h" d="M270,420 H710" marker-end="url(#c)" stroke-dasharray="5 4"/><text class="lc" x="310" y="412">D 主机 pull（16 B UC 读）：W=1 0.84 µs</text>
   <text class="m" x="310" y="480">64 B 消息，batch 1，uncore 固定；数字来自 FACTS.md / MRV issue</text>
-  <text class="m" x="310" y="500">闭环上限 34–49 M msg/s：双向时 MOVDIR64B 被反压（MRV-24）</text>
+  <text class="m" x="310" y="496">闭环 1 卡核 W=1024：34–49 M msg/s，上限原因在 MRV-17 查</text>
+  <text class="m" x="310" y="512">MRV-24：MOVDIR64B 没被反压，双向 113→76 源于发送核频率</text>
 </svg>
