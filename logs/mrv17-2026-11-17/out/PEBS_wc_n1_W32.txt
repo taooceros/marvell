@@ -1,0 +1,27 @@
+reply ring VA 0x1100b40000 bytes 262144 reply cap 32
+reply ring at IOVA 0x1100b40000: 0 polls waited on a missing reply while a later one had landed
+inline movdir64b reply ring window 32 rounds 20000000 lost 0 bad 0 torn 0 late 37 (max 12.03 us) | 17.067 Mmsg/s | RTT us: min 0.04 p50 0.83 p90 1.01 p99 2.31 p99.9 2.70 p99.99 4.67 max 227.66 mean 0.90 | polls 97% empty
+WARNING: Kernel address maps (/proc/{kallsyms,modules}) are restricted,
+check /proc/sys/kernel/kptr_restrict and /proc/sys/kernel/perf_event_paranoid.
+
+Samples in kernel functions may not be resolved if a suitable vmlinux
+file is not found in the buildid cache or in the vmlinux path.
+
+Samples in kernel modules won't be resolved at all.
+
+If some relocation was applied (e.g. kexec) symbols may be misresolved
+even with a suitable vmlinux or kallsyms file.
+
+Couldn't record kernel reference relocation symbol
+Symbol resolution may be skewed if relocation was used (e.g. kexec).
+Check /proc/kallsyms permission or run as root.
+EAL: Detected CPU lcores: 128
+EAL: Detected NUMA nodes: 2
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /run/user/1001/dpdk/mrv17/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: No free 2048 kB hugepages reported on node 0
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+[ perf record: Woken up 7 times to write data ]
+[ perf record: Captured and wrote 6.415 MB /tmp/mrv17/pebs-w32.data (22166 samples) ]

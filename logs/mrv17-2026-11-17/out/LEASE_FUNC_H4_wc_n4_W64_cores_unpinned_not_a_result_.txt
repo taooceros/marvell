@@ -1,0 +1,15 @@
+reply ring at IOVA 0x1100b40000: 0 + 0 + 0 + 0 polls waited on a missing reply while a later one had landed
+inline movdir64b reply ring host lcore 0 (cpu 40) with card cores 0, batch 1, concurrency 64: window 64 rounds 2000000 lost 0 bad 0 torn 0 late 6 (max 4.12 us) | 3.589 Mmsg/s | RTT us: min 0.69 p50 17.76 p90 18.90 p99 19.59 p99.9 20.31 p99.99 35.43 max 83.64 mean 17.29 | polls 99% empty | 0.23 GB/s of 64 B messages per direction | held back 0 times (0.000 ms)
+inline movdir64b reply ring host lcore 1 (cpu 41) with card cores 1, batch 1, concurrency 64: window 64 rounds 2000000 lost 0 bad 0 torn 0 late 2 (max 2.46 us) | 3.576 Mmsg/s | RTT us: min 1.07 p50 17.56 p90 18.82 p99 19.55 p99.9 20.21 p99.99 24.04 max 139.61 mean 17.11 | polls 98% empty | 0.23 GB/s of 64 B messages per direction | held back 0 times (0.000 ms)
+inline movdir64b reply ring host lcore 2 (cpu 42) with card cores 2, batch 1, concurrency 64: window 64 rounds 2000000 lost 0 bad 0 torn 0 late 1 (max 2.74 us) | 3.576 Mmsg/s | RTT us: min 1.07 p50 17.47 p90 18.78 p99 19.51 p99.9 20.17 p99.99 22.97 max 181.81 mean 17.03 | polls 98% empty | 0.23 GB/s of 64 B messages per direction | held back 0 times (0.000 ms)
+inline movdir64b reply ring host lcore 3 (cpu 43) with card cores 3, batch 1, concurrency 64: window 64 rounds 2000000 lost 0 bad 0 torn 0 late 5 (max 2.61 us) | 3.576 Mmsg/s | RTT us: min 1.03 p50 17.41 p90 18.78 p99 19.51 p99.9 20.19 p99.99 25.96 max 217.29 mean 16.97 | polls 98% empty | 0.23 GB/s of 64 B messages per direction | held back 0 times (0.000 ms)
+inline movdir64b reply ring 4 host lcores x 4 card cores, batch 1, concurrency 256 (64 per lcore): rounds 8000000 lost 0 bad 0 torn 0 late 14 (max 4.12 us) | 14.290 Mmsg/s, 0.91 GB/s of 64 B messages per direction | RTT us: min 0.69 p50 17.56 p90 18.82 p99 19.54 p99.9 20.23 p99.99 28.84 max 217.29 mean 17.10 | polls 98% empty
+EAL: Detected CPU lcores: 128
+EAL: Detected NUMA nodes: 2
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /run/user/1001/dpdk/mrv17/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: No free 2048 kB hugepages reported on node 0
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+inline_pingpong: inline_reflector pid 64117 at 10.10.0.2:7526 granted BAR4 slot 15 (nonce 0x4689b25d7b26993b)

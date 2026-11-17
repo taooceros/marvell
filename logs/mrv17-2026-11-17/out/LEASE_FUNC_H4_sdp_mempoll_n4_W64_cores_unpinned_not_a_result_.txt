@@ -1,0 +1,18 @@
+inline movdir64b reply sdp host lcore 0 (cpu 40) with card cores 0, batch 1, concurrency 64: window 64 rounds 2000000 lost 0 bad 0 torn 0 late 0 (max 0.00 us) | 3.780 Mmsg/s | RTT us: min 2.07 p50 17.28 p90 20.24 p99 23.36 p99.9 25.58 p99.99 35.16 max 168.05 mean 16.56 | polls 99% empty | 0.24 GB/s of 64 B messages per direction | held back 10028 times (13.181 ms)
+inline movdir64b reply sdp host lcore 1 (cpu 41) with card cores 1, batch 1, concurrency 64: window 64 rounds 2000000 lost 0 bad 0 torn 0 late 0 (max 0.00 us) | 3.756 Mmsg/s | RTT us: min 2.55 p50 17.36 p90 20.49 p99 23.53 p99.9 25.51 p99.99 30.25 max 140.45 mean 16.59 | polls 97% empty | 0.24 GB/s of 64 B messages per direction | held back 0 times (0.000 ms)
+inline movdir64b reply sdp host lcore 2 (cpu 42) with card cores 2, batch 1, concurrency 64: window 64 rounds 2000000 lost 0 bad 0 torn 0 late 0 (max 0.00 us) | 3.756 Mmsg/s | RTT us: min 2.34 p50 17.34 p90 20.46 p99 23.58 p99.9 25.53 p99.99 39.31 max 151.42 mean 16.59 | polls 97% empty | 0.24 GB/s of 64 B messages per direction | held back 0 times (0.000 ms)
+inline movdir64b reply sdp host lcore 3 (cpu 43) with card cores 3, batch 1, concurrency 64: window 64 rounds 2000000 lost 0 bad 0 torn 0 late 0 (max 0.00 us) | 3.758 Mmsg/s | RTT us: min 2.52 p50 17.31 p90 20.42 p99 23.47 p99.9 25.51 p99.99 31.30 max 131.26 mean 16.58 | polls 97% empty | 0.24 GB/s of 64 B messages per direction | held back 0 times (0.000 ms)
+inline movdir64b reply sdp 4 host lcores x 4 card cores, batch 1, concurrency 256 (64 per lcore): rounds 8000000 lost 0 bad 0 torn 0 late 0 (max 0.00 us) | 15.022 Mmsg/s, 0.96 GB/s of 64 B messages per direction | RTT us: min 2.07 p50 17.32 p90 20.40 p99 23.49 p99.9 25.53 p99.99 35.02 max 168.05 mean 16.58 | polls 98% empty
+EAL: Detected CPU lcores: 128
+EAL: Detected NUMA nodes: 2
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /run/user/1001/dpdk/mrv17/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: No free 2048 kB hugepages reported on node 0
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+inline_pingpong: inline_reflector pid 64554 at 10.10.0.2:7526 granted BAR4 slot 15 (nonce 0x22173a85792fb0af)
+OTX_NET_EP: cnxk_ep_vf_setup_iq_regs():167 SDP_R[0] INST Q ISM virt: 0x1100bc0004, dma: 0x1100BC0007
+OTX_NET_EP: cnxk_ep_vf_setup_iq_regs():167 SDP_R[1] INST Q ISM virt: 0x1100bc0044, dma: 0x1100BC0047
+OTX_NET_EP: cnxk_ep_vf_setup_iq_regs():167 SDP_R[2] INST Q ISM virt: 0x1100bc0084, dma: 0x1100BC0087
+OTX_NET_EP: cnxk_ep_vf_setup_iq_regs():167 SDP_R[3] INST Q ISM virt: 0x1100bc00c4, dma: 0x1100BC00C7
