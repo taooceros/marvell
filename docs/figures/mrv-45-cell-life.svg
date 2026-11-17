@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="890" viewBox="0 0 1100 890" font-family="Droid Sans Fallback, DejaVu Sans, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#374151"/>
+    </marker>
+    <marker id="arrowb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrowg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#059669"/>
+    </marker>
+    <marker id="arrowo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#d97706"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1100" height="890" fill="white"/>
+  <text x="550" y="30" text-anchor="middle" font-size="19" font-weight="bold" fill="#111827">一格的一生：主机写 → 卡看到 → 卡用完 → 主机知道这一格可以再写</text>
+  <text x="550" y="53" text-anchor="middle" font-size="12.5" fill="#4b5563">第 s 条消息，写在请求环格 (s − 1) mod 65533；卡核 i 负责它（(s − 1) mod n = i）。按 main 上的代码画；没有门铃，也没有中断</text>
+
+  <!-- lanes -->
+  <rect x="20" y="80" width="1060" height="140" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+  <rect x="20" y="290" width="1060" height="140" rx="8" fill="#f0fdf4" stroke="#bbf7d0"/>
+  <text x="62" y="146" text-anchor="middle" font-size="15" font-weight="bold" fill="#1e3a8a">主机</text>
+  <text x="62" y="166" text-anchor="middle" font-size="11" fill="#1e3a8a">发送核</text>
+  <text x="62" y="356" text-anchor="middle" font-size="15" font-weight="bold" fill="#065f46">卡</text>
+  <text x="62" y="376" text-anchor="middle" font-size="11" fill="#065f46">卡核 i</text>
+
+  <!-- host events -->
+  <rect x="110" y="95" width="165" height="110" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+  <text x="192" y="117" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e3a8a">① 先查额度</text>
+  <text x="192" y="139" text-anchor="middle" font-size="11.5" fill="#1e3a8a">闭环：在途 &lt; W</text>
+  <text x="192" y="157" text-anchor="middle" font-size="11.5" fill="#1e3a8a">流：s &lt; min NEXT + 65533</text>
+  <text x="192" y="177" text-anchor="middle" font-size="11.5" fill="#1e3a8a">还查一次租约</text>
+  <text x="192" y="195" text-anchor="middle" font-size="10.5" fill="#6b7280">（都只读主机本地变量）</text>
+
+  <rect x="290" y="95" width="175" height="110" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+  <text x="377" y="117" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e3a8a">② 一条 MOVDIR64B</text>
+  <text x="377" y="139" text-anchor="middle" font-size="11.5" fill="#1e3a8a">64 B 写到 BAR4 槽 15</text>
+  <text x="377" y="157" text-anchor="middle" font-size="11.5" fill="#1e3a8a">的格 (s−1) mod 65533</text>
+  <text x="377" y="177" text-anchor="middle" font-size="11.5" fill="#1e3a8a">不等，接着发下一条</text>
+  <text x="377" y="195" text-anchor="middle" font-size="10.5" fill="#6b7280">（不 fence，不敲门铃）</text>
+
+  <rect x="690" y="95" width="185" height="110" rx="8" fill="#ecfdf5" stroke="#059669"/>
+  <text x="782" y="117" text-anchor="middle" font-size="13" font-weight="bold" fill="#065f46">⑧a 闭环：收到回复</text>
+  <text x="782" y="139" text-anchor="middle" font-size="11.5" fill="#065f46">主机轮询自己内存的回复环</text>
+  <text x="782" y="157" text-anchor="middle" font-size="11.5" fill="#065f46">第 s 条的回复：核对 seq、tsc</text>
+  <text x="782" y="177" text-anchor="middle" font-size="11.5" fill="#065f46">done + 1 → 在途少一条</text>
+  <text x="782" y="195" text-anchor="middle" font-size="11.5" fill="#065f46">→ 可以再发一条</text>
+
+  <rect x="890" y="95" width="180" height="110" rx="8" fill="#fffbeb" stroke="#d97706"/>
+  <text x="980" y="117" text-anchor="middle" font-size="13" font-weight="bold" fill="#92400e">⑧b 流：额度用完时</text>
+  <text x="980" y="139" text-anchor="middle" font-size="11.5" fill="#92400e">经 BAR4 做 MMIO 读</text>
+  <text x="980" y="157" text-anchor="middle" font-size="11.5" fill="#92400e">NEXT[0..n−1]（n 个 8 B）</text>
+  <text x="980" y="177" text-anchor="middle" font-size="11.5" fill="#92400e">额度 = min NEXT + 65533</text>
+  <text x="980" y="195" text-anchor="middle" font-size="10.5" fill="#6b7280">每次读等一个 PCIe 来回</text>
+
+  <!-- card events -->
+  <rect x="110" y="305" width="165" height="110" rx="8" fill="white" stroke="#059669" stroke-dasharray="5 3"/>
+  <text x="192" y="327" text-anchor="middle" font-size="13" font-weight="bold" fill="#065f46">卡核一直在轮询</text>
+  <text x="192" y="349" text-anchor="middle" font-size="11.5" fill="#065f46">读这一格的头 seq</text>
+  <text x="192" y="367" text-anchor="middle" font-size="11.5" fill="#065f46">还是旧值（s − 65533）</text>
+  <text x="192" y="385" text-anchor="middle" font-size="11.5" fill="#065f46">或 0 → Empty</text>
+  <text x="192" y="403" text-anchor="middle" font-size="10.5" fill="#6b7280">本轮停，下一轮再看</text>
+
+  <rect x="290" y="305" width="175" height="110" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-dasharray="5 3"/>
+  <text x="377" y="327" text-anchor="middle" font-size="13" font-weight="bold" fill="#991b1b">④ 头到了、尾没到</text>
+  <text x="377" y="349" text-anchor="middle" font-size="11.5" fill="#991b1b">头 = s，尾 ≠ s</text>
+  <text x="377" y="367" text-anchor="middle" font-size="11.5" fill="#991b1b">→ Partial：不取</text>
+  <text x="377" y="385" text-anchor="middle" font-size="11.5" fill="#991b1b">本轮停，下一轮再看</text>
+  <text x="377" y="403" text-anchor="middle" font-size="10.5" fill="#6b7280">（可能出现；有计数）</text>
+
+  <rect x="480" y="305" width="190" height="110" rx="8" fill="#ecfdf5" stroke="#059669"/>
+  <text x="575" y="327" text-anchor="middle" font-size="13" font-weight="bold" fill="#065f46">⑤ 头 = 尾 = s</text>
+  <text x="575" y="349" text-anchor="middle" font-size="11.5" fill="#065f46">→ Complete：读出 8 个字</text>
+  <text x="575" y="367" text-anchor="middle" font-size="11.5" fill="#065f46">核对 payload（由 s 算出）</text>
+  <text x="575" y="385" text-anchor="middle" font-size="11.5" fill="#065f46">不对：回复里 tsc 置 0</text>
+  <text x="575" y="403" text-anchor="middle" font-size="10.5" fill="#6b7280">然后看 s + n（下一条归它的）</text>
+
+  <rect x="690" y="305" width="185" height="110" rx="8" fill="#ecfdf5" stroke="#059669"/>
+  <text x="782" y="327" text-anchor="middle" font-size="13" font-weight="bold" fill="#065f46">⑥ 回复（闭环）</text>
+  <text x="782" y="349" text-anchor="middle" font-size="11.5" fill="#065f46">SDP 帧，或进主机回复环：</text>
+  <text x="782" y="367" text-anchor="middle" font-size="11.5" fill="#065f46">DPI 从这一格原样复制</text>
+  <text x="782" y="385" text-anchor="middle" font-size="11.5" fill="#065f46">或卡核直写</text>
+  <text x="782" y="403" text-anchor="middle" font-size="10.5" fill="#6b7280">流（REPLY_NONE）：不回</text>
+
+  <rect x="890" y="305" width="180" height="110" rx="8" fill="#fffbeb" stroke="#d97706"/>
+  <text x="980" y="327" text-anchor="middle" font-size="13" font-weight="bold" fill="#92400e">⑦ 记进度</text>
+  <text x="980" y="349" text-anchor="middle" font-size="11.5" fill="#92400e">这一批（最多 32 格）</text>
+  <text x="980" y="367" text-anchor="middle" font-size="11.5" fill="#92400e">处理完，写 NEXT[i] =</text>
+  <text x="980" y="385" text-anchor="middle" font-size="11.5" fill="#92400e">下一个要的 seq</text>
+  <text x="980" y="403" text-anchor="middle" font-size="10.5" fill="#6b7280">写在卡自己内存的控制区</text>
+
+  <!-- arrows -->
+  <line x1="275" y1="150" x2="288" y2="150" stroke="#374151" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="420" y1="207" x2="420" y2="302" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrowb)"/>
+  <text x="410" y="240" text-anchor="end" font-size="11.5" fill="#1d4ed8">③ posted 写在路上：IIO → PCIe → PEM → 卡内存</text>
+  <text x="410" y="258" text-anchor="end" font-size="11.5" fill="#1d4ed8">主机不知道何时到；不同格可能后发先到；</text>
+  <text x="410" y="276" text-anchor="end" font-size="11.5" fill="#1d4ed8">卡先看头尾 seq 都到了才取，中间 32 B 再用 payload 核对</text>
+  <line x1="275" y1="360" x2="288" y2="360" stroke="#374151" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="465" y1="360" x2="478" y2="360" stroke="#374151" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="670" y1="360" x2="688" y2="360" stroke="#374151" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="875" y1="360" x2="888" y2="360" stroke="#374151" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="760" y1="303" x2="760" y2="208" stroke="#059669" stroke-width="2.5" marker-end="url(#arrowg)"/>
+  <text x="752" y="252" text-anchor="end" font-size="11.5" fill="#047857">回复回到主机内存</text>
+  <line x1="1000" y1="208" x2="1000" y2="302" stroke="#d97706" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#arrowo)"/>
+  <line x1="960" y1="302" x2="960" y2="208" stroke="#d97706" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#arrowo)"/>
+  <text x="1010" y="252" font-size="11" fill="#b45309">读请求 /</text>
+  <text x="1010" y="268" font-size="11" fill="#b45309">读回 NEXT</text>
+
+  <!-- time axis -->
+  <line x1="110" y1="446" x2="1070" y2="446" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="1070" y="464" text-anchor="end" font-size="11.5" fill="#6b7280">时间 →（示意，不按比例）</text>
+
+  <!-- bottom panels -->
+  <rect x="20" y="478" width="525" height="250" rx="8" fill="#ecfdf5" stroke="#059669"/>
+  <text x="36" y="502" font-size="14" font-weight="bold" fill="#065f46">闭环（inline_pingpong；split 同理）：靠回复，运行中不读卡的进度</text>
+  <text x="36" y="526" font-size="12" fill="#064e3b">• 发第 s 条前要求在途 &lt; W（closed_loop.rs:187），W ≤ 4095（:175）</text>
+  <text x="36" y="548" font-size="12" fill="#064e3b">• 卡先读完、核对完请求格，才发回复；DPI 回复是从这一格复制的，</text>
+  <text x="36" y="566" font-size="12" fill="#064e3b">   所以"主机收到第 s 条的回复" ⇒ 这一格卡已经用完</text>
+  <text x="36" y="588" font-size="12" fill="#064e3b">• 这一格下一次被写是第 s + 65533 条。那时在途 &lt; W ≤ 4095，</text>
+  <text x="36" y="606" font-size="12" fill="#064e3b">   第 s 条的回复早已收到 ⇒ 不会盖掉卡还没读的格</text>
+  <text x="36" y="628" font-size="12" fill="#064e3b">• 主机只在开始时读一次 NEXT，接着上一次的 seq 往下写</text>
+  <text x="36" y="650" font-size="12" fill="#064e3b">• 回复环只有 4096 格，W &lt; 4096 也保证回复不互相覆盖</text>
+  <text x="36" y="676" font-size="11.5" fill="#6b7280">多个主机核各跑一个闭环（MRV-17，jj change kkvvxrou，还没进 main）：</text>
+  <text x="36" y="694" font-size="11.5" fill="#6b7280">各核的 seq 交错占满整个环，只靠自己的 W 不够，另加"最多领先最慢的核</text>
+  <text x="36" y="712" font-size="11.5" fill="#6b7280">max_lead 条"（各核每 64 条公布一次已发数）</text>
+
+  <rect x="555" y="478" width="525" height="250" rx="8" fill="#fffbeb" stroke="#d97706"/>
+  <text x="571" y="502" font-size="14" font-weight="bold" fill="#92400e">单向流 h2c（inline_stream --via movdir）：没有回复，读 NEXT</text>
+  <text x="571" y="526" font-size="12" fill="#78350f">• 卡核 i 每处理完一批（≤ 32 格）把下一个要的 seq 写进</text>
+  <text x="571" y="544" font-size="12" fill="#78350f">   NEXT[i]（inline_reflector.rs:501）；它之前归 i 的格都用完了</text>
+  <text x="571" y="566" font-size="12" fill="#78350f">• 主机发第 s 条前：s &lt; min_i NEXT[i] + 65533（inline_stream.rs:299-303）</text>
+  <text x="571" y="584" font-size="12" fill="#78350f">   min 以下的每一条都已被它的卡核取走</text>
+  <text x="571" y="606" font-size="12" fill="#78350f">• 额度缓存在主机，用完才经 BAR4 读一次 NEXT（MMIO 读，等一个 PCIe 来回）；</text>
+  <text x="571" y="624" font-size="12" fill="#78350f">   卡跟得上时，每个发送核约每绕环一圈（6.5 万格）读一次</text>
+  <text x="571" y="646" font-size="12" fill="#78350f">• 多个主机核各发一部分 seq，都用同一个 min NEXT：慢核没写到的格</text>
+  <text x="571" y="664" font-size="12" fill="#78350f">   会让对应卡核停住，快核最多领先一圈，不会盖掉没读的格</text>
+  <text x="571" y="690" font-size="11.5" fill="#6b7280">反方向 c2h（卡写主机环）用 TAKEN：主机每取 512 格经 BAR4</text>
+  <text x="571" y="708" font-size="11.5" fill="#6b7280">写一次，卡只写 k ≤ TAKEN + 4096 的格。fetch 路用 FETCH_NEXT，同理</text>
+
+  <!-- violation -->
+  <rect x="20" y="742" width="1060" height="66" rx="8" fill="#fef2f2" stroke="#dc2626"/>
+  <text x="36" y="764" font-size="12.5" font-weight="bold" fill="#991b1b">要是违反了（主机写第 s 条时，第 s − 65533 条还没被卡取走）：</text>
+  <text x="36" y="784" font-size="12" fill="#7f1d1d">那个卡核等的是 s − 65533，却看到头 = s，永远是 Empty：这条消息丢了，这个卡核停在那里，后面归它的全都卡住（主机记 lost；流在结尾报卡核停住）。</text>
+  <text x="36" y="801" font-size="12" fill="#7f1d1d">若正好在卡读这一格时被盖：头尾对不上（Partial）或 payload 对不上（corrupt → 主机记 bad）。DPI 回复还没复制完就被盖，回复内容也会错。</text>
+
+  <text x="20" y="836" font-size="11" fill="#9ca3af">代码：inline.rs Cell::poll（:214-226）、Cell::offset（:171-173）；inline_reflector.rs serve_ring（:421-517）；closed_loop.rs:186-201；</text>
+  <text x="20" y="852" font-size="11" fill="#9ca3af">inline_stream.rs send_movdir（:294-312）、take_stream（:500-562）。</text>
+  <text x="20" y="868" font-size="11" fill="#9ca3af">NEXT 读的耗时没有单独测过（参考：pull 模式一次 16 B BAR4 读约 0.63 µs，docs/video/data/FACTS.md §Pull）。</text>
+</svg>

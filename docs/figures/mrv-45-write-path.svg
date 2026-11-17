@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="800" viewBox="0 0 1100 800" font-family="Droid Sans Fallback, DejaVu Sans, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#374151"/>
+    </marker>
+    <marker id="arrowb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1100" height="800" fill="white"/>
+  <text x="550" y="30" text-anchor="middle" font-size="19" font-weight="bold" fill="#111827">一条请求写到哪里：主机一条 MOVDIR64B → 卡内存请求环里的一格</text>
+  <text x="550" y="53" text-anchor="middle" font-size="12.5" fill="#4b5563">按 main 上的代码画（inline.rs、mmio.rs、lease.rs、inline_pingpong / inline_stream / inline_reflector）；64 B 一格，批大小 1，不加 fence、不敲门铃</text>
+
+  <!-- side labels -->
+  <text x="40" y="88" font-size="14" font-weight="bold" fill="#1e3a8a">主机 saturn（插卡的 NUMA 节点 1）</text>
+  <text x="1060" y="88" text-anchor="end" font-size="14" font-weight="bold" fill="#065f46">卡 CN106</text>
+
+  <!-- path boxes -->
+  <rect x="30" y="100" width="190" height="128" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+  <text x="125" y="124" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e3a8a">① 主机核</text>
+  <text x="125" y="145" text-anchor="middle" font-size="12" fill="#1e3a8a">Cell::new(seq, tag, tsc)</text>
+  <text x="125" y="163" text-anchor="middle" font-size="12" fill="#1e3a8a">在栈上拼好 64 B</text>
+  <text x="125" y="183" text-anchor="middle" font-size="12" fill="#1e3a8a">一条 MOVDIR64B 写到</text>
+  <text x="125" y="200" text-anchor="middle" font-size="12" fill="#1e3a8a">映射的槽 15 + offset(seq)</text>
+  <text x="125" y="218" text-anchor="middle" font-size="11" fill="#6b7280">不进缓存，弱序，无 fence</text>
+
+  <rect x="245" y="100" width="190" height="128" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+  <text x="340" y="124" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e3a8a">② 主机 uncore</text>
+  <text x="340" y="145" text-anchor="middle" font-size="12" fill="#1e3a8a">store buffer → CHA</text>
+  <text x="340" y="163" text-anchor="middle" font-size="12" fill="#1e3a8a">（一个 WCiLF 请求）</text>
+  <text x="340" y="183" text-anchor="middle" font-size="12" fill="#1e3a8a">→ M2PCIe → IIO</text>
+  <text x="340" y="203" text-anchor="middle" font-size="12" fill="#1e3a8a">数据推出去，不等回应</text>
+  <text x="340" y="220" text-anchor="middle" font-size="11" fill="#6b7280">（datapath-kb 002）</text>
+
+  <rect x="460" y="100" width="190" height="128" rx="8" fill="#f9fafb" stroke="#6b7280"/>
+  <text x="555" y="124" text-anchor="middle" font-size="13" font-weight="bold" fill="#374151">③ PCIe Gen5 x4</text>
+  <text x="555" y="145" text-anchor="middle" font-size="12" fill="#374151">一个 64 B posted 写</text>
+  <text x="555" y="163" text-anchor="middle" font-size="12" fill="#374151">到 PF 0000:99:00.0 的 BAR4</text>
+  <text x="555" y="183" text-anchor="middle" font-size="12" fill="#374151">主机物理地址</text>
+  <text x="555" y="201" text-anchor="middle" font-size="12" fill="#374151">0x223ff3c00000 + offset</text>
+  <text x="555" y="220" text-anchor="middle" font-size="11" fill="#6b7280">（BAR4 起点 + 15 × 4 MiB）</text>
+
+  <rect x="675" y="100" width="190" height="128" rx="8" fill="#ecfdf5" stroke="#059669"/>
+  <text x="770" y="124" text-anchor="middle" font-size="13" font-weight="bold" fill="#065f46">④ 卡 PEM0</text>
+  <text x="770" y="145" text-anchor="middle" font-size="12" fill="#065f46">BAR4 = 16 个 4 MiB 窗口</text>
+  <text x="770" y="163" text-anchor="middle" font-size="12" fill="#065f46">BAR4_INDEX15 =</text>
+  <text x="770" y="181" text-anchor="middle" font-size="12" fill="#065f46">(pa &gt;&gt; 22) &lt;&lt; 4 | 1</text>
+  <text x="770" y="201" text-anchor="middle" font-size="12" fill="#065f46">窗口 15 → 卡物理 pa</text>
+  <text x="770" y="220" text-anchor="middle" font-size="11" fill="#6b7280">reflector 启动时改，退出时还原</text>
+
+  <rect x="890" y="100" width="180" height="128" rx="8" fill="#ecfdf5" stroke="#059669"/>
+  <text x="980" y="124" text-anchor="middle" font-size="13" font-weight="bold" fill="#065f46">⑤ 卡 DRAM</text>
+  <text x="980" y="145" text-anchor="middle" font-size="12" fill="#065f46">memzone "inline_ring"</text>
+  <text x="980" y="163" text-anchor="middle" font-size="12" fill="#065f46">4 MiB，物理连续，</text>
+  <text x="980" y="181" text-anchor="middle" font-size="12" fill="#065f46">4 MiB 对齐，启动时清零</text>
+  <text x="980" y="201" text-anchor="middle" font-size="12" fill="#065f46">pa 每次启动可能不同</text>
+  <text x="980" y="220" text-anchor="middle" font-size="11" fill="#6b7280">日志里多为 0x19ac00000</text>
+
+  <line x1="220" y1="164" x2="243" y2="164" stroke="#374151" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="435" y1="164" x2="458" y2="164" stroke="#374151" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="650" y1="164" x2="673" y2="164" stroke="#374151" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="865" y1="164" x2="888" y2="164" stroke="#374151" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- lease strip -->
+  <rect x="30" y="244" width="1040" height="46" rx="8" fill="#fffbeb" stroke="#d97706"/>
+  <text x="46" y="263" font-size="12.5" fill="#92400e"><tspan font-weight="bold">谁可以写（租约，MRV-26）：</tspan>主机先走控制网 TCP 10.10.0.2:7526 拿租约（随机 nonce），reflector 把 nonce 写进控制区再回 READY；</text>
+  <text x="46" y="281" font-size="12.5" fill="#92400e">主机这才映射槽 15，先读 READY 和 nonce 核对，之后每次读、写、MOVDIR64B 前都 LeasedSlot::check()；reflector 退出先收回租约再还原窗口。</text>
+
+  <!-- slot bar -->
+  <text x="40" y="326" font-size="14" font-weight="bold" fill="#111827">槽 15 的 4 MiB 里放了什么（主机写 BAR4 槽 15 的 offset 处 = 卡内存 pa + offset 处，两边同一布局）</text>
+  <rect x="40" y="340" width="900" height="54" fill="#dbeafe" stroke="#2563eb"/>
+  <line x1="70" y1="340" x2="70" y2="394" stroke="#2563eb"/>
+  <line x1="100" y1="340" x2="100" y2="394" stroke="#2563eb"/>
+  <line x1="130" y1="340" x2="130" y2="394" stroke="#2563eb"/>
+  <line x1="820" y1="340" x2="820" y2="394" stroke="#2563eb"/>
+  <line x1="880" y1="340" x2="880" y2="394" stroke="#2563eb"/>
+  <text x="55" y="372" text-anchor="middle" font-size="11" fill="#1e3a8a">0</text>
+  <text x="85" y="372" text-anchor="middle" font-size="11" fill="#1e3a8a">1</text>
+  <text x="115" y="372" text-anchor="middle" font-size="11" fill="#1e3a8a">2</text>
+  <text x="475" y="364" text-anchor="middle" font-size="13" fill="#1e3a8a">请求环：65533 格 × 64 B，格号 0…65532（RING_CELLS = 4 MiB / 64 − 3）</text>
+  <text x="475" y="383" text-anchor="middle" font-size="12" fill="#1e3a8a">第 seq 条 → 格 (seq − 1) mod 65533，offset = 格号 × 64；卡核 i（共 n 个）取 (seq − 1) mod n = i 的</text>
+  <text x="850" y="372" text-anchor="middle" font-size="11" fill="#1e3a8a">65531</text>
+  <text x="910" y="372" text-anchor="middle" font-size="11" fill="#1e3a8a">65532</text>
+  <rect x="940" y="340" width="130" height="54" fill="#fde68a" stroke="#d97706"/>
+  <text x="1005" y="363" text-anchor="middle" font-size="12" font-weight="bold" fill="#92400e">控制区 3 格</text>
+  <text x="1005" y="381" text-anchor="middle" font-size="11" fill="#92400e">offset 0x3FFF40 起</text>
+  <text x="40" y="410" font-size="11" fill="#6b7280">0x0</text>
+  <text x="940" y="410" text-anchor="middle" font-size="11" fill="#6b7280">0x3FFF40</text>
+  <text x="1070" y="410" text-anchor="end" font-size="11" fill="#6b7280">0x400000</text>
+
+  <!-- cell zoom -->
+  <line x1="100" y1="394" x2="40" y2="452" stroke="#2563eb" stroke-dasharray="4 3"/>
+  <line x1="130" y1="394" x2="640" y2="452" stroke="#2563eb" stroke-dasharray="4 3"/>
+  <text x="40" y="446" font-size="13" font-weight="bold" fill="#111827">一格 = 一条消息 = 一条 MOVDIR64B（struct Cell，64 B）</text>
+  <rect x="40" y="452" width="80" height="58" fill="#bfdbfe" stroke="#1d4ed8"/>
+  <rect x="120" y="452" width="80" height="58" fill="#e0e7ff" stroke="#1d4ed8"/>
+  <rect x="200" y="452" width="80" height="58" fill="#e0e7ff" stroke="#1d4ed8"/>
+  <rect x="280" y="452" width="280" height="58" fill="#f3f4f6" stroke="#1d4ed8"/>
+  <rect x="560" y="452" width="80" height="58" fill="#bfdbfe" stroke="#1d4ed8"/>
+  <text x="80" y="477" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e3a8a">seq</text>
+  <text x="80" y="497" text-anchor="middle" font-size="10.5" fill="#374151">字节 0–7</text>
+  <text x="160" y="477" text-anchor="middle" font-size="13" fill="#1e3a8a">tsc</text>
+  <text x="160" y="497" text-anchor="middle" font-size="10.5" fill="#374151">8–15</text>
+  <text x="240" y="477" text-anchor="middle" font-size="13" fill="#1e3a8a">tag</text>
+  <text x="240" y="497" text-anchor="middle" font-size="10.5" fill="#374151">16–23</text>
+  <text x="420" y="477" text-anchor="middle" font-size="13" fill="#1e3a8a">payload = pattern(seq)，32 B</text>
+  <text x="420" y="497" text-anchor="middle" font-size="10.5" fill="#374151">24–55，由 seq 算出，卡逐字核对</text>
+  <text x="600" y="477" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e3a8a">seq_tail</text>
+  <text x="600" y="497" text-anchor="middle" font-size="10.5" fill="#374151">56–63</text>
+  <text x="40" y="530" font-size="11.5" fill="#374151">头 seq 和尾 seq_tail 是同一个数：两头都等于卡要的 seq 才取这格，中间 32 B 再按 seq 逐字核对。</text>
+  <text x="40" y="548" font-size="11.5" fill="#374151">seq 从 1 开始数，清零的内存 = 空；新一次运行接着卡上记的下一个 seq 往下写，不从 1 重来。</text>
+
+  <!-- control words -->
+  <text x="680" y="446" font-size="13" font-weight="bold" fill="#111827">控制区里的 8 B 字（offset 0x3FFF40 + 8 × w）</text>
+  <rect x="680" y="452" width="390" height="210" rx="6" fill="#fffbeb" stroke="#d97706"/>
+  <text x="692" y="472" font-size="11.5" fill="#78350f">w0  READY = "INLINERD"（卡占着这个槽时）</text>
+  <text x="692" y="490" font-size="11.5" fill="#78350f">w1  取请求环的卡核数 n</text>
+  <text x="692" y="508" font-size="11.5" fill="#78350f">w2  回复走哪：回复环 IOVA / 1 = pull / 2 = 不回 / 0 = SDP</text>
+  <text x="692" y="526" font-size="11.5" fill="#78350f">w3  卡→主机流的长度；w4–5 pull 的 (tag, tsc)</text>
+  <text x="692" y="544" font-size="11.5" fill="#78350f">w6  TAKEN：主机取走的卡→主机流格数（主机写）</text>
+  <text x="692" y="562" font-size="11.5" fill="#78350f">w7  本次租约的 nonce</text>
+  <text x="692" y="580" font-size="11.5" font-weight="bold" fill="#78350f">w8–15  NEXT[i]：卡核 i 下一个要取的 seq（卡写）</text>
+  <text x="692" y="598" font-size="11.5" fill="#78350f">w16–17  卡→主机流的环 IOVA、写流的卡核数</text>
+  <text x="692" y="616" font-size="11.5" fill="#78350f">w18–20  fetch 环 IOVA、FETCH_NEXT、触发方式</text>
+  <text x="692" y="640" font-size="10.5" fill="#6b7280">主机读写控制字用普通 8 B MMIO 读/写（同一个映射），</text>
+  <text x="692" y="655" font-size="10.5" fill="#6b7280">不用 MOVDIR64B；卡用普通原子读写自己内存</text>
+
+  <!-- guarantees -->
+  <rect x="40" y="570" width="620" height="92" rx="6" fill="#f9fafb" stroke="#9ca3af"/>
+  <text x="52" y="590" font-size="12.5" font-weight="bold" fill="#111827">MOVDIR64B 给了什么、没给什么</text>
+  <text x="52" y="609" font-size="11.5" fill="#374151">• 给：64 B 原子写（mmio.rs 的约定），不经过缓存，和目的地内存类型无关</text>
+  <text x="52" y="627" font-size="11.5" fill="#374151">• 没给：顺序和送达确认。不同格的写可能后发先到；posted 写，主机不知道何时落地</text>
+  <text x="52" y="645" font-size="11.5" fill="#374151">• 不加 fence（每条加 SFENCE 时闭环 W=128 只有 6.86 M/s，MRV-5）：卡查头尾 seq，再核对 payload</text>
+
+  <text x="40" y="690" font-size="12" fill="#4b5563">回复不走这条路：卡用 SDP 帧、DPI DMA 或卡核直写把回复放进主机内存里的回复环（4096 格），主机轮询自己的内存。</text>
+  <text x="40" y="710" font-size="12" fill="#4b5563">另一条请求路（fetch）：主机把请求写进自己内存的环，卡用 DPI 读过去；hybrid 时再用一条 MOVDIR64B 门铃告诉卡读到哪。</text>
+  <text x="40" y="738" font-size="11" fill="#9ca3af">BAR4 主机物理地址取自 /sys/bus/pci/devices/0000:99:00.0/resource（BAR4 0x223ff0000000–0x223ff3ffffff，64 位可预取）；pa 取自 logs/ 里 reflector 启动行</text>
+  <text x="40" y="755" font-size="11" fill="#9ca3af">"BAR4 slot 15 -&gt; pa 0x19ac00000"（429 行；另有 0x197c00000、0x19a800000）。路径中段（store buffer、CHA、IIO）来自 ~/dev/datapath-kb x86-mmio/002。</text>
+</svg>
