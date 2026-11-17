@@ -1,0 +1,5 @@
+$ /tmp/mrv26/target/release/inline_stream -l 40 -a 0000:99:02.0 --file-prefix=mrv26 --log-level=error -- --dir h2c -n 3000000000
+inline_stream: inline_reflector pid 60056 at 10.10.0.2:7526 granted BAR4 slot 15 (nonce 0x22655f4d37fe5d2f)
+Error: "inline_reflector at 10.10.0.2:7526 took BAR4 slot 15 back (it is exiting); stopped using the slot"
+
+rc=1

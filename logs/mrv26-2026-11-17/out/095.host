@@ -1,0 +1,4 @@
+$ /tmp/mrv26/base-target/release/inline_stream -l 40,41 --main-lcore 41 -a 0000:99:02.0 --file-prefix=mrv26 --log-level=error -- --dir bidir -n 20000000
+bidir 20000000 cells each way: h2c via Movdir card took all at 35.50 M cells/s (2.27 GB/s of 64 B cells) | c2h 1 card cores -> 1 host core at 52.79 M cells/s (3.38 GB/s of 64 B cells) (bad 0 torn 0 late 0)
+
+rc=0

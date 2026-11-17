@@ -1,0 +1,23 @@
+EAL: Detected CPU lcores: 24
+EAL: Detected NUMA nodes: 1
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/inl/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+CNXK: RoC Model: cn10ka_b0 (HW_PLATFORM)
+inline_reflector: core 0 DMAs to the host via 0000:06:00.1 as host function PcieFunction { core: 0, pf: 0, vf: 1 }
+inline_reflector: BAR4 slot 15 -> pa 0x19a800000 (was 0x2ff71); roles [Ring]; SDP replies to 00:00:00:01:01:01 from 72:64:9b:c1:e3:53; hosts lease the slot at 10.10.0.2:7526
+lease: host 10.10.0.1:47454 (pid 3201866) took slot 15, nonce 0x0d041c55dd416597
+lease: host 10.10.0.1:47454 (pid 3201866) released slot 15 after 2.5 s
+lease: host 10.10.0.1:47470 (pid 3201881) took slot 15, nonce 0xe7ae37a6c7c7e42d
+lease: host 10.10.0.1:47470 (pid 3201881) released slot 15 after 0.3 s
+lease: host 10.10.0.1:47482 (pid 3201894) took slot 15, nonce 0xf460f7003d4abd7f
+lease: host 10.10.0.1:47482 (pid 3201894) released slot 15 after 1.4 s
+lease: host 10.10.0.1:47492 (pid 3201915) took slot 15, nonce 0x6fcc6e84c15e4dd7
+lease: host 10.10.0.1:47492 (pid 3201915) released slot 15 after 0.9 s
+lease: host 10.10.0.1:47508 (pid 3202010) took slot 15, nonce 0x094386ceb3ffe96d
+lease: host 10.10.0.1:47508 (pid 3202010) released slot 15 after 0.2 s
+lease: host 10.10.0.1:47514 (pid 3202036) took slot 15, nonce 0x86f0f0e6e9d8c6bd
+lease: host 10.10.0.1:47514 (pid 3202036) released slot 15 after 0.4 s
+lease: host 10.10.0.1:47530 (pid 3202042) took slot 15, nonce 0x51c3a13b21a964cf

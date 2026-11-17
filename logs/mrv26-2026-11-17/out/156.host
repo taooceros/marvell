@@ -1,0 +1,5 @@
+$ /tmp/mrv26/base-target/release/inline_pingpong -l 40 -a 0000:99:02.0 --file-prefix=mrv26 --log-level=error -- --probe-reads 3
+BAR4 UC 8 B read of card DRAM, 3 reads: RTT us: min 0.61 p50 0.62 p90 0.62 p99 0.62 p99.9 0.62 p99.99 0.62 max 0.63 mean 0.62
+BAR4 UC 16 B read of card DRAM, 3 reads: RTT us: min 0.62 p50 0.62 p90 0.62 p99 0.62 p99.9 0.62 p99.99 0.62 max 0.62 mean 0.62
+
+rc=0

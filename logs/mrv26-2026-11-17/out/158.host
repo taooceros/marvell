@@ -1,0 +1,5 @@
+$ strace -f -e trace=openat,mmap,connect -o /tmp/mrv26/logs/158.strace /tmp/mrv26/target/release/inline_pingpong -l 40 -a 0000:99:02.0 --file-prefix=mrv26 --log-level=error -- -w 1 -n 1000
+inline_pingpong: inline_reflector pid 4242 at 10.10.0.2:7526 granted BAR4 slot 15 (nonce 0x2f33fff54c55521b)
+Error: "BAR4 slot 15 holds cookie 0x4452454e494c4e49 and nonce 0xca26b59396a8884d, not READY and this run's 0x2f33fff54c55521b: it does not point at the buffer of the reflector that answered; not writing"
+
+rc=1

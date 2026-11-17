@@ -1,0 +1,5 @@
+$ /tmp/mrv26/target/release/inline_stream -l 40 -a 0000:99:02.0 --file-prefix=mrv26 --log-level=error -- --dir h2c -n 3000000000
+inline_stream: inline_reflector pid 60662 at 10.10.0.2:7526 granted BAR4 slot 15 (nonce 0x51c3a13b21a964cf)
+Error: "connection to inline_reflector at 10.10.0.2:7526 closed (killed?); stopped using BAR4 slot 15"
+
+rc=1

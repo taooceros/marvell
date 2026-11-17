@@ -1,0 +1,5 @@
+$ /tmp/mrv26/target/release/pingpong -l 40 -a 0000:99:02.0 --file-prefix=mrv26 --log-level=error -- --peer 72:64:9b:c1:e3:53 -n 200000
+sdp frame 64B window 1 rounds 200000 lost 0 bad 0 torn 0 late 0 (max 0.00 us) | 0.205 Mmsg/s | RTT us: min 4.38 p50 4.96 p90 5.09 p99 5.14 p99.9 6.76 p99.99 11.04 max 1958.14 mean 4.84 | polls 88% empty
+OTX_NET_EP: cnxk_ep_vf_setup_iq_regs():167 SDP_R[0] INST Q ISM virt: 0x1100bc0004, dma: 0x1100BC0007
+
+rc=0

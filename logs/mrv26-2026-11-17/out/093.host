@@ -1,0 +1,5 @@
+$ /tmp/mrv26/target/release/inline_stream -l 40,41 --main-lcore 41 -a 0000:99:02.0 --file-prefix=mrv26 --log-level=error -- --dir bidir -n 20000000
+bidir 20000000 cells each way: h2c via Movdir card took all at 35.53 M cells/s (2.27 GB/s of 64 B cells) | c2h 1 card cores -> 1 host core at 52.87 M cells/s (3.38 GB/s of 64 B cells) (bad 0 torn 0 late 0)
+inline_stream: inline_reflector pid 59565 at 10.10.0.2:7526 granted BAR4 slot 15 (nonce 0xdf8ea8207e1725ed)
+
+rc=0

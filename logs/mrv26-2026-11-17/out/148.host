@@ -1,0 +1,6 @@
+$ /tmp/mrv26/target/release/inline_pingpong -l 40 -a 0000:99:02.0 --file-prefix=mrv26 --log-level=error -- -w 1 -n 40000000
+inline_pingpong: inline_reflector pid 59955 at 10.10.0.2:7526 granted BAR4 slot 15 (nonce 0xf242b7098504eeb7)
+OTX_NET_EP: cnxk_ep_vf_setup_iq_regs():167 SDP_R[0] INST Q ISM virt: 0x1100bc0004, dma: 0x1100BC0007
+Error: "inline_reflector at 10.10.0.2:7526 took BAR4 slot 15 back (it is exiting); stopped using the slot"
+
+rc=1

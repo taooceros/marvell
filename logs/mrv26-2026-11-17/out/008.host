@@ -1,0 +1,5 @@
+$ /tmp/mrv26/base-target/release/inline_pingpong -l 40 -a 0000:99:02.0 --file-prefix=mrv26 --log-level=error -- -w 8 -n 2000000
+inline movdir64b reply sdp window 8 rounds 2000000 lost 0 bad 0 torn 0 late 0 (max 0.00 us) | 3.037 Mmsg/s | RTT us: min 1.76 p50 2.53 p90 2.86 p99 4.44 p99.9 5.09 p99.99 7.42 max 94.53 mean 2.55 | polls 40% empty
+OTX_NET_EP: cnxk_ep_vf_setup_iq_regs():167 SDP_R[0] INST Q ISM virt: 0x1100bc0004, dma: 0x1100BC0007
+
+rc=0

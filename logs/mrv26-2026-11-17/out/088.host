@@ -1,0 +1,4 @@
+$ /tmp/mrv26/base-target/release/inline_stream -l 40,41 --main-lcore 41 -a 0000:99:02.0 --file-prefix=mrv26 --log-level=error -- --dir split -n 20000000 --window 64
+split via Movdir, window 64, 1 sender + 1 receiver host core, 1 card cores, 20000000 round trips: bad 0, 15.26 M cells/s (0.98 GB/s of 64 B cells) (sender issued at 15.26 M cells/s (0.98 GB/s of 64 B cells), waited for credit 2725931 times) | RTT of every 16th: RTT us: min 1.29 p50 4.59 p90 5.03 p99 5.38 p99.9 6.65 p99.99 10.57 max 122.57 mean 3.84
+
+rc=0

@@ -1,0 +1,5 @@
+$ /tmp/mrv26/target/release/inline_stream -l 40 -a 0000:99:02.0 --file-prefix=mrv26 --log-level=error -- --dir c2h -n 20000000
+c2h 1 card cores -> 1 host core, 20000000 cells, lag 0 us: bad 0 torn 0 late 0, host took them at 51.50 M cells/s (3.30 GB/s of 64 B cells); polling took 13.5 ns per cell
+inline_stream: inline_reflector pid 59490 at 10.10.0.2:7526 granted BAR4 slot 15 (nonce 0xe620e82b81ad8a37)
+
+rc=0

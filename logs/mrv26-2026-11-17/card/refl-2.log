@@ -1,0 +1,54 @@
+EAL: Detected CPU lcores: 24
+EAL: Detected NUMA nodes: 1
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/inl/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+CNXK: RoC Model: cn10ka_b0 (HW_PLATFORM)
+inline_reflector: core 0 DMAs to the host via 0000:06:00.1 as host function PcieFunction { core: 0, pf: 0, vf: 1 }
+inline_reflector: BAR4 slot 15 -> pa 0x19a800000 (was 0x2ff71); roles [Ring]; SDP replies to 00:00:00:01:01:01 from 72:64:9b:c1:e3:53; hosts lease the slot at 10.10.0.2:7526
+lease: host 10.10.0.1:53078 (pid 3198191) took slot 15, nonce 0xf069a945e0e6a595
+lease: host 10.10.0.1:53078 (pid 3198191) released slot 15 after 0.2 s
+lease: host 10.10.0.1:60398 (pid 3198205) took slot 15, nonce 0x071797789d252e85
+lease: host 10.10.0.1:60398 (pid 3198205) released slot 15 after 0.2 s
+lease: host 10.10.0.1:60400 (pid 3198229) took slot 15, nonce 0xbfb102f05ce299af
+lease: host 10.10.0.1:60400 (pid 3198229) released slot 15 after 0.2 s
+lease: host 10.10.0.1:60402 (pid 3198235) took slot 15, nonce 0xc42022c14ca95453
+lease: host 10.10.0.1:60402 (pid 3198235) released slot 15 after 0.2 s
+lease: host 10.10.0.1:60408 (pid 3198259) took slot 15, nonce 0x7f1a2c9565e5c2ff
+lease: host 10.10.0.1:60408 (pid 3198259) released slot 15 after 0.4 s
+lease: host 10.10.0.1:60420 (pid 3198279) took slot 15, nonce 0xa486e26318c4b6ef
+lease: host 10.10.0.1:60420 (pid 3198279) released slot 15 after 0.4 s
+lease: host 10.10.0.1:60430 (pid 3198307) took slot 15, nonce 0xc3698340d371b5d7
+lease: host 10.10.0.1:60430 (pid 3198307) released slot 15 after 2.5 s
+lease: host 10.10.0.1:53312 (pid 3198321) took slot 15, nonce 0x4a9784263401ffb5
+lease: host 10.10.0.1:53312 (pid 3198321) released slot 15 after 2.5 s
+lease: host 10.10.0.1:53324 (pid 3198352) took slot 15, nonce 0xa90f2b2dbac3e911
+lease: host 10.10.0.1:53324 (pid 3198352) released slot 15 after 0.2 s
+lease: host 10.10.0.1:53332 (pid 3198358) took slot 15, nonce 0xce690eca5c81876f
+lease: host 10.10.0.1:53332 (pid 3198358) released slot 15 after 0.2 s
+lease: host 10.10.0.1:53336 (pid 3198375) took slot 15, nonce 0x7e07b01066bce20b
+lease: host 10.10.0.1:53336 (pid 3198375) released slot 15 after 0.2 s
+lease: host 10.10.0.1:39774 (pid 3198388) took slot 15, nonce 0xff98521bc1f40b8d
+lease: host 10.10.0.1:39774 (pid 3198388) released slot 15 after 0.2 s
+lease: host 10.10.0.1:39782 (pid 3198405) took slot 15, nonce 0xf3880b609f528ac5
+lease: host 10.10.0.1:39782 (pid 3198405) released slot 15 after 0.9 s
+lease: host 10.10.0.1:39786 (pid 3198411) took slot 15, nonce 0xa92b318a2ac8ca5d
+lease: host 10.10.0.1:39786 (pid 3198411) released slot 15 after 0.9 s
+lease: host 10.10.0.1:39802 (pid 3198452) took slot 15, nonce 0x14ed6feb6ee2f6bd
+lease: host 10.10.0.1:39802 (pid 3198452) released slot 15 after 2.9 s
+lease: host 10.10.0.1:33790 (pid 3198479) took slot 15, nonce 0x450273ff94c4a989
+lease: host 10.10.0.1:33790 (pid 3198479) released slot 15 after 2.9 s
+lease: host 10.10.0.1:50418 (pid 3198639) took slot 15, nonce 0x82d3df599ac88c45
+lease: host 10.10.0.1:50418 (pid 3198639) released slot 15 after 1.3 s
+lease: host 10.10.0.1:50422 (pid 3198649) took slot 15, nonce 0x5006829f24f4681b
+lease: host 10.10.0.1:50422 (pid 3198649) released slot 15 after 1.4 s
+lease: host 10.10.0.1:50430 (pid 3198678) took slot 15, nonce 0xdf8ea8207e1725ed
+lease: host 10.10.0.1:50430 (pid 3198678) released slot 15 after 0.6 s
+lease: host 10.10.0.1:50436 (pid 3198685) took slot 15, nonce 0x4a12686a37c674cf
+lease: host 10.10.0.1:50436 (pid 3198685) released slot 15 after 0.6 s
+reflected 112320000 (sdp 4080000, pull 4080000, stored 0, dma 264160000 in 35213246 copies: completed 35213246, failed 0), partial cells seen 0, corrupt payloads 0, no ring writer for 0; streams: sunk 240000000, sourced 160000000 (included in stored/dma)
+per core: ring 352320000 cells, 7.6 per busy poll
+stream writing rate per core (credit waits excluded): 54.7 M/s
+CNXK: 0002:01:00.2: common resource in use by other devices

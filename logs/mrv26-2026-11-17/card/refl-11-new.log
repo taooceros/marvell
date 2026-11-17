@@ -1,0 +1,13 @@
+EAL: Detected CPU lcores: 24
+EAL: Detected NUMA nodes: 1
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/inl/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+CNXK: RoC Model: cn10ka_b0 (HW_PLATFORM)
+inline_reflector: core 0 stores to the host through PEM0 outbound region 255 (was 0x0) as host pf 0 vf 1, Device-nGnRnE
+inline_reflector: BAR4 slot 15 -> pa 0x19ac00000 (was 0x2ff71); roles [Ring]; SDP replies to 00:00:00:01:01:01 from 72:64:9b:c1:e3:53; hosts lease the slot at 10.10.0.2:7526
+lease: host 10.10.0.1:55042 (pid 3200412) took slot 15, nonce 0x4ce9637697156c3b
+lease: host 10.10.0.1:55042 (pid 3200412) released slot 15 after 0.3 s
+lease: host 10.10.0.1:55050 (pid 3200418) took slot 15, nonce 0xca26b59396a8884d

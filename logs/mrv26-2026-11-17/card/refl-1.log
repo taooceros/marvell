@@ -1,0 +1,70 @@
+EAL: Detected CPU lcores: 24
+EAL: Detected NUMA nodes: 1
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/inl/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+CNXK: RoC Model: cn10ka_b0 (HW_PLATFORM)
+inline_reflector: core 0 DMAs to the host via 0000:06:00.1 as host function PcieFunction { core: 0, pf: 0, vf: 1 }
+inline_reflector: BAR4 slot 15 -> pa 0x19a800000 (was 0x2ff71); roles [Ring]; SDP replies to 00:00:00:01:01:01 from 72:64:9b:c1:e3:53; hosts lease the slot at 10.10.0.2:7526
+lease: host 10.10.0.1:37594 (pid 3195374) took slot 15, nonce 0x491990508dc5488d
+lease: host 10.10.0.1:37594 (pid 3195374) released slot 15 after 0.6 s
+lease: host 10.10.0.1:50376 (pid 3195619) took slot 15, nonce 0x825d745693bd786f
+lease: host 10.10.0.1:50376 (pid 3195619) released slot 15 after 2.5 s
+lease: host 10.10.0.1:36814 (pid 3195633) took slot 15, nonce 0xa067de1356b7c543
+lease: host 10.10.0.1:36814 (pid 3195633) released slot 15 after 2.5 s
+lease: host 10.10.0.1:36818 (pid 3195668) took slot 15, nonce 0x4a4ba2900b97bdfd
+lease: host 10.10.0.1:36818 (pid 3195668) released slot 15 after 2.5 s
+lease: host 10.10.0.1:46134 (pid 3195701) took slot 15, nonce 0x1df3638932915425
+lease: host 10.10.0.1:46134 (pid 3195701) released slot 15 after 0.7 s
+lease: host 10.10.0.1:46142 (pid 3195714) took slot 15, nonce 0x0168c652629c514b
+lease: host 10.10.0.1:46142 (pid 3195714) released slot 15 after 0.7 s
+lease: host 10.10.0.1:46148 (pid 3195749) took slot 15, nonce 0xcaf1fe157ce5c4e9
+lease: host 10.10.0.1:46148 (pid 3195749) released slot 15 after 0.3 s
+lease: host 10.10.0.1:46154 (pid 3195755) took slot 15, nonce 0xca64214dcbf2f3e9
+lease: host 10.10.0.1:46154 (pid 3195755) released slot 15 after 0.3 s
+lease: host 10.10.0.1:46160 (pid 3195778) took slot 15, nonce 0x6790c13f2f3246ed
+lease: host 10.10.0.1:46160 (pid 3195778) released slot 15 after 0.1 s
+lease: host 10.10.0.1:46168 (pid 3195784) took slot 15, nonce 0xa35c58d9cd405165
+lease: host 10.10.0.1:46168 (pid 3195784) released slot 15 after 0.1 s
+lease: host 10.10.0.1:55450 (pid 3195801) took slot 15, nonce 0x51d26195a72c5e15
+lease: host 10.10.0.1:55450 (pid 3195801) released slot 15 after 1.4 s
+lease: host 10.10.0.1:55460 (pid 3195807) took slot 15, nonce 0xbd00959f2a2a8c65
+lease: host 10.10.0.1:55460 (pid 3195807) released slot 15 after 1.4 s
+lease: host 10.10.0.1:55468 (pid 3195831) took slot 15, nonce 0xd6a473517a49b275
+lease: host 10.10.0.1:55468 (pid 3195831) released slot 15 after 0.2 s
+lease: host 10.10.0.1:55476 (pid 3195837) took slot 15, nonce 0x4e2370873d52549f
+lease: host 10.10.0.1:55476 (pid 3195837) released slot 15 after 0.1 s
+lease: host 10.10.0.1:43222 (pid 3195854) took slot 15, nonce 0xc8fe78db8f396d91
+lease: host 10.10.0.1:43222 (pid 3195854) released slot 15 after 0.9 s
+lease: host 10.10.0.1:43234 (pid 3195868) took slot 15, nonce 0x70438f76f88fae47
+lease: host 10.10.0.1:43234 (pid 3195868) released slot 15 after 0.9 s
+lease: host 10.10.0.1:43248 (pid 3195892) took slot 15, nonce 0x3b488ef58fab12e5
+lease: host 10.10.0.1:43248 (pid 3195892) released slot 15 after 0.2 s
+lease: host 10.10.0.1:43260 (pid 3195898) took slot 15, nonce 0xf66b3ae77a50354f
+lease: host 10.10.0.1:43260 (pid 3195898) released slot 15 after 0.2 s
+lease: host 10.10.0.1:43264 (pid 3195915) took slot 15, nonce 0xdeac0f9bebd3d291
+lease: host 10.10.0.1:43264 (pid 3195915) released slot 15 after 0.2 s
+lease: host 10.10.0.1:43268 (pid 3195926) took slot 15, nonce 0x1be8a76f93c62dbf
+lease: host 10.10.0.1:43268 (pid 3195926) released slot 15 after 0.4 s
+lease: host 10.10.0.1:43284 (pid 3195939) took slot 15, nonce 0xe620e82b81ad8a37
+lease: host 10.10.0.1:43284 (pid 3195939) released slot 15 after 0.4 s
+lease: host 10.10.0.1:35452 (pid 3195969) took slot 15, nonce 0x8d912c65355e6bf1
+lease: host 10.10.0.1:35452 (pid 3195969) released slot 15 after 0.4 s
+lease: host 10.10.0.1:44770 (pid 3196146) took slot 15, nonce 0xd7740963a6dd5acd
+lease: host 10.10.0.1:44770 (pid 3196146) released slot 15 after 0.2 s
+lease: host 10.10.0.1:44778 (pid 3196152) took slot 15, nonce 0x03c15f29f20686cf
+lease: host 10.10.0.1:44778 (pid 3196152) released slot 15 after 0.1 s
+lease: host 10.10.0.1:44780 (pid 3196176) took slot 15, nonce 0x5e46868a1efca109
+lease: host 10.10.0.1:44780 (pid 3196176) released slot 15 after 0.1 s
+lease: host 10.10.0.1:44788 (pid 3196183) took slot 15, nonce 0x14212a507344f795
+lease: host 10.10.0.1:44788 (pid 3196183) released slot 15 after 0.1 s
+lease: host 10.10.0.1:44804 (pid 3196199) took slot 15, nonce 0xa2d1ab23ad20abc3
+lease: host 10.10.0.1:44804 (pid 3196199) released slot 15 after 0.1 s
+lease: host 10.10.0.1:44810 (pid 3196205) took slot 15, nonce 0x907c9415e5e316ab
+lease: host 10.10.0.1:44810 (pid 3196205) released slot 15 after 0.1 s
+reflected 71280000 (sdp 30800000, pull 4080000, stored 0, dma 156400000 in 13299085 copies: completed 13299085, failed 0), partial cells seen 0, corrupt payloads 0, no ring writer for 0; streams: sunk 120000000, sourced 120000000 (included in stored/dma)
+per core: ring 191280000 cells, 7.0 per busy poll
+stream writing rate per core (credit waits excluded): 53.3 M/s
+CNXK: 0002:01:00.2: common resource in use by other devices

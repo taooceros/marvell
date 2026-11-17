@@ -1,0 +1,5 @@
+$ /tmp/mrv26/target/release/inline_stream -l 40,41 --main-lcore 41 -a 0000:99:02.0 --file-prefix=mrv26 --log-level=error -- --dir split -n 2000000 --window 1
+split via Movdir, window 1, 1 sender + 1 receiver host core, 1 card cores, 2000000 round trips: bad 0, 0.70 M cells/s (0.04 GB/s of 64 B cells) (sender issued at 0.70 M cells/s (0.04 GB/s of 64 B cells), waited for credit 1999998 times) | RTT of every 16th: RTT us: min 1.22 p50 1.33 p90 1.38 p99 1.44 p99.9 1.58 p99.99 4.75 max 31.04 mean 1.34
+inline_stream: inline_reflector pid 59565 at 10.10.0.2:7526 granted BAR4 slot 15 (nonce 0x450273ff94c4a989)
+
+rc=0

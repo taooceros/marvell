@@ -1,0 +1,6 @@
+$ /tmp/mrv26/target/release/inline_pingpong -l 40 -a 0000:99:02.0 --file-prefix=mrv26 --log-level=error -- -w 32 -n 2000000
+inline movdir64b reply sdp window 32 rounds 2000000 lost 0 bad 0 torn 0 late 0 (max 0.00 us) | 8.503 Mmsg/s | RTT us: min 1.85 p50 3.45 p90 4.75 p99 6.07 p99.9 6.85 p99.99 17.00 max 257.83 mean 3.53 | polls 47% empty
+inline_pingpong: inline_reflector pid 59490 at 10.10.0.2:7526 granted BAR4 slot 15 (nonce 0xca64214dcbf2f3e9)
+OTX_NET_EP: cnxk_ep_vf_setup_iq_regs():167 SDP_R[0] INST Q ISM virt: 0x1100bc0004, dma: 0x1100BC0007
+
+rc=0

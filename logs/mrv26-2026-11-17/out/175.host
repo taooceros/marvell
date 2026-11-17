@@ -1,0 +1,4 @@
+$ /tmp/mrv26/base-target/release/inline_pingpong -l 40 -a 0000:99:02.0 --file-prefix=mrv26 --log-level=error -- --reply pull -w 1 -n 1000000
+inline movdir64b reply pull delay 150 ns window 1 rounds 1000000 lost 0 bad 0 torn 0 late 0 (max 0.00 us) | 1.186 Mmsg/s | RTT us: min 0.78 p50 0.83 p90 0.83 p99 0.84 p99.9 1.00 p99.99 4.14 max 140.30 mean 0.83 | polls 0% empty
+
+rc=0

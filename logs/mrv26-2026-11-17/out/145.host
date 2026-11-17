@@ -1,0 +1,4 @@
+$ strace -f -e trace=openat,mmap,connect -o /tmp/mrv26/logs/145.strace /tmp/mrv26/target/release/inline_stream -l 40 -a 0000:99:02.0 --file-prefix=mrv26 --log-level=error -- --dir h2c -n 1000
+Error: "10.10.0.2:7526: connection refused, so inline_reflector is not running; BAR4 slot 15 not touched"
+
+rc=1

@@ -1,0 +1,5 @@
+$ /tmp/mrv26/base-target/release/inline_pingpong -l 40 -a 0000:99:02.0 --file-prefix=mrv26 --log-level=error -- --reply ring -w 1 -n 1000000
+reply ring at IOVA 0x1100b40000: 0 polls waited on a missing reply while a later one had landed
+inline movdir64b reply ring window 1 rounds 1000000 lost 0 bad 0 torn 0 late 0 (max 0.00 us) | 0.744 Mmsg/s | RTT us: min 1.21 p50 1.31 p90 1.35 p99 1.39 p99.9 1.55 p99.99 4.97 max 1955.20 mean 1.32 | polls 99% empty
+
+rc=0

@@ -1,0 +1,5 @@
+$ strace -f -e trace=openat,mmap,connect -o /tmp/mrv26/logs/167.strace /tmp/mrv26/target/release/inline_pingpong -l 40 -a 0000:99:02.0 --file-prefix=mrv26 --log-level=error -- -w 1 -n 1000
+inline_pingpong: inline_reflector pid 4242 at 10.10.0.2:7526 granted BAR4 slot 15 (nonce 0x0ad1a9d6ec3c9ffb)
+Error: "BAR4 slot 15 holds a READY cookie with nonce 0x51c3a13b21a964cf, this run's is 0x0ad1a9d6ec3c9ffb: the slot does not point at the buffer of the reflector that answered (a stale READY); not writing"
+
+rc=1

@@ -1,0 +1,8 @@
+$ strace -f -e trace=openat,mmap,connect -o /tmp/mrv26/logs/149.strace /tmp/mrv26/target/release/inline_pingpong -l 42 -a 0000:99:02.0 --file-prefix=mrv26b --log-level=error -- -w 1 -n 1000
+EAL: Cannot open /dev/vfio/286: Device or resource busy
+EAL: Failed to open VFIO group 286
+PCI_BUS: Requested device 0000:99:02.0 cannot be used
+EAL: Bus (pci) probe failed.
+Error: "10.10.0.2:7526: inline_reflector (pid 59955) is busy: host pid 3199924 holds slot 15; BAR4 slot 15 not touched"
+
+rc=1

@@ -1,0 +1,5 @@
+$ /tmp/mrv26/target/release/inline_stream -l 40 -a 0000:99:02.0 --file-prefix=mrv26 --log-level=error -- --dir h2c -n 20000000
+h2c via movdir 1 host cores -> 1 card ring cores, 20000000 cells: host issued at 105.48 M cells/s (6.75 GB/s of 64 B cells), card took all at 105.15 M cells/s (6.73 GB/s of 64 B cells)
+inline_stream: inline_reflector pid 59817 at 10.10.0.2:7526 granted BAR4 slot 15 (nonce 0x3f33cbefa1fd9959)
+
+rc=0
