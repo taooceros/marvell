@@ -1,0 +1,27 @@
+$ /root/bench/inline_reflector-mrv53 -l 3 -a 0002:01:00.2 --file-prefix=inl -- --store --store-wc --exp-hold-ns 2000
+EAL: Detected CPU lcores: 24
+EAL: Detected NUMA nodes: 1
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/inl/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+CNXK: RoC Model: cn10ka_b0 (HW_PLATFORM)
+inline_reflector: experiment build (MRV-53/MRV-50): delay 0 ns, hold Some(2000) ns, stamp false
+inline_reflector: core 0 stores to the host through PEM0 outbound region 255 (was 0x0) as host pf 0 vf 1, write-combining
+inline_reflector: BAR4 slot 15 -> pa 0x19ac00000 (was 0x2ff71); roles [Ring]; SDP replies to 00:00:00:01:01:01 from 72:64:9b:c1:e3:53; hosts lease the slot at 10.10.0.2:7526
+lease: host 10.10.0.1:54834 (pid 4075953) took slot 15, nonce 0x5123af073da0cb21
+lease: host 10.10.0.1:54834 (pid 4075953) released slot 15 after 6.0 s
+lease: host 10.10.0.1:42600 (pid 4076024) took slot 15, nonce 0x4359249eee1c41b3
+lease: host 10.10.0.1:42600 (pid 4076024) released slot 15 after 6.0 s
+lease: host 10.10.0.1:42542 (pid 4076047) took slot 15, nonce 0xb03573ee4460fe4f
+lease: host 10.10.0.1:42542 (pid 4076047) released slot 15 after 1.4 s
+lease: host 10.10.0.1:42548 (pid 4076056) took slot 15, nonce 0xe0317f1beba034f5
+lease: host 10.10.0.1:42548 (pid 4076056) released slot 15 after 1.4 s
+lease: host 10.10.0.1:42552 (pid 4076065) took slot 15, nonce 0x992455bd9968a98b
+lease: host 10.10.0.1:42552 (pid 4076065) released slot 15 after 0.9 s
+lease: host 10.10.0.1:42562 (pid 4076073) took slot 15, nonce 0xd55c4cff2452dfc7
+lease: host 10.10.0.1:42562 (pid 4076073) released slot 15 after 0.9 s
+reflected 84120000 (sdp 0, pull 0, stored 84120000, dma 0 in 0 copies: completed 0, failed 0), partial cells seen 0, corrupt payloads 0, no ring writer for 0; streams: sunk 0, sourced 0 (included in stored/dma)
+per core: ring 84120000 cells, 10.9 per busy poll
+CNXK: 0002:01:00.2: common resource in use by other devices

@@ -1,0 +1,27 @@
+$ /root/bench/inline_reflector-mrv53 -l 3 -a 0002:01:00.2 --file-prefix=inl -- --store --exp-hold-ns 500
+EAL: Detected CPU lcores: 24
+EAL: Detected NUMA nodes: 1
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/inl/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+CNXK: RoC Model: cn10ka_b0 (HW_PLATFORM)
+inline_reflector: experiment build (MRV-53/MRV-50): delay 0 ns, hold Some(500) ns, stamp false
+inline_reflector: core 0 stores to the host through PEM0 outbound region 255 (was 0x0) as host pf 0 vf 1, Device-nGnRnE
+inline_reflector: BAR4 slot 15 -> pa 0x19ac00000 (was 0x2ff71); roles [Ring]; SDP replies to 00:00:00:01:01:01 from 72:64:9b:c1:e3:53; hosts lease the slot at 10.10.0.2:7526
+lease: host 10.10.0.1:55902 (pid 4098059) took slot 15, nonce 0xc68d505a92705019
+lease: host 10.10.0.1:55902 (pid 4098059) released slot 15 after 3.0 s
+lease: host 10.10.0.1:55904 (pid 4098079) took slot 15, nonce 0x0674fed52494d71d
+lease: host 10.10.0.1:55904 (pid 4098079) released slot 15 after 3.0 s
+lease: host 10.10.0.1:49642 (pid 4098089) took slot 15, nonce 0x3bcbbe5b07a26523
+lease: host 10.10.0.1:49642 (pid 4098089) released slot 15 after 3.4 s
+lease: host 10.10.0.1:49648 (pid 4098123) took slot 15, nonce 0x17c2193b4f83e29f
+lease: host 10.10.0.1:49648 (pid 4098123) released slot 15 after 3.5 s
+lease: host 10.10.0.1:49656 (pid 4098241) took slot 15, nonce 0x2e98d02ce03ad007
+lease: host 10.10.0.1:49656 (pid 4098241) released slot 15 after 5.5 s
+lease: host 10.10.0.1:47130 (pid 4098283) took slot 15, nonce 0x7ac3abb9d109d1bf
+lease: host 10.10.0.1:47130 (pid 4098283) released slot 15 after 5.5 s
+reflected 84120000 (sdp 0, pull 0, stored 84120000, dma 0 in 0 copies: completed 0, failed 0), partial cells seen 0, corrupt payloads 0, no ring writer for 0; streams: sunk 0, sourced 0 (included in stored/dma)
+per core: ring 84120000 cells, 3.8 per busy poll
+CNXK: 0002:01:00.2: common resource in use by other devices

@@ -1,0 +1,46 @@
+$ /root/bench/inline_reflector-mrv53 -l 3-6 -a 0002:01:00.2 --file-prefix=inl -- --store --store-wc
+EAL: Detected CPU lcores: 24
+EAL: Detected NUMA nodes: 1
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/inl/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+CNXK: RoC Model: cn10ka_b0 (HW_PLATFORM)
+inline_reflector: experiment build (MRV-53/MRV-50): spin round 3.048 ns; delay 0 ns, hold 0 ns, stamp false
+inline_reflector: core 0 stores to the host through PEM0 outbound region 255 (was 0x0) as host pf 0 vf 1, write-combining
+inline_reflector: core 1 stores to the host through PEM0 outbound region 254 (was 0x0) as host pf 0 vf 1, write-combining
+inline_reflector: core 2 stores to the host through PEM0 outbound region 253 (was 0x0) as host pf 0 vf 1, write-combining
+inline_reflector: core 3 stores to the host through PEM0 outbound region 252 (was 0x0) as host pf 0 vf 1, write-combining
+inline_reflector: BAR4 slot 15 -> pa 0x19ac00000 (was 0x2ff71); roles [Ring, Ring, Ring, Ring]; SDP replies to 00:00:00:01:01:01 from 72:64:9b:c1:e3:53; hosts lease the slot at 10.10.0.2:7526
+lease: host 10.10.0.1:36622 (pid 4067592) took slot 15, nonce 0xec101a6d4f6caa13
+lease: host 10.10.0.1:36622 (pid 4067592) released slot 15 after 1.7 s
+lease: host 10.10.0.1:36626 (pid 4067605) took slot 15, nonce 0x739ffd983d9bd445
+lease: host 10.10.0.1:36626 (pid 4067605) released slot 15 after 1.7 s
+lease: host 10.10.0.1:36632 (pid 4067632) took slot 15, nonce 0x79f67006c7b7c133
+lease: host 10.10.0.1:36632 (pid 4067632) released slot 15 after 1.8 s
+lease: host 10.10.0.1:36636 (pid 4067639) took slot 15, nonce 0xf5a191d09be5c419
+lease: host 10.10.0.1:36636 (pid 4067639) released slot 15 after 1.7 s
+lease: host 10.10.0.1:46844 (pid 4067650) took slot 15, nonce 0xc5be61b14cf89347
+lease: host 10.10.0.1:46844 (pid 4067650) released slot 15 after 1.8 s
+lease: host 10.10.0.1:46850 (pid 4067658) took slot 15, nonce 0x19eb439e89c6b4af
+lease: host 10.10.0.1:46850 (pid 4067658) released slot 15 after 1.7 s
+lease: host 10.10.0.1:46852 (pid 4067665) took slot 15, nonce 0x752b1a5a06e99c6b
+lease: host 10.10.0.1:46852 (pid 4067665) released slot 15 after 1.7 s
+lease: host 10.10.0.1:46858 (pid 4067783) took slot 15, nonce 0xbd3012d29a9db379
+lease: host 10.10.0.1:46858 (pid 4067783) released slot 15 after 1.2 s
+lease: host 10.10.0.1:46874 (pid 4067790) took slot 15, nonce 0x1a6800fa0149e719
+lease: host 10.10.0.1:46874 (pid 4067790) released slot 15 after 1.2 s
+lease: host 10.10.0.1:38252 (pid 4067810) took slot 15, nonce 0x35c282b05bf88a7f
+lease: host 10.10.0.1:38252 (pid 4067810) released slot 15 after 1.4 s
+lease: host 10.10.0.1:38256 (pid 4067828) took slot 15, nonce 0x94a2ebb12ffbdeed
+lease: host 10.10.0.1:38256 (pid 4067828) released slot 15 after 1.5 s
+lease: host 10.10.0.1:38260 (pid 4067835) took slot 15, nonce 0xaf46bac697fd6e97
+lease: host 10.10.0.1:38260 (pid 4067835) released slot 15 after 1.7 s
+lease: host 10.10.0.1:38272 (pid 4067848) took slot 15, nonce 0x2dd3902e423b22ab
+lease: host 10.10.0.1:38272 (pid 4067848) released slot 15 after 1.2 s
+lease: host 10.10.0.1:38280 (pid 4067855) took slot 15, nonce 0x6b118bbcfb8df475
+lease: host 10.10.0.1:38280 (pid 4067855) released slot 15 after 1.2 s
+reflected 280280000 (sdp 0, pull 0, stored 280280000, dma 0 in 0 copies: completed 0, failed 0), partial cells seen 0, corrupt payloads 0, no ring writer for 0; streams: sunk 0, sourced 0 (included in stored/dma)
+per core: ring 70070000 cells, 1.3 per busy poll; ring 70070000 cells, 1.3 per busy poll; ring 70070000 cells, 1.3 per busy poll; ring 70070000 cells, 1.3 per busy poll
+CNXK: 0002:01:00.2: common resource in use by other devices
