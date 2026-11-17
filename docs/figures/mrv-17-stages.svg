@@ -1,67 +1,105 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="600" viewBox="0 0 960 600" font-family="Droid Sans Fallback, DejaVu Sans, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="404" viewBox="0 0 960 404" font-family="Droid Sans Fallback, DejaVu Sans, sans-serif">
+  <!-- MRV-44 / MRV-46. Where the in-flight messages of the closed loop sit.
+       Left: W=128 (~13 M/s), ~108 between the card's reply write and host memory.
+       Right: W=1024 (~50 M/s), ~992 already in host memory, waiting for the host core.
+       Numbers: docs/figures/mrv-17-where-wait.py (logs/mrv17-2026-11-17). Explanations live in the issue text. -->
   <defs>
-    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="#374151"/>
+    <marker id="head" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#64748b"/>
+    </marker>
+    <marker id="head-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#dc2626"/>
     </marker>
   </defs>
-  <rect x="0" y="0" width="960" height="600" fill="white"/>
-  <text x="480" y="30" text-anchor="middle" font-size="18" font-weight="bold" fill="#111827">13 M/s 时，窗口里的消息停在哪一段</text>
-  <text x="480" y="52" text-anchor="middle" font-size="12" fill="#4b5563">闭环：W=128，写合并回复，卡 1 核，主机核 40，64 B，批大小 1；数字是主机每 5 万条采样一次、各次的中位数</text>
+  <rect width="960" height="404" fill="white"/>
 
-  <!-- column labels -->
-  <text x="150" y="88" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="bold">主机</text>
-  <text x="810" y="88" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="bold">卡（CN106）</text>
+  <!-- headers -->
+  <text x="30" y="42" font-size="22" font-weight="bold" fill="#0f172a">13 M/s 时，消息停在哪</text>
+  <text x="30" y="68" font-size="14" fill="#64748b">W=128，写合并，卡 1 核</text>
+  <text x="700" y="42" font-size="16" font-weight="bold" fill="#0f172a">对照：W=1024</text>
+  <text x="700" y="68" font-size="14" fill="#64748b">50 M/s</text>
 
-  <!-- request path (top row, left to right) -->
-  <rect x="40" y="105" width="220" height="70" rx="8" fill="#eff6ff" stroke="#2563eb"/>
-  <text x="150" y="133" text-anchor="middle" font-size="13" fill="#1e3a8a">1 主机核用 MOVDIR64B</text>
-  <text x="150" y="153" text-anchor="middle" font-size="13" fill="#1e3a8a">写请求格（BAR4 槽 15）</text>
+  <!-- lanes -->
+  <g fill="#f1f5f9">
+    <rect x="30" y="92" width="650" height="120" rx="12"/>
+    <rect x="30" y="252" width="650" height="120" rx="12"/>
+    <rect x="700" y="92" width="230" height="120" rx="12"/>
+    <rect x="700" y="252" width="230" height="120" rx="12"/>
+  </g>
+  <g font-size="16" font-weight="bold" fill="#64748b">
+    <text x="52" y="158">主机</text>
+    <text x="52" y="318">卡</text>
+  </g>
+  <text x="52" y="237" font-size="13" fill="#94a3b8">PCIe</text>
 
-  <rect x="370" y="105" width="220" height="70" rx="8" fill="#eff6ff" stroke="#2563eb"/>
-  <text x="480" y="133" text-anchor="middle" font-size="13" fill="#1e3a8a">2–3 主机 IIO → PCIe →</text>
-  <text x="480" y="153" text-anchor="middle" font-size="13" fill="#1e3a8a">卡 PEM → 卡内存请求环</text>
+  <!-- W=128: stages -->
+  <g fill="white" stroke="#94a3b8" stroke-width="1.5">
+    <rect x="128" y="126" width="124" height="52" rx="10"/>
+    <rect x="304" y="126" width="124" height="52" rx="10"/>
+    <rect x="128" y="286" width="124" height="52" rx="10"/>
+    <rect x="480" y="286" width="124" height="52" rx="10"/>
+  </g>
+  <g font-size="16" fill="#1e293b" text-anchor="middle">
+    <text x="190" y="158">写请求</text>
+    <text x="366" y="158">轮询回复</text>
+    <text x="190" y="318">轮询请求</text>
+    <text x="542" y="318">写回复</text>
+    <text x="542" y="127">主机内存</text>
+  </g>
+  <!-- host memory: reply ring slots, empty -->
+  <g fill="white" stroke="#94a3b8" stroke-width="1.5">
+    <rect x="484" y="138" width="16" height="28" rx="3"/>
+    <rect x="504" y="138" width="16" height="28" rx="3"/>
+    <rect x="524" y="138" width="16" height="28" rx="3"/>
+    <rect x="544" y="138" width="16" height="28" rx="3"/>
+    <rect x="564" y="138" width="16" height="28" rx="3"/>
+    <rect x="584" y="138" width="16" height="28" rx="3"/>
+  </g>
 
-  <rect x="700" y="105" width="220" height="70" rx="8" fill="#eff6ff" stroke="#2563eb"/>
-  <text x="810" y="133" text-anchor="middle" font-size="13" fill="#1e3a8a">4 卡核轮询请求环，</text>
-  <text x="810" y="153" text-anchor="middle" font-size="13" fill="#1e3a8a">找到请求</text>
+  <!-- W=128: flow -->
+  <g stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#head)">
+    <line x1="190" y1="178" x2="190" y2="284"/>
+    <line x1="252" y1="312" x2="478" y2="312"/>
+    <line x1="484" y1="152" x2="430" y2="152"/>
+    <line x1="304" y1="152" x2="254" y2="152"/>
+  </g>
+  <text x="202" y="237" font-size="13" fill="#94a3b8">MOVDIR64B</text>
 
-  <line x1="260" y1="140" x2="368" y2="140" stroke="#374151" stroke-width="2" marker-end="url(#arrow)"/>
-  <line x1="590" y1="140" x2="698" y2="140" stroke="#374151" stroke-width="2" marker-end="url(#arrow)"/>
-  <text x="480" y="205" text-anchor="middle" font-size="13" fill="#1d4ed8">主机已发、卡还没发出回复：约 2 条（请求方向不排队）</text>
+  <!-- W=128: the wait, between the card's write and host memory -->
+  <line x1="542" y1="286" x2="542" y2="171" stroke="#dc2626" stroke-width="2" marker-end="url(#head-red)"/>
+  <g fill="#dc2626">
+    <rect x="525" y="191" width="34" height="8" rx="2"/>
+    <rect x="525" y="203" width="34" height="8" rx="2"/>
+    <rect x="525" y="215" width="34" height="8" rx="2"/>
+    <rect x="525" y="227" width="34" height="8" rx="2"/>
+    <rect x="525" y="239" width="34" height="8" rx="2"/>
+    <rect x="525" y="251" width="34" height="8" rx="2"/>
+    <rect x="525" y="263" width="34" height="8" rx="2"/>
+  </g>
+  <text x="574" y="240" font-size="24" font-weight="bold" fill="#dc2626">~108</text>
 
-
-  <!-- the wait: stages 5-7 -->
-  <rect x="290" y="232" width="650" height="190" rx="12" fill="#fef2f2" stroke="#dc2626" stroke-width="2.5" stroke-dasharray="7 4"/>
-  <text x="306" y="256" font-size="14" font-weight="bold" fill="#b91c1c">卡已发出回复的写、主机内存里还没有：约 108 条</text>
-  <text x="306" y="276" font-size="12" fill="#b91c1c">等待在第 5–7 级这一段；在哪一处、为什么只在闭环里慢，还没定位</text>
-
-  <!-- turn at the card (drawn over the highlighted area) -->
-  <line x1="810" y1="175" x2="810" y2="283" stroke="#374151" stroke-width="2" marker-end="url(#arrow)"/>
-  <rect x="700" y="285" width="220" height="70" rx="8" fill="#fff7ed" stroke="#ea580c"/>
-  <text x="810" y="313" text-anchor="middle" font-size="13" fill="#9a3412">5 卡核写回复</text>
-  <text x="810" y="333" text-anchor="middle" font-size="13" fill="#9a3412">（写合并，经 PEM 出窗口）</text>
-
-  <rect x="370" y="285" width="220" height="70" rx="8" fill="#fff7ed" stroke="#ea580c"/>
-  <text x="480" y="313" text-anchor="middle" font-size="13" fill="#9a3412">6–7 卡 PEM → PCIe →</text>
-  <text x="480" y="333" text-anchor="middle" font-size="13" fill="#9a3412">主机 IIO → 主机内存回复环</text>
-
-  <line x1="700" y1="320" x2="592" y2="320" stroke="#374151" stroke-width="2" marker-end="url(#arrow)"/>
-
-  <rect x="40" y="285" width="220" height="70" rx="8" fill="#f0fdf4" stroke="#16a34a"/>
-  <text x="150" y="313" text-anchor="middle" font-size="13" fill="#14532d">8 主机核轮询回复环，</text>
-  <text x="150" y="333" text-anchor="middle" font-size="13" fill="#14532d">取到回复后再发下一条</text>
-  <line x1="370" y1="320" x2="262" y2="320" stroke="#374151" stroke-width="2" marker-end="url(#arrow)"/>
-  <line x1="150" y1="285" x2="150" y2="177" stroke="#374151" stroke-width="2" marker-end="url(#arrow)"/>
-
-  <text x="150" y="380" text-anchor="middle" font-size="12" fill="#15803d">回复已到主机内存、主机还没取：0 条</text>
-  <text x="150" y="398" text-anchor="middle" font-size="12" fill="#15803d">（主机多半在等最老的那一格）</text>
-
-  <!-- fast state -->
-  <rect x="40" y="445" width="880" height="60" rx="8" fill="#f9fafb" stroke="#9ca3af"/>
-  <text x="480" y="470" text-anchor="middle" font-size="13" fill="#111827">对照：W=1024 的快状态（约 50 M/s）时，没取的 992 条全都已在主机内存里，</text>
-  <text x="480" y="490" text-anchor="middle" font-size="13" fill="#111827">卡不落后、也没有在路上的：这时是主机核来不及取（第 8 级）。</text>
-
-  <text x="40" y="532" font-size="11" fill="#4b5563">排除过的：主机每次最多收 32 条（改成 8 / 64，拐点不动）；CHA 里请求、回复的停留不随 W 变长（102 / 52 ns）；</text>
-  <text x="40" y="550" font-size="11" fill="#4b5563">单向卡→主机流里，主机边到边读刚到的行、卡一格一格写，都没有把速度压到 13 M/s（到 24 M/s 都跟得上）。</text>
-  <text x="40" y="568" font-size="11" fill="#4b5563">这个位置是近似的：采样本身会让 W=128 的吞吐变一点（13.6 / 14.6 对不采样的 13.1 / 13.1 Mmsg/s）。</text>
+  <!-- W=1024: the same loop, small -->
+  <g fill="white" stroke="#94a3b8" stroke-width="1.5">
+    <rect x="720" y="140" width="50" height="24" rx="6"/>
+    <rect x="790" y="140" width="50" height="24" rx="6"/>
+    <rect x="720" y="300" width="50" height="24" rx="6"/>
+    <rect x="860" y="300" width="50" height="24" rx="6"/>
+  </g>
+  <g stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#head)">
+    <line x1="745" y1="164" x2="745" y2="298"/>
+    <line x1="770" y1="312" x2="858" y2="312"/>
+    <line x1="885" y1="300" x2="885" y2="168"/>
+    <line x1="856" y1="152" x2="842" y2="152"/>
+    <line x1="790" y1="152" x2="772" y2="152"/>
+  </g>
+  <!-- host memory: reply ring slots, full -->
+  <g fill="#dc2626">
+    <rect x="856" y="140" width="8" height="24" rx="2"/>
+    <rect x="866" y="140" width="8" height="24" rx="2"/>
+    <rect x="876" y="140" width="8" height="24" rx="2"/>
+    <rect x="886" y="140" width="8" height="24" rx="2"/>
+    <rect x="896" y="140" width="8" height="24" rx="2"/>
+    <rect x="906" y="140" width="8" height="24" rx="2"/>
+  </g>
+  <text x="885" y="128" font-size="24" font-weight="bold" fill="#dc2626" text-anchor="middle">~992</text>
 </svg>
