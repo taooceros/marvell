@@ -1,0 +1,16 @@
+$ MRV35_PERF_CTL=/tmp/mrv35/ctl.fifo /nix/store/hln3gq5s0pajpqlwcffqadzxglqfhx29-perf-linux-7.3.4/bin/perf stat -C 40 -x ";" -e cycles,instructions,ref-cycles --control fifo:/tmp/mrv35/ctl.fifo -D -1 -o /home/hongtao/dev/marvell-mrv35/logs/mrv35-2026-11-17/out/0002.perf.csv -- /tmp/mrv35/t/release/inline_pingpong -l 40 --no-pci --file-prefix=mrv35 -- --fake-card -w 8 -n 20000000
+--- stdout
+inline fake-card reply ring window 8 rounds 20000000 lost 0 bad 0 torn 0 late 0 (max 0.00 us) | 69.189 Mmsg/s | RTT us: min 0.01 p50 0.04 p90 0.06 p99 0.06 p99.9 0.06 p99.99 0.07 max 45.09 mean 0.04 | polls 0% empty
+
+--- stderr
+Events disabled
+EAL: Detected CPU lcores: 128
+EAL: Detected NUMA nodes: 2
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /run/user/1001/dpdk/mrv35/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: No free 2048 kB hugepages reported on node 0
+EAL: VFIO support initialized
+Events enabled
+Events disabled
+

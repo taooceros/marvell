@@ -1,0 +1,19 @@
+$ MRV35_PERF_CTL=/tmp/mrv35/ctl.fifo /nix/store/hln3gq5s0pajpqlwcffqadzxglqfhx29-perf-linux-7.3.4/bin/perf stat -C 40 -x ";" -e cycles,instructions,ref-cycles --control fifo:/tmp/mrv35/ctl.fifo -D -1 -o /home/hongtao/dev/marvell-mrv35/logs/mrv35-2026-11-17/out/0057.perf.csv -- /tmp/mrv35/t/release/inline_pingpong -l 40 -a 0000:99:02.0 --file-prefix=mrv35 -- --reply ring -w 1024 -n 40000000
+--- stdout
+reply ring at IOVA 0x1100b40000: 0 polls waited on a missing reply while a later one had landed
+inline movdir64b reply ring window 1024 rounds 40000000 lost 0 bad 0 torn 0 late 0 (max 0.00 us) | 32.444 Mmsg/s | RTT us: min 11.86 p50 22.26 p90 52.33 p99 63.00 p99.9 77.55 p99.99 148.29 max 207.69 mean 30.73 | polls 1% empty
+
+--- stderr
+Events disabled
+EAL: Detected CPU lcores: 128
+EAL: Detected NUMA nodes: 2
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /run/user/1001/dpdk/mrv35/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: No free 2048 kB hugepages reported on node 0
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+inline_pingpong: inline_reflector pid 69742 at 10.10.0.2:7526 granted BAR4 slot 15 (nonce 0xbfa2864dbf54c55b)
+Events enabled
+Events disabled
+

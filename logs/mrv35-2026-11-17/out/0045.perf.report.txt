@@ -1,0 +1,5 @@
+    50.45%  [.] testbed::closed_loop::ClosedLoop::run
+    43.25%  [.] cnxk_ep_recv_pkts_avx
+     4.92%  [.] rte_pktmbuf_free_bulk
+     0.72%  [k] 0xffffffffa3a01320
+     0.66%  [.] core::slice::sort::unstable::quicksort::quicksort
