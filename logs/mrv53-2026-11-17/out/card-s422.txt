@@ -1,0 +1,81 @@
+$ /root/bench/inline_reflector-mrv53 -l 3 -a 0002:01:00.2 --file-prefix=inl -- --store
+EAL: Detected CPU lcores: 24
+EAL: Detected NUMA nodes: 1
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/inl/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+CNXK: RoC Model: cn10ka_b0 (HW_PLATFORM)
+inline_reflector: experiment build (MRV-53/MRV-50): delay 0 ns, hold None ns, stamp false
+inline_reflector: core 0 stores to the host through PEM0 outbound region 255 (was 0x0) as host pf 0 vf 1, Device-nGnRnE
+inline_reflector: BAR4 slot 15 -> pa 0x19ac00000 (was 0x2ff71); roles [Ring]; SDP replies to 00:00:00:01:01:01 from 72:64:9b:c1:e3:53; hosts lease the slot at 10.10.0.2:7526
+lease: host 10.10.0.1:49432 (pid 4095915) took slot 15, nonce 0x657843df10d66999
+lease: host 10.10.0.1:49432 (pid 4095915) released slot 15 after 1.9 s
+lease: host 10.10.0.1:49446 (pid 4095929) took slot 15, nonce 0x939d0cd10120e985
+lease: host 10.10.0.1:49446 (pid 4095929) released slot 15 after 1.9 s
+lease: host 10.10.0.1:49448 (pid 4095941) took slot 15, nonce 0xb0c133c226f83a7d
+lease: host 10.10.0.1:49448 (pid 4095941) released slot 15 after 1.9 s
+lease: host 10.10.0.1:60726 (pid 4095948) took slot 15, nonce 0xf8691967e8dda929
+lease: host 10.10.0.1:60726 (pid 4095948) released slot 15 after 1.9 s
+lease: host 10.10.0.1:60742 (pid 4095956) took slot 15, nonce 0x79ac0ab6d2c9092b
+lease: host 10.10.0.1:60742 (pid 4095956) released slot 15 after 2.0 s
+lease: host 10.10.0.1:60756 (pid 4095987) took slot 15, nonce 0x4c30e84b786cf7a7
+lease: host 10.10.0.1:60756 (pid 4095987) released slot 15 after 1.9 s
+lease: host 10.10.0.1:60772 (pid 4096090) took slot 15, nonce 0x7c7a004ec436fe47
+lease: host 10.10.0.1:60772 (pid 4096090) released slot 15 after 2.0 s
+lease: host 10.10.0.1:47642 (pid 4096127) took slot 15, nonce 0x1c08ca206e3cff39
+lease: host 10.10.0.1:47642 (pid 4096127) released slot 15 after 1.9 s
+lease: host 10.10.0.1:47658 (pid 4096153) took slot 15, nonce 0x7193a72d3e65e995
+lease: host 10.10.0.1:47658 (pid 4096153) released slot 15 after 1.9 s
+lease: host 10.10.0.1:47662 (pid 4096160) took slot 15, nonce 0x78efd1847dea1cd3
+lease: host 10.10.0.1:47662 (pid 4096160) released slot 15 after 1.9 s
+lease: host 10.10.0.1:47674 (pid 4096168) took slot 15, nonce 0x2d8dff4de50de629
+lease: host 10.10.0.1:47674 (pid 4096168) released slot 15 after 1.9 s
+lease: host 10.10.0.1:47676 (pid 4096178) took slot 15, nonce 0x9e2ff5ab2ca00d61
+lease: host 10.10.0.1:47676 (pid 4096178) released slot 15 after 3.9 s
+lease: host 10.10.0.1:38054 (pid 4096213) took slot 15, nonce 0x309a29fb163291dd
+lease: host 10.10.0.1:38054 (pid 4096213) released slot 15 after 3.9 s
+lease: host 10.10.0.1:38060 (pid 4096237) took slot 15, nonce 0x90e8f1973f7559fb
+lease: host 10.10.0.1:38060 (pid 4096237) released slot 15 after 2.2 s
+lease: host 10.10.0.1:56102 (pid 4096246) took slot 15, nonce 0x725193b56337bd57
+lease: host 10.10.0.1:56102 (pid 4096246) released slot 15 after 1.5 s
+lease: host 10.10.0.1:56116 (pid 4096257) took slot 15, nonce 0xfc8ec65f068a4217
+lease: host 10.10.0.1:56116 (pid 4096257) released slot 15 after 1.7 s
+lease: host 10.10.0.1:56124 (pid 4096265) took slot 15, nonce 0x4f2b7b7274bdcbb7
+lease: host 10.10.0.1:56124 (pid 4096265) released slot 15 after 3.9 s
+lease: host 10.10.0.1:56130 (pid 4096296) took slot 15, nonce 0x6da3da2068935519
+lease: host 10.10.0.1:56130 (pid 4096296) released slot 15 after 1.7 s
+lease: host 10.10.0.1:36640 (pid 4096331) took slot 15, nonce 0x827a0d03fbaf9b3b
+lease: host 10.10.0.1:36640 (pid 4096331) released slot 15 after 1.5 s
+lease: host 10.10.0.1:36648 (pid 4096352) took slot 15, nonce 0x5af8176c3b0c576b
+lease: host 10.10.0.1:36648 (pid 4096352) released slot 15 after 2.1 s
+lease: host 10.10.0.1:36658 (pid 4096363) took slot 15, nonce 0x7c2f1ad2b3714de3
+lease: host 10.10.0.1:36658 (pid 4096363) released slot 15 after 3.9 s
+lease: host 10.10.0.1:36668 (pid 4096376) took slot 15, nonce 0x66c02e507d6f0df7
+lease: host 10.10.0.1:36668 (pid 4096376) released slot 15 after 3.9 s
+lease: host 10.10.0.1:53756 (pid 4096406) took slot 15, nonce 0xf505338c854929f7
+lease: host 10.10.0.1:53756 (pid 4096406) released slot 15 after 5.5 s
+lease: host 10.10.0.1:53758 (pid 4096432) took slot 15, nonce 0x5eff2b28e4c7ae8f
+lease: host 10.10.0.1:53758 (pid 4096432) released slot 15 after 5.5 s
+lease: host 10.10.0.1:58724 (pid 4096460) took slot 15, nonce 0x2cd397ef4f4602f7
+lease: host 10.10.0.1:58724 (pid 4096460) released slot 15 after 3.8 s
+lease: host 10.10.0.1:58732 (pid 4096579) took slot 15, nonce 0xf411975c2e00e943
+lease: host 10.10.0.1:58732 (pid 4096579) released slot 15 after 1.1 s
+lease: host 10.10.0.1:54548 (pid 4096606) took slot 15, nonce 0xea488eb468eb80e3
+lease: host 10.10.0.1:54548 (pid 4096606) released slot 15 after 1.8 s
+lease: host 10.10.0.1:54552 (pid 4096627) took slot 15, nonce 0x8b4be269fb4688cd
+lease: host 10.10.0.1:54552 (pid 4096627) released slot 15 after 5.5 s
+lease: host 10.10.0.1:54560 (pid 4096636) took slot 15, nonce 0x803cbde2348616f1
+lease: host 10.10.0.1:54560 (pid 4096636) released slot 15 after 1.8 s
+lease: host 10.10.0.1:54386 (pid 4096642) took slot 15, nonce 0x758ef809083132a9
+lease: host 10.10.0.1:54386 (pid 4096642) released slot 15 after 1.1 s
+lease: host 10.10.0.1:54400 (pid 4096657) took slot 15, nonce 0xbb456dba68cf12cb
+lease: host 10.10.0.1:54400 (pid 4096657) released slot 15 after 4.3 s
+lease: host 10.10.0.1:54414 (pid 4096707) took slot 15, nonce 0xc52797a80687fa79
+lease: host 10.10.0.1:54414 (pid 4096707) released slot 15 after 5.5 s
+lease: host 10.10.0.1:36660 (pid 4096718) took slot 15, nonce 0xfc5affc83498c38b
+lease: host 10.10.0.1:36660 (pid 4096718) released slot 15 after 5.5 s
+reflected 462660000 (sdp 0, pull 0, stored 462660000, dma 0 in 0 copies: completed 0, failed 0), partial cells seen 0, corrupt payloads 0, no ring writer for 0; streams: sunk 0, sourced 0 (included in stored/dma)
+per core: ring 462660000 cells, 3.0 per busy poll
+CNXK: 0002:01:00.2: common resource in use by other devices

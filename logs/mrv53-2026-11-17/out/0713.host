@@ -1,0 +1,17 @@
+$ /tmp/mrv53/t/release/inline_pingpong -l 40 -a 0000:99:02.0 --file-prefix=mrv53 -- --reply ring -w 64 -n 20000000 --account-every 64
+--- stdout
+reply ring at IOVA 0x1100b40000: 1415910 polls waited on a missing reply while a later one had landed
+inline movdir64b reply ring window 64 rounds 20000000 lost 0 bad 0 torn 0 late 0 (max 0.00 us) | 13.744 Mmsg/s | RTT us: min 0.51 p50 3.70 p90 5.82 p99 10.03 p99.9 11.65 p99.99 13.77 max 206.92 mean 3.66 | polls 7% empty
+MRV53 {"tsc_hz":2200000000,"host_delay_ns":0,"host_delay_iters":0,"hold_ns":0,"stamp":false,"account_every":64,"rounds":1706731,"sampled":26405,"send_ticks":6843814,"busy_poll_ticks":41363904,"empty_poll_ticks":102072,"busy_polls":24907,"empty_polls":1498,"gap_ticks":622556024,"gap_replies":318549,"tail_ticks":2652782,"tails":26405,"per_poll":[118860,12134,60962,170011,528088,410808,405868],"records":0,"fake_card":false,"fake_batch":32,"fake_cores":1}
+
+--- stderr
+EAL: Detected CPU lcores: 128
+EAL: Detected NUMA nodes: 2
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /run/user/1001/dpdk/mrv53/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: No free 2048 kB hugepages reported on node 0
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+inline_pingpong: inline_reflector pid 94090 at 10.10.0.2:7526 granted BAR4 slot 15 (nonce 0xb7433f8caab93f71)
+

@@ -1,0 +1,14 @@
+$ /tmp/mrv53/t/release/inline_pingpong -l 40 --no-pci --file-prefix=mrv53 -- --fake-card --fake-batch 8 --fake-cores 4 -w 64 -n 20000000 --account-every 64
+--- stdout
+inline fake-card batch 8 cores 4 reply ring window 64 rounds 20000000 lost 0 bad 0 torn 0 late 0 (max 0.00 us) | 48.726 Mmsg/s | RTT us: min 0.65 p50 1.08 p90 1.97 p99 2.35 p99.9 3.51 p99.99 6.82 max 207.54 mean 1.20 | polls 0% empty
+MRV53 {"tsc_hz":2200000000,"host_delay_ns":0,"host_delay_iters":0,"hold_ns":0,"stamp":false,"account_every":64,"rounds":2502500,"sampled":38717,"send_ticks":6084670,"busy_poll_ticks":8085478,"empty_poll_ticks":0,"busy_polls":38717,"empty_polls":0,"gap_ticks":50051600,"gap_replies":309736,"tail_ticks":1086600,"tails":38717,"per_poll":[0,0,0,0,2502500,0,0],"records":0,"fake_card":true,"fake_batch":8,"fake_cores":4}
+
+--- stderr
+EAL: Detected CPU lcores: 128
+EAL: Detected NUMA nodes: 2
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /run/user/1001/dpdk/mrv53/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: No free 2048 kB hugepages reported on node 0
+EAL: VFIO support initialized
+

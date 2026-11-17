@@ -1,0 +1,16 @@
+$ /tmp/mrv53/tp/release/inline_pingpong -l 40 -a 0000:99:02.0 --file-prefix=mrv53 -- --reply ring -w 1024 -n 20000000
+--- stdout
+reply ring at IOVA 0x1100b40000: 0 polls waited on a missing reply while a later one had landed
+inline movdir64b reply ring window 1024 rounds 20000000 lost 0 bad 0 torn 0 late 0 (max 0.00 us) | 25.221 Mmsg/s | RTT us: min 20.20 p50 39.34 p90 40.04 p99 49.55 p99.9 55.58 p99.99 243.11 max 261.36 mean 39.87 | polls 97% empty
+
+--- stderr
+EAL: Detected CPU lcores: 128
+EAL: Detected NUMA nodes: 2
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /run/user/1001/dpdk/mrv53/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: No free 2048 kB hugepages reported on node 0
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+inline_pingpong: inline_reflector pid 92899 at 10.10.0.2:7526 granted BAR4 slot 15 (nonce 0x34542034cbc17bc5)
+

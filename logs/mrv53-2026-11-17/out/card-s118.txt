@@ -1,0 +1,27 @@
+$ /root/bench/inline_reflector-mrv53 -l 3 -a 0002:01:00.2 --file-prefix=inl -- --store --store-wc --exp-hold-ns 2000
+EAL: Detected CPU lcores: 24
+EAL: Detected NUMA nodes: 1
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/inl/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+CNXK: RoC Model: cn10ka_b0 (HW_PLATFORM)
+inline_reflector: experiment build (MRV-53/MRV-50): spin round 3.048 ns; delay 0 ns, hold 2000 ns, stamp false
+inline_reflector: core 0 stores to the host through PEM0 outbound region 255 (was 0x0) as host pf 0 vf 1, write-combining
+inline_reflector: BAR4 slot 15 -> pa 0x19ac00000 (was 0x2ff71); roles [Ring]; SDP replies to 00:00:00:01:01:01 from 72:64:9b:c1:e3:53; hosts lease the slot at 10.10.0.2:7526
+lease: host 10.10.0.1:53982 (pid 4066617) took slot 15, nonce 0xa3253b2ab2409987
+lease: host 10.10.0.1:53982 (pid 4066617) released slot 15 after 6.0 s
+lease: host 10.10.0.1:58536 (pid 4067005) took slot 15, nonce 0xadb039f41662cae1
+lease: host 10.10.0.1:58536 (pid 4067005) released slot 15 after 6.0 s
+lease: host 10.10.0.1:52520 (pid 4067135) took slot 15, nonce 0xe167d1fe316d4ca5
+lease: host 10.10.0.1:52520 (pid 4067135) released slot 15 after 1.5 s
+lease: host 10.10.0.1:52526 (pid 4067152) took slot 15, nonce 0x8966cae42797f4c1
+lease: host 10.10.0.1:52526 (pid 4067152) released slot 15 after 1.4 s
+lease: host 10.10.0.1:52540 (pid 4067166) took slot 15, nonce 0x1c96f89758452361
+lease: host 10.10.0.1:52540 (pid 4067166) released slot 15 after 0.9 s
+lease: host 10.10.0.1:52542 (pid 4067173) took slot 15, nonce 0xe7f6e945e1054961
+lease: host 10.10.0.1:52542 (pid 4067173) released slot 15 after 0.9 s
+reflected 84120000 (sdp 0, pull 0, stored 84120000, dma 0 in 0 copies: completed 0, failed 0), partial cells seen 0, corrupt payloads 0, no ring writer for 0; streams: sunk 0, sourced 0 (included in stored/dma)
+per core: ring 84120000 cells, 10.7 per busy poll
+CNXK: 0002:01:00.2: common resource in use by other devices
