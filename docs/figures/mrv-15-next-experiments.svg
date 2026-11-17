@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="404" viewBox="0 0 960 404" font-family="Droid Sans Fallback, DejaVu Sans, sans-serif">
+  <!-- MRV-15 / MRV-47. The closed loop at the 4-card-core baseline (SDP replies, W=512, 13.5 M/s)
+       and where each proposed next experiment acts. Filled badge = changes something there,
+       outlined badge = only measures there. A = Argon (min-batch 16), C = Carbon (open loop:
+       the card stops reading request cells), F = Fable (host-core time split),
+       47 = MRV-47 (F's host timing + card mbufs in use + BAR4 read round trip).
+       Explanations live in the issue text. -->
+  <defs>
+    <marker id="head" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#64748b"/>
+    </marker>
+  </defs>
+  <rect width="960" height="404" fill="white"/>
+
+  <!-- headers -->
+  <text x="30" y="42" font-size="22" font-weight="bold" fill="#0f172a">下一步：各动哪一处</text>
+  <text x="30" y="68" font-size="14" fill="#64748b">实心 = 改动　空心 = 只量</text>
+
+  <!-- lanes -->
+  <g fill="#f1f5f9">
+    <rect x="30" y="92" width="660" height="120" rx="12"/>
+    <rect x="30" y="252" width="660" height="120" rx="12"/>
+    <rect x="720" y="92" width="210" height="280" rx="12"/>
+  </g>
+  <g font-size="16" font-weight="bold" fill="#64748b">
+    <text x="46" y="158">主机</text>
+    <text x="46" y="318">卡</text>
+  </g>
+  <text x="46" y="237" font-size="13" fill="#94a3b8">PCIe</text>
+
+  <!-- stages -->
+  <g fill="white" stroke="#94a3b8" stroke-width="1.5">
+    <rect x="110" y="126" width="140" height="52" rx="10"/>
+    <rect x="330" y="126" width="140" height="52" rx="10"/>
+    <rect x="530" y="126" width="140" height="52" rx="10"/>
+    <rect x="110" y="286" width="140" height="52" rx="10"/>
+    <rect x="330" y="286" width="140" height="52" rx="10"/>
+    <rect x="530" y="286" width="140" height="52" rx="10"/>
+  </g>
+  <g font-size="16" fill="#1e293b" text-anchor="middle">
+    <text x="180" y="158">主机核</text>
+    <text x="400" y="158">主机内存</text>
+    <text x="600" y="158">主机 IIO</text>
+    <text x="180" y="318">请求环</text>
+    <text x="400" y="318">卡核 ×4</text>
+    <text x="600" y="318">NIX / SDP</text>
+  </g>
+
+  <!-- the loop -->
+  <g stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#head)">
+    <line x1="180" y1="178" x2="180" y2="284"/>
+    <line x1="250" y1="312" x2="328" y2="312"/>
+    <line x1="470" y1="312" x2="528" y2="312"/>
+    <line x1="600" y1="286" x2="600" y2="180"/>
+    <line x1="530" y1="152" x2="472" y2="152"/>
+    <line x1="330" y1="152" x2="252" y2="152"/>
+  </g>
+  <g font-size="13" fill="#94a3b8">
+    <text x="614" y="237">回程</text>
+    <text x="166" y="237" text-anchor="end">MOVDIR64B</text>
+  </g>
+
+  <!-- proposals: filled = turns a knob, outlined = measures -->
+  <g fill="#dc2626">
+    <circle cx="180" cy="196" r="14"/>
+    <circle cx="499" cy="312" r="14"/>
+  </g>
+  <g fill="white" stroke="#dc2626" stroke-width="2.5">
+    <circle cx="160" cy="109" r="14"/>
+    <circle cx="198" cy="109" r="14"/>
+    <circle cx="180" cy="256" r="14"/>
+    <circle cx="670" cy="286" r="14"/>
+  </g>
+  <!-- C: the card stops reading request cells (both C runs) -->
+  <g stroke="#dc2626" stroke-width="3" stroke-linecap="round">
+    <line x1="281" y1="304" x2="297" y2="320"/>
+    <line x1="281" y1="320" x2="297" y2="304"/>
+  </g>
+  <g font-size="14" font-weight="bold" text-anchor="middle">
+    <text x="180" y="201" fill="white">C</text>
+    <text x="499" y="317" fill="white">A</text>
+    <text x="160" y="114" fill="#dc2626">F</text>
+    <text x="198" y="113" font-size="12" fill="#dc2626">47</text>
+    <text x="180" y="260" font-size="12" fill="#dc2626">47</text>
+    <text x="670" y="290" font-size="12" fill="#dc2626">47</text>
+  </g>
+  <g font-size="13" fill="#dc2626">
+    <text x="220" y="114">计时</text>
+    <text x="200" y="201">写 关 / 开</text>
+    <text x="200" y="261">读延迟</text>
+    <text x="289" y="358" text-anchor="middle">C：不读</text>
+    <text x="499" y="358" text-anchor="middle">攒 16 条</text>
+    <text x="600" y="358" text-anchor="middle">在用 mbuf</text>
+  </g>
+
+  <!-- baseline -->
+  <text x="744" y="140" font-size="16" font-weight="bold" fill="#64748b">基线</text>
+  <text x="744" y="222" font-size="56" font-weight="bold" fill="#0f172a">13.5</text>
+  <text x="744" y="252" font-size="18" fill="#0f172a">M/s</text>
+  <text x="744" y="300" font-size="14" fill="#64748b">卡 4 核 · W=512</text>
+  <text x="744" y="324" font-size="14" fill="#64748b">64 B · SDP 回程</text>
+</svg>
