@@ -1,0 +1,17 @@
+$ /root/bench/inline_reflector-mrv35 -l 3 -a 0002:01:00.2 --file-prefix=inl -- --busy-time
+EAL: Detected CPU lcores: 24
+EAL: Detected NUMA nodes: 1
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/inl/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+CNXK: RoC Model: cn10ka_b0 (HW_PLATFORM)
+inline_reflector: MRV-35 experiment: counter 1000 MHz, 20.17 ticks per read; busy-time true, pool per core false, fake requests None (count 20000000), null reply false
+inline_reflector: BAR4 slot 15 -> pa 0x19ac00000 (was 0x2ff71); roles [Ring]; SDP replies to 00:00:00:01:01:01 from 72:64:9b:c1:e3:53; hosts lease the slot at 10.10.0.2:7526
+lease: host 10.10.0.1:56156 (pid 3441573) took slot 15, nonce 0x5180232b20da60ef
+lease: host 10.10.0.1:56156 (pid 3441573) released slot 15 after 1.0 s
+reflected 20020000 (sdp 20020000, pull 0, stored 0, dma 0 in 0 copies: completed 0, failed 0), partial cells seen 0, corrupt payloads 0, no ring writer for 0; streams: sunk 0, sourced 0 (included in stored/dma)
+per core: ring 20020000 cells, 31.9 per busy poll
+MRV35 {"core":0,"taken":20020000,"batches":626929,"loops":462421862,"empty":461794933,"sdp":20020000,"stored":0,"sunk":0,"corrupt":0,"partial":0,"tx_calls":626929,"tx_short":0,"span_ticks":830283744,"loop_ticks":2493077620,"phase_ticks":[157709946,381469678,160040475,112990017,12648444],"hz":1000000000}
+CNXK: 0002:01:00.2: common resource in use by other devices

@@ -1,0 +1,20 @@
+$ /root/bench/inline_reflector-mrv35 -l 3-6 -a 0002:01:00.2 --file-prefix=inl -- --busy-time
+EAL: Detected CPU lcores: 24
+EAL: Detected NUMA nodes: 1
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/inl/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+CNXK: RoC Model: cn10ka_b0 (HW_PLATFORM)
+inline_reflector: MRV-35 experiment: counter 1000 MHz, 20.17 ticks per read; busy-time true, pool per core false, fake requests None (count 20000000), null reply false
+inline_reflector: BAR4 slot 15 -> pa 0x19ac00000 (was 0x2ff71); roles [Ring, Ring, Ring, Ring]; SDP replies to 00:00:00:01:01:01 from 72:64:9b:c1:e3:53; hosts lease the slot at 10.10.0.2:7526
+lease: host 10.10.0.1:51636 (pid 3441946) took slot 15, nonce 0x72573a8f15de9123
+lease: host 10.10.0.1:51636 (pid 3441946) released slot 15 after 1.8 s
+reflected 20020000 (sdp 20020000, pull 0, stored 0, dma 0 in 0 copies: completed 0, failed 0), partial cells seen 0, corrupt payloads 0, no ring writer for 0; streams: sunk 0, sourced 0 (included in stored/dma)
+per core: ring 5005000 cells, 1.1 per busy poll; ring 5005000 cells, 1.1 per busy poll; ring 5005000 cells, 1.1 per busy poll; ring 5005000 cells, 1.1 per busy poll
+MRV35 {"core":0,"taken":5005000,"batches":4587027,"loops":480348522,"empty":475761495,"sdp":5005000,"stored":0,"sunk":0,"corrupt":0,"partial":0,"tx_calls":4587027,"tx_short":0,"span_ticks":1515831275,"loop_ticks":3182444352,"phase_ticks":[579045145,247727066,105481194,283938013,102231960],"hz":1000000000}
+MRV35 {"core":1,"taken":5005000,"batches":4571158,"loops":481083021,"empty":476511863,"sdp":5005000,"stored":0,"sunk":0,"corrupt":0,"partial":0,"tx_calls":4571158,"tx_short":0,"span_ticks":1515831333,"loop_ticks":3182505090,"phase_ticks":[583089405,255348070,105352806,280776351,102179522],"hz":1000000000}
+MRV35 {"core":2,"taken":5005000,"batches":4532481,"loops":479461646,"empty":474929165,"sdp":5005000,"stored":0,"sunk":0,"corrupt":0,"partial":0,"tx_calls":4532481,"tx_short":0,"span_ticks":1515831320,"loop_ticks":3182458877,"phase_ticks":[579305731,269766174,104580601,276204455,101273487],"hz":1000000000}
+MRV35 {"core":3,"taken":5005000,"batches":4526542,"loops":481712867,"empty":477186325,"sdp":5005000,"stored":0,"sunk":0,"corrupt":0,"partial":0,"tx_calls":4526542,"tx_short":0,"span_ticks":1515831432,"loop_ticks":3182441728,"phase_ticks":[560030355,264830330,104775407,276340360,100617569],"hz":1000000000}
+CNXK: 0002:01:00.2: common resource in use by other devices

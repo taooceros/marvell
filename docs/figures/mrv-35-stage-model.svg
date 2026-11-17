@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 756" font-family="Noto Sans CJK SC, sans-serif" font-size="13">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#444"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1240" height="756" fill="#fff"/>
+  <text x="26" y="32" font-size="19" font-weight="bold" fill="#222">MRV-35：一条消息拆成软件和硬件（64 B，主机批大小 1，同时在途 W 条）</text>
+  <text x="26" y="54" font-size="13" fill="#555">软件 = 把硬件换成假的（立刻完成）时，同一段代码（应用和 DPDK 驱动）跑多久；硬件 = 真运行比它多出来的时间：</text>
+  <text x="26" y="72" font-size="13" fill="#555">传输、设备处理、核上等它们的停顿（读设备刚写的行、MMIO 读、门铃和写之后的反压），以及两边的相互影响。</text>
+
+  <!-- row labels -->
+  <text x="26" y="92" font-size="15" font-weight="bold" fill="#222">A　MOVDIR64B 请求 + SDP 回复（MRV-15）</text>
+  <text x="26" y="292" font-size="15" font-weight="bold" fill="#222">B　MOVDIR64B 请求 + 写合并直写回复（MRV-17）</text>
+  <text x="1214" y="92" font-size="12" fill="#666" text-anchor="end">收到一条回复就发下一条，主机 1 个核既发又收</text>
+  <text x="1214" y="292" font-size="12" fill="#666" text-anchor="end">闭环里没有回复额度，W 是唯一的额度</text>
+
+  <!-- boxes: host sw blue, hw orange, card sw green -->
+  <g stroke-width="2">
+    <rect x="26" y="104" width="220" height="152" rx="8" stroke="#2563eb" fill="#eff6ff"/>
+    <rect x="268" y="104" width="220" height="152" rx="8" stroke="#ea580c" fill="#fff7ed"/>
+    <rect x="510" y="104" width="220" height="152" rx="8" stroke="#059669" fill="#ecfdf5"/>
+    <rect x="752" y="104" width="220" height="152" rx="8" stroke="#ea580c" fill="#fff7ed"/>
+    <rect x="994" y="104" width="220" height="152" rx="8" stroke="#2563eb" fill="#eff6ff"/>
+    <rect x="26" y="304" width="220" height="152" rx="8" stroke="#2563eb" fill="#eff6ff"/>
+    <rect x="268" y="304" width="220" height="152" rx="8" stroke="#ea580c" fill="#fff7ed"/>
+    <rect x="510" y="304" width="220" height="152" rx="8" stroke="#059669" fill="#ecfdf5"/>
+    <rect x="752" y="304" width="220" height="152" rx="8" stroke="#ea580c" fill="#fff7ed"/>
+    <rect x="994" y="304" width="220" height="152" rx="8" stroke="#2563eb" fill="#eff6ff"/>
+  </g>
+  <g stroke="#444" stroke-width="2" marker-end="url(#a)">
+    <line x1="246" y1="180" x2="266" y2="180"/>
+    <line x1="488" y1="180" x2="508" y2="180"/>
+    <line x1="730" y1="180" x2="750" y2="180"/>
+    <line x1="972" y1="180" x2="992" y2="180"/>
+    <line x1="246" y1="380" x2="266" y2="380"/>
+    <line x1="488" y1="380" x2="508" y2="380"/>
+    <line x1="730" y1="380" x2="750" y2="380"/>
+    <line x1="972" y1="380" x2="992" y2="380"/>
+  </g>
+
+  <!-- row A -->
+  <g fill="#222">
+    <text x="40" y="130" font-size="15" font-weight="bold" fill="#1d4ed8">主机软件：发</text>
+    <text x="40" y="154">打时间戳（rdtsc）</text>
+    <text x="40" y="172">记在途表（seq → tsc）</text>
+    <text x="40" y="190">组 64 B 请求格</text>
+    <text x="40" y="208">查租约</text>
+    <text x="40" y="226">MOVDIR64B 指令</text>
+
+    <text x="282" y="130" font-size="15" font-weight="bold" fill="#c2410c">硬件：去程</text>
+    <text x="282" y="154">主机核写缓冲 → CHA → IIO</text>
+    <text x="282" y="172">→ PCIe Gen5 x4 → 卡 PEM</text>
+    <text x="282" y="190">→ 卡内存里的请求环</text>
+    <text x="282" y="208">→ 卡核读到这一行</text>
+    <text x="282" y="226">（含读它的那次缓存缺失）</text>
+
+    <text x="524" y="130" font-size="15" font-weight="bold" fill="#047857">卡软件</text>
+    <text x="524" y="154">Cell::poll 读格、核对内容</text>
+    <text x="524" y="172">分配 mbuf、写 64 B 帧</text>
+    <text x="524" y="190">每批：写进度字</text>
+    <text x="524" y="208">tx_burst：组 SQE、门铃</text>
+    <text x="524" y="226">（批 = 一轮扫到的格，≤ 32）</text>
+
+    <text x="766" y="130" font-size="15" font-weight="bold" fill="#c2410c">硬件：回程（SDP）</text>
+    <text x="766" y="154">NIX 取 SQE、读帧</text>
+    <text x="766" y="172">→ SDP → PEM → PCIe</text>
+    <text x="766" y="190">→ 主机 IIO → DROQ 缓冲</text>
+    <text x="766" y="208">+ info 字 / OUT_CNTS</text>
+    <text x="766" y="226">NIX 把 mbuf 还给 NPA</text>
+
+    <text x="1008" y="130" font-size="15" font-weight="bold" fill="#1d4ed8">主机软件：收</text>
+    <text x="1008" y="154">rx_burst 逐队列取帧</text>
+    <text x="1008" y="172">补 DROQ 缓冲、写门铃</text>
+    <text x="1008" y="190">解析帧，核对 seq/tsc/尾</text>
+    <text x="1008" y="208">释放 mbuf</text>
+    <text x="1008" y="226">记 RTT、窗口记账</text>
+    <text x="1008" y="244" font-size="12" fill="#666">（MMIO 读 OUT_CNTS 算硬件）</text>
+  </g>
+
+  <!-- row B -->
+  <g fill="#222">
+    <text x="40" y="330" font-size="15" font-weight="bold" fill="#1d4ed8">主机软件：发</text>
+    <text x="40" y="354">同 A</text>
+
+    <text x="282" y="330" font-size="15" font-weight="bold" fill="#c2410c">硬件：去程</text>
+    <text x="282" y="354">同 A</text>
+
+    <text x="524" y="330" font-size="15" font-weight="bold" fill="#047857">卡软件</text>
+    <text x="524" y="354">Cell::poll 读格、核对内容</text>
+    <text x="524" y="372">4 个 STP 写进写合并窗口</text>
+    <text x="524" y="390">（窗口指向主机回复环）</text>
+    <text x="524" y="408">每批：写进度字</text>
+    <text x="524" y="426">没有 mbuf，没有门铃</text>
+
+    <text x="766" y="330" font-size="15" font-weight="bold" fill="#c2410c">硬件：回程（写合并）</text>
+    <text x="766" y="354">卡核写合并缓冲合成 64 B</text>
+    <text x="766" y="372">→ PEM → PCIe</text>
+    <text x="766" y="390">→ 主机 IIO → LLC（整行写）</text>
+    <text x="766" y="408">→ 主机核读到这一行</text>
+    <text x="766" y="426">（含读它的那次缓存缺失）</text>
+
+    <text x="1008" y="330" font-size="15" font-weight="bold" fill="#1d4ed8">主机软件：收</text>
+    <text x="1008" y="354">RingReplies 读回复格</text>
+    <text x="1008" y="372">核对 seq/tag/payload/尾</text>
+    <text x="1008" y="390">每次轮询一次 rdtscp</text>
+    <text x="1008" y="408">记 RTT、窗口记账</text>
+    <text x="1008" y="426">没有额度要还</text>
+  </g>
+
+  <!-- how measured -->
+  <text x="26" y="492" font-size="15" font-weight="bold" fill="#222">怎么测（每次只换一处，其余代码不变）</text>
+  <g stroke-width="2">
+    <rect x="26" y="504" width="381" height="236" rx="8" stroke="#2563eb" fill="#eff6ff"/>
+    <rect x="429" y="504" width="381" height="236" rx="8" stroke="#059669" fill="#ecfdf5"/>
+    <rect x="832" y="504" width="382" height="236" rx="8" stroke="#ea580c" fill="#fff7ed"/>
+  </g>
+  <g fill="#222">
+    <text x="40" y="530" font-size="15" font-weight="bold" fill="#1d4ed8">主机软件</text>
+    <text x="40" y="556">同一套主机代码，卡换成本地假回复：</text>
+    <text x="40" y="576">发出一条，回复立刻出现在本地回复环（B）</text>
+    <text x="40" y="596">或本地帧队列（A），不碰 PCIe</text>
+    <text x="40" y="616">→ 应用代码每条软件多少 ns（perf 周期、指令）</text>
+    <text x="40" y="640">真闭环：perf record 看周期落在哪些函数；</text>
+    <text x="40" y="660">驱动（octeon_ep 收包、补缓冲）换不了假硬件：</text>
+    <text x="40" y="680">它的软件份额是估计值，perf 只看时间落在哪</text>
+    <text x="40" y="704">MOVDIR64B 真写卡（卡只收不回）：发送的代价</text>
+
+    <text x="443" y="530" font-size="15" font-weight="bold" fill="#047857">卡软件</text>
+    <text x="443" y="556">同一套卡代码，请求换成本地假请求环</text>
+    <text x="443" y="576">（本核先写好，读时都在缓存里）</text>
+    <text x="443" y="600">B：回复写本地内存；再换真写合并窗口</text>
+    <text x="443" y="620">A：分配 mbuf、写帧、软件释放（null 发送）；</text>
+    <text x="443" y="640">再换真 tx_burst（cnxk 驱动份额是估计值）</text>
+    <text x="443" y="664">真闭环：卡核分段计时（读格、mbuf、写帧、</text>
+    <text x="443" y="684">tx_burst）；PMU 只看多出的时间落在哪一段</text>
+    <text x="443" y="708">mbuf：卡 2 核，共用池 vs 每核一个池，</text>
+    <text x="443" y="728">数「拿到别的核发过的 mbuf」的比例</text>
+
+    <text x="846" y="530" font-size="15" font-weight="bold" fill="#c2410c">硬件</text>
+    <text x="846" y="556">W=1 往返 − 两侧软件 = 硬件往返</text>
+    <text x="846" y="576">去程、回程各占多少分不开（两边时钟不同步），</text>
+    <text x="846" y="596">只能推断（主机 UC 读卡内存一次往返 0.63 µs）</text>
+    <text x="846" y="620">回程能过多少：单向流（写合并卡→主机</text>
+    <text x="846" y="640">77–87 M/s/核；SDP 每批 32 条 32 M/s/核）</text>
+    <text x="846" y="664">吞吐：每种资源每条消息要多久（主机软件、</text>
+    <text x="846" y="684">卡软件 ÷ 核数、回程），对比实测 1/吞吐：对上的</text>
+    <text x="846" y="704">是候选瓶颈，要改它看吞吐变不变才算确认</text>
+  </g>
+</svg>

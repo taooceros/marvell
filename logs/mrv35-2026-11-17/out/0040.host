@@ -1,0 +1,20 @@
+$ MRV35_PERF_CTL=/tmp/mrv35/ctl.fifo /nix/store/hln3gq5s0pajpqlwcffqadzxglqfhx29-perf-linux-7.3.4/bin/perf stat -C 40 -x ";" -e cycles,instructions,ref-cycles --control fifo:/tmp/mrv35/ctl.fifo -D -1 -o /home/hongtao/dev/marvell-mrv35/logs/mrv35-2026-11-17/out/0040.perf.csv -- /tmp/mrv35/t/release/inline_pingpong -l 40 -a 0000:99:02.0,rx_poll_mem=1 --file-prefix=mrv35 -- --reply sdp -w 512 -n 20000000
+--- stdout
+inline movdir64b reply sdp window 512 rounds 20000000 lost 0 bad 0 torn 0 late 0 (max 0.00 us) | 33.112 Mmsg/s | RTT us: min 5.54 p50 12.80 p90 19.16 p99 39.26 p99.9 48.08 p99.99 154.34 max 230.65 mean 14.58 | polls 70% empty
+
+--- stderr
+Events disabled
+EAL: Detected CPU lcores: 128
+EAL: Detected NUMA nodes: 2
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /run/user/1001/dpdk/mrv35/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: No free 2048 kB hugepages reported on node 0
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+inline_pingpong: inline_reflector pid 68079 at 10.10.0.2:7526 granted BAR4 slot 15 (nonce 0x2d340761bb41bbb7)
+OTX_NET_EP: cnxk_ep_vf_setup_iq_regs():167 SDP_R[0] INST Q ISM virt: 0x1100bc0004, dma: 0x1100BC0007
+OTX_NET_EP: cnxk_ep_vf_setup_iq_regs():167 SDP_R[1] INST Q ISM virt: 0x1100bc0044, dma: 0x1100BC0047
+Events enabled
+Events disabled
+

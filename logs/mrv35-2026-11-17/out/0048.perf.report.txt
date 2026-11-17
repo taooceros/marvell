@@ -1,0 +1,4 @@
+    49.64%  [.] cnxk_ep_recv_pkts_avx
+    45.10%  [.] testbed::closed_loop::ClosedLoop::run
+     4.57%  [.] rte_pktmbuf_free_bulk
+     0.53%  [.] core::slice::sort::unstable::quicksort::quicksort
