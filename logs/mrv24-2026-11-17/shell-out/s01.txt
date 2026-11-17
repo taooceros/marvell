@@ -1,0 +1,6 @@
+# session Mrv24Backpressure.jsonl, tool call toolu_017Lt3X6YuQJcfzijiz6Pu2H, 2026-11-16T23:53:17Z
+$ cd /home/hongtao/dev/marvell/testbed && ./target/release/inline_stream -l 41 -a 0000:99:02.0 --file-prefix=mrv24 --log-level=lib.eal:error -- --dir h2c -n 50000000 2>&1 | grep -v -E '^EAL|^TELEMETRY' | tail -5
+h2c via movdir 1 host cores -> 2 card ring cores, 50000000 cells: host issued at 54.56 M cells/s (3.49 GB/s of 64 B cells), card took all at 54.55 M cells/s (3.49 GB/s of 64 B cells)
+
+
+Wall time: 1.25 seconds

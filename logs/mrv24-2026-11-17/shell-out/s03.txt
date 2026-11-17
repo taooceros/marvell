@@ -1,0 +1,9 @@
+# session Mrv24Backpressure.jsonl, tool call toolu_0126bqinVQ8ybxW9kLEgE139, 2026-11-16T23:54:03Z
+$ cd /home/hongtao/dev/marvell/testbed && B=./target/release/inline_stream; E="-a 0000:99:02.0 --file-prefix=mrv24 --log-level=lib.eal:error"; for i in 1 2; do $B -l 41 $E -- --dir c2h -n 100000000 2>&1 | grep -E '^c2h'; $B -l 40,41 --main-lcore 41 $E -- --dir bidir -n 100000000 2>&1 | grep -E '^bidir|rror'; done
+c2h 2 card cores -> 1 host core, 100000000 cells, lag 0 us: bad 0 torn 0 late 0, host took them at 100.12 M cells/s (6.41 GB/s of 64 B cells); polling took 9.0 ns per cell
+bidir 100000000 cells each way: h2c via Movdir card took all at 157.83 M cells/s (10.10 GB/s of 64 B cells) | c2h 2 card cores -> 1 host core at 74.59 M cells/s (4.77 GB/s of 64 B cells) (bad 0 torn 0 late 0)
+c2h 2 card cores -> 1 host core, 100000000 cells, lag 0 us: bad 0 torn 0 late 0, host took them at 105.74 M cells/s (6.77 GB/s of 64 B cells); polling took 8.6 ns per cell
+bidir 100000000 cells each way: h2c via Movdir card took all at 156.30 M cells/s (10.00 GB/s of 64 B cells) | c2h 2 card cores -> 1 host core at 74.45 M cells/s (4.76 GB/s of 64 B cells) (bad 0 torn 0 late 0)
+
+
+Wall time: 5.98 seconds

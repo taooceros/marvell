@@ -1,0 +1,13 @@
+# session Mrv24Backpressure.jsonl, tool call toolu_013zSTCnk3bCseKurbg1H8gK, 2026-11-16T23:54:21Z
+$ cd /home/hongtao/dev/marvell/testbed && B=./target/release/inline_stream; E="-a 0000:99:02.0 --file-prefix=mrv24 --log-level=lib.eal:error"; for i in 1 2 3; do $B -l 40,41 $E -- --dir bidir -n 100000000 2>&1 | grep -E '^bidir|rror' | sed 's/^/send41 recv40: /'; $B -l 40,41 --main-lcore 41 $E -- --dir bidir -n 100000000 2>&1 | grep -E '^bidir|rror'| sed 's/^/send40 recv41: /'; done; ls /sys/bus/pci/devices/0000:99:00.0/link/ 2>&1; cat /sys/bus/pci/devices/0000:99:00.0/link/* 2>&1 | head; cat /sys/module/pcie_aspm/parameters/policy
+send41 recv40: bidir 100000000 cells each way: h2c via Movdir card took all at 55.31 M cells/s (3.54 GB/s of 64 B cells) | c2h 2 card cores -> 1 host core at 50.61 M cells/s (3.24 GB/s of 64 B cells) (bad 0 torn 0 late 0)
+send40 recv41: bidir 100000000 cells each way: h2c via Movdir card took all at 158.40 M cells/s (10.14 GB/s of 64 B cells) | c2h 2 card cores -> 1 host core at 73.87 M cells/s (4.73 GB/s of 64 B cells) (bad 0 torn 0 late 0)
+send41 recv40: bidir 100000000 cells each way: h2c via Movdir card took all at 144.18 M cells/s (9.23 GB/s of 64 B cells) | c2h 2 card cores -> 1 host core at 71.37 M cells/s (4.57 GB/s of 64 B cells) (bad 0 torn 0 late 0)
+send40 recv41: bidir 100000000 cells each way: h2c via Movdir card took all at 156.17 M cells/s (10.00 GB/s of 64 B cells) | c2h 2 card cores -> 1 host core at 74.47 M cells/s (4.77 GB/s of 64 B cells) (bad 0 torn 0 late 0)
+send41 recv40: bidir 100000000 cells each way: h2c via Movdir card took all at 142.68 M cells/s (9.13 GB/s of 64 B cells) | c2h 2 card cores -> 1 host core at 72.39 M cells/s (4.63 GB/s of 64 B cells) (bad 0 torn 0 late 0)
+send40 recv41: bidir 100000000 cells each way: h2c via Movdir card took all at 156.61 M cells/s (10.02 GB/s of 64 B cells) | c2h 2 card cores -> 1 host core at 74.05 M cells/s (4.74 GB/s of 64 B cells) (bad 0 torn 0 late 0)
+cat: '/sys/bus/pci/devices/0000:99:00.0/link/*': No such file or directory
+[default] performance powersave powersupersave 
+
+
+Wall time: 10.84 seconds

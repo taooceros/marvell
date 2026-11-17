@@ -1,0 +1,9 @@
+# session Mrv24Backpressure.jsonl, tool call toolu_01L61KpEyu5bcH7G2LKcASCB, 2026-11-17T00:09:22Z
+$ cd /home/hongtao/dev/marvell/testbed && B=./target/release/inline_stream; E="-a 0000:99:02.0 --file-prefix=mrv24 --log-level=lib.eal:error"; for i in 1 2; do $B -l 40 $E -- --dir h2c -n 200000000 2>&1 | grep -E '^h2c' | sed -E 's/ \(([0-9.]+) GB\/s of 64 B cells\)//g; s/^/idle 41:  /'; taskset -c 41 sh -c 'end=$(($(date +%s)+6)); while [ $(date +%s) -lt $end ]; do :; done' & sleep 1.5; $B -l 40 $E -- --dir h2c -n 200000000 2>&1 | grep -E '^h2c' | sed -E 's/ \(([0-9.]+) GB\/s of 64 B cells\)//g; s/^/busy 41:  /'; wait; done
+idle 41:  h2c via movdir 1 host cores -> 2 card ring cores, 200000000 cells: host issued at 126.38 M cells/s, card took all at 126.37 M cells/s
+busy 41:  h2c via movdir 1 host cores -> 2 card ring cores, 200000000 cells: host issued at 126.62 M cells/s, card took all at 126.61 M cells/s
+idle 41:  h2c via movdir 1 host cores -> 2 card ring cores, 200000000 cells: host issued at 126.25 M cells/s, card took all at 126.24 M cells/s
+busy 41:  h2c via movdir 1 host cores -> 2 card ring cores, 200000000 cells: host issued at 126.11 M cells/s, card took all at 126.11 M cells/s
+
+
+Wall time: 14.27 seconds

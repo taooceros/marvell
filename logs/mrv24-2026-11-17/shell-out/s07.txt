@@ -1,0 +1,35 @@
+# session Mrv24Backpressure.jsonl, tool call toolu_01YQojYgGC3p8g7M5ycKqYJy, 2026-11-16T23:58:51Z
+$ cd /home/hongtao/dev/marvell/testbed && P=/nix/store/hln3gq5s0pajpqlwcffqadzxglqfhx29-perf-linux-7.3.4/bin/perf; B=./target/release/inline_stream; E="-a 0000:99:02.0 --file-prefix=mrv24 --log-level=lib.eal:error"; N=50000000; run() { $P stat -C 40,41 -A -x';' -e cycles,ref-cycles -o /tmp/mrv24/f.txt -- "$@" 2>&1 | grep -E '^(h2c|c2h|bidir)|rror' | sed -E 's/ \(([0-9.]+) GB\/s of 64 B cells\)//g'; awk -F';' '/^CPU/{c[$1" "$4]=$2} END{for(k in c) if (k ~ /^CPU4[01] cycles/) {split(k,a," "); printf "  %s %.2f GHz;", a[1], c[a[1]" cycles"]/c[a[1]" ref-cycles"]*2.2}; print ""}' /tmp/mrv24/f.txt; }; for r in 1 2; do sleep 6; echo "[cold 41] h2c alone on 41:"; run $B -l 41 $E -- --dir h2c -n $N; sleep 6; echo "[cold 41] h2c alone on 40:"; run $B -l 40 $E -- --dir h2c -n $N; sleep 6; echo "[cold 41] bidir send41 recv40:"; run $B -l 40,41 $E -- --dir bidir -n $N; echo "[warm 41] bidir send41 recv40:"; run $B -l 40,41 $E -- --dir bidir -n $N; sleep 6; echo "[cold 41] bidir send40 recv41:"; run $B -l 40,41 --main-lcore 41 $E -- --dir bidir -n $N; done
+[cold 41] h2c alone on 41:
+h2c via movdir 1 host cores -> 1 card ring cores, 50000000 cells: host issued at 98.31 M cells/s, card took all at 98.20 M cells/s
+  CPU41 3.18 GHz;  CPU40 3.81 GHz;
+[cold 41] h2c alone on 40:
+h2c via movdir 1 host cores -> 1 card ring cores, 50000000 cells: host issued at 112.81 M cells/s, card took all at 112.67 M cells/s
+  CPU41 0.80 GHz;  CPU40 3.90 GHz;
+[cold 41] bidir send41 recv40:
+bidir 50000000 cells each way: h2c via Movdir card took all at 74.38 M cells/s | c2h 1 card cores -> 1 host core at 81.65 M cells/s (bad 0 torn 0 late 35)
+  CPU41 2.12 GHz;  CPU40 3.90 GHz;
+[warm 41] bidir send41 recv40:
+bidir 50000000 cells each way: h2c via Movdir card took all at 74.26 M cells/s | c2h 1 card cores -> 1 host core at 81.65 M cells/s (bad 0 torn 0 late 35)
+  CPU41 2.12 GHz;  CPU40 3.88 GHz;
+[cold 41] bidir send40 recv41:
+bidir 50000000 cells each way: h2c via Movdir card took all at 111.32 M cells/s | c2h 1 card cores -> 1 host core at 82.39 M cells/s (bad 0 torn 0 late 69)
+  CPU41 3.02 GHz;  CPU40 3.71 GHz;
+[cold 41] h2c alone on 41:
+h2c via movdir 1 host cores -> 1 card ring cores, 50000000 cells: host issued at 112.94 M cells/s, card took all at 112.80 M cells/s
+  CPU41 3.71 GHz;  CPU40 3.90 GHz;
+[cold 41] h2c alone on 40:
+h2c via movdir 1 host cores -> 1 card ring cores, 50000000 cells: host issued at 112.63 M cells/s, card took all at 112.48 M cells/s
+  CPU41 0.80 GHz;  CPU40 3.90 GHz;
+[cold 41] bidir send41 recv40:
+bidir 50000000 cells each way: h2c via Movdir card took all at 76.97 M cells/s | c2h 1 card cores -> 1 host core at 82.08 M cells/s (bad 0 torn 0 late 54)
+  CPU41 2.12 GHz;  CPU40 3.88 GHz;
+[warm 41] bidir send41 recv40:
+bidir 50000000 cells each way: h2c via Movdir card took all at 76.92 M cells/s | c2h 1 card cores -> 1 host core at 82.07 M cells/s (bad 0 torn 0 late 47)
+  CPU41 2.12 GHz;  CPU40 3.90 GHz;
+[cold 41] bidir send40 recv41:
+bidir 50000000 cells each way: h2c via Movdir card took all at 111.21 M cells/s | c2h 1 card cores -> 1 host core at 82.40 M cells/s (bad 0 torn 0 late 81)
+  CPU41 2.94 GHz;  CPU40 3.88 GHz;
+
+
+Wall time: 57.31 seconds

@@ -1,0 +1,13 @@
+# session Mrv24Backpressure.jsonl, tool call toolu_011qdoRxXPV6ZkrD3VKRVv7j, 2026-11-16T23:57:10Z
+$ cd /home/hongtao/dev/marvell/testbed && B=./target/release/inline_stream; E="-a 0000:99:02.0 --file-prefix=mrv24 --log-level=lib.eal:error"; N=100000000; for i in 1 2; do $B -l 40 $E -- --dir h2c -n $N 2>&1 | grep -E '^h2c' | sed 's/^/h2c send40: /'; $B -l 41 $E -- --dir c2h -n $N 2>&1 | grep -E '^c2h' | sed 's/^/c2h recv41: /'; $B -l 40,41 --main-lcore 41 $E -- --dir bidir -n $N 2>&1 | grep -E '^bidir|rror' | sed 's/^/bidir send40 recv41: /'; $B -l 40,41 $E -- --dir bidir -n $N 2>&1 | grep -E '^bidir|rror' | sed 's/^/bidir send41 recv40: /'; done
+h2c send40: h2c via movdir 1 host cores -> 1 card ring cores, 100000000 cells: host issued at 112.40 M cells/s (7.19 GB/s of 64 B cells), card took all at 112.32 M cells/s (7.19 GB/s of 64 B cells)
+c2h recv41: c2h 1 card cores -> 1 host core, 100000000 cells, lag 0 us: bad 0 torn 0 late 176, host took them at 82.29 M cells/s (5.27 GB/s of 64 B cells); polling took 10.9 ns per cell
+bidir send40 recv41: bidir 100000000 cells each way: h2c via Movdir card took all at 112.20 M cells/s (7.18 GB/s of 64 B cells) | c2h 1 card cores -> 1 host core at 82.41 M cells/s (5.27 GB/s of 64 B cells) (bad 0 torn 0 late 159)
+bidir send41 recv40: bidir 100000000 cells each way: h2c via Movdir card took all at 107.68 M cells/s (6.89 GB/s of 64 B cells) | c2h 1 card cores -> 1 host core at 82.55 M cells/s (5.28 GB/s of 64 B cells) (bad 0 torn 0 late 148)
+h2c send40: h2c via movdir 1 host cores -> 1 card ring cores, 100000000 cells: host issued at 113.64 M cells/s (7.27 GB/s of 64 B cells), card took all at 113.57 M cells/s (7.27 GB/s of 64 B cells)
+c2h recv41: c2h 1 card cores -> 1 host core, 100000000 cells, lag 0 us: bad 0 torn 0 late 154, host took them at 82.61 M cells/s (5.29 GB/s of 64 B cells); polling took 10.6 ns per cell
+bidir send40 recv41: bidir 100000000 cells each way: h2c via Movdir card took all at 112.26 M cells/s (7.18 GB/s of 64 B cells) | c2h 1 card cores -> 1 host core at 82.45 M cells/s (5.28 GB/s of 64 B cells) (bad 0 torn 0 late 162)
+bidir send41 recv40: bidir 100000000 cells each way: h2c via Movdir card took all at 107.57 M cells/s (6.88 GB/s of 64 B cells) | c2h 1 card cores -> 1 host core at 82.42 M cells/s (5.28 GB/s of 64 B cells) (bad 0 torn 0 late 169)
+
+
+Wall time: 11.73 seconds
