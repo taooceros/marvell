@@ -86,6 +86,9 @@ for label, path, cores, w, prod, kind in STATES:
                      hide=x * RTT0[path]))
 
 C_REAL, C_HOST, C_CARD = "#dc2626", "#60a5fa", "#9ca3af"
+# The host loop pays its per-poll work (two TSC reads, the poll loop) once per poll: per message
+# it costs fake W=1 (one reply per poll) at most and fake W>=32 (32 per poll) at least.
+HOST1 = fake_host_ns(1)
 
 # ---- chart 1: throughput vs fake-hardware ceilings ----------------------------------------
 fig, ax = plt.subplots(figsize=(13, 4.8))
@@ -105,6 +108,7 @@ for r in rows:
     ax.bar(k - 0.27, r["rate"], 0.26, color=C_REAL)
     if r["host"]:
         ax.bar(k, 1e3 / r["host"], 0.26, color=C_HOST)
+        ax.plot([k - 0.12, k + 0.12], [1e3 / HOST1] * 2, color="#111827", lw=1.5)
     ax.bar(k + 0.27, 1e3 / r["card_b32"], 0.26, color=C_CARD)
     ax.plot([k + 0.15, k + 0.39], [1e3 / r["card_b1"]] * 2, color="#111827", lw=1.5)
     ax.text(k - 0.27, r["rate"] * 1.12, f"{r['rate']:.1f}", ha="center", fontsize=8)
@@ -116,7 +120,7 @@ ax.set_xticks(range(k), labels, fontsize=7.5)
 ax.set_ylabel("吞吐 (Mmsg/s，对数)")
 ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=C_REAL), plt.Rectangle((0, 0), 1, 1, color=C_HOST),
                    plt.Rectangle((0, 0), 1, 1, color=C_CARD), plt.Line2D([0], [0], color="#111827", lw=1.5)],
-          labels=["实测", "主机代码，假硬件（同 W）", "卡代码，假硬件，每批 32 条（W=1：两侧串行）", "卡代码，假硬件，每批 1 条"],
+          labels=["实测", "主机代码，假硬件，每次轮询 32 条", "卡代码，假硬件，每批 32 条（W=1：两侧串行）", "黑线：每次轮询 / 每批只有 1 条时"],
           fontsize=7.5, ncol=4, loc="upper left")
 ax.set_title("假硬件上限 vs 实测：64 B，主机批大小 1，主机核 40，uncore 2.2 GHz，卡核 2.0 GHz；SDP 只作参照（rx_poll_mem=1，主机收包驱动无法假，没有主机上限）",
              fontsize=9)
@@ -126,7 +130,10 @@ print(save(fig, "mrv-35-ceiling"))
 fig, (a1, a2) = plt.subplots(1, 2, figsize=(17, 5.2), gridspec_kw={"width_ratios": [1.1, 1]})
 xs = list(range(len(rows)))
 a1.bar([x - 0.27 for x in xs], [r["interval"] for r in rows], 0.26, color=C_REAL, label="间隔 = 1/吞吐（瓶颈每条的服务时间）")
-a1.bar(xs, [r["host"] or 0 for r in rows], 0.26, color=C_HOST, label="主机代码，假硬件")
+a1.bar(xs, [HOST1 if r["host"] else 0 for r in rows], 0.26, color=C_HOST, label="主机代码，假硬件，每次轮询 1 条（黑线：32 条）")
+for x, r in zip(xs, rows):
+    if r["host"]:
+        a1.plot([x - 0.13, x + 0.13], [r["host"]] * 2, color="#111827", lw=1.5)
 a1.bar([x + 0.27 for x in xs], [r["card_b32"] if r["path"] == "SDP" else r["card_b1"] for r in rows], 0.26, color=C_CARD,
        label="卡代码，假硬件，÷ 卡核数（每批 1 条，较慢的一端；SDP 按实测每批 32 条）")
 for x, r in zip(xs, rows):
