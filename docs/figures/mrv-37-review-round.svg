@@ -1,40 +1,61 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 300" font-family="Noto Sans CJK SC, sans-serif" font-size="15">
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="330" viewBox="0 0 880 330" font-family="Droid Sans Fallback, DejaVu Sans, sans-serif">
+  <!-- MRV-37. Review round after every experiment: results -> check (small model) -> three reviewers in
+       parallel -> the issue agent answers each point. A failed check goes back first.
+       What each step looks at is in AGENTS.md ("Review round after every experiment"). -->
   <defs>
-    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    <marker id="head" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#64748b"/>
+    </marker>
+    <marker id="head-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#dc2626"/>
     </marker>
   </defs>
-  <rect width="980" height="300" fill="#fff"/>
-  <text x="20" y="30" font-size="19" font-weight="bold" fill="#222">MRV-37：每次实验后的评审轮</text>
-  <g stroke-width="2">
-    <rect x="20" y="110" width="170" height="70" rx="8" stroke="#2563eb" fill="#eff6ff"/>
-    <rect x="230" y="110" width="220" height="70" rx="8" stroke="#0891b2" fill="#ecfeff"/>
-    <rect x="490" y="50" width="200" height="50" rx="8" stroke="#7c3aed" fill="#f5f3ff"/>
-    <rect x="490" y="120" width="200" height="50" rx="8" stroke="#7c3aed" fill="#f5f3ff"/>
-    <rect x="490" y="190" width="200" height="50" rx="8" stroke="#7c3aed" fill="#f5f3ff"/>
-    <rect x="750" y="110" width="210" height="70" rx="8" stroke="#059669" fill="#ecfdf5"/>
+  <rect width="880" height="330" fill="white"/>
+  <text x="30" y="42" font-size="22" font-weight="bold" fill="#0f172a">每次实验后的评审轮</text>
+
+  <!-- stages -->
+  <g fill="#f1f5f9">
+    <rect x="30" y="70" width="190" height="230" rx="12"/>
+    <rect x="240" y="70" width="190" height="230" rx="12"/>
+    <rect x="450" y="70" width="190" height="230" rx="12"/>
+    <rect x="660" y="70" width="190" height="230" rx="12"/>
   </g>
-  <g text-anchor="middle" fill="#222">
-    <text x="105" y="140" font-weight="bold">issue agent</text>
-    <text x="105" y="162" font-size="13" fill="#555">贴结果 / 结论（带图）</text>
-    <text x="340" y="140" font-weight="bold">① 检查</text>
-    <text x="340" y="162" font-size="13" fill="#555">Gemini 4 Hydrogen（小模型）</text>
-    <text x="590" y="80" font-size="14">② 评审 · Gemini 4 Carbon</text>
-    <text x="590" y="150" font-size="14">② 评审 · Gemini 4 Argon</text>
-    <text x="590" y="220" font-size="14">② 评审 · Fable 5.2</text>
-    <text x="855" y="140" font-weight="bold">③ 逐条回复</text>
-    <text x="855" y="162" font-size="13" fill="#555">改正 / 说明理由 / 排成后续</text>
+  <g font-size="16" font-weight="bold" fill="#64748b" text-anchor="middle">
+    <text x="125" y="104">贴结果</text>
+    <text x="335" y="104">检查</text>
+    <text x="545" y="104">评审</text>
+    <text x="755" y="104">逐条回复</text>
   </g>
-  <g stroke="#333" stroke-width="1.6" fill="none" marker-end="url(#a)">
-    <line x1="190" y1="145" x2="228" y2="145"/>
-    <path d="M450,145 L465,145 L465,75 L488,75"/>
-    <line x1="450" y1="145" x2="488" y2="145"/>
-    <path d="M450,145 L465,145 L465,215 L488,215"/>
-    <path d="M690,75 L720,75 L720,145 L748,145"/>
-    <line x1="690" y1="145" x2="748" y2="145"/>
-    </g>
-  <path d="M690,215 L720,215 L720,145" fill="none" stroke="#333" stroke-width="1.6"/>
-  <path d="M340,180 C340,255 105,255 105,182" fill="none" stroke="#dc2626" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#a)"/>
-  <text x="220" y="250" font-size="13" fill="#dc2626" text-anchor="middle">数字对不上 → 先改再评审</text>
-  <text x="20" y="285" font-size="13" fill="#555">检查：从原始数据重算每个数、lost/bad/torn、条件、图、推断标注。评审：结论站不站得住、别的解释、缺什么、下一个实验。全部只读，每人一条评论。</text>
+
+  <!-- who -->
+  <g fill="white" stroke="#94a3b8" stroke-width="1.5">
+    <rect x="60" y="180" width="130" height="40" rx="10"/>
+    <rect x="270" y="180" width="130" height="40" rx="10"/>
+    <rect x="480" y="130" width="130" height="40" rx="10"/>
+    <rect x="480" y="180" width="130" height="40" rx="10"/>
+    <rect x="480" y="230" width="130" height="40" rx="10"/>
+    <rect x="690" y="180" width="130" height="40" rx="10"/>
+  </g>
+  <g font-size="16" fill="#1e293b" text-anchor="middle">
+    <text x="125" y="206">issue agent</text>
+    <text x="335" y="206">Hydrogen</text>
+    <text x="545" y="156">Carbon</text>
+    <text x="545" y="206">Argon</text>
+    <text x="545" y="256">Fable</text>
+    <text x="755" y="206">issue agent</text>
+  </g>
+
+  <!-- flow -->
+  <g stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#head)">
+    <path d="M 190 200 H 268"/>
+    <path d="M 400 200 H 478"/>
+    <path d="M 440 200 V 150 H 478"/>
+    <path d="M 440 200 V 250 H 478"/>
+    <path d="M 610 200 H 688"/>
+  </g>
+  <path d="M 610 150 H 650 V 250 H 610" stroke="#64748b" stroke-width="2" fill="none"/>
+
+  <!-- failed check: back to the issue agent -->
+  <path d="M 335 220 C 335 282, 125 282, 125 223" stroke="#dc2626" stroke-width="2" stroke-dasharray="6 4" fill="none" marker-end="url(#head-red)"/>
+  <text x="230" y="252" font-size="16" font-weight="bold" fill="#dc2626" text-anchor="middle">不过</text>
 </svg>

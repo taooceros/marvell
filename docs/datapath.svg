@@ -1,30 +1,66 @@
-<svg viewBox="0 0 980 560" xmlns="http://www.w3.org/2000/svg" font-family="DejaVu Sans Mono, Noto Sans Mono CJK SC, monospace" font-size="13">
-  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker>
-  <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker>
-  <marker id="c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker></defs>
-  <style>.box{fill:#f8fafc;stroke:#94a3b8;stroke-width:1.5}.t{fill:#0f172a}.m{fill:#64748b;font-size:12px}.h2c{stroke:#2563eb;stroke-width:2;fill:none}.c2h{stroke:#ea580c;stroke-width:2;fill:none}.lh{fill:#2563eb}.lc{fill:#ea580c}</style>
-  <rect width="980" height="560" fill="#ffffff"/>
-  <rect class="box" x="20" y="40" width="250" height="480" rx="10"/>
-  <text class="t" x="40" y="68" font-weight="bold">主机 saturn (x86)</text><text class="m" x="40" y="88">DPDK 26.10.1, lcore 40 / NUMA 1</text>
-  <text class="t" x="40" y="130">发送核</text><text class="m" x="40" y="148">MOVDIR64B / doorbell</text>
-  <text class="t" x="40" y="215">请求 ring（主机内存）</text>
-  <text class="t" x="40" y="320">回复 ring / memzone</text><text class="m" x="40" y="338">轮询自己内存，校验 seq+TSC</text>
-  <text class="t" x="40" y="440">接收核</text><text class="m" x="40" y="458">OUT_CNTS 或 rx_poll_mem</text>
-  <rect x="300" y="40" width="380" height="480" rx="10" fill="none" stroke="#94a3b8" stroke-dasharray="6 5"/>
-  <text class="m" x="400" y="62">PCIe Gen5 x4 (0000:99:00.0)</text>
-  <rect class="box" x="710" y="40" width="250" height="480" rx="10"/>
-  <text class="t" x="730" y="68" font-weight="bold">CN106 卡 (Arm N2)</text><text class="m" x="730" y="88">DPDK 24.11, Rust reflector</text>
-  <text class="t" x="730" y="130">SDP 队列</text><text class="t" x="730" y="185">BAR4 窗口 15 → hugepage</text>
-  <text class="t" x="730" y="240">DPI 引擎（fetch / DMA）</text><text class="t" x="730" y="320">卡核 reflector</text>
-  <text class="t" x="730" y="380">PEM 出站区域 255−core</text><text class="m" x="730" y="398">Device 或 WC（pem_wc）</text>
-  <path class="h2c" d="M270,125 H710" marker-end="url(#b)"/><text class="lh" x="310" y="117">① SDP doorbell：8.36 M/s（单核）</text>
-  <path class="h2c" d="M270,180 H710" marker-end="url(#b)"/><text class="lh" x="310" y="172">② inline：MOVDIR64B 64 B cell，1 核 112 M/s</text>
-  <path class="h2c" d="M710,235 H270" marker-end="url(#b)" stroke-dasharray="5 4"/><text class="lh" x="310" y="228">③ DPI fetch：卡读主机请求 ring，187–189 M/s</text>
-  <path class="c2h" d="M710,290 H270" marker-end="url(#c)"/><text class="lc" x="310" y="282">A SDP 回复：W=1 2.40 µs</text>
-  <path class="c2h" d="M710,330 H270" marker-end="url(#c)"/><text class="lc" x="310" y="322">B DPI DMA 写回：W=1 1.33 µs</text>
-  <path class="c2h" d="M710,375 H270" marker-end="url(#c)"/><text class="lc" x="310" y="367">C 卡核直写（WC）：W=1 0.90 µs，4 核 177.6 M/s</text>
-  <path class="c2h" d="M270,420 H710" marker-end="url(#c)" stroke-dasharray="5 4"/><text class="lc" x="310" y="412">D 主机 pull（16 B UC 读）：W=1 0.84 µs</text>
-  <text class="m" x="310" y="480">64 B 消息，batch 1，uncore 固定；数字来自 FACTS.md / MRV issue</text>
-  <text class="m" x="310" y="496">闭环 1 卡核 W=1024：34–49 M msg/s，上限原因在 MRV-17 查</text>
-  <text class="m" x="310" y="512">MRV-24：MOVDIR64B 没被反压，双向 113→76 源于发送核频率</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="530" viewBox="0 0 960 530" font-family="Droid Sans Fallback, DejaVu Sans, sans-serif">
+  <!-- MRV-13 overview. The paths between host and card and the headline number of each:
+       requests (host to card) by one-direction throughput, replies (card to host) by W=1 round-trip p50.
+       Dashed = the receiver comes and reads it (fetch: card reads the host's ring; pull: host reads card memory).
+       Numbers: docs/video/data/FACTS.md; 64 B, batch 1, host uncore pinned. Details live in the MRV-13 text. -->
+  <defs>
+    <marker id="head-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2563eb"/>
+    </marker>
+    <marker id="head-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#dc2626"/>
+    </marker>
+  </defs>
+  <rect width="960" height="530" fill="white"/>
+  <text x="30" y="42" font-size="22" font-weight="bold" fill="#0f172a">主机 ⇄ 卡：每条通路有多快</text>
+  <text x="30" y="68" font-size="14" fill="#64748b">64 B，批大小 1，uncore 固定</text>
+
+  <!-- lanes -->
+  <g fill="#f1f5f9">
+    <rect x="30" y="92" width="140" height="408" rx="12"/>
+    <rect x="790" y="92" width="140" height="408" rx="12"/>
+  </g>
+  <g font-size="16" font-weight="bold" fill="#64748b" text-anchor="middle">
+    <text x="100" y="302">主机</text>
+    <text x="860" y="302">卡</text>
+  </g>
+
+  <!-- requests: host to card, throughput -->
+  <text x="194" y="122" font-size="14" font-weight="bold" fill="#2563eb">去程 · 吞吐</text>
+  <g stroke="#2563eb" stroke-width="2" fill="none" marker-end="url(#head-blue)">
+    <line x1="170" y1="166" x2="788" y2="166"/>
+    <line x1="170" y1="210" x2="788" y2="210"/>
+    <line x1="170" y1="254" x2="788" y2="254" stroke-dasharray="7 5"/>
+  </g>
+  <g font-size="16" fill="#1e293b">
+    <text x="194" y="156">SDP 门铃</text>
+    <text x="194" y="200">MOVDIR64B</text>
+    <text x="194" y="244">fetch</text>
+  </g>
+  <g font-size="20" font-weight="bold" fill="#0f172a" text-anchor="end">
+    <text x="766" y="156">8.36 <tspan font-size="13" font-weight="normal" fill="#64748b">M/s</tspan></text>
+    <text x="766" y="200">112 <tspan font-size="13" font-weight="normal" fill="#64748b">M/s</tspan></text>
+    <text x="766" y="244">187–189 <tspan font-size="13" font-weight="normal" fill="#64748b">M/s</tspan></text>
+  </g>
+
+  <!-- replies: card to host, W=1 round trip -->
+  <text x="194" y="304" font-size="14" font-weight="bold" fill="#dc2626">回程 · W=1 往返</text>
+  <g stroke="#dc2626" stroke-width="2" fill="none" marker-end="url(#head-red)">
+    <line x1="790" y1="348" x2="172" y2="348"/>
+    <line x1="790" y1="392" x2="172" y2="392"/>
+    <line x1="790" y1="436" x2="172" y2="436"/>
+    <line x1="790" y1="480" x2="172" y2="480" stroke-dasharray="7 5"/>
+  </g>
+  <g font-size="16" fill="#1e293b">
+    <text x="194" y="338">SDP</text>
+    <text x="194" y="382">DPI DMA</text>
+    <text x="194" y="426">卡核直写</text>
+    <text x="194" y="470">主机拉取</text>
+  </g>
+  <g font-size="20" font-weight="bold" fill="#0f172a" text-anchor="end">
+    <text x="766" y="338">2.40 <tspan font-size="13" font-weight="normal" fill="#64748b">µs</tspan></text>
+    <text x="766" y="382">1.33 <tspan font-size="13" font-weight="normal" fill="#64748b">µs</tspan></text>
+    <text x="766" y="426">0.90 <tspan font-size="13" font-weight="normal" fill="#64748b">µs</tspan></text>
+    <text x="766" y="470">0.84 <tspan font-size="13" font-weight="normal" fill="#64748b">µs</tspan></text>
+  </g>
 </svg>
