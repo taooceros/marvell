@@ -1,0 +1,11 @@
+reply ring at IOVA 0x1100b40000: 1131950 polls waited on a missing reply while a later one had landed
+inline movdir64b reply ring window 256 rounds 20000000 lost 0 bad 0 torn 0 late 28 (max 3.70 us) | 12.850 Mmsg/s | RTT us: min 4.64 p50 18.72 p90 19.64 p99 20.45 p99.9 21.96 p99.99 53.12 max 235.82 mean 18.60 | polls 5% empty
+EAL: Detected CPU lcores: 128
+EAL: Detected NUMA nodes: 2
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /run/user/1001/dpdk/mrv48/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: No free 2048 kB hugepages reported on node 0
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+inline_pingpong: inline_reflector pid 76184 at 10.10.0.2:7526 granted BAR4 slot 15 (nonce 0x03f0fd60f2440d51)
