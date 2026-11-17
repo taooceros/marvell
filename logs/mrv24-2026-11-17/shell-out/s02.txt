@@ -1,0 +1,9 @@
+# session Mrv24Backpressure.jsonl, tool call toolu_01TeUNfzL6spbVsojWNtNq8r, 2026-11-16T23:53:29Z
+$ cd /home/hongtao/dev/marvell/testbed && for l in 40 41 40 41; do ./target/release/inline_stream -l $l -a 0000:99:02.0 --file-prefix=mrv24 --log-level=lib.eal:error -- --dir h2c -n 100000000 2>&1 | grep -E '^h2c' | sed "s/^/lcore $l: /"; done
+lcore 40: h2c via movdir 1 host cores -> 2 card ring cores, 100000000 cells: host issued at 126.14 M cells/s (8.07 GB/s of 64 B cells), card took all at 126.12 M cells/s (8.07 GB/s of 64 B cells)
+lcore 41: h2c via movdir 1 host cores -> 2 card ring cores, 100000000 cells: host issued at 106.76 M cells/s (6.83 GB/s of 64 B cells), card took all at 106.75 M cells/s (6.83 GB/s of 64 B cells)
+lcore 40: h2c via movdir 1 host cores -> 2 card ring cores, 100000000 cells: host issued at 126.88 M cells/s (8.12 GB/s of 64 B cells), card took all at 126.86 M cells/s (8.12 GB/s of 64 B cells)
+lcore 41: h2c via movdir 1 host cores -> 2 card ring cores, 100000000 cells: host issued at 122.18 M cells/s (7.82 GB/s of 64 B cells), card took all at 122.16 M cells/s (7.82 GB/s of 64 B cells)
+
+
+Wall time: 4.65 seconds
