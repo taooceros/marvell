@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="380" viewBox="0 0 960 380" font-family="Droid Sans Fallback, DejaVu Sans, sans-serif">
+  <!-- MRV-44 review: the BAR4 read of the card's progress word cannot pass the writes queued ahead
+       of it, in either direction, so the probe cannot tell whether the backlog sits on the way to
+       the card (requests) or on the way back (replies). Explanation lives in the issue text. -->
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+  <rect width="960" height="380" fill="white"/>
+
+  <!-- ends -->
+  <rect x="40" y="60" width="150" height="270" rx="14" fill="#f1f5f9"/>
+  <rect x="770" y="60" width="150" height="270" rx="14" fill="#f1f5f9"/>
+  <text x="115" y="200" font-size="22" font-weight="bold" fill="#475569" text-anchor="middle">主机</text>
+  <text x="845" y="200" font-size="22" font-weight="bold" fill="#475569" text-anchor="middle">卡</text>
+
+  <!-- the way to the card -->
+  <line x1="196" y1="140" x2="762" y2="140" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="214" y="122" font-size="15" fill="#94a3b8">去程</text>
+  <g fill="#cbd5e1">
+    <rect x="530" y="127" width="26" height="26" rx="4"/>
+    <rect x="562" y="127" width="26" height="26" rx="4"/>
+    <rect x="594" y="127" width="26" height="26" rx="4"/>
+    <rect x="626" y="127" width="26" height="26" rx="4"/>
+    <rect x="658" y="127" width="26" height="26" rx="4"/>
+    <rect x="690" y="127" width="26" height="26" rx="4"/>
+  </g>
+  <rect x="448" y="125" width="70" height="30" rx="8" fill="#dc2626"/>
+  <text x="483" y="146" font-size="15" font-weight="bold" fill="white" text-anchor="middle">读请求</text>
+  <text x="623" y="112" font-size="34" font-weight="bold" fill="#94a3b8" text-anchor="middle">?</text>
+
+  <!-- the way back -->
+  <line x1="764" y1="250" x2="198" y2="250" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="746" y="282" font-size="15" fill="#94a3b8" text-anchor="end">回程</text>
+  <g fill="#cbd5e1">
+    <rect x="244" y="237" width="26" height="26" rx="4"/>
+    <rect x="276" y="237" width="26" height="26" rx="4"/>
+    <rect x="308" y="237" width="26" height="26" rx="4"/>
+    <rect x="340" y="237" width="26" height="26" rx="4"/>
+    <rect x="372" y="237" width="26" height="26" rx="4"/>
+    <rect x="404" y="237" width="26" height="26" rx="4"/>
+  </g>
+  <rect x="442" y="235" width="70" height="30" rx="8" fill="#dc2626"/>
+  <text x="477" y="256" font-size="15" font-weight="bold" fill="white" text-anchor="middle">读完成</text>
+  <text x="337" y="300" font-size="34" font-weight="bold" fill="#94a3b8" text-anchor="middle">?</text>
+</svg>
