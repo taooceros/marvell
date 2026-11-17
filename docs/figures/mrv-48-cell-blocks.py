@@ -19,7 +19,7 @@ RUNS = ROOT / "logs/mrv48-2026-11-17/runs.jsonl"
 SHA = "4c6c508e560b18772cd97cb66e45b13b7fb5ff29fdc436addc1819460e50a26b"
 TAG = re.compile(r"^M48[bc] wc n(?P<n>\d) W(?P<w>\d+) (?P<v>\S+) pass(?P<p>\d+)$")
 FLAGS = {"base": "", "pairs": "--seq-pairs", "blocks": "--cell-blocks", "blocks+priv": "--cell-blocks --private-progress"}
-LABEL = {"base": "按序号\n轮流", "pairs": "按序号\n两格一组", "blocks": "按 128 B 块\n两格一组", "blocks+priv": "按 128 B 块\n+ 进度字独占"}
+LABEL = {"base": "按序号\n轮流", "pairs": "按序号\n两格一组", "blocks": "按 128 B 块\n两格一组", "blocks+priv": "按 128 B 块\n+ 不写进度字"}
 ORDER = list(FLAGS)
 
 runs = defaultdict(list)
