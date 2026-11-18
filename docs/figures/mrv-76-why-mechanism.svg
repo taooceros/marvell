@@ -41,7 +41,7 @@
   <rect x="652" y="134" width="298" height="80" rx="5" fill="#FFF5F5" fill-opacity="0.92"/>
   <text x="801" y="155" font-size="15" font-weight="700" fill="#D93829" text-anchor="middle">④c ~3 µs 乱序在途写带（真正前沿）</text>
   <text x="801" y="177" font-size="13" font-weight="700" fill="#B91C1C" text-anchor="middle">next .. next + 430（主机已发、乱序落盘中）</text>
-  <text x="801" y="201" font-size="13" font-weight="700" fill="#D93829" text-anchor="middle">⚡ 核读拉入缓存 ⇄ PEM0 覆写触发嗅探失效</text>
+  <text x="801" y="201" font-size="12" font-weight="700" fill="#D93829" text-anchor="middle">⚡ 未落盘行读写碰撞（同行嗅探 / 入站写队头阻塞）[推断]</text>
 
   <!-- Host CHA / PEM0 Arrow into Zone C -->
   <rect x="984" y="128" width="136" height="92" rx="8" fill="#FFF5F5" stroke="#D93829" stroke-width="2"/>
@@ -71,7 +71,7 @@
 
   <rect x="64" y="498" width="484" height="70" rx="6" fill="#F1F5F9" stroke="#64748B" stroke-width="1.5"/>
   <text x="80" y="524" font-size="14" font-weight="700" fill="#0F172A">结论：卡侧通用 L3/TAD 读带宽与同环端口绝非瓶颈</text>
-  <text x="80" y="548" font-size="12.5" font-weight="600" fill="#334155">TAD 请求激增 +522M、L2 重填 21.4M，CHA 仍稳定 320–341 条</text>
+  <text x="80" y="548" font-size="12.5" font-weight="600" fill="#334155">TAD 达 1033M/s（命中 99.97%，无写分配争用），CHA 稳定 320–341 条</text>
 
   <!-- Right Card: Inside Active Write Band (0 ns & Mode 4c write-band) -->
   <rect x="608" y="294" width="532" height="294" rx="10" fill="#FFF5F5" stroke="#D93829" stroke-width="2.5"/>
@@ -86,10 +86,10 @@
 
   <rect x="632" y="428" width="484" height="58" rx="6" fill="#FFFFFF" stroke="#D93829" stroke-width="2.2"/>
   <text x="648" y="452" font-size="14" font-weight="700" fill="#991B1B">④c 停 3 µs 但扫读在途写带（next .. +384）</text>
-  <text x="648" y="474" font-size="12.5" fill="#B91C1C">TAD 嗅探 111.9M（+44M）· L2 重填 24.3M · CHA 458 条（4.03 µs）</text>
+  <text x="648" y="474" font-size="12.5" fill="#B91C1C">嗅探 111.9M（63.3M/s）· 停顿翻 2.6× · CHA 458 条（4.03 µs）</text>
   <text x="1104" y="452" font-size="15" font-weight="700" fill="#D93829" text-anchor="end">113.4 M/s</text>
 
   <rect x="632" y="498" width="484" height="70" rx="6" fill="#FEE2E2" stroke="#D93829" stroke-width="1.8"/>
-  <text x="648" y="524" font-size="14" font-weight="700" fill="#991B1B">结论：根因是「核提前拉入未落盘行 ⇄ PEM0 覆写嗅探」乒乓</text>
-  <text x="648" y="548" font-size="12.5" font-weight="700" fill="#B91C1C">TAD 总请求（833M）远少于冷读组（1280M），活跃写带嗅探反压 CHA</text>
+  <text x="648" y="524" font-size="13.5" font-weight="700" fill="#991B1B">结论：根因是在途写带同行嗅探失效 / 入站写队头阻塞 [推断]</text>
+  <text x="648" y="548" font-size="12.5" font-weight="700" fill="#B91C1C">写带碰撞推高 τ_CHA &gt; 3 µs 触发停顿正反馈，反压主机 CHA [推断]</text>
 </svg>
