@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 340" width="960" height="340" font-family="DejaVu Sans, Droid Sans Fallback, sans-serif">
+  <rect width="960" height="340" fill="#ffffff"/>
+
+  <!-- Left panel: Closed-loop W=64 -->
+  <rect x="24" y="24" width="400" height="292" rx="14" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="224" y="58" text-anchor="middle" font-size="16" font-weight="700" fill="#475569">闭环锁步（W = 64 / 256）</text>
+
+  <!-- Host box left -->
+  <rect x="48" y="88" width="124" height="96" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="110" y="128" text-anchor="middle" font-size="15" font-weight="700" fill="#334155">主机 cpu40</text>
+  <text x="110" y="154" text-anchor="middle" font-size="12" fill="#64748b">等 k−W 回复</text>
+
+  <!-- Card box left -->
+  <rect x="276" y="88" width="124" height="96" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="338" y="128" text-anchor="middle" font-size="15" font-weight="700" fill="#334155">卡核</text>
+  <text x="338" y="154" text-anchor="middle" font-size="12" fill="#64748b">前沿空轮询</text>
+
+  <!-- Arrows left (coupled loop) -->
+  <path d="M 172 114 L 268 114" stroke="#64748b" stroke-width="2.2" fill="none" marker-end="url(#arrow-grey)"/>
+  <text x="224" y="104" text-anchor="middle" font-size="11" fill="#64748b">MOVDIR64B</text>
+
+  <path d="M 276 158 L 180 158" stroke="#64748b" stroke-width="2.2" stroke-dasharray="5,4" fill="none" marker-end="url(#arrow-grey)"/>
+  <text x="224" y="177" text-anchor="middle" font-size="11" fill="#64748b">回复门控下一轮</text>
+
+  <!-- Key number left -->
+  <text x="224" y="242" text-anchor="middle" font-size="32" font-weight="800" fill="#475569">13.1–14.2 M/s</text>
+  <text x="224" y="272" text-anchor="middle" font-size="13.5" font-weight="600" fill="#64748b">慢状态锁死（RTT 3.7–18.4 µs）</text>
+
+  <!-- Right panel: Open-loop Duplex -->
+  <rect x="452" y="24" width="484" height="292" rx="14" fill="#f0f9ff" stroke="#0284c7" stroke-width="2"/>
+  <text x="694" y="58" text-anchor="middle" font-size="16" font-weight="700" fill="#0369a1">开环双向（独立速率）</text>
+
+  <!-- Host box right -->
+  <rect x="476" y="88" width="144" height="96" rx="10" fill="#ffffff" stroke="#0284c7" stroke-width="1.8"/>
+  <text x="548" y="128" text-anchor="middle" font-size="15" font-weight="700" fill="#0f172a">主机 cpu40</text>
+  <text x="548" y="154" text-anchor="middle" font-size="12" fill="#0369a1">按率发 + 非阻塞收</text>
+
+  <!-- Card box right -->
+  <rect x="768" y="88" width="144" height="96" rx="10" fill="#ffffff" stroke="#0284c7" stroke-width="1.8"/>
+  <text x="840" y="128" text-anchor="middle" font-size="15" font-weight="700" fill="#0f172a">卡核（同核/分核）</text>
+  <text x="840" y="154" text-anchor="middle" font-size="12" fill="#0369a1">收 h2c + 写 c2h</text>
+
+  <!-- Independent stream arrows right -->
+  <path d="M 620 114 L 760 114" stroke="#0284c7" stroke-width="3" fill="none" marker-end="url(#arrow-blue)"/>
+  <text x="694" y="103" text-anchor="middle" font-size="12" font-weight="600" fill="#0369a1">h2c MOVDIR64B</text>
+
+  <path d="M 768 158 L 628 158" stroke="#0284c7" stroke-width="3" fill="none" marker-end="url(#arrow-blue)"/>
+  <text x="694" y="178" text-anchor="middle" font-size="12" font-weight="600" fill="#0369a1">c2h 写合并 / DPI</text>
+
+  <!-- Key numbers right -->
+  <text x="574" y="242" text-anchor="middle" font-size="28" font-weight="800" fill="#0284c7">35 + 35 M/s</text>
+  <text x="574" y="272" text-anchor="middle" font-size="13" font-weight="600" fill="#0369a1">单向 p50 0.85–1.24 µs（1 核）</text>
+
+  <line x1="694" y1="208" x2="694" y2="284" stroke="#bae6fd" stroke-width="1.5"/>
+
+  <text x="814" y="242" text-anchor="middle" font-size="28" font-weight="800" fill="#0284c7">45–49 M/s × 2</text>
+  <text x="814" y="272" text-anchor="middle" font-size="13" font-weight="600" fill="#0369a1">合计 91–97 M/s（1+1 分核）</text>
+
+  <defs>
+    <marker id="arrow-grey" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#64748b"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#0284c7"/>
+    </marker>
+  </defs>
+</svg>
