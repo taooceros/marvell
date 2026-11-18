@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 630" width="1160" height="630" font-family="'Noto Sans CJK SC', 'PingFang SC', 'Microsoft YaHei', sans-serif">
+  <defs>
+    <marker id="arrow-grey" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748B"/>
+    </marker>
+    <marker id="arrow-dark" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#1E293B"/>
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#D93829"/>
+    </marker>
+    <pattern id="write-band-hatch" width="12" height="12" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="12" stroke="#FAD1CC" stroke-width="5"/>
+    </pattern>
+  </defs>
+
+  <!-- White background -->
+  <rect x="0" y="0" width="1160" height="630" fill="#FFFFFF"/>
+
+  <!-- Top Header: Short, clean, zero overlap -->
+  <text x="40" y="46" font-size="22" font-weight="700" fill="#0F172A">MRV-76：跨行冷读穿透 L1D/L2 vs ~3 µs 在途写带嗅探</text>
+  <text x="1120" y="46" font-size="22" font-weight="700" fill="#0F172A" text-anchor="end">162 M/s vs 129 M/s</text>
+  <line x1="40" y1="64" x2="1120" y2="64" stroke="#E2E8F0" stroke-width="1.5"/>
+
+  <!-- ================= COLUMN 1: CARD CORE ================= -->
+  <rect x="40" y="92" width="136" height="504" rx="10" fill="#F8FAFC" stroke="#334155" stroke-width="2"/>
+  <text x="108" y="130" font-size="18" font-weight="700" fill="#0F172A" text-anchor="middle">卡收请求核</text>
+  <text x="108" y="154" font-size="14" font-weight="600" fill="#475569" text-anchor="middle">停顿 3 µs 动作</text>
+
+  <!-- Row 0: MRV-61 -->
+  <rect x="54" y="182" width="108" height="56" rx="6" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <text x="108" y="206" font-size="13" font-weight="700" fill="#64748B" text-anchor="middle">MRV-61 旧测</text>
+  <text x="108" y="226" font-size="12" fill="#64748B" text-anchor="middle">固定单格</text>
+
+  <!-- Row 1: spin -->
+  <rect x="54" y="254" width="108" height="56" rx="6" fill="#FFFFFF" stroke="#64748B" stroke-width="1.5"/>
+  <text x="108" y="278" font-size="14" font-weight="700" fill="#1E293B" text-anchor="middle">① spin</text>
+  <text x="108" y="298" font-size="12" fill="#64748B" text-anchor="middle">纯空转</text>
+
+  <!-- Row 2: cold-private -->
+  <rect x="54" y="346" width="108" height="62" rx="6" fill="#FFFFFF" stroke="#334155" stroke-width="1.8"/>
+  <text x="108" y="372" font-size="14" font-weight="700" fill="#0F172A" text-anchor="middle">② cold-priv</text>
+  <text x="108" y="394" font-size="12" fill="#475569" text-anchor="middle">64B 步进冷读</text>
+
+  <!-- Row 3: far-ring -->
+  <rect x="54" y="434" width="108" height="62" rx="6" fill="#FFFFFF" stroke="#334155" stroke-width="1.8"/>
+  <text x="108" y="460" font-size="14" font-weight="700" fill="#0F172A" text-anchor="middle">③ far-ring</text>
+  <text x="108" y="482" font-size="12" fill="#475569" text-anchor="middle">64B 步进冷读</text>
+
+  <!-- Row 4: near-ring -->
+  <rect x="54" y="514" width="108" height="64" rx="6" fill="#FEF2F2" stroke="#D93829" stroke-width="2"/>
+  <text x="108" y="540" font-size="14" font-weight="700" fill="#D93829" text-anchor="middle">④ near-ring</text>
+  <text x="108" y="562" font-size="12" font-weight="600" fill="#B91C1C" text-anchor="middle">及邻格 next - 1</text>
+
+  <!-- ================= COLUMN 2: L1D (64 KiB) ================= -->
+  <rect x="212" y="92" width="128" height="504" rx="10" fill="#F8FAFC" stroke="#64748B" stroke-width="2"/>
+  <text x="276" y="130" font-size="18" font-weight="700" fill="#1E293B" text-anchor="middle">L1D</text>
+  <text x="276" y="154" font-size="15" font-weight="700" fill="#475569" text-anchor="middle">64 KiB</text>
+
+  <!-- L1D Trap Box -->
+  <rect x="224" y="180" width="104" height="132" rx="8" fill="#E2E8F0" stroke="#64748B" stroke-width="1.5"/>
+  <text x="276" y="208" font-size="14" font-weight="700" fill="#1E293B" text-anchor="middle">100% 命中</text>
+  <text x="276" y="232" font-size="12" fill="#475569" text-anchor="middle">private /</text>
+  <text x="276" y="250" font-size="12" fill="#475569" text-anchor="middle">next - 2</text>
+  <line x1="236" y1="266" x2="316" y2="266" stroke="#94A3B8" stroke-width="1"/>
+  <text x="276" y="292" font-size="15" font-weight="700" fill="#0F172A" text-anchor="middle">L3 读 = 0</text>
+
+  <!-- Arrows into L1D Trap -->
+  <line x1="162" y1="210" x2="218" y2="210" stroke="#64748B" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#arrow-grey)"/>
+  <line x1="162" y1="282" x2="218" y2="282" stroke="#64748B" stroke-width="2" marker-end="url(#arrow-grey)"/>
+
+  <!-- ================= COLUMN 3: L2 (1 MiB) ================= -->
+  <rect x="372" y="92" width="118" height="504" rx="10" fill="#F8FAFC" stroke="#64748B" stroke-width="2"/>
+  <text x="431" y="130" font-size="18" font-weight="700" fill="#1E293B" text-anchor="middle">L2</text>
+  <text x="431" y="154" font-size="15" font-weight="700" fill="#475569" text-anchor="middle">1 MiB</text>
+
+  <!-- Blocked X between L1D and L2 -->
+  <text x="356" y="252" font-size="18" font-weight="700" fill="#94A3B8" text-anchor="middle">✕</text>
+
+  <!-- Piercing Banner across L1D and L2 -->
+  <rect x="224" y="318" width="254" height="24" rx="5" fill="#E2E8F0"/>
+  <text x="351" y="335" font-size="12" font-weight="700" fill="#1E293B" text-anchor="middle">跨度 &gt; 2 MiB · 穿透 L1D + L2</text>
+
+  <!-- ================= COLUMN 4: CARD L3 / TAD ================= -->
+  <rect x="526" y="92" width="424" height="504" rx="12" fill="#F8FAFC" stroke="#1E293B" stroke-width="2.5"/>
+  <text x="738" y="128" font-size="20" font-weight="700" fill="#0F172A" text-anchor="middle">卡侧 L3 / TAD 一致性网格</text>
+  <text x="738" y="152" font-size="13" font-weight="600" fill="#475569" text-anchor="middle">perf: tad_req_msh_in_any · tad_snp_msh_out_any</text>
+
+  <!-- Top Summary Verdict Box inside L3 -->
+  <rect x="550" y="172" width="376" height="140" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+  <text x="568" y="200" font-size="15" font-weight="700" fill="#0F172A">实验判据（停顿 3 µs 下去程吞吐）</text>
+  <line x1="566" y1="212" x2="910" y2="212" stroke="#E2E8F0" stroke-width="1"/>
+
+  <circle cx="576" cy="238" r="6" fill="#D93829"/>
+  <text x="592" y="243" font-size="14" font-weight="700" fill="#0F172A">① ≈ ② ≈ ③ ≈ 162 M/s，唯 ④ 跌回 ~130 M/s</text>
+  <text x="592" y="264" font-size="13" font-weight="700" fill="#D93829">→ 坐实「~3 µs 乱序在途写带嗅探争用」</text>
+
+  <circle cx="576" cy="292" r="6" fill="#475569"/>
+  <text x="592" y="297" font-size="14" font-weight="700" fill="#334155">② 或 ③ 亦跌回 ~130 M/s → L3/TAD 读带宽瓶颈</text>
+
+  <!-- Zone 2: Out-of-ring 4 MiB Cold Buffer (Row 2, y=346..408) -->
+  <rect x="550" y="344" width="376" height="66" rx="8" fill="#FFFFFF" stroke="#334155" stroke-width="2"/>
+  <text x="568" y="372" font-size="16" font-weight="700" fill="#0F172A">环外独立冷大页（4 MiB）</text>
+  <text x="568" y="395" font-size="13" fill="#475569">纯 L3/TAD 读流量 · 不碰 BAR4 请求环</text>
+  <rect x="818" y="359" width="92" height="36" rx="6" fill="#F1F5F9" stroke="#64748B" stroke-width="1.2"/>
+  <text x="864" y="382" font-size="13" font-weight="700" fill="#334155" text-anchor="middle">无在途写</text>
+
+  <!-- Container for BAR4 Request Ring (Rows 3 & 4, y=422..582) -->
+  <rect x="550" y="422" width="376" height="162" rx="8" fill="#FFFFFF" stroke="#1E293B" stroke-width="2"/>
+  <text x="568" y="444" font-size="14" font-weight="700" fill="#0F172A">BAR4 请求环（65,536 格 · 4 MiB）</text>
+
+  <!-- Zone 3: Far Ring (Row 3, y=452..506) -->
+  <rect x="566" y="452" width="344" height="54" rx="6" fill="#F1F5F9" stroke="#475569" stroke-width="1.6"/>
+  <text x="582" y="476" font-size="15" font-weight="700" fill="#0F172A">远端已消费冷区</text>
+  <text x="582" y="496" font-size="12" font-weight="600" fill="#475569">next - 32768 .. next - 16384</text>
+  <text x="894" y="484" font-size="13" font-weight="700" fill="#334155" text-anchor="end">同环 TAD · 早已落盘</text>
+
+  <!-- Zone 4: Near Ring / ~3 us Write Band (Row 4, y=514..574) -->
+  <rect x="566" y="514" width="344" height="60" rx="6" fill="url(#write-band-hatch)" stroke="#D93829" stroke-width="2.5"/>
+  <rect x="571" y="519" width="334" height="50" rx="4" fill="#FFF5F5" fill-opacity="0.90"/>
+  <text x="584" y="541" font-size="15" font-weight="700" fill="#D93829">~3 µs 乱序在途写带</text>
+  <text x="584" y="561" font-size="12" font-weight="700" fill="#B91C1C">next - 384 .. next (~430 格)</text>
+  <text x="894" y="549" font-size="14" font-weight="700" fill="#D93829" text-anchor="end">⚡ TAD 嗅探争用</text>
+
+  <!-- Straight Horizontal Piercing Arrows for Rows 2, 3, 4 (ZERO crossings!) -->
+  <line x1="162" y1="377" x2="542" y2="377" stroke="#1E293B" stroke-width="2.5" marker-end="url(#arrow-dark)"/>
+  <line x1="162" y1="479" x2="558" y2="479" stroke="#1E293B" stroke-width="2.5" marker-end="url(#arrow-dark)"/>
+  <line x1="162" y1="544" x2="558" y2="544" stroke="#D93829" stroke-width="3" marker-end="url(#arrow-red)"/>
+
+  <!-- ================= COLUMN 5: HOST CHA & PEM0 ================= -->
+  <rect x="988" y="92" width="132" height="504" rx="10" fill="#FFF5F5" stroke="#D93829" stroke-width="2"/>
+  <text x="1054" y="130" font-size="18" font-weight="700" fill="#991B1B" text-anchor="middle">主机核 40</text>
+  <text x="1054" y="154" font-size="14" font-weight="700" fill="#D93829" text-anchor="middle">MOVDIR64B</text>
+
+  <!-- Host CHA Box -->
+  <rect x="1000" y="186" width="108" height="136" rx="8" fill="#FFFFFF" stroke="#D93829" stroke-width="1.8"/>
+  <text x="1054" y="216" font-size="15" font-weight="700" fill="#0F172A" text-anchor="middle">32 个 CHA</text>
+  <text x="1054" y="240" font-size="13" font-weight="600" fill="#475569" text-anchor="middle">乱序排空</text>
+  <text x="1054" y="274" font-size="20" font-weight="700" fill="#D93829" text-anchor="middle">~430 格</text>
+  <text x="1054" y="302" font-size="15" font-weight="700" fill="#B91C1C" text-anchor="middle">τ ≈ 3.2 µs</text>
+
+  <!-- PEM0 Inbound Box -->
+  <rect x="1000" y="362" width="108" height="90" rx="8" fill="#FFFFFF" stroke="#D93829" stroke-width="1.8"/>
+  <text x="1054" y="394" font-size="16" font-weight="700" fill="#0F172A" text-anchor="middle">PEM0</text>
+  <text x="1054" y="418" font-size="13" font-weight="600" fill="#475569" text-anchor="middle">PCIe Gen5 x4</text>
+  <text x="1054" y="438" font-size="12" font-weight="600" fill="#D93829" text-anchor="middle">入站写卡内存</text>
+
+  <!-- Arrow CHA -> PEM0 -> Write Band (Row 4) -->
+  <line x1="1054" y1="322" x2="1054" y2="354" stroke="#D93829" stroke-width="3" marker-end="url(#arrow-red)"/>
+  <path d="M 1054 452 L 1054 544 L 918 544" fill="none" stroke="#D93829" stroke-width="3.5" marker-end="url(#arrow-red)"/>
+</svg>

@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 620" width="1180" height="620" font-family="'Noto Sans CJK SC', 'PingFang SC', 'Microsoft YaHei', sans-serif">
+  <defs>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#D93829"/>
+    </marker>
+    <pattern id="write-band-hatch" width="12" height="12" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="12" stroke="#FAD1CC" stroke-width="5"/>
+    </pattern>
+  </defs>
+
+  <!-- White background -->
+  <rect x="0" y="0" width="1180" height="620" fill="#FFFFFF"/>
+
+  <!-- Top Title -->
+  <text x="40" y="44" font-size="21" font-weight="700" fill="#0F172A">为什么冷读 L3/TAD 不降速（162.6 M/s），唯有扫入 ~3 µs 在途写带才降速（113.4 M/s）</text>
+  <line x1="40" y1="62" x2="1140" y2="62" stroke="#E2E8F0" stroke-width="1.5"/>
+
+  <!-- ================= TOP SECTION: THE RING TIMELINE AROUND `next` ================= -->
+  <rect x="40" y="80" width="1100" height="190" rx="10" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.8"/>
+  <text x="64" y="110" font-size="16" font-weight="700" fill="#0F172A">BAR4 请求环（65,533 格 · 4 MiB）相对于卡核消费指针 next 的三个物理区域</text>
+
+  <!-- Zone A: Far Ring (next - 32768 .. -16384) -->
+  <rect x="64" y="128" width="270" height="92" rx="8" fill="#FFFFFF" stroke="#475569" stroke-width="2"/>
+  <text x="199" y="154" font-size="15" font-weight="700" fill="#0F172A" text-anchor="middle">③ 远端已消费冷区</text>
+  <text x="199" y="176" font-size="13" font-weight="600" fill="#475569" text-anchor="middle">next - 32768 .. next - 16384</text>
+  <text x="199" y="200" font-size="13" font-weight="700" fill="#0F766E" text-anchor="middle">200 µs 前已落盘 · 零在途写</text>
+
+  <!-- Zone B: Near Ring behind next (next - 384 .. next - 1) -->
+  <rect x="354" y="128" width="260" height="92" rx="8" fill="#FFFFFF" stroke="#475569" stroke-width="2"/>
+  <text x="484" y="154" font-size="15" font-weight="700" fill="#0F172A" text-anchor="middle">④a/b 近前沿已消费区</text>
+  <text x="484" y="176" font-size="13" font-weight="600" fill="#475569" text-anchor="middle">next - 384 .. next - 1</text>
+  <text x="484" y="200" font-size="13" font-weight="700" fill="#0F766E" text-anchor="middle">已过 next 校验 · 写入已完成</text>
+
+  <!-- Pointer `next` Divider -->
+  <line x1="630" y1="118" x2="630" y2="254" stroke="#D93829" stroke-width="3" stroke-dasharray="5 3"/>
+  <rect x="590" y="228" width="80" height="26" rx="5" fill="#D93829"/>
+  <text x="630" y="246" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle">队头 next</text>
+
+  <!-- Zone C: Active In-Flight Write Band (next .. next + 430) -->
+  <rect x="646" y="128" width="310" height="92" rx="8" fill="url(#write-band-hatch)" stroke="#D93829" stroke-width="2.5"/>
+  <rect x="652" y="134" width="298" height="80" rx="5" fill="#FFF5F5" fill-opacity="0.92"/>
+  <text x="801" y="155" font-size="15" font-weight="700" fill="#D93829" text-anchor="middle">④c ~3 µs 乱序在途写带（真正前沿）</text>
+  <text x="801" y="177" font-size="13" font-weight="700" fill="#B91C1C" text-anchor="middle">next .. next + 430（主机已发、乱序落盘中）</text>
+  <text x="801" y="201" font-size="13" font-weight="700" fill="#D93829" text-anchor="middle">⚡ 核读拉入缓存 ⇄ PEM0 覆写触发嗅探失效</text>
+
+  <!-- Host CHA / PEM0 Arrow into Zone C -->
+  <rect x="984" y="128" width="136" height="92" rx="8" fill="#FFF5F5" stroke="#D93829" stroke-width="2"/>
+  <text x="1052" y="154" font-size="15" font-weight="700" fill="#991B1B" text-anchor="middle">主机 32 CHA</text>
+  <text x="1052" y="176" font-size="13" font-weight="700" fill="#D93829" text-anchor="middle">~440 格在途</text>
+  <text x="1052" y="198" font-size="12" font-weight="600" fill="#B91C1C" text-anchor="middle">PEM0 乱序写入</text>
+  <line x1="984" y1="174" x2="962" y2="174" stroke="#D93829" stroke-width="3" marker-end="url(#arrow-red)"/>
+
+  <!-- ================= BOTTOM SECTION: MEASURED OUTCOMES ================= -->
+
+  <!-- Left Card: Away from Write Band (Modes 1, 2, 3, 4a, 4b) -->
+  <rect x="40" y="294" width="532" height="294" rx="10" fill="#F8FAFC" stroke="#334155" stroke-width="2.2"/>
+  <text x="64" y="328" font-size="17" font-weight="700" fill="#0F172A">A. 读在在途写带之外</text>
+  <text x="548" y="328" font-size="20" font-weight="700" fill="#0F766E" text-anchor="end">160.2–162.6 M/s</text>
+  <line x1="60" y1="342" x2="552" y2="342" stroke="#CBD5E1" stroke-width="1.5"/>
+
+  <!-- Rows inside Left Card -->
+  <rect x="64" y="358" width="484" height="58" rx="6" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.5"/>
+  <text x="80" y="382" font-size="14" font-weight="700" fill="#0F172A">② 环外 4M 冷页（64B / 4K 跨页）</text>
+  <text x="80" y="404" font-size="12.5" fill="#475569">L3 读 311–442M · L2 重填 21.3M · TAD 1016–1280M</text>
+  <text x="536" y="382" font-size="15" font-weight="700" fill="#0F766E" text-anchor="end">160.4–161.4 M/s</text>
+
+  <rect x="64" y="428" width="484" height="58" rx="6" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.5"/>
+  <text x="80" y="452" font-size="14" font-weight="700" fill="#0F172A">③ 环内半圈外冷区（-32768 .. -16384）</text>
+  <text x="80" y="474" font-size="12.5" fill="#475569">L3 读 307–403M · L2 重填 21.4M · TAD 978–1167M</text>
+  <text x="536" y="452" font-size="15" font-weight="700" fill="#0F766E" text-anchor="end">162.0–162.6 M/s</text>
+
+  <rect x="64" y="498" width="484" height="70" rx="6" fill="#F1F5F9" stroke="#64748B" stroke-width="1.5"/>
+  <text x="80" y="524" font-size="14" font-weight="700" fill="#0F172A">结论：卡侧通用 L3/TAD 读带宽与同环端口绝非瓶颈</text>
+  <text x="80" y="548" font-size="12.5" font-weight="600" fill="#334155">TAD 请求激增 +522M、L2 重填 21.4M，CHA 仍稳定 320–341 条</text>
+
+  <!-- Right Card: Inside Active Write Band (0 ns & Mode 4c write-band) -->
+  <rect x="608" y="294" width="532" height="294" rx="10" fill="#FFF5F5" stroke="#D93829" stroke-width="2.5"/>
+  <text x="632" y="328" font-size="17" font-weight="700" fill="#991B1B">B. 读落入 ~3 µs 在途写带</text>
+  <text x="1116" y="328" font-size="20" font-weight="700" fill="#D93829" text-anchor="end">128.3 / 113.4 M/s</text>
+  <line x1="628" y1="342" x2="1120" y2="342" stroke="#FECACA" stroke-width="1.5"/>
+
+  <rect x="632" y="358" width="484" height="58" rx="6" fill="#FFFFFF" stroke="#D93829" stroke-width="1.8"/>
+  <text x="648" y="382" font-size="14" font-weight="700" fill="#991B1B">单独不停（0 ns）：紧追队头 next（95% 空轮询）</text>
+  <text x="648" y="404" font-size="12.5" fill="#B91C1C">TAD 嗅探 81.9M（+14M）· L2 重填 17.0M · CHA 438 条（3.42 µs）</text>
+  <text x="1104" y="382" font-size="15" font-weight="700" fill="#D93829" text-anchor="end">128.3 M/s</text>
+
+  <rect x="632" y="428" width="484" height="58" rx="6" fill="#FFFFFF" stroke="#D93829" stroke-width="2.2"/>
+  <text x="648" y="452" font-size="14" font-weight="700" fill="#991B1B">④c 停 3 µs 但扫读在途写带（next .. +384）</text>
+  <text x="648" y="474" font-size="12.5" fill="#B91C1C">TAD 嗅探 111.9M（+44M）· L2 重填 24.3M · CHA 458 条（4.03 µs）</text>
+  <text x="1104" y="452" font-size="15" font-weight="700" fill="#D93829" text-anchor="end">113.4 M/s</text>
+
+  <rect x="632" y="498" width="484" height="70" rx="6" fill="#FEE2E2" stroke="#D93829" stroke-width="1.8"/>
+  <text x="648" y="524" font-size="14" font-weight="700" fill="#991B1B">结论：根因是「核提前拉入未落盘行 ⇄ PEM0 覆写嗅探」乒乓</text>
+  <text x="648" y="548" font-size="12.5" font-weight="700" fill="#B91C1C">TAD 总请求（833M）远少于冷读组（1280M），活跃写带嗅探反压 CHA</text>
+</svg>
