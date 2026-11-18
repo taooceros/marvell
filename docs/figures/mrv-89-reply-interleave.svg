@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 400" width="960" height="400" font-family="DejaVu Sans, Noto Sans CJK SC, Droid Sans Fallback, sans-serif">
+  <rect width="960" height="400" fill="#ffffff"/>
+
+  <!-- Column 1: What happens inside 1 reply (64 B = 4 x 16 B) -->
+  <rect x="24" y="24" width="284" height="352" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.8"/>
+  <text x="166" y="54" font-size="16" font-weight="bold" fill="#0f172a" text-anchor="middle">① 1 条回复内部：4 次 16B 凑满 64B</text>
+
+  <!-- 4 x 16 B STP instructions -->
+  <text x="166" y="84" font-size="12.5" fill="#475569" text-anchor="middle">卡核写 1 条回复要发 4 条 16B 指令：</text>
+  <g transform="translate(46, 96)">
+    <rect x="0" y="0" width="54" height="34" rx="4" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/>
+    <text x="27" y="22" font-size="12.5" font-weight="bold" fill="#1e293b" text-anchor="middle">16 B</text>
+    <rect x="62" y="0" width="54" height="34" rx="4" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/>
+    <text x="89" y="22" font-size="12.5" font-weight="bold" fill="#1e293b" text-anchor="middle">16 B</text>
+    <rect x="124" y="0" width="54" height="34" rx="4" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/>
+    <text x="151" y="22" font-size="12.5" font-weight="bold" fill="#1e293b" text-anchor="middle">16 B</text>
+    <rect x="186" y="0" width="54" height="34" rx="4" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/>
+    <text x="213" y="22" font-size="12.5" font-weight="bold" fill="#1e293b" text-anchor="middle">16 B</text>
+  </g>
+
+  <!-- Arrow down to WC buffer -->
+  <line x1="166" y1="138" x2="166" y2="168" stroke="#0284c7" stroke-width="2.5"/>
+  <polygon points="166,176 160,164 172,164" fill="#0284c7"/>
+  <text x="228" y="158" font-size="12" font-weight="bold" fill="#0284c7">写合并缓冲</text>
+
+  <!-- 64 B WC Buffer (Full!) -->
+  <rect x="46" y="182" width="240" height="58" rx="6" fill="#e0f2fe" stroke="#0284c7" stroke-width="2.2"/>
+  <text x="166" y="206" font-size="14" font-weight="bold" fill="#0369a1" text-anchor="middle">刚好填满 1 个 64 B 整行！</text>
+  <text x="166" y="228" font-size="12" fill="#0c4a6e" text-anchor="middle">（单条回复自己就装满一箱）</text>
+
+  <!-- Arrow down to PCIe packet -->
+  <line x1="166" y1="246" x2="166" y2="276" stroke="#dc2626" stroke-width="2.5"/>
+  <polygon points="166,284 160,272 172,272" fill="#dc2626"/>
+  <text x="228" y="268" font-size="12" font-weight="bold" fill="#dc2626">当场整包发走</text>
+
+  <!-- Shipped 64 B PCIe Write -->
+  <rect x="46" y="290" width="240" height="62" rx="6" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+  <text x="166" y="316" font-size="14" font-weight="bold" fill="#991b1b" text-anchor="middle">1 次 PCIe 64B 整行写 (ItoM)</text>
+  <text x="166" y="338" font-size="12" font-weight="bold" fill="#dc2626" text-anchor="middle">根本不需要等第 2 条回复来拼单</text>
+
+  <!-- Column 2: Two Ways of Placing Replies in Host Memory -->
+  <rect x="328" y="24" width="320" height="352" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.8"/>
+  <text x="488" y="54" font-size="16" font-weight="bold" fill="#0f172a" text-anchor="middle">② 两种写回位置（唯一改变的变量）</text>
+
+  <!-- Top half of Col 2: G1 Contiguous -->
+  <text x="348" y="88" font-size="14" font-weight="bold" fill="#334155">写法 A：本段连续写 (G1)</text>
+  <text x="348" y="108" font-size="12" fill="#64748b">只往房间 0 挨着放：第 1 箱 → 第 2 箱 → 第 3 箱</text>
+
+  <!-- Room 0 and Room 1 for G1 -->
+  <rect x="348" y="120" width="132" height="68" rx="6" fill="#ffffff" stroke="#64748b" stroke-width="1.6"/>
+  <text x="414" y="139" font-size="12" font-weight="bold" fill="#475569" text-anchor="middle">房间 0 (段 0)</text>
+  <rect x="358" y="148" width="34" height="28" rx="3" fill="#0284c7"/>
+  <text x="375" y="166" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">#1</text>
+  <rect x="397" y="148" width="34" height="28" rx="3" fill="#0284c7"/>
+  <text x="414" y="166" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">#2</text>
+  <rect x="436" y="148" width="34" height="28" rx="3" fill="#0284c7"/>
+  <text x="453" y="166" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">#3</text>
+
+  <rect x="496" y="120" width="132" height="68" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="562" y="139" font-size="12" fill="#94a3b8" text-anchor="middle">房间 1 (+64 KiB)</text>
+  <text x="562" y="167" font-size="12" fill="#cbd5e1" text-anchor="middle">（不写这里）</text>
+
+  <line x1="348" y1="208" x2="628" y2="208" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Bottom half of Col 2: G4 Interleaved -->
+  <text x="348" y="236" font-size="14" font-weight="bold" fill="#0284c7">写法 B：跨段交错写 (G4)</text>
+  <text x="348" y="256" font-size="12" fill="#64748b">每放 1 箱就跳 64 KiB 换房间：#1 房间0 → #2 房间1</text>
+
+  <rect x="348" y="268" width="132" height="68" rx="6" fill="#ffffff" stroke="#0284c7" stroke-width="1.6"/>
+  <text x="414" y="287" font-size="12" font-weight="bold" fill="#0369a1" text-anchor="middle">房间 0 (段 0)</text>
+  <rect x="358" y="296" width="34" height="28" rx="3" fill="#0284c7"/>
+  <text x="375" y="314" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">#1</text>
+  <rect x="397" y="296" width="34" height="28" rx="3" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <rect x="436" y="296" width="34" height="28" rx="3" fill="#0284c7"/>
+  <text x="453" y="314" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">#3</text>
+
+  <rect x="496" y="268" width="132" height="68" rx="6" fill="#ffffff" stroke="#0284c7" stroke-width="1.6"/>
+  <text x="562" y="287" font-size="12" font-weight="bold" fill="#0369a1" text-anchor="middle">房间 1 (+64 KiB)</text>
+  <rect x="506" y="296" width="34" height="28" rx="3" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <rect x="545" y="296" width="34" height="28" rx="3" fill="#dc2626"/>
+  <text x="562" y="314" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">#2</text>
+  <rect x="584" y="296" width="34" height="28" rx="3" fill="#f1f5f9" stroke="#cbd5e1"/>
+
+  <!-- Jump arc from #1 to #2 (below boxes so it never crosses text) -->
+  <path d="M 375 326 Q 468 366 562 326" fill="none" stroke="#dc2626" stroke-width="2.2"/>
+  <polygon points="562,326 551,329 556,336" fill="#dc2626"/>
+
+  <!-- Column 3: Measured Result -->
+  <rect x="668" y="24" width="268" height="352" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.8"/>
+  <text x="802" y="54" font-size="16" font-weight="bold" fill="#0f172a" text-anchor="middle">③ 实测结果：完全一样</text>
+
+  <!-- Box A result -->
+  <rect x="688" y="96" width="228" height="92" rx="8" fill="#ffffff" stroke="#64748b" stroke-width="1.8"/>
+  <text x="802" y="122" font-size="13.5" font-weight="bold" fill="#334155" text-anchor="middle">写法 A（本段连续写）</text>
+  <text x="802" y="152" font-size="24" font-weight="bold" fill="#0f172a" text-anchor="middle">13.14 M/s</text>
+  <text x="802" y="174" font-size="12.5" font-weight="bold" fill="#059669" text-anchor="middle">整行写：1.0001 次/条 (99.99%)</text>
+
+  <!-- Equals sign -->
+  <text x="802" y="226" font-size="28" font-weight="bold" fill="#0284c7" text-anchor="middle">＝</text>
+
+  <!-- Box B result -->
+  <rect x="688" y="246" width="228" height="92" rx="8" fill="#ffffff" stroke="#0284c7" stroke-width="2"/>
+  <text x="802" y="272" font-size="13.5" font-weight="bold" fill="#0369a1" text-anchor="middle">写法 B（跨段交错写）</text>
+  <text x="802" y="302" font-size="24" font-weight="bold" fill="#0284c7" text-anchor="middle">13.16 M/s</text>
+  <text x="802" y="324" font-size="12.5" font-weight="bold" fill="#059669" text-anchor="middle">整行写：1.0000 次/条 (99.99%)</text>
+</svg>
