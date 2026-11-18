@@ -163,8 +163,8 @@ pub fn rdtsc() -> u64 {
 /// Plain RDTSC may execute before an outstanding load (an MMIO read of a
 /// device counter, a cache miss on a DMA'd line), which makes an arrival
 /// timestamp too early. RDTSCP waits for all earlier instructions and loads
-/// (same effect as LFENCE;RDTSC, measured equal). Elsewhere only a full
-/// memory fence (not a guarantee for the counter read).
+/// (same effect as LFENCE;RDTSC, measured equal). On ARM64, DMB ISH + ISB
+/// prevents MRS CNTVCT_EL0 from executing before earlier loads complete.
 pub fn rdtsc_after_loads() -> u64 {
     #[cfg(target_arch = "x86_64")]
     {
@@ -172,7 +172,14 @@ pub fn rdtsc_after_loads() -> u64 {
         // SAFETY: RDTSCP only reads the TSC and IA32_TSC_AUX.
         unsafe { std::arch::x86_64::__rdtscp(&mut aux) }
     }
-    #[cfg(not(target_arch = "x86_64"))]
+    #[cfg(target_arch = "aarch64")]
+    {
+        std::sync::atomic::fence(std::sync::atomic::Ordering::SeqCst);
+        // SAFETY: ISB orders the subsequent MRS CNTVCT_EL0 after the fence.
+        unsafe { std::arch::asm!("isb", options(nostack, preserves_flags)) };
+        rdtsc()
+    }
+    #[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
     {
         std::sync::atomic::fence(std::sync::atomic::Ordering::SeqCst);
         rdtsc()
