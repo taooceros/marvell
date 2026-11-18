@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 436" width="980" height="436" font-family="'Noto Sans CJK SC', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif">
+  <defs>
+    <marker id="arr-grey" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#64748b"/>
+    </marker>
+    <marker id="arr-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#dc2626"/>
+    </marker>
+  </defs>
+
+  <rect width="980" height="436" fill="#ffffff"/>
+
+  <!-- ================= LEFT PANEL: W = 1 BASELINE ================= -->
+  <rect x="24" y="24" width="444" height="388" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+
+  <text x="48" y="62" font-size="18" font-weight="700" fill="#0f172a">正常基线（W = 1）</text>
+  <text x="48" y="86" font-size="13" font-weight="500" fill="#64748b">1 条在途 · 无排队 · 1.04 M/s</text>
+  <text x="444" y="68" text-anchor="end" font-size="28" font-weight="800" fill="#334155">0.92 µs</text>
+
+  <line x1="48" y1="104" x2="444" y2="104" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Proportional Time Bar (1 us = 76 px; 0.46->35px, 0.04->6px, 0.42->32px) -->
+  <text x="48" y="132" font-size="12" font-weight="600" fill="#64748b">单条往返耗时比例</text>
+  <rect x="48" y="142" width="36" height="22" rx="3" fill="#64748b"/>
+  <rect x="86" y="142" width="6" height="22" rx="2" fill="#94a3b8"/>
+  <rect x="94" y="142" width="33" height="22" rx="3" fill="#cbd5e1"/>
+  <text x="137" y="158" font-size="13" font-weight="700" fill="#475569">0.46 + 0.04 + 0.42 µs</text>
+
+  <!-- 3 Stage Cards -->
+  <!-- Stage 1: H2C -->
+  <rect x="48" y="184" width="396" height="58" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="66" y="210" font-size="14" font-weight="700" fill="#334155">① 去程 h2c</text>
+  <text x="66" y="229" font-size="12" fill="#64748b">主机 MOVDIR64B → 卡 BAR4</text>
+  <text x="424" y="220" text-anchor="end" font-size="20" font-weight="800" fill="#334155">0.46 µs</text>
+
+  <line x1="246" y1="242" x2="246" y2="258" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr-grey)"/>
+
+  <!-- Stage 2: Card -->
+  <rect x="48" y="260" width="396" height="54" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="66" y="284" font-size="14" font-weight="700" fill="#334155">② 卡核处理</text>
+  <text x="66" y="303" font-size="12" fill="#64748b">读到请求 → 发出回复</text>
+  <text x="424" y="294" text-anchor="end" font-size="20" font-weight="800" fill="#334155">0.04 µs</text>
+
+  <line x1="246" y1="314" x2="246" y2="330" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr-grey)"/>
+
+  <!-- Stage 3: C2H -->
+  <rect x="48" y="332" width="396" height="58" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="66" y="358" font-size="14" font-weight="700" fill="#334155">③ 回程 c2h</text>
+  <text x="66" y="377" font-size="12" fill="#64748b">卡写合并 → 主机回复环</text>
+  <text x="424" y="368" text-anchor="end" font-size="20" font-weight="800" fill="#334155">0.42 µs</text>
+
+
+  <!-- ================= RIGHT PANEL: W = 64 SLOW STATE ================= -->
+  <rect x="492" y="24" width="464" height="388" rx="12" fill="#f8fafc" stroke="#dc2626" stroke-width="2"/>
+
+  <text x="516" y="62" font-size="18" font-weight="700" fill="#0f172a">闭环慢状态（W = 64，4 卡核）</text>
+  <text x="516" y="86" font-size="13" font-weight="600" fill="#dc2626">锁死 13.1 M/s（~76 ns/条）</text>
+  <text x="932" y="68" text-anchor="end" font-size="28" font-weight="800" fill="#dc2626">~3.7 µs</text>
+
+  <line x1="516" y1="104" x2="932" y2="104" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Proportional Time Bar (1 us = 76 px; 3.3->250px, 0.04->6px, 0.45->34px) -->
+  <text x="516" y="132" font-size="12" font-weight="600" fill="#dc2626">去程排队膨胀 ~3 µs（卡核与回程不变）</text>
+  <rect x="516" y="142" width="250" height="22" rx="3" fill="#dc2626"/>
+  <text x="641" y="158" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">去程 3.2–3.6 µs</text>
+  <rect x="768" y="142" width="6" height="22" rx="2" fill="#94a3b8"/>
+  <rect x="776" y="142" width="34" height="22" rx="3" fill="#cbd5e1"/>
+  <text x="818" y="158" font-size="12" font-weight="700" fill="#475569">+ 0.04 + 0.45 µs</text>
+
+  <!-- Stage 1: H2C Expanded with Queue & Suspects -->
+  <rect x="516" y="182" width="416" height="148" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+  <text x="534" y="208" font-size="14" font-weight="700" fill="#dc2626">① 去程 h2c（实测积压 ~45 条）</text>
+  <text x="914" y="211" text-anchor="end" font-size="22" font-weight="800" fill="#dc2626">3.2–3.6 µs</text>
+
+  <!-- Cadence flow inside H2C -->
+  <rect x="534" y="222" width="110" height="32" rx="5" fill="#ffffff" stroke="#fca5a5" stroke-width="1.2"/>
+  <text x="589" y="243" text-anchor="middle" font-size="12" font-weight="700" fill="#0f172a">主突发 ~9 ns/条</text>
+
+  <line x1="646" y1="238" x2="672" y2="238" stroke="#dc2626" stroke-width="1.8" marker-end="url(#arr-red)"/>
+
+  <!-- Queue slots icon -->
+  <g fill="#dc2626">
+    <rect x="676" y="225" width="8" height="26" rx="1.5"/>
+    <rect x="688" y="225" width="8" height="26" rx="1.5"/>
+    <rect x="700" y="225" width="8" height="26" rx="1.5"/>
+    <rect x="712" y="225" width="8" height="26" rx="1.5" opacity="0.7"/>
+    <rect x="724" y="225" width="8" height="26" rx="1.5" opacity="0.45"/>
+  </g>
+
+  <line x1="736" y1="238" x2="762" y2="238" stroke="#dc2626" stroke-width="1.8" marker-end="url(#arr-red)"/>
+
+  <rect x="766" y="222" width="148" height="32" rx="5" fill="#dc2626"/>
+  <text x="840" y="243" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">串行落盘 ~75 ns/条</text>
+
+  <!-- Two [推断] Suspect Boxes -->
+  <rect x="534" y="266" width="184" height="52" rx="6" fill="#ffffff" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="546" y="287" font-size="12" font-weight="700" fill="#dc2626">[推断] 嫌疑 A：主机侧</text>
+  <text x="546" y="306" font-size="12" fill="#334155">Store Buffer / IIO 写队列</text>
+
+  <rect x="730" y="266" width="184" height="52" rx="6" fill="#ffffff" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="742" y="287" font-size="12" font-weight="700" fill="#dc2626">[推断] 嫌疑 B：卡侧</text>
+  <text x="742" y="306" font-size="12" fill="#334155">PEM0 入向 + 前沿空轮询</text>
+
+  <line x1="612" y1="330" x2="612" y2="344" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr-grey)"/>
+
+  <!-- Compact Stages 2 & 3 side-by-side at bottom of right panel -->
+  <rect x="516" y="346" width="192" height="44" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="532" y="373" font-size="13" font-weight="700" fill="#334155">② 卡核</text>
+  <text x="692" y="374" text-anchor="end" font-size="18" font-weight="800" fill="#334155">0.04 µs</text>
+
+  <line x1="708" y1="368" x2="736" y2="368" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr-grey)"/>
+
+  <rect x="740" y="346" width="192" height="44" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="756" y="373" font-size="13" font-weight="700" fill="#334155">③ 回程 c2h</text>
+  <text x="916" y="374" text-anchor="end" font-size="18" font-weight="800" fill="#334155">0.45 µs</text>
+</svg>
