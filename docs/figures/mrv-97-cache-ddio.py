@@ -58,19 +58,19 @@ def plot_latency(by_cond):
                     label="3.85–3.90 GHz" if i == 0 else None)
         if lo:
             ax1.scatter([i + 0.07] * len(lo), lo, facecolors="none", edgecolors="#64748b",
-                        linewidths=1.4, s=34, zorder=4, label="2.91–3.74 GHz (同机降频)" if i == 0 else None)
+                        linewidths=1.4, s=34, zorder=4, label="2.91–3.85 GHz (同机降频)" if i == 0 else None)
         ax1.text(i, max(hi + lo) + 22, f"{med:.1f} ns", ha="center", va="bottom", fontsize=10, fontweight="bold")
     da = a_meds[1] - a_meds[0]
     ax1.annotate(
-        f"+{da:.1f} ns",
-        xy=(0.76, a_meds[1] - 6), xytext=(0.35, 1145),
-        ha="center", fontsize=10.5, fontweight="bold", color="#b91c1c",
+        f"+{da:.1f} ns\n(端到端 RTT)",
+        xy=(0.76, a_meds[1] - 6), xytext=(0.33, 1135),
+        ha="center", fontsize=10.0, fontweight="bold", color="#b91c1c",
         arrowprops=dict(arrowstyle="->", color="#b91c1c", lw=1.4),
     )
     ax1.set_xticks(range(2), [s[1] for s in a_specs], fontsize=9.2)
-    ax1.set_ylabel("W=1 往返延迟 p50 (ns)")
+    ax1.set_ylabel("W=1 端到端往返延迟 p50 (ns)")
     ax1.set_ylim(0, 1280)
-    ax1.set_title("(a) 发端从 cache 写：L1D 读源省 ~117 ns", fontsize=10.2, fontweight="bold")
+    ax1.set_title("(a) 发端从 L1D 写：端到端 RTT 省 117.3 ns", fontsize=9.8, fontweight="bold")
     ax1.legend(loc="lower right", fontsize=7.8, framealpha=0.92)
 
     # --- Panel (b): Control B (card_read_ns, B0 hot L3 vs B1 cold-before vs B2 DRAM ctrl) ---
@@ -91,16 +91,16 @@ def plot_latency(by_cond):
         ax2.text(i, max(hi + lo) + 6, f"{med:.0f} ns", ha="center", va="bottom", fontsize=10, fontweight="bold")
     db = b_meds[2] - b_meds[0]
     ax2.annotate(
-        f"+{db:.0f} ns\n(DRAM vs L3)",
+        f"+{db:.0f} ns\n(仅读端差)",
         xy=(1.74, b_meds[2] - 2), xytext=(1.02, 188),
         ha="center", fontsize=9.5, fontweight="bold", color="#b91c1c",
         arrowprops=dict(arrowstyle="->", color="#b91c1c", lw=1.4),
     )
-    ax2.text(1, b_meds[1] * 0.45, "持平\n(-2 ns)", ha="center", va="center", fontsize=9, fontweight="bold", color="white")
+    ax2.text(1, b_meds[1] * 0.45, "读端持平\n(-2 ns)", ha="center", va="center", fontsize=8.8, fontweight="bold", color="white")
     ax2.set_xticks(range(3), [s[1] for s in b_specs], fontsize=8.8)
-    ax2.set_ylabel("卡核单次读延迟 p50 (ns，含计时围栏)")
+    ax2.set_ylabel("卡核单次读延迟 p50 (ns，含 ~70–80 ns 屏障)")
     ax2.set_ylim(0, 232)
-    ax2.set_title("(b) 去程进卡写到卡 L3：冷行也分配进 L3，省 ~75 ns", fontsize=10.0, fontweight="bold")
+    ax2.set_title("(b) 去程卡 L3：冷行落地命中，读端省 75 ns", fontsize=9.8, fontweight="bold")
 
     # --- Panel (c): Control C (host_read_ns, C0 hot LLC vs C1 cold-before vs C2 DRAM ctrl) ---
     c_specs = [
@@ -120,20 +120,20 @@ def plot_latency(by_cond):
         ax3.text(i, max(hi + lo) + 5, f"{med:.1f} ns", ha="center", va="bottom", fontsize=10, fontweight="bold")
     dc = c_meds[2] - c_meds[0]
     ax3.annotate(
-        f"+{dc:.1f} ns\n(DRAM vs LLC)",
+        f"+{dc:.1f} ns\n(仅读端差)",
         xy=(1.74, c_meds[2] - 2), xytext=(1.02, 138),
         ha="center", fontsize=9.5, fontweight="bold", color="#b91c1c",
         arrowprops=dict(arrowstyle="->", color="#b91c1c", lw=1.4),
     )
-    ax3.text(1, c_meds[1] * 0.45, "0.0 ns 差", ha="center", va="center", fontsize=8.8, fontweight="bold", color="white")
+    ax3.text(1, c_meds[1] * 0.45, "读端\n0.0 ns", ha="center", va="center", fontsize=8.4, fontweight="bold", color="white")
     ax3.set_xticks(range(3), [s[1] for s in c_specs], fontsize=8.8)
     ax3.set_ylabel("主机核单次读延迟 p50 (ns)")
     ax3.set_ylim(0, 176)
-    ax3.set_title("(c) 回程主机 DDIO 写到 LLC：冷行也进 LLC，省 ~87 ns", fontsize=10.0, fontweight="bold")
+    ax3.set_title("(c) 回程主机 DDIO：冷行进 LLC，读端省 87.3 ns", fontsize=9.8, fontweight="bold")
 
     fig.suptitle(
-        "MRV-97 单变量 W=1 缓存对照（MOVDIR64B + 1 卡核写合并，64 B，批=1，cpu40=3.9 GHz / uncore=2.2 GHz / 卡=2.0 GHz，lost=bad=torn=0）",
-        fontsize=10.3, fontweight="bold", y=0.99,
+        "MRV-97 单变量 W=1 缓存对照（MOVDIR64B + 1 卡核写合并，64 B，批=1；(a) 端到端 RTT，(b)(c) 为 2500 ns 围栏下读端对照，lost=bad=torn=0）",
+        fontsize=9.8, fontweight="bold", y=0.99,
     )
     return save(fig, "mrv-97-w1-cache-latency")
 
