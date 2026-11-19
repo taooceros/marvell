@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 540" width="1100" height="540" font-family="DejaVu Sans, Droid Sans Fallback, sans-serif">
+  <defs>
+    <marker id="arr-gray" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+    </marker>
+    <marker id="arr-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#dc2626"/>
+    </marker>
+    <marker id="arr-dark" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#1e293b"/>
+    </marker>
+  </defs>
+
+  <!-- Clean white background -->
+  <rect width="1100" height="540" fill="#ffffff"/>
+
+  <!-- Top title (short, crisp) -->
+  <text x="40" y="42" font-size="20" font-weight="bold" fill="#0f172a">WC4 W=64 慢态根因：主机队列全空，~42 条全卡在卡侧 PEM0 / TAD 嗅探锁死</text>
+
+  <!-- ================= TOP LANE: SLOW STATE (13.1 M/s) ================= -->
+  <rect x="30" y="66" width="1040" height="224" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="52" y="96" font-size="14" font-weight="bold" fill="#dc2626">基线慢态（WC4 · W=64 · T_pause=0）</text>
+  <text x="1046" y="98" font-size="22" font-weight="bold" fill="#dc2626" text-anchor="end">13.1 M/s · RTT 4.06 µs</text>
+
+  <!-- Stage 1: Host SB -->
+  <rect x="52" y="120" width="136" height="106" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="120" y="146" font-size="13" font-weight="bold" fill="#334155" text-anchor="middle">主机核 SB</text>
+  <text x="120" y="182" font-size="24" font-weight="bold" fill="#475569" text-anchor="middle">0.0%</text>
+  <text x="120" y="208" font-size="11.5" fill="#64748b" text-anchor="middle">无停顿</text>
+
+  <line x1="188" y1="173" x2="220" y2="173" stroke="#64748b" stroke-width="2.2" marker-end="url(#arr-gray)"/>
+
+  <!-- Stage 2: Host CHA -->
+  <rect x="224" y="120" width="150" height="106" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="299" y="146" font-size="13" font-weight="bold" fill="#334155" text-anchor="middle">主机 CHA (32个)</text>
+  <text x="299" y="182" font-size="24" font-weight="bold" fill="#475569" text-anchor="middle">1.3 条</text>
+  <text x="299" y="208" font-size="11.5" fill="#64748b" text-anchor="middle">停留 102.5 ns</text>
+
+  <line x1="374" y1="173" x2="406" y2="173" stroke="#64748b" stroke-width="2.2" marker-end="url(#arr-gray)"/>
+
+  <!-- Stage 3: Host IRP1 / PCIe -->
+  <rect x="410" y="120" width="136" height="106" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="478" y="146" font-size="13" font-weight="bold" fill="#334155" text-anchor="middle">主机 IRP1</text>
+  <text x="478" y="182" font-size="24" font-weight="bold" fill="#475569" text-anchor="middle">0.25 条</text>
+  <text x="478" y="208" font-size="11.5" fill="#64748b" text-anchor="middle">无反压</text>
+
+  <line x1="546" y1="173" x2="582" y2="173" stroke="#dc2626" stroke-width="3" marker-end="url(#arr-red)"/>
+  <text x="564" y="160" font-size="11" font-weight="bold" fill="#64748b" text-anchor="middle">PCIe</text>
+
+  <!-- Stage 4: Card PEM0 -> L3/TAD (ACCENT BOTTLENECK) -->
+  <rect x="588" y="112" width="234" height="122" rx="10" fill="#fef2f2" stroke="#dc2626" stroke-width="2.6"/>
+  <text x="705" y="138" font-size="14" font-weight="bold" fill="#991b1b" text-anchor="middle">卡 PEM0 入向 → L3/TAD</text>
+  <text x="705" y="176" font-size="28" font-weight="bold" fill="#dc2626" text-anchor="middle">~42 条排队</text>
+  <text x="705" y="202" font-size="13" font-weight="bold" fill="#b91c1c" text-anchor="middle">h2c 3.69 µs · 76.4 ns/条</text>
+  <text x="705" y="222" font-size="11.5" fill="#991b1b" text-anchor="middle">4.28 嗅探/条 · 2.53 L2重填/条</text>
+
+  <!-- Card 4 cores hammering frontier -->
+  <line x1="882" y1="173" x2="828" y2="173" stroke="#dc2626" stroke-width="2.6" stroke-dasharray="6,4" marker-end="url(#arr-red)"/>
+  <rect x="886" y="120" width="160" height="106" rx="8" fill="#ffffff" stroke="#dc2626" stroke-width="1.8"/>
+  <text x="966" y="146" font-size="13" font-weight="bold" fill="#991b1b" text-anchor="middle">卡 4 核死盯前沿</text>
+  <text x="966" y="180" font-size="22" font-weight="bold" fill="#dc2626" text-anchor="middle">396 M/s</text>
+  <text x="966" y="206" font-size="11.5" fill="#991b1b" text-anchor="middle">空轮询 · 仅 1.0 格/批</text>
+
+  <!-- Subtle bracket under host stages -->
+  <path d="M 56 244 L 56 254 L 542 254 L 542 244" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="299" y="274" font-size="12.5" font-weight="bold" fill="#475569" text-anchor="middle">主机侧合计 &lt; 1.6 条（完全畅通）</text>
+  <text x="795" y="274" font-size="12.5" font-weight="bold" fill="#dc2626" text-anchor="middle">≥ 2 核死盯前沿 → 嗅探 3.5–4.3 次/条锁死</text>
+  <!-- ================= BOTTOM LANE: TWO SINGLE-VARIABLE FIXES ================= -->
+  <rect x="30" y="316" width="505" height="196" rx="12" fill="#f8fafc" stroke="#334155" stroke-width="1.8"/>
+  <text x="52" y="346" font-size="14" font-weight="bold" fill="#0f172a">破局 A：卡核空轮询退避 T_pause = 1.8 µs</text>
+  <text x="52" y="394" font-size="30" font-weight="bold" fill="#0f172a">26.8 M/s</text>
+  <text x="210" y="394" font-size="18" font-weight="bold" fill="#dc2626">+105%</text>
+  <text x="52" y="424" font-size="14" font-weight="bold" fill="#334155">RTT 4.06 → 1.70 µs (-58%)</text>
+
+  <rect x="52" y="444" width="142" height="48" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="123" y="464" font-size="11" fill="#64748b" text-anchor="middle">TAD 嗅探</text>
+  <text x="123" y="483" font-size="13.5" font-weight="bold" fill="#0f172a" text-anchor="middle">4.25 → 1.75</text>
+
+  <rect x="206" y="444" width="142" height="48" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="277" y="464" font-size="11" fill="#64748b" text-anchor="middle">卡 L2 重填</text>
+  <text x="277" y="483" font-size="13.5" font-weight="bold" fill="#0f172a" text-anchor="middle">2.54 → 0.31</text>
+
+  <rect x="360" y="444" width="152" height="48" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="436" y="464" font-size="11" fill="#64748b" text-anchor="middle">卡忙轮询批量</text>
+  <text x="436" y="483" font-size="13.5" font-weight="bold" fill="#0f172a" text-anchor="middle">1.0 → 15.0 格</text>
+
+  <!-- Fix B -->
+  <rect x="565" y="316" width="505" height="196" rx="12" fill="#f8fafc" stroke="#334155" stroke-width="1.8"/>
+  <text x="587" y="346" font-size="14" font-weight="bold" fill="#0f172a">破局 B：主机限制突发 max_send_burst = 8</text>
+  <text x="587" y="394" font-size="30" font-weight="bold" fill="#0f172a">20.2 M/s</text>
+  <text x="745" y="394" font-size="18" font-weight="bold" fill="#dc2626">+54%</text>
+  <text x="587" y="424" font-size="14" font-weight="bold" fill="#334155">RTT 4.06 → 0.92 µs (-77%)</text>
+
+  <rect x="587" y="444" width="142" height="48" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="658" y="464" font-size="11" fill="#64748b" text-anchor="middle">去程 h2c</text>
+  <text x="658" y="483" font-size="13.5" font-weight="bold" fill="#0f172a" text-anchor="middle">3.64 → 0.66 µs</text>
+
+  <rect x="741" y="444" width="142" height="48" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="812" y="464" font-size="11" fill="#64748b" text-anchor="middle">有效在途 W_eff</text>
+  <text x="812" y="483" font-size="13.5" font-weight="bold" fill="#0f172a" text-anchor="middle">51 → 21.6 条</text>
+
+  <rect x="895" y="444" width="152" height="48" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="971" y="464" font-size="11" fill="#64748b" text-anchor="middle">TAD 嗅探</text>
+  <text x="971" y="483" font-size="13.5" font-weight="bold" fill="#0f172a" text-anchor="middle">4.28 → 2.79</text>
+</svg>
