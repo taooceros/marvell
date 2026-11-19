@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 340" width="920" height="340" font-family="DejaVu Sans, Droid Sans Fallback, sans-serif">
+  <rect width="920" height="340" fill="#ffffff"/>
+
+  <defs>
+    <marker id="arr-grey" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#868e96"/>
+    </marker>
+    <marker id="arr-accent" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#d9480f"/>
+    </marker>
+  </defs>
+
+  <!-- Stage 1: 4 DSA Engines Frontend (NOT bottleneck) -->
+  <rect x="28" y="42" width="214" height="256" rx="10" fill="#f8f9fa" stroke="#adb5bd" stroke-width="1.6"/>
+  <text x="135" y="72" text-anchor="middle" font-size="15" font-weight="700" fill="#343a40">dsa2 执行引擎前端</text>
+  <text x="135" y="94" text-anchor="middle" font-size="12" fill="#868e96">1 → 2 → 4 引擎均分</text>
+
+  <rect x="52" y="112" width="76" height="32" rx="5" fill="#e9ecef" stroke="#adb5bd" stroke-width="1.2"/>
+  <text x="90" y="133" text-anchor="middle" font-size="12" font-weight="600" fill="#495057">E0  25%</text>
+  <rect x="142" y="112" width="76" height="32" rx="5" fill="#e9ecef" stroke="#adb5bd" stroke-width="1.2"/>
+  <text x="180" y="133" text-anchor="middle" font-size="12" font-weight="600" fill="#495057">E1  25%</text>
+  <rect x="52" y="152" width="76" height="32" rx="5" fill="#e9ecef" stroke="#adb5bd" stroke-width="1.2"/>
+  <text x="90" y="173" text-anchor="middle" font-size="12" font-weight="600" fill="#495057">E2  25%</text>
+  <rect x="142" y="152" width="76" height="32" rx="5" fill="#e9ecef" stroke="#adb5bd" stroke-width="1.2"/>
+  <text x="180" y="173" text-anchor="middle" font-size="12" font-weight="600" fill="#495057">E3  25%</text>
+
+  <text x="135" y="214" text-anchor="middle" font-size="12.5" fill="#495057">pipefull 4.6% · WQ 空 99.6%</text>
+  <text x="135" y="236" text-anchor="middle" font-size="12.5" fill="#495057">4 引擎 stall_nordy 0.0001%</text>
+  <text x="135" y="276" text-anchor="middle" font-size="13" font-weight="700" fill="#495057">非单引擎排空</text>
+
+  <!-- Arrow 1 -> 2 -->
+  <line x1="242" y1="170" x2="294" y2="170" stroke="#868e96" stroke-width="2.4" marker-end="url(#arr-grey)"/>
+
+  <!-- Stage 2: Shared dsa2 Completion/Ordering Domain (THE BOTTLENECK) -->
+  <rect x="302" y="28" width="316" height="284" rx="12" fill="#fff4e6" stroke="#d9480f" stroke-width="2.8"/>
+  <text x="460" y="62" text-anchor="middle" font-size="15.5" font-weight="700" fill="#d9480f">dsa2 共享完成 / 保序域 [推断]</text>
+
+  <!-- Giant key number -->
+  <text x="460" y="124" text-anchor="middle" font-size="40" font-weight="800" fill="#d9480f">15.5 GB/s</text>
+  <text x="460" y="152" text-anchor="middle" font-size="14.5" font-weight="700" fill="#b03a0c">+127 ns / 笔 · ~56/64 笔滞留</text>
+
+  <!-- Two conflicting targets -->
+  <rect x="326" y="176" width="124" height="44" rx="6" fill="#ffffff" stroke="#d9480f" stroke-width="1.4"/>
+  <text x="388" y="196" text-anchor="middle" font-size="12" font-weight="700" fill="#343a40">4 KiB 主机访存</text>
+  <text x="388" y="212" text-anchor="middle" font-size="11" fill="#868e96">DRAM / LLC</text>
+
+  <text x="460" y="204" text-anchor="middle" font-size="18" font-weight="800" fill="#d9480f">⇄</text>
+
+  <rect x="470" y="176" width="124" height="44" rx="6" fill="#ffffff" stroke="#d9480f" stroke-width="1.4"/>
+  <text x="532" y="196" text-anchor="middle" font-size="12" font-weight="700" fill="#343a40">32 B 完成写</text>
+  <text x="532" y="212" text-anchor="middle" font-size="11" fill="#d9480f">BAR4 P2P</text>
+
+  <text x="460" y="256" text-anchor="middle" font-size="12.5" font-weight="700" fill="#d9480f">单 WQ 保序 / 隐式读回待拆</text>
+  <text x="460" y="282" text-anchor="middle" font-size="12" fill="#495057">B=4 摊销 → 31.0 GB/s</text>
+
+  <!-- Arrow 2 -> 3 -->
+  <line x1="618" y1="170" x2="670" y2="170" stroke="#d9480f" stroke-width="2.4" marker-end="url(#arr-accent)"/>
+
+  <!-- Stage 3: Socket 1 IIO0 -> Mesh -> IIO1 -> CN106 BAR4 (NOT bottleneck) -->
+  <rect x="678" y="42" width="214" height="256" rx="10" fill="#f8f9fa" stroke="#adb5bd" stroke-width="1.6"/>
+  <text x="785" y="72" text-anchor="middle" font-size="15" font-weight="700" fill="#343a40">IIO0 ⇄ IIO1 通道</text>
+  <text x="785" y="94" text-anchor="middle" font-size="12" fill="#868e96">CN106 BAR4 P2P</text>
+
+  <text x="785" y="148" text-anchor="middle" font-size="26" font-weight="800" fill="#495057">19.4 M/s</text>
+  <text x="785" y="172" text-anchor="middle" font-size="12" fill="#868e96">NOP 对照 (5.2×)</text>
+
+  <line x1="708" y1="192" x2="862" y2="192" stroke="#dee2e6" stroke-width="1.2"/>
+
+  <text x="785" y="222" text-anchor="middle" font-size="13" fill="#495057">IRP TxS 占用 0.07</text>
+  <text x="785" y="244" text-anchor="middle" font-size="13" fill="#495057">M2P NCB 拒绝 = 0</text>
+  <text x="785" y="276" text-anchor="middle" font-size="13" font-weight="700" fill="#495057">非 IIO/P2P 饱和</text>
+</svg>

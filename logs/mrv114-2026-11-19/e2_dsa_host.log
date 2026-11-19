@@ -1,0 +1,20 @@
+EAL: Detected CPU lcores: 128
+EAL: Detected NUMA nodes: 2
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /run/user/1001/dpdk/mrv114/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: No free 2048 kB hugepages reported on node 0
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+dsa_batch_host: tsc_hz=2200000000 socket=1 cc=false engines=2 cpu40_gov=performance cpu40_khz=3900000 uncore0_khz=2200000 uncore1_khz=2200000 swerror_init=00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000
+dsa_batch_host: mmap(/dev/dsa/wq2.0, PROT_WRITE) -> Err(1)
+dsa_batch_host: mmap(/sys/bus/pci/devices/0000:f2:01.0/resource2 +0x1000, RW) -> Ok("0x7ff7fa3fb000")
+dsa_batch_host: memzone va=0x1100e00000 iova=0x1100e00000 (va==iova: true) subdesc_va=0x1101010000 (align64: true)
+dsa_batch_host: VFIO_IOMMU_MAP_DMA(resource2, FLAG_WRITE only) -> OK iova=0x117fe00000
+dsa_batch_host: sanity host B=1 cc=false st=0x1 w0=0x1 w1=0x0 raw=0100000000000000000000000000000000000000000000000000000000000000 ns=4127.3 ok=1 pending=0 err=0 comp32_bad=0 mismatches=0 bad_raw=none swerror=00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000
+dsa_batch_host: sanity host B=4 cc=false st=0x1 w0=0x400000001 w1=0x0 raw=0100000004000000000000000000000000000000000000000000000000000000 ns=5265.5 ok=1 pending=0 err=0 comp32_bad=0 mismatches=0 bad_raw=none swerror=00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000
+dsa_batch_host: acquired BAR4 slot 15 lease from 10.10.0.2:7526 (card pid=149678, nonce=0xd56cab73b41c93bd)
+dsa_batch_host: mapped BAR4 slot 15 at bar4_comp_va=0x7ff7f9dfa000 (READY + nonce verified)
+dsa_batch_host: serving control on 10.10.0.1:7527 (portal_iova=0x117fe00000 subdesc_va=0x1101010000 host_comp_va=0x1101000000 bar4_comp_va=0x7ff7f9dfa000)
+dsa_batch_host: card connected from 10.10.0.2:51554
+dsa_batch_host: clean exit, swerror_final=00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000
