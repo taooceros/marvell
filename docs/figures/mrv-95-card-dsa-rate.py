@@ -69,15 +69,15 @@ ax1.set_ylabel("持续提交与完成速率 (M ops/s)", fontsize=10.5)
 ax1.set_title("卡直写 DSA 持续速率（零主机转发，lost=bad=0）", fontsize=11.3, fontweight="bold", pad=10)
 ax1.legend(loc="upper left", fontsize=8.8, frameon=True, facecolor="white")
 
-# Right panel: 4 KiB MEMMOVE host-memory bandwidth (GB/s) vs W
+# Right panel: 4 KiB MEMMOVE host LLC-resident bandwidth (10^9 GB/s) vs W
 ax2.plot(WINDOWS, gb_med, "-s", color="#2563eb", linewidth=2.4, markersize=6.5,
-         label="dsa2 主机内搬运带宽（4 KiB MEMMOVE）")
+         label="dsa2 热 LLC 搬运带宽（4 KiB，≤768 KiB 工作集，CC=1）")
 for w in WINDOWS:
     ax2.scatter([w] * len(mm_gbps[w]), mm_gbps[w], color="#2563eb", alpha=0.35, s=24, zorder=3)
 
 pcie_desc_gbps = [m * 64.0 / 1000.0 for m in mm_med]
 ax2.plot(WINDOWS, pcie_desc_gbps, "--^", color="#64748b", linewidth=1.6, markersize=5.0,
-         label="PCIe 链路实际描述符流量（64 B/op，峰值 0.46 GB/s）")
+         label="仅描述符 PCIe 写流量（64 B/op，峰 0.46 GB/s；含轮询总比约 6–7×）")
 
 for w, v in zip(WINDOWS, gb_med):
     if w == 1:
@@ -93,14 +93,14 @@ for w, v in zip(WINDOWS, gb_med):
 
 ax2.set_xticks(WINDOWS)
 ax2.set_xlim(-3, 106)
-ax2.set_ylim(0, 41.5)
+ax2.set_ylim(0, 42.5)
 ax2.set_xlabel("在途并发窗口 W（< wq2.0 深度 128）", fontsize=10.5)
-ax2.set_ylabel("主机内存搬运带宽 (GB/s)", fontsize=10.5)
-ax2.set_title("4 KiB 搬运带宽：0.46 GB/s PCIe 描述符驱动 ~30 GB/s 主机搬运", fontsize=10.8, fontweight="bold", pad=10)
-ax2.legend(loc="upper left", fontsize=8.5, frameon=True, facecolor="white")
+ax2.set_ylabel("主机热 LLC 搬运带宽 (10^9 GB/s)", fontsize=10.5)
+ax2.set_title("4 KiB 热 LLC 搬运带宽（768 KiB 工作集，CC=1）", fontsize=11.0, fontweight="bold", pad=10)
+ax2.legend(loc="upper left", fontsize=8.0, frameon=True, facecolor="white")
 
-fig.suptitle("MRV-95 · 卡 DPI DMA 直写 dsa2/wq2.0（1 引擎 · SVA PASID · 零主机转发 · 全部 30 组零错零丢）",
-             fontsize=10.5, y=0.99, color="#475569")
+fig.suptitle("MRV-95 · 卡 DPI DMA 直写 dsa2/wq2.0（1 引擎 · SVA PASID · 热 LLC · 零主机转发 · 全部 30 组 lost=bad=0）",
+             fontsize=10.3, y=0.99, color="#475569")
 
 out = save(fig, "mrv-95-card-dsa-rate")
 print("Saved:", out)
