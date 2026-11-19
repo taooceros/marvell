@@ -101,10 +101,10 @@ ax2.annotate("W≤8 实验组胜出\n(+44% / +58%)", xy=(8, treat_mm[1] + 0.52),
              fontsize=8.5, fontweight="bold", color=C_TREAT,
              bbox=dict(boxstyle="round,pad=0.25", fc="#f0fdfa", ec=C_TREAT, lw=0.9))
 
-ax2.annotate("W≥32 锁死在 3.74 M/s (15.3 GB/s)\nmin_batch=1/8/16 均不变 → 非门铃瓶颈",
-             xy=(64, treat_mm[3] - 0.16), xytext=(33, 1.35),
+ax2.annotate("W≥32 锁死 3.74 M/s (267.5 ns/笔 = 136.6+130.9)\n单笔 4K→1M 边际仍 31.9 GB/s；min_batch=1/8/16 不变",
+             xy=(64, treat_mm[3] - 0.16), xytext=(22, 1.25),
              arrowprops=dict(arrowstyle="->", color="#b45309", lw=1.2),
-             fontsize=8.4, fontweight="bold", color="#92400e",
+             fontsize=8.1, fontweight="bold", color="#92400e",
              bbox=dict(boxstyle="round,pad=0.25", fc="#fffbeb", ec="#d97706", lw=0.9))
 
 ax2.set_title("4 KiB MEMMOVE (CC=0) 持续吞吐 vs 并发窗口 W", fontsize=10.4, fontweight="bold")
@@ -117,7 +117,7 @@ ax2.legend(loc="upper left", fontsize=8.4, frameon=True, facecolor="white")
 
 ax2_r = ax2.twinx()
 ax2_r.set_ylim(0, 8.8 * 4.096)
-ax2_r.set_ylabel("有效搬运带宽 (GB/s)", fontsize=9.5, color="#4b5563")
+ax2_r.set_ylabel("有效搬运带宽 (GB/s, 10⁹ B/s)", fontsize=9.5, color="#4b5563")
 ax2_r.spines["top"].set_visible(False)
 ax2_r.grid(False)
 
