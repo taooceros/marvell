@@ -108,10 +108,8 @@ def main():
     )
     print(f"total {total:.1f} s = {total / 60:.2f} min, {sum(len(s['cues']) for s in SCENES)} cues")
     if "--script" in sys.argv:
-        out = ["# Why 161.6 M/s one way but ~13 M/s in a loop? Six single-variable experiments on the host ⇄ DPU "
-               "direct path (narrated explainer script)", "",
-               "Raw data: `logs/mrv{24,50,53,54,55,61,70,76}-*/` of `~/dev/marvell` (2026-11-17/18; every plotted run "
-               "verified, lost = bad = torn = 0). Every on-screen number is recomputed by `data/verify_facts.py` and "
+        out = ["# Direct PCIe Datapath Advisor Progress Report — Verified Direct-MMIO Findings, Active 13 M/s Closed-Loop Puzzle & Zero-Host-CPU Card → Intel DSA P2P", "",
+               "Raw data: `logs/mrv{24,50,53,54,55,61,70,76,95,97,99}-*/` and `../marvell-mrv106/logs/mrv106-*/` (every plotted run verified, lost = bad = torn = 0). Every on-screen number is recomputed by `data/verify_facts.py` and "
                "listed with its source in `data/FACTS.md`; `[INF]` marks our interpretations (spoken as \"our reading\").", "",
                "## Build", "",
                "1. Edit captions/narration only in `tts/script_data.py`, then `python3 tts/gen_scenes.py --script` "

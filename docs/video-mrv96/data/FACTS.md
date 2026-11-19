@@ -1,84 +1,66 @@
-# FACTS — MRV-96 v2 video (host ⇄ OCTEON 10 DPU direct path, strict single-variable detective chain)
+# FACTS — MRV-96 v3 Advisor Progress Report (Host ⇄ OCTEON 10 DPU Direct PCIe Datapath)
 
-Every number below is recomputed from the raw runs by `data/verify_facts.py`
-(`uv run -q --with matplotlib python docs/video-mrv96/data/verify_facts.py`, read-only; it asserts
-lost = bad = torn = 0 on every run it uses).
-Numbers are medians over repeated runs unless a line says "mean". `[INF]` = our interpretation, not a measurement.
-Units: **M/s = million 64-byte messages per second**; µs / ns per message.
+Every number below is recomputed from raw `runs.jsonl` by `data/verify_facts.py`
+(`uv run -q --with matplotlib python docs/video-mrv96/data/verify_facts.py`).
+All plotted runs verified zero data loss / corruption (`lost = bad = torn = 0`, DSA `mismatches = 0`, `swerror = 0`).
+`[INF]` marks interpretations, not direct measurements.
 Rule: **ZERO internal issue IDs (`MRV-xx`) or raw `logs/mrvxx` paths** anywhere on screen or in speech.
 
-## §Setup (S01)
-- Host: Intel Xeon Gold 6438M, sending core pinned at **3.9 GHz**, uncore/mesh pinned at **2.2 GHz**.
-- DPU: Marvell OCTEON 10 CN106, **24 Arm cores** at **2.0 GHz**. Link: **PCIe Gen5 ×4**.
-- Message: **64-byte** cell (sequence number at both ends).
-- Forward: one `MOVDIR64B` into a 65,533-cell (4 MiB) card-memory ring through PCIe BAR4; no doorbell, no DMA.
-- Return: card core stores 64-byte reply into host reply ring with **write-combining (WC)** (`4 × 16 B = 64 B`).
-- Central mystery: **161.6 M/s** one way vs **~13 M/s** closed loop (`W = 64`, 4 card cores) — **12×** slower.
-- Integrity: **0 lost, 0 bad, 0 torn** on every plotted run.
+## §S01 Overview & 897 ns Direct-Path Baseline
+- Hardware: Intel Xeon Gold 6438M host (core pinned **3.9 GHz**, uncore **2.2 GHz**) ⇄ **PCIe Gen5 ×4** (zero switch) ⇄ Marvell OCTEON 10 DPU (**24 Arm cores** at **2.0 GHz**).
+- Direct path: Forward = `MOVDIR64B` 64-byte write into card BAR4 ring (no doorbell, no DMA). Return = card core `64 B` write-combining (`4 × 16 B`) straight into host RAM.
+- 3 same-machine measured `W = 1` RTT anchors:
+  - Anchor 1 (Host on-die DSA2 NOP, 0 PCIe hops): **403 ns** (`402.7 ns`) → Xeon on-die round trip (~201 ns one way).
+  - Anchor 2 (BAR4 uncached hardware read, across PCIe Gen5 ×4, no card core): **646 ns** (`645.5 ns`) → `+243 ns` PCIe Gen5 ×4 + PEM0 `[INF]`.
+  - Anchor 3 (Host ⇄ Card core `W = 1`, `MOVDIR64B` + 1 card core WC): **897 ns** (`897.3 ns`) → `+212 ns` core/cache/IOMMU `[INF]` + `~40 ns` card work (~429 ns one way).
+- 3-part progress roadmap: (1) Three things nailed down on direct MMIO, (2) The one open puzzle (`13 M/s` 4-core closed loop), (3) New zero-host-CPU Card → Intel DSA P2P breakthrough (**31.32 GB/s**).
 
-## §E0 Sanity check — return traffic vs forward writes (S02)
-- Fixed: host pinned **3.9 GHz**, uncore **2.2 GHz**, **1 receive + 1 reply core**, WC replies.
-- Forward alone (replies OFF): **113.1 M/s** (n = 6, 112.32–113.58).
-- Bidirectional (replies ON): **112.2 M/s** (n = 5, 111.21–112.29).
-- Earlier unpinned sender (~**2.1 GHz**, 2.07–2.12 GHz): **75.6 M/s** (n = 10) → `[INF]` clock drop, not PCIe backpressure.
+## §S02 Nailed Down #1 — Why One-Way Hits 161.6 M/s
+- Sanity check (return traffic OFF vs ON, host pinned `3.9 GHz`, 1 recv + 1 reply core WC): **113.1 vs 112.2 M/s** (no slowdown; earlier `75.6 M/s` drop was an unpinned `~2.1 GHz` sender `[INF]`).
+- Frontier polling (one-way forward, `3.9 GHz`, **2 card cores**, `≤ 32 cells/poll`; knob = pause when caught up):
+  - `0 µs`: **128.7 M/s** (`93.6%` empty polls, host CHA queue **447** entries / **3.47 µs**).
+  - `1 µs`: **132.2 M/s** (`132–134` across modes, `433` entries / `3.28 µs`).
+  - `3 µs`: **161.6 M/s** (**+26%**, `24.2 cycles/msg`, queue drops to **360** / **2.23 µs**, `~900` cells settle).
+- Location vs card L3 bandwidth (fixed `3 µs` pause; knob = where card reads during pause):
+  - Idle spin: **160.4 M/s** (`608 M/s` L3 reqs).
+  - Cold RAM outside ring: **160.4–161.4 M/s** (`815–1,033 M/s` L3 reqs, **> 1 billion/s**!).
+  - Old ring slots behind frontier: **162.0–162.6 M/s** (`790–948 M/s` L3); just behind: **160.2 M/s** (`728 M/s` L3).
+  - **Active ~3 µs write band (ahead)**: crashes to **113.4 M/s** (`472 M/s` L3, snoops `67.9 → 111.9 M`, host CHA **4.03 µs > 3 µs** `[INF]` coherence snoops / write blocking feedback).
 
-## §E1 Exp 1 — card frontier polling (S03)
-- Fixed: one-way forward, host **3.9 GHz**, **2 card cores**, ≤ **32 cells/poll** (`< 32` = caught up).
-- Knob: pause when caught up (`0 µs`, `1 µs`, `3 µs`):
-  - `0 µs`: **128.7 M/s**, **93.6%** empty polls, **447** CHA entries / **3.47 µs**, 30.3 cycles/cell.
-  - `1 µs`: **132.2 M/s** (`132–134` across pause modes), **433** entries / **3.28 µs**, ~198 cells/pause.
-  - `3 µs`: **161.6 M/s** (**+26%**), **360** entries / **2.23 µs**, **~900** (`907`) cells/pause, **24.2 cycles/cell**, 0.7% empty polls.
-- `[INF]`: ~447 writes in flight land slightly out of order, leaving temporary holes inside the ~3.5 µs landing band.
+## §S03 Nailed Down #2 — Cache/DDIO Shortcuts Active & 64 B Card Coherence
+- `W = 1` `897 ns` cache/DDIO single-variable checks (40 runs, `cpu40 ≥ 3.85 GHz`, 100% PMU active):
+  - **Host source hot in L1D**: flushing source to cold DRAM adds **+117.3 ns** end-to-end RTT (`897.3 → 1,014.5 ns`).
+  - **Card L3 write-allocate ON**: flushing card slot before host write keeps card read flat (`104.0 → 102.0 ns`, `−2.0 ns`) while `tad_alloc_ltg` jumps **+1.00/msg** (`0.11 → 1.11`); flushing *after* write to card DRAM adds **+75.0 ns** read-side (`104.0 → 179.0 ns`).
+  - **Host Xeon DDIO ON**: hot reply ring hits `io_hit_itom = 1.00`; flushing before card WC write keeps host read flat (`42.7 → 42.7 ns`, `0.0 ns`); flushing *after* write to host DRAM adds **+87.3 ns** read-side (`42.7 → 130.0 ns`).
+- Card core-to-core L3 coherence (2 card cores rewriting own 64 B cells; knob = spacing `d`, Linux reports `128 B`):
+  - `0 B` (same cell): **72.3 M/s** per core (**17.8 M/s** snoops).
+  - `64 B / 128 B / 256 B / 4 KiB`: **259.8 M/s** per core (**0.52–0.55 M/s** idle snoops). Coherence is strictly **64 B** (core-to-core; PCIe beside polling untested).
 
-## §E2 Exp 2 — write-band conflict vs L3 bandwidth (S04)
-- Fixed: one-way forward, **3 µs pause**, 2 card cores. Knob: **where** the core reads during each 3 µs pause.
-- Reference (`0 µs` no pause): **128.3 M/s** (`497 M/s` L3 reqs, `81.9 M` snoops, `3.42 µs` CHA).
-- Idle spin (read nothing): **160.4 M/s** (`608 M/s` L3, `67.9 M` snoops, `2.13 µs` CHA).
-- Cold RAM outside ring (64 B stride): **160.4 M/s** (`815 M/s` L3).
-- Cold RAM outside ring (4 KiB+64 B stride): **161.4 M/s** (`1,033 M/s` L3, > 1 billion/s).
-- Old ring slots half a lap behind: **162.0 M/s** (`790 M/s` L3) / page stride **162.6 M/s** (`948 M/s` L3).
-- Just behind frontier (`next−384..−64`): **160.2 M/s** (`728 M/s` L3); `next−1`: **159.8 M/s** (`607 M/s`).
-- **Ahead inside active write band** (`next..next+384`): **113.4 M/s** (`472 M/s` L3, **111.9 M** snoops, **4.03 µs > 3 µs** CHA).
-- `[INF]`: coherence snoops or inbound-write head-of-line blocking stretch queuing past 3 µs, creating feedback.
+## §S04 Nailed Down #3 — Open-Loop Bidirectional Breaks Lockstep
+- Fixed: 1 host core + 1 card core, WC replies. Knob: closed-loop lockstep vs open-loop bidirectional duplex.
+- Lockstep (`W = 256`, 1 card core): **14.2 M/s**.
+- Open-loop duplex (`5–35 M/s` each way): met cleanly; at **35 + 35 M/s** (`70 M/s` combined), median `p50` is **0.97 µs** forward / **1.24 µs** return (`~1 µs`).
+- Peak unthrottled (1 host core): `1 card core` **41.9 + 41.9 = 83.7 M/s**; `2 card cores split` **91.0 M/s** (`45.5` each way, WC) and **97.3 M/s** (`49.3 + 47.9`, DMA).
+- Honest tail caveat: at `35 + 35 M/s`, forward **`p99 = 38.7 µs`** (`p90 = 5.55 µs`, return `p99 = 13.9 µs`; at `20 + 20`, forward `p50 = 16.9 µs`). In open-loop request–response **Echo**, RTT `p99` jumps from **1.26 µs** (`10 M/s`) to **35.4 µs** at **13.5 M/s**.
 
-## §E3 Exp 3 — where time sits in the 13 M/s closed loop (S05)
-- Fixed: closed loop, WC replies, **4 card cores**, synchronized card & host timestamps. Knob: **W = 1** vs **W = 64**.
-- `W = 1` (pre-touched): `1.01 M/s`, RTT **0.92 µs** = **0.45 µs** fwd + **0.04 µs** card + **0.43 µs** ret.
-- `W = 64` (pre-touched): **13.5 M/s** (`13.55 / 13.52`), RTT **3.7 µs** (`3.68 / 3.70`) = **3.11–3.21 µs** (`3.1–3.2`) fwd + **0.04 µs** card + **0.49–0.52 µs** (`~0.5`) ret (`+2.7 µs` forward).
-- Host burst send gap: **9.1 ns**; card arrival gap: **~75 ns** (`76.5–77.3 ns`) → **~42** (`42.1–43.4`) messages queued in transit.
-- Caveat (2 runs without pre-touched pages): **13.4 M/s**, RTT **3.8 µs** = **0.71–0.73 µs** (`0.7`) fwd + **0.04 µs** card + **2.67–2.71 µs** (`2.7`) ret.
-- `[INF]`: ~13 M/s is not one stage's speed limit; the queue forms wherever the loop's rhythm puts it.
+## §S05 Open Problem (Honest Status) — Why Does 4-Core Closed-Loop Stall at 13 M/s?
+- The Little's Law puzzle: at `0.92 µs` (`897 ns`) RTT, `W = 64` SHOULD saturate near **~50 M/s** — and **1 card core at `W = 1024` DOES hit `50.5 M/s`**! Yet **4 card cores** collapse to **13.1–13.5 M/s** at `W = 64..256` (and only **23.9 M/s** at `W = 1024`, where host reply-polling grows `13.6 → 32.5 ns`).
+- What we HAVE measured inside the `13 M/s` slow state:
+  - Timestamps (`W = 64`, `13.5 M/s`, RTT `3.7 µs`): card work stays **0.04 µs**, **~42 messages** queue (`3.1–3.2 µs` forward, `~0.5 µs` return; flipping to return `0.7 / 2.7 µs` in 2 runs without page pre-touch).
+  - Delay-injection slopes (`20M` msgs/run): card slope **−0.01** (`76.1 → 75.6 ns` up to `+59 ns`), host **`+10 ns` speeds it up +20%** (`76.2 → 60.9 ns` `[INF]` burst pacing breaks slow rhythm) — **both CPUs sit idle**.
+  - Hardware suspects already cleared: interleaved WC stays **99.99%** full 64 B writes (`13.14 vs 13.16 M/s`), and card L3 coherence is **64 B** (not `128 B`).
+- **Honest open question (running next on hardware)**: We have NOT yet pinned down which hardware queue throttles those ~42 in-flight writes to `~75 ns/msg`. Next experiment on the card: sweep `MOVDIR64B` pacing & parallel ingress with host Store Buffer / CHA / IIO vs card TAD counters.
 
-## §E4 Exp 4 — who owns the critical path (S06)
-- Fixed: closed loop, WC replies, **20M** messages/run. Knob: inject fenced dependent-multiply delay **δ** on ONE side.
-- Calibration (`W = 1`, 1 card core): host `+0 / +10 / +20 / +40 ns` → `924.2 / 934.9 / 944.7 / 964.3 ns` (**+40.1 ns**, slope **1.01**).
-- Fast state (1 card core, `W = 1024`, slope-series base `24.8 ns/msg = 40.3 M/s`): host slope **1.07**, card slope **1.07**.
-- Slow state (4 card cores, `W = 64`, base **76.1 ns/msg = 13.1 M/s**):
-  - Card `+32 / +45 / +59 ns` → `75.9 / 75.7 / 75.6 ns` (slope **−0.01**).
-  - Host `+0 / +10 / +20 / +40 ns` → `76.2 / 60.9 / 61.4 / 78.3 ns` (**+10 ns = 20% faster**!).
-- 4-core clue (`W = 1024`, newer build): **1 card core 50.5 M/s** vs **4 card cores 23.9 M/s**; host send **9.2 vs 9.3 ns**, reply polling **13.6 → 32.5 ns** across 4 reply sub-rings.
-- `[INF]`: both CPUs are mostly idle in the slow state; spacing host bursts helps break the slow rhythm.
+## §S06 New Breakthrough — Zero-Host-CPU Bidirectional PCIe P2P to Intel DSA
+- Forward P2P (Card → Host `dsa2/wq2.0`, zero host CPU forwarding):
+  - Card **DPI DMA** 64 B descriptor writes: **0 drops** across **182.9M+ ops** (`lost = bad = mismatches = 0`).
+  - Card **WC** direct portal writes: **0.048%–1.217%** silent drops (`12/24,900` none, `14/2,300` DGH, `28/2,300` DSB).
+- Reverse P2P (`dsa2` writes 32 B completion directly into Card BAR4 vs Host RAM):
+  - `W = 1` closed-loop period: `NOP` **1.96 → 1.27 µs** (`−35%`), `4 KiB` **3.13 → 2.17 µs** (`−31%`).
+  - `W = 1` `4 KiB` latency jitter (`p99 − p50`): **1,119 ns → 163 ns** (`−85%`, eliminating the `1.21 µs` host-RAM DPI poll jump).
+- DSA Batch (`B = 1 → 2 → 4 → 8 → 16`, `4 KiB`, `W = 64 ops`, hot `512 KiB` `src`, `CC = 0` write-through `dst`):
+  - Eliminates the `~131 ns/op` per-op drain bubble (`268.0 → 130.8 ns/op`): Card BAR4 P2P jumps **`15.28 → 23.35 → 31.13 → 31.25 → 31.32 GB/s`** (**2.05×**!).
+  - At `B = 16`, Card BAR4 P2P matches/beats Host-RAM completion on BOTH throughput and `W = 1` batch latency: **`31.32` vs `31.10 GB/s`**, `p50` **`4.42` vs `4.63 µs`**, `p99` **`4.61` vs `5.75 µs`**.
 
-## §E6a & §E6b Exp 5 — ruling out two 4-core hardware suspects (S07)
-- **5a Write-combining**: fixed closed loop, 4 card cores, `W = 64`; knob contiguous vs interleaved across **64 KB** regions.
-  - Full 64 B writes (ItoM) per reply: **1.0001 vs 1.0000** (**99.99%** full lines in both).
-  - Throughput: **13.14 vs 13.16 M/s**. Why: `4 × 16 B = 64 B` fills one WC line completely.
-  - Caveat (`W = 1024`): `21.88 → 21.22 M/s` (`−3%`, unexplained), still `99.99%` full lines.
-- **5b Card L3 coherence**: Linux reports **128-byte** coherency line. Fixed: 2 card cores rewriting own 64 B cells; knob spacing `d`:
-  - `0 B`: **72.3 M/s** per core (`17.8 M/s` snoops).
-  - `64 B`: **259.8 M/s** per core (`0.52 M/s` snoops = idle `0.52 M/s`).
-  - `128 B / 256 B / 4 KB`: **259.8 M/s** (`0.53–0.55 M/s` snoops).
-  - Caveat: core-to-core only; PCIe writes beside a polling core remain untested.
-
-## §E5 Exp 6 — breaking the loop: open-loop bidirectional (S08)
-- Fixed: **1 host core + 1 card core**, WC replies. Knob: closed-loop **lockstep** vs **open-loop duplex**.
-- Lockstep (`W = 256`): **14.2 M/s**.
-- Open loop (`5–35 M/s` each way): delivered cleanly (`70 M/s` combined at `35 + 35`).
-- At `35 + 35 M/s`: median `p50` **0.97 µs** fwd / **1.24 µs** ret; `p90` **5.55 µs** fwd; **p99 38.7 µs** fwd / **13.9 µs** ret.
-- At `20 + 20 M/s`: forward `p50` **16.9 µs**.
-- Peak unthrottled: `1c` = **41.9 + 41.9 = 83.7 M/s**; `2c split` WC = **91.0 M/s** (`45.5 + 45.5`); `2c split` DMA = **97.3 M/s** (`49.3 + 47.9`).
-- Open-loop request–response echo (`1 card core`): RTT `p99` = **1.03 µs** (`5 M/s`), **1.26 µs** (`10 M/s`), **35.4 µs** (`13.5 M/s`), **38.5 µs** (`20 M/s`).
-
-## §Next (S09)
-- Kill slow state & `35–39 µs` `p99` tail: pace host bursts, cap reply-poll batches, sweep mesh clock, measure long-run `p99`.
-- Real systems: let card cores directly drive host **Intel DSA** copy engine; build a minimal **RPC / message layer** for real DPU-to-host offload.
+## §S07 Executive Summary & Immediate Next Steps
+- 3 verified pillars (`161.6 M/s` one-way + `897 ns` cache/DDIO & `64 B` coherence + `91–97 M/s` open-loop + `31.32 GB/s` zero-host-CPU Card → DSA P2P), 1 active open puzzle (`13 M/s` 4-core closed loop + `35–39 µs` `p99` tail), and immediate next hardware + system milestones.

@@ -313,15 +313,15 @@ export function Scene({ def, warp }: { def: SceneDef; warp: Warp }) {
 }
 
 // ---------------------------------------------------------------- story rail (top-right)
-/** Chapters: 0 Sanity check (S02) · 1 One-way (S03–S04) · 2 Closed loop (S05–S06) · 3 Ruled out (S07) ·
- *  4 Open loop (S08) · 5 Summary (S09). S01 hides the rail. */
+/** Chapters: 0 One-way (S02) · 1 Cache & 64 B (S03) · 2 Open loop (S04) · 3 Open puzzle (S05) ·
+ *  4 Card → DSA (S06) · 5 Summary (S07). S01 hides the rail. */
 export const STAGES: { label: string; color: string }[] = [
-  { label: "Sanity check", color: C.purple },
   { label: "One-way", color: C.cyan },
-  { label: "Closed loop", color: C.orange },
-  { label: "Ruled out", color: C.pink },
+  { label: "Cache & 64 B", color: C.blue },
   { label: "Open loop", color: C.green },
-  { label: "Summary", color: C.yellow },
+  { label: "Open puzzle", color: C.red },
+  { label: "Card → DSA", color: C.yellow },
+  { label: "Summary", color: C.purple },
 ];
 
 /** Top-right progress rail (x 760–1860, y 30–74) with paper brackets underneath (y ≤ 100). Drawn by Scene. */
@@ -374,7 +374,9 @@ export function PipelineRail({ active }: { active: number }) {
           </g>
         );
       })}
-      {bracket(0, 4, "Occam's razor · fixed baseline, one knob per experiment", C.muted)}
+      {bracket(0, 2, "Nailed down", C.green)}
+      {bracket(3, 3, "Active", C.red)}
+      {bracket(4, 4, "New P2P", C.yellow)}
     </svg>
   );
 }
