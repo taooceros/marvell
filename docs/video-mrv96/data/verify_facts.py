@@ -202,7 +202,85 @@ def mrv55():
         snp = st.fmean(r["tad"]["tad_snp_msh_out_any"]["per_s"] / 1e6 for r in sub)
         show(f"write_only d={d} B", f"per core {(c0 + c1) / 2:.1f} M/s (core3 {c0:.1f}, core4 {c1:.1f}) | snoops {snp:.2f} M/s")
 
+def _log_path(rel: str) -> Path:
+    for base in (LOGS, ROOT.parent / "marvell/logs", ROOT.parent / "marvell-mrv106/logs"):
+        p = base / rel
+        if p.exists():
+            return p
+    raise FileNotFoundError(rel)
+
+
+def mrv97():
+    rs = jsonl(_log_path("mrv97-2026-11-19/runs.jsonl"))
+    for r in rs:
+        assert r["host"]["lost"] == 0 and r["host"]["bad"] == 0 and r["host"]["torn"] == 0
+    print(f"== MRV-97 (W=1 897 ns baseline & 3 cache/DDIO shortcuts; {len(rs)} runs verified)")
+    by = {}
+    for r in rs:
+        by.setdefault(r["cond"], []).append(r)
+    hi = lambda c, fn: med(fn(r) for r in by[c] if r["clocks"]["cpu40_ghz"] >= 3.85)
+    base = hi("base", lambda r: r["host"]["rtt_ns"]["p50"])
+    cold = hi("A_cold_src", lambda r: r["host"]["rtt_ns"]["p50"])
+    show("base W=1 RTT p50", f"{base:.1f} ns")
+    show("cold host src RTT p50", f"{cold:.1f} ns ({cold - base:+.1f} ns)")
+    b0 = hi("B0_card_hot_wait", lambda r: r["card"]["card_read_ns"]["p50"])
+    b1 = hi("B1_card_cold_pre", lambda r: r["card"]["card_read_ns"]["p50"])
+    b2 = hi("B2_card_dram_ctrl", lambda r: r["card"]["card_read_ns"]["p50"])
+    tad0 = hi("B0_card_hot_wait", lambda r: r["card"]["tad"]["tad_alloc_ltg"]["val"] / r["card"]["pmu_rounds"])
+    tad1 = hi("B1_card_cold_pre", lambda r: r["card"]["tad"]["tad_alloc_ltg"]["val"] / r["card"]["pmu_rounds"])
+    show("card L3 read (hot/cold/DRAM)", f"{b0:.1f} / {b1:.1f} / {b2:.1f} ns (DRAM {b2 - b0:+.1f} ns) | tad_alloc {tad0:.2f} -> {tad1:.2f} ({tad1 - tad0:+.2f})")
+    c0 = hi("C0_host_hot_wait", lambda r: r["host"]["read_ns"]["p50"])
+    c1 = hi("C1_host_cold_pre", lambda r: r["host"]["read_ns"]["p50"])
+    c2 = hi("C2_host_dram_ctrl", lambda r: r["host"]["read_ns"]["p50"])
+    ihit = hi("C0_host_hot_wait", lambda r: r["host_perf_s1"]["unc_cha_tor_inserts.io_hit_itom"]["val"] / max(1, r["host_perf_s1"]["unc_cha_tor_inserts.io_itom"]["val"]))
+    show("host DDIO read (hot/cold/DRAM)", f"{c0:.1f} / {c1:.1f} / {c2:.1f} ns (DRAM {c2 - c0:+.1f} ns) | io_hit_itom {ihit:.2f}")
+
+
+def mrv95():
+    rs = jsonl(_log_path("mrv95-2026-11-19/runs.jsonl"))
+    print(f"== MRV-95 (Card DPI DMA vs WC -> host Intel DSA dsa2/wq2.0; {len(rs)} rows)")
+    dpi_ops = 0
+    for r in rs:
+        if r["submitter"] == "card_dpi_dma":
+            assert r.get("lost", 0) == 0 and r.get("bad", 0) == 0
+            dpi_ops += r.get("ops", r.get("rounds", 0))
+    show("card_dpi_dma total verified ops", f"{dpi_ops:,} (0 lost, 0 bad)")
+    on_die_nop = med(r["p50_ns"] for r in rs if r["submitter"] == "host_movdir64b" and r["mode"] == "w1_lat" and r["op"] == "nop")
+    show("host on-die DSA2 NOP p50", f"{on_die_nop:.1f} ns")
+    for sub in ("card_pem_wc_none", "card_pem_wc_dgh", "card_pem_wc_dsb"):
+        rows = [r for r in rs if r["mode"] == "w1_lat" and r["submitter"] == sub]
+        bad, n = sum(r["bad"] for r in rows), sum(r["rounds"] for r in rows)
+        show(f"{sub} silent drops", f"{bad}/{n} ({100 * bad / n:.3f}%)")
+
+
+def mrv99():
+    rs = jsonl(_log_path("mrv99-2026-11-19/runs.jsonl"))
+    for r in rs:
+        assert r.get("lost", 0) == 0 and r.get("bad", 0) == 0
+    print(f"== MRV-99 (Reverse P2P completion -> Card BAR4 vs Host RAM; {len(rs)} runs verified)")
+    for op, sz in (("nop", 0), ("memmove", 4096)):
+        h = med(r["cycle_ns"] / 1000.0 for r in rs if r["mode"] == "rate" and r["window"] == 1 and r["op"] == op and r["size"] == sz and r["comp_target"] == "host_memzone")
+        c = med(r["cycle_ns"] / 1000.0 for r in rs if r["mode"] == "rate" and r["window"] == 1 and r["op"] == op and r["size"] == sz and r["comp_target"] == "card_bar4")
+        show(f"W=1 period {op} {sz}B", f"host {h:.2f} us -> BAR4 {c:.2f} us")
+    for tgt in ("host_memzone", "card_bar4"):
+        sub = [r for r in rs if r["mode"] == "w1_lat" and r["op"] == "memmove" and r["size"] == 4096 and r["comp_target"] == tgt]
+        p50, p99 = med(r["p50_ns"] for r in sub), med(r["p99_ns"] for r in sub)
+        show(f"w1_lat 4KiB {tgt}", f"p50 {p50 / 1000:.2f} us | p99 {p99 / 1000:.2f} us | jitter {p99 - p50:.0f} ns")
+
+
+def mrv106():
+    rs = jsonl(_log_path("mrv106-2026-11-19/runs.jsonl"))
+    for r in rs:
+        assert r.get("lost", 0) == 0 and r.get("bad", 0) == 0 and r.get("dyn_lost", 0) == 0 and r.get("dyn_bad", 0) == 0
+    print(f"== MRV-106 (DSA Batch B=1..32, 4 KiB, W=64 ops, hot 512 KiB src, CC=0; {len(rs)} runs verified)")
+    for tgt, bs in (("card_bar4", 1), ("card_bar4", 2), ("card_bar4", 4), ("card_bar4", 8), ("card_bar4", 16), ("card_bar4", 32), ("host_memzone", 1), ("host_memzone", 16)):
+        sub = [r for r in rs if r["mode"] == "rate" and r["comp_target"] == tgt and r["batch_size"] == bs]
+        show(f"rate {tgt} B={bs}", f"{med(r['gb_s'] for r in sub):.2f} GB/s | {med(r['cycle_ns'] for r in sub):.1f} ns/op")
+    for tgt in ("card_bar4", "host_memzone"):
+        sub = [r for r in rs if r["mode"] == "w1_lat" and r["comp_target"] == tgt and r["batch_size"] == 16]
+        show(f"w1_lat B=16 {tgt}", f"p50 {med(r['p50_ns'] for r in sub) / 1000:.2f} us | p99 {med(r['p99_ns'] for r in sub) / 1000:.2f} us")
+
 
 if __name__ == "__main__":
-    for fn in (mrv24, mrv61, mrv76, mrv50, mrv53, mrv70, mrv54, mrv55):
+    for fn in (mrv24, mrv61, mrv76, mrv50, mrv53, mrv70, mrv54, mrv55, mrv97, mrv95, mrv99, mrv106):
         fn()
