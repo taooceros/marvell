@@ -280,12 +280,12 @@ export function Scene({ def, warp }: { def: SceneDef; warp: Warp }) {
             style={{
               position: "absolute",
               left: 60,
-              top: 28,
-              fontSize: 30,
+              top: 29,
+              fontSize: 27,
               color: C.text,
-              letterSpacing: 1,
+              letterSpacing: 0.3,
               fontWeight: 700,
-              opacity: 0.92,
+              opacity: 0.94,
             }}
           >
             {def.title}
@@ -313,21 +313,21 @@ export function Scene({ def, warp }: { def: SceneDef; warp: Warp }) {
 }
 
 // ---------------------------------------------------------------- story rail (top-right)
-/** Chapters: 0 Setup (S02) · 1 One-way (S03–S04) · 2 Closed loop (S05–S06) · 3 Open loop (S07) ·
- *  4 Ruled out (S08–S09) · 5 Takeaways (S10). S01 hides the rail. */
+/** Chapters: 0 Sanity check (S02) · 1 One-way (S03–S04) · 2 Closed loop (S05–S06) · 3 Ruled out (S07) ·
+ *  4 Open loop (S08) · 5 Summary (S09). S01 hides the rail. */
 export const STAGES: { label: string; color: string }[] = [
-  { label: "Setup", color: C.purple },
+  { label: "Sanity check", color: C.purple },
   { label: "One-way", color: C.cyan },
   { label: "Closed loop", color: C.orange },
-  { label: "Open loop", color: C.green },
   { label: "Ruled out", color: C.pink },
-  { label: "Takeaways", color: C.yellow },
+  { label: "Open loop", color: C.green },
+  { label: "Summary", color: C.yellow },
 ];
 
 /** Top-right progress rail (x 760–1860, y 30–74) with paper brackets underneath (y ≤ 100). Drawn by Scene. */
 export function PipelineRail({ active }: { active: number }) {
-  const x0 = 760;
-  const w = 1100 / STAGES.length;
+  const x0 = 860;
+  const w = 1000 / STAGES.length;
   const bracket = (i0: number, i1: number, label: string, color: string) => {
     const a = x0 + i0 * w + 8;
     const b = x0 + (i1 + 1) * w - 12;
@@ -365,7 +365,7 @@ export function PipelineRail({ active }: { active: number }) {
               y={53}
               textAnchor="middle"
               dominantBaseline="central"
-              fontSize={18}
+              fontSize={17}
               fontWeight={on ? 800 : 500}
               fill={on ? C.bg : done ? s.color : C.dim}
             >
@@ -374,7 +374,7 @@ export function PipelineRail({ active }: { active: number }) {
           </g>
         );
       })}
-      {bracket(1, 4, "Experiments 1–6 · fixed baseline, one knob each", C.muted)}
+      {bracket(0, 4, "Occam's razor · fixed baseline, one knob per experiment", C.muted)}
     </svg>
   );
 }
