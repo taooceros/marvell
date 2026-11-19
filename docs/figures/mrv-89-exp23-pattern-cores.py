@@ -162,7 +162,7 @@ def main():
                frameon=True, facecolor="white", framealpha=0.95)
 
     fig.suptitle(
-        "MRV-89 实验 2 & 3：地址分布与多核并发对 MOVDIR64B 入卡并行度的影响（uncore 2.2 GHz · 卡核静默 · 3 次重复 err=0）",
+        "MRV-89 实验 2 & 3：静态模板地址分布与多核并发（uncore 2.2 GHz · 卡核静默 · 3 次重复 · PMU 100%）",
         fontsize=10.2, y=0.975, color="#334155",
     )
     fig.tight_layout(rect=[0, 0, 1, 0.93])
