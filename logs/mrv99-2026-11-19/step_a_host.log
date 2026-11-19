@@ -1,0 +1,24 @@
+EAL: Detected CPU lcores: 128
+EAL: Detected NUMA nodes: 2
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /run/user/1001/dpdk/mrv99_host/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: No free 2048 kB hugepages reported on node 0
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+dsa_p2p_host: tsc_hz=2200000000 socket=1 cc=false swerror_init=00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000
+dsa_p2p_host: mmap(/dev/dsa/wq2.0, PROT_WRITE) -> Err(1)
+dsa_p2p_host: mmap(/sys/bus/pci/devices/0000:f2:01.0/resource2 +0x1000, RW) -> Ok("0x7fa6284bb000")
+dsa_p2p_host: memzone va=0x1100e00000 iova=0x1100e00000 (va==iova: true) win_base=0x1100000000
+dsa_p2p_host: VFIO_IOMMU_MAP_DMA(resource2, FLAG_WRITE only) -> OK iova=0x117fe00000
+dsa_p2p_host: sanity host NOP st=0x1 ns=1349.1 swerror=00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000
+dsa_p2p_host: sanity host MEMMOVE(4KiB, cc=false) st=0x1 ns=1095.5 ok=1 pending=0 err=0 mismatches=0 fault=0x0 swerror=00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000
+dsa_p2p_host: acquired BAR4 slot 15 lease from 10.10.0.2:7526 (card pid=141872, nonce=0xdcc5eb0533521233)
+dsa_p2p_host: mapped BAR4 slot 15 at bar4_comp_va=0x7fa6253fb000 (READY + nonce verified)
+dsa_p2p_host: smaps(0x7fa6253fb000): 7fa6253fb000-7fa6257fb000 rw-s 223ff3c00000 00:17 150697                 /sys/devices/pci0000:98/0000:98:01.0/0000:99:00.0/resource4
+dsa_p2p_host: smaps(0x7fa6253fb000): Size:               4096 kB
+dsa_p2p_host: smaps(0x7fa6253fb000): MMUPageSize:           4 kB
+dsa_p2p_host: smaps(0x7fa6253fb000): VmFlags: rd wr sh mr mw ms pf io de dd sd 
+dsa_p2p_host: serving control on 10.10.0.1:7527 (portal_iova=0x117fe00000 host_comp_va=0x1101000000 bar4_comp_va=0x7fa6253fb000)
+dsa_p2p_host: card connected from 10.10.0.2:59866
+dsa_p2p_host: clean exit, swerror_final=00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000

@@ -1,0 +1,19 @@
+EAL: Detected CPU lcores: 24
+EAL: Detected NUMA nodes: 1
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/mrv99/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+CNXK: RoC Model: cn10ka_b0 (HW_PLATFORM)
+dsa_p2p_card: BAR4 slot 15 -> pa=0x19f800000 (old=0x2ff71), serving lease on 10.10.0.2:7526
+lease: host 10.10.0.1:46250 (pid 1827487) took slot 15, nonce 0xdcc5eb0533521233
+dsa_p2p_card: connected host=10.10.0.1:7527 tsc_hz=1000000000 portal_iova=0x117fe00000 host_comp_va=0x1101000000 bar4_comp_va=0x7fa6253fb000
+STEP_A_HOST_NOP STEP_A target=bar4 op=nop size=0 st=0x1 res=0x0 bytes=0 fault=0x0 timed_out=false ns=2181.8 mismatches=0 swerror=00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000 | card_ram: st=0x1 res=0x0 bytes=0 fault=0x0 raw=0100000000000000000000000000000000000000000000000000000000000000
+STEP_A_HOST_MEMMOVE4K STEP_A target=bar4 op=memmove size=4096 st=0x1 res=0x0 bytes=0 fault=0x0 timed_out=false ns=8869.1 mismatches=0 swerror=00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000 | card_ram: st=0x1 res=0x0 bytes=0 fault=0x0 raw=0100000000000000000000000000000000000000000000000000000000000000
+STEP_A_CARD_DPI_BAR4 op=nop size=0 st=0x1 polls=2551 rtt_ns=3180.0 card_ram=(st=0x1 res=0x0 bytes=0 fault=0x0 raw=0100000000000000000000000000000000000000000000000000000000000000) host_VERIFY ok=0 pending=0 err=0 mismatches=0 first_status=0x1 fault_addr=0x0 swerror=00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000
+STEP_A_CARD_DPI_BAR4 op=memmove size=4096 st=0x1 polls=3073 rtt_ns=2104.0 card_ram=(st=0x1 res=0x0 bytes=0 fault=0x0 raw=0100000000000000000000000000000000000000000000000000000000000000) host_VERIFY ok=0 pending=0 err=0 mismatches=0 first_status=0x1 fault_addr=0x0 swerror=00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000
+STEP_A_CARD_DPI_HOST_CTRL op=nop size=0 st=0x1 polls=1 rtt_ns=2384.0 host_VERIFY ok=1 pending=0 err=0 mismatches=0 first_status=0x1 fault_addr=0x0 swerror=00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000
+STEP_A_CARD_DPI_HOST_CTRL op=memmove size=4096 st=0x1 polls=1 rtt_ns=2208.0 host_VERIFY ok=1 pending=0 err=0 mismatches=0 first_status=0x1 fault_addr=0x0 swerror=00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000
+lease: took slot 15 back from host 10.10.0.1:46250 (pid 1827487): released after 0.1 ms
+dsa_p2p_card: clean exit (BAR4 slot 15 restored to firmware default)
