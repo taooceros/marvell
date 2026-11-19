@@ -129,7 +129,7 @@ def main():
                fontsize=7.9, frameon=True, facecolor="white", framealpha=0.95)
 
     fig.suptitle(
-        "MRV-89 实验 1：单核 cpu40 (3.9 GHz, uncore 2.2 GHz) 顺序写 BAR4 槽 15 (2 MiB) · 卡核静默 · 3 次交错重复 (err=0)",
+        "MRV-89 实验 1：单核 cpu40 (3.9 GHz, uncore 2.2 GHz) 静态模板顺序写 BAR4 槽 15 (2 MiB) · 卡核静默 · 3 次重复",
         fontsize=10.3, y=0.975, color="#334155",
     )
     fig.tight_layout(rect=[0, 0, 1, 0.93])
