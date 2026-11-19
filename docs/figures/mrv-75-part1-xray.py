@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""MRV-75 Figure 1: Part 1 Hardware Queue X-Ray, WC4 Window Cliff & MRV-50 Pre-Touch Check."""
+"""MRV-75 Figure 1: Part 1 Hardware Queue X-Ray (incl. tad_req_occ), WC4 Window Cliff & MRV-50 Pre-Touch Check."""
 import collections
 import csv
 import json
@@ -27,9 +27,9 @@ def med(exp, cond, fn):
     return statistics.median(fn(r) for r in by_key[(exp, cond)])
 
 
-fig, axes = plt.subplots(1, 3, figsize=(16.0, 5.1))
+fig, axes = plt.subplots(1, 3, figsize=(16.2, 5.1))
 
-# ---- Panel A: Where do the in-flight messages sit? (Host CHA vs Card-side) ----
+# ---- Panel A: Where do the in-flight messages sit? (Host CHA/IRP1 vs Card TAD vs Upstream PEM0/IOBN) ----
 ax = axes[0]
 states = [
     ("part1_xray", "wc4_w1", "WC4\nW=1\n(1.0 M/s)"),
@@ -43,6 +43,7 @@ labels = [s[2] for s in states]
 x = np.arange(len(states))
 cha_inf = [med(e, c, lambda r: r["host_pmu"]["cha_inflight"]) for e, c, _ in states]
 irp_inf = [med(e, c, lambda r: r["host_pmu"]["irp1_inflight_nom"]) for e, c, _ in states]
+tad_inf = [med(e, c, lambda r: r["card_pmu"]["tad"]["tad_req_occ"]["val"] / (r["card_pmu"]["wall_s"] * 2.0e9)) for e, c, _ in states]
 tot_inf = [med(e, c, lambda r: r["mops"] * r["rtt_mean_us"]) for e, c, _ in states]
 card_and_ret = [max(0.0, t - c - i) for t, c, i in zip(tot_inf, cha_inf, irp_inf)]
 
@@ -54,27 +55,27 @@ ax.bar(
     card_and_ret,
     w_bar,
     bottom=[c + i for c, i in zip(cha_inf, irp_inf)],
-    label="已离主机（卡 PEM0/L3 排队+在途）",
+    label="已离主机（堵在 TAD 上游 PEM0/IOBN）",
     color="#dc2626",
     alpha=0.82,
 )
 ax.set_yscale("symlog", linthresh=5.0)
-ax.set_ylim(0, 3800)
+ax.set_ylim(0, 4200)
 ax.set_xticks(x)
-ax.set_xticklabels(labels, fontsize=8.5)
+ax.set_xticklabels(labels, fontsize=8.4)
 ax.set_ylabel("平均在途消息数（条，对数刻度）")
-ax.set_title("A. 硬件队列 X 光：~42–113 条全停在卡侧")
-ax.legend(loc="upper left", fontsize=8, frameon=True, facecolor="white")
+ax.set_title("A. 队列 X 光：主机与 TAD 均空，堵在 PEM0/IOBN")
+ax.legend(loc="upper left", fontsize=7.8, frameon=True, facecolor="white")
 
-for idx, (t, c, cr) in enumerate(zip(tot_inf, cha_inf, card_and_ret)):
+for idx, (t, c, td) in enumerate(zip(tot_inf, cha_inf, tad_inf)):
     if idx in (1, 2):
         ax.annotate(
-            f"总 {t:.0f} 条\nCHA 仅 {c:.1f}",
+            f"总 {t:.0f} 条\nCHA {c:.1f}\nTAD {td:.2f}",
             xy=(idx, t),
-            xytext=(0, 6),
+            xytext=(0, 5),
             textcoords="offset points",
             ha="center",
-            fontsize=8,
+            fontsize=7.5,
             fontweight="bold",
             color="#991b1b",
         )
@@ -82,10 +83,10 @@ for idx, (t, c, cr) in enumerate(zip(tot_inf, cha_inf, card_and_ret)):
         ax.annotate(
             f"总 {t:.0f}\nCHA {c:.1f}",
             xy=(idx, t),
-            xytext=(0, 6),
+            xytext=(0, 5),
             textcoords="offset points",
             ha="center",
-            fontsize=8,
+            fontsize=7.8,
             color="#1e40af",
         )
     elif idx == 5:
@@ -115,7 +116,7 @@ xs = np.arange(len(w_list))
 w_labels = [str(w) for _, _, w in w_list]
 mops_w = [med(e, c, lambda r: r["mops"]) for e, c, _ in w_list]
 snp_w = [med(e, c, lambda r: r["card_pmu"]["tad"]["tad_snp_msh_out_any"]["val"] / (r["rounds"] + r["warmup"])) for e, c, _ in w_list]
-l2_w = [med(e, c, lambda r: sum(cc["l2d_cache_refill"] for cc in r["card_pmu"]["cores"]) / (r["rounds"] + r["warmup"])) for e, c, _ in w_list]
+tad_w = [med(e, c, lambda r: r["card_pmu"]["tad"]["tad_req_occ"]["val"] / (r["card_pmu"]["wall_s"] * 2.0e9)) for e, c, _ in w_list]
 
 ax.axvspan(3.5, 6.4, color="#fee2e2", alpha=0.55, zorder=0)
 l1, = ax.plot(xs, mops_w, "-o", color="#1d4ed8", lw=2.2, ms=6, label="闭环吞吐 (M/s)")
@@ -132,25 +133,25 @@ ax.set_ylim(0, 27)
 ax2 = ax.twinx()
 ax2.spines["top"].set_visible(False)
 l2, = ax2.plot(xs, snp_w, "--s", color="#dc2626", lw=2.0, ms=5.5, label="卡 TAD 嗅探 (次/条)")
-l3, = ax2.plot(xs, l2_w, ":^", color="#ea580c", lw=1.8, ms=5.5, label="卡 L2 重填 (次/条)")
-ax2.set_ylabel("卡侧每条消息 TAD 嗅探 / L2 重填", color="#dc2626")
+l3, = ax2.plot(xs, tad_w, ":D", color="#059669", lw=2.0, ms=5.5, label="卡 TAD 在途 (条)")
+ax2.set_ylabel("卡 TAD 嗅探 (次/条) / TAD 在途 (条)", color="#dc2626")
 ax2.tick_params(axis="y", labelcolor="#dc2626")
 ax2.set_ylim(0, 6.2)
 ax2.grid(False)
 
 ax.axvline(3.5, color="#991b1b", ls="--", lw=1.1, alpha=0.8)
 ax.text(
-    3.65,
+    3.62,
     25.8,
-    "W=48 坍缩悬崖：13.1 M/s 锁死\n(主机 CHA 仍仅 1.3 条)",
-    fontsize=8.0,
+    "W=48 坍缩：13.1 M/s 锁死\nTAD 在途反跌 1.03→0.15 条",
+    fontsize=7.8,
     color="#991b1b",
     fontweight="bold",
     va="top",
     bbox=dict(boxstyle="round,pad=0.25", fc="#fff5f5", ec="#fca5a5"),
 )
-ax.set_title("B. WC4 随窗口 W 坍缩：嗅探翻倍至 4.5 次/条")
-ax.legend([l1, l2, l3], [l.get_label() for l in (l1, l2, l3)], loc="lower right", fontsize=8, frameon=True, facecolor="white")
+ax.set_title("B. WC4 随窗口 W 坍缩：TAD 在途反跌 5–10×")
+ax.legend([l1, l2, l3], [l.get_label() for l in (l1, l2, l3)], loc="upper left", fontsize=7.8, frameon=True, facecolor="white")
 
 # ---- Panel C: MRV-50 Pre-Touch Verification across seq=20512 (4 reps) ----
 ax = axes[2]

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""MRV-75 Figure 3: Part 3 Single-Variable Intervention B — Host max_send_burst vs host_gap_ns."""
+"""MRV-75 Figure 3: Part 3 Single-Variable Intervention B — Host max_send_burst vs host_gap_ns (incl. PAUSE quantization note)."""
 import collections
 import json
 import pathlib
@@ -25,7 +25,7 @@ def med(exp, cond, fn):
     return statistics.median(fn(r) for r in by_key[(exp, cond)])
 
 
-fig, axes = plt.subplots(1, 2, figsize=(13.5, 5.1))
+fig, axes = plt.subplots(1, 2, figsize=(13.6, 5.1))
 
 # ---- Panel A: max_send_burst sweep (WC4 W=64, T_pause=0) ----
 ax = axes[0]
@@ -80,7 +80,6 @@ ax = axes[1]
 gaps = [0, 10, 20, 40, 60]
 xg = np.arange(len(gaps))
 mops_g = [med("part3_gap", f"gap_{g}ns", lambda r: r["mops"]) for g in gaps]
-snp_g = [med("part3_gap", f"gap_{g}ns", lambda r: r["card_pmu"]["tad"]["tad_snp_msh_out_any"]["val"] / (r["rounds"] + r["warmup"])) for g in gaps]
 h2c_g = [
     by_key[("part3_stamp", "burst_64_sp" if g == 0 else f"gap_{g}ns_sp")][0]["stamp_summary"]["all"]["h2c_p50_ns"] / 1000.0
     for g in gaps
@@ -95,8 +94,15 @@ for idx, g in enumerate(gaps):
     for r in by_key[("part3_gap", f"gap_{g}ns")]:
         ax.scatter(idx, r["mops"], color="#1d4ed8", s=16, alpha=0.45, zorder=3)
 ax.set_xticks(xg)
-ax.set_xticklabels([f"{g} ns\n(嗅探 {s:.1f})" for g, s in zip(gaps, snp_g)], fontsize=8.8)
-ax.set_xlabel("主机逐条最小发送间隔 host_gap_ns（括号为卡 TAD 嗅探/条）")
+gap_xlabels = [
+    "0 ns\n(实测 8.2)",
+    "10 ns*\n(PAUSE→32.7)",
+    "20 ns*\n(PAUSE→32.7)",
+    "40 ns\n(实测 50.0)",
+    "60 ns\n(主机限速)",
+]
+ax.set_xticklabels(gap_xlabels, fontsize=8.0)
+ax.set_xlabel("主机设定发送间隔 host_gap_ns（*受 PAUSE 量化；括号为实测突发间隔 ns）")
 ax.set_ylabel("吞吐 (M msg/s)", color="#1d4ed8")
 ax.tick_params(axis="y", labelcolor="#1d4ed8")
 ax.set_ylim(5, 25)
@@ -111,10 +117,10 @@ ax2.set_ylim(0, 5.0)
 ax2.grid(False)
 
 ax.text(
-    0.25,
+    0.18,
     19.8,
-    "10–40 ns 仍填满 W=64\n全程锁死 12.9–13.0 M/s\n嗅探高达 4.4–4.5 次/条",
-    fontsize=8.3,
+    "10/20 ns 被 PAUSE 量化至 32.7 ns\n实测 33–50 ns 仍填满 W=64\n锁死 12.9–13.0 M/s (10–25 ns 未测)",
+    fontsize=7.9,
     color="#991b1b",
     fontweight="bold",
     bbox=dict(boxstyle="round,pad=0.3", fc="#fef2f2", ec="#fca5a5"),
@@ -128,7 +134,7 @@ ax2.annotate(
     color="#065f46",
     bbox=dict(boxstyle="round,pad=0.25", fc="#ecfdf5", ec="#6ee7b7"),
 )
-ax.set_title("B. 只拉大发送间隔 host_gap_ns：无法跳出 13 M/s")
+ax.set_title("B. 只拉大发送间隔 host_gap_ns：33–50 ns 仍锁死")
 ax.legend([l1, l2, l3], [l.get_label() for l in (l1, l2, l3)], loc="lower center", fontsize=8, frameon=True, facecolor="white")
 
 fig.suptitle("MRV-75 Part 3：单变量干预 B —— 主机发包节流对比（WC4 W=64，T_pause = 0，每档 3 次重复）", fontsize=11.5, fontweight="bold")
