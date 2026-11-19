@@ -13,230 +13,197 @@ Raw data: `logs/mrv{24,50,53,54,55,61,70,76}-*/` of `~/dev/marvell` (2026-11-17/
 
 | Scene | Title | Length | Cues | Source |
 |---|---|---|---|---|
-| S01 | One path, two speeds | 52 s | 5 | host ⇄ DPU direct path · six experiments · Nov 17–18, 2026 |
-| S02 | The direct path | 76 s | 6 | Xeon Gold 6438M ⇄ OCTEON 10 CN106 · PCIe Gen5 x4 |
-| S03 | Exp 1 · Chasing the frontier | 76 s | 7 | MRV-61 · logs/mrv61-2026-11-18 · 27 runs × 2×10⁸ msgs |
-| S04 | Exp 2 · Where the core reads | 78 s | 7 | MRV-76 · logs/mrv76-2026-11-18 · 33 runs × 2×10⁸ msgs |
-| S05 | Exp 3 · Inside the slow loop | 84 s | 7 | MRV-50 · logs/mrv50-2026-11-17 · card-side timestamps |
-| S06 | Exp 4 · Who sets the pace? | 90 s | 7 | MRV-53 · logs/mrv53-2026-11-17 · 2×10⁷ msgs per run |
-| S07 | Exp 5 · Remove the loop | 88 s | 7 | MRV-70 · logs/mrv70-2026-11-18 · 483 runs × 300 ms |
-| S08 | Exp 6a · Interleaved replies | 65 s | 5 | MRV-54 · logs/mrv54-2026-11-18 · 4 × 2×10⁷ msgs per point |
-| S09 | Exp 6b · 64 B or 128 B? | 64 s | 5 | MRV-55 · logs/mrv55-2026-11-18 · 1 s × 5 per point |
-| S10 | What we learned | 67 s | 6 | six single-variable experiments · open items |
+| S01 | The direct path & the 12× mystery | 75 s | 6 | Xeon host ⇄ OCTEON 10 DPU · PCIe Gen5 ×4 · 64-byte messages |
+| S02 | Sanity check · Return traffic vs forward | 61 s | 5 | Forward vs bidirectional · host pinned 3.9 GHz · 21 verified runs |
+| S03 | Exp 1 · Card frontier polling | 77 s | 6 | One-way forward · 2 card cores · 27 verified runs × 2×10⁸ msgs |
+| S04 | Exp 2 · Write-band conflict vs L3 bandwidth | 80 s | 6 | One-way · 3 µs pause · 33 verified runs × 2×10⁸ msgs · card L3 counters |
+| S05 | Exp 3 · Where time sits in the 13 M/s loop | 85 s | 6 | Closed-loop timestamps · 4 card cores · WC replies · W = 1 vs 64 |
+| S06 | Exp 4 · Who owns the critical path? | 88 s | 6 | Closed-loop delay injection · 2×10⁷ msgs/run · host vs card slopes |
+| S07 | Exp 5 · Ruling out two 4-core suspects | 93 s | 6 | 4-core WC layout (64 runs) · card L3 spacing sweep (155 runs) |
+| S08 | Exp 6 · Breaking the loop (open-loop) | 89 s | 6 | Lockstep vs open-loop duplex · 1 host core · 483 verified runs |
+| S09 | The complete causal map & what's next | 72 s | 5 | Six single-variable experiments · verified causal map & roadmap |
 
 ## Cues (caption / narration / provenance)
 
-### S01 One path, two speeds (52 s)
+### S01 The direct path & the 12× mystery (75 s)
 
-1. `   0.6s` A server talks to its **DPU** through direct **64-byte** writes. One way, one host core pushes **161.6 M messages/s** into the card.
-   - spoken: A server talks to its D P U through direct sixty-four byte writes. One way, a single host core pushes one hundred sixty-one point six million messages per second.
-   - source: §E1
-2. `  11.2s` Close the loop, so the host waits for replies before sending more, and the same path settles near **13 M/s**: about **12× slower**.
-   - spoken: But close the loop, so the host waits for replies before sending more, and the same path settles near thirteen million per second. Twelve times slower.
+1. `   0.6s` An **Intel Xeon** host (one core pinned at **3.9 GHz**) talks to a **Marvell OCTEON 10 DPU** (24 Arm cores at **2.0 GHz**) over **PCIe Gen5 ×4**.
+   - spoken: An Intel Xeon host, one core pinned at three point nine gigahertz, talks to a Marvell Octeon ten D P U with twenty-four Arm cores at two gigahertz over P C I e Gen five by four.
+   - source: §Setup
+2. `  13.7s` Forward: one `MOVDIR64B` instruction writes a **64-byte** message directly into a card-memory ring over PCIe — no doorbell, no DMA.
+   - spoken: Forward: one move dir sixty-four B instruction writes a sixty-four byte message straight into a card-memory ring over P C I e. No doorbell, no D M A.
+   - source: §Setup
+3. `  25.2s` Return: a card core polls the ring, checks sequence tags, and sends a **64-byte** reply to host memory via **write-combining** (`4 × 16 B`).
+   - spoken: Return: a card core polls the ring, checks sequence tags, and writes a sixty-four byte reply into host memory with write combining: four sixteen-byte stores merged into one P C I e write.
+   - source: §Setup
+4. `  38.0s` The mystery: one way, one host core hits **161.6 M/s**. Close the loop (`W = 64`, 4 card cores), and the same path collapses **12× to ~13 M/s**.
+   - spoken: Here is the mystery. One way, one host core pushes one hundred sixty-one point six million messages per second. Close the loop at window sixty-four with four card cores, and it collapses twelve times to about thirteen million.
    - source: §E1, §E3
-3. `  20.1s` Why? We ran **six experiments**. Each keeps the fastest setup fixed and turns **exactly one knob**, so each result has one cause.
-   - spoken: Why? We ran six experiments. Each one keeps the fastest setup fixed, and turns exactly one knob, so every difference has a single cause.
+5. `  51.9s` Our method (**Occam's razor**): fix this fastest baseline, turn **one knob per experiment**, verify every message (**0 lost, 0 corrupt**), and tag **[INF]**.
+   - spoken: Our method: Occam's razor. Fix this fastest baseline, turn one knob per experiment, verify every message for zero loss or corruption, and tag interpretations as our reading.
    - source: §Method
-4. `  29.6s` Experiments **1–2** dissect the one-way path, **3–4** look inside the loop, **5** removes the loop, and **6** rules out two suspects.
-   - spoken: Experiments one and two dissect the one-way path, three and four look inside the loop, five removes the loop, and six rules out two suspects.
-5. `  38.8s` Every run verifies every message: **0 lost, 0 corrupt**. Numbers are medians unless marked; **[INF]** marks our interpretation.
-   - spoken: Every run verifies every message: zero lost, zero corrupted. Numbers are medians unless noted, and anything tagged as an inference is our interpretation, not a measurement.
+6. `  63.8s` Our 4-step hunt: **rule out return traffic** & solve **one-way**, dissect the **13 M/s loop**, clear **two 4-core suspects**, then **break the loop**.
+   - spoken: Our four-step hunt: sanity-check return traffic and solve one-way, step inside the thirteen million loop, clear two four-core suspects, and finally break the loop.
    - source: §Method
 
-### S02 The direct path (76 s)
+### S02 Sanity check · Return traffic vs forward (61 s)
 
-1. `   0.6s` Host: **Intel Xeon**, one core pinned at **3.9 GHz**. DPU: **Marvell OCTEON 10**, 24 Arm cores at **2.0 GHz**. Link: **PCIe Gen5 ×4**.
-   - spoken: The hardware: an Intel Xeon host, using one core pinned at three point nine gigahertz, and a Marvell Octeon ten D P U with twenty-four Arm cores at two gigahertz, linked by P C I e Gen five, by four.
-   - source: §Setup
-2. `  15.2s` Forward: one **MOVDIR64B** instruction writes a whole 64-byte message into a ring in card memory, through a PCIe window. No doorbell, no DMA.
-   - spoken: Forward: one move dir sixty-four B instruction writes a whole sixty-four byte message into a ring in card memory, through a P C I e window. No doorbell, no D M A.
-   - source: §Setup
-3. `  27.9s` A card core **polls** the ring. Sequence numbers at both ends of each message tell it the slot is complete and in order.
-   - spoken: A card core polls the ring. Sequence numbers at both ends of each message tell it a slot is complete, and in order.
-   - source: §Setup
-4. `  34.9s` Return: the card core writes its reply into host memory with **write-combining (WC)**: four 16-byte stores leave as one 64-byte PCIe write.
-   - spoken: Return: the card core writes its reply straight into host memory with write combining. Four stores, of sixteen bytes each, merge into a single sixty-four byte P C I e write.
-   - source: §Setup
-5. `  47.1s` Sanity check first: does reply traffic slow the forward path? Sender pinned at 3.9 GHz: **113.1 → 112.2 M/s**. No.
-   - spoken: First, a sanity check: does reply traffic slow the forward path? With the sender pinned, forward throughput only moves from one hundred thirteen point one to one hundred twelve point two million per second. No.
+1. `   0.6s` **Suspect 0:** Test the simplest idea first — do return replies from card to host choke forward `MOVDIR64B` writes on PCIe?
+   - spoken: Start with the simplest suspect. Do return replies from card to host choke forward move dir sixty-four B writes on P C I e?
    - source: §E0
-6. `  59.5s` An earlier drop to **75.6 M/s** came from an unpinned sender at **~2.1 GHz**. **[INF]** The clock, not PCIe. Lesson: pin every clock.
-   - spoken: An earlier drop, to seventy-five point six, appeared only with the sender unpinned, at about two point one gigahertz. Our reading: the clock, not P C I e, though that clock was never run one way. Lesson: pin every clock.
+2. `   9.4s` **Fixed:** host sender pinned **3.9 GHz** (uncore **2.2 GHz**), **1 receive + 1 reply core** with WC. **One knob:** replies **OFF vs ON**.
+   - spoken: Fixed baseline: host sender pinned at three point nine gigahertz, uncore two point two, one receive core plus one write-combining reply core. One knob: replies off versus on.
+   - source: §E0
+3. `  21.2s` **Result:** forward alone runs **113.1 M/s**; with replies flowing it stays **112.2 M/s**. **Verdict: No** — return traffic does not slow forward writes.
+   - spoken: Result: forward alone runs one hundred thirteen point one million per second; with replies flowing it stays one hundred twelve point two. Verdict: no, return traffic does not slow forward writes.
+   - source: §E0
+4. `  33.6s` An earlier drop to **75.6 M/s** had an unpinned sender at **~2.1 GHz** — **[INF]** a clock drop, not PCIe backpressure. Rule zero: pin every clock.
+   - spoken: An earlier drop to seventy-five point six came only from an unpinned sender at two point one gigahertz. Our reading: clock drop, not P C I e, though two point one was never run one way. Always pin clocks.
    - source: §E0 [INF]
+5. `  47.4s` **Next:** Return traffic is innocent. Give pure one-way traffic **2 receive cores** — yet forward still stalls at **128.7 M/s**. What holds it back?
+   - spoken: Return traffic is innocent. Next, give pure one-way traffic two receive cores so the receiver is not the limit, yet forward still stalls at one hundred twenty-eight point seven million. Why?
+   - source: §E0 -> §E1
 
-### S03 Exp 1 · Chasing the frontier (76 s)
+### S03 Exp 1 · Card frontier polling (77 s)
 
-1. `   0.6s` **Experiment 1.** One-way traffic only. When a card core catches up with the newest writes, should it keep polling, or step back?
-   - spoken: Experiment one. One-way traffic only. When a card core catches up with the newest writes, should it keep polling, or step back?
+1. `   0.6s` **Question:** Two card cores polling non-stop catch up to the **write frontier** where `MOVDIR64B` writes are landing. Does chasing that frontier slow the host?
+   - spoken: Experiment one. Two card cores polling non-stop catch right up to the write frontier where host writes are still landing. Does chasing that frontier slow the host?
    - source: §E1
-2. `   8.5s` Fixed: the host core sends; **two card cores** receive, each taking up to **32 messages per poll**. Fewer than 32 means it reached the frontier.
-   - spoken: Fixed: the host core sends, and two card cores receive, each taking up to thirty-two messages per poll. Fewer than thirty-two means it has reached the frontier.
+2. `  10.2s` **Fixed:** one-way forward, host **3.9 GHz**, **2 card cores**, up to **32 cells/poll** (`< 32` = caught up). **One knob:** pause when caught up (**0, 1, or 3 µs**).
+   - spoken: Fixed baseline: one-way forward, host three point nine gigahertz, two card cores taking up to thirty-two cells per poll. One knob: how long a core pauses when caught up: zero, one, or three microseconds.
    - source: §E1
-3. `  18.7s` The frontier is fuzzy: host counters show **~440 writes in flight**, each queued **~3.5 µs**. **[INF]** They land out of order, leaving holes.
-   - spoken: That frontier is fuzzy. Host counters show about four hundred forty writes in flight, each queued about three and a half microseconds. Our reading: they land out of order, leaving holes.
+3. `  24.4s` **0 µs** (non-stop): **93.6%** of polls are empty; throughput sticks at **128.7 M/s**. **1 µs**: barely moves, **132.2 M/s** (`132–134` across modes).
+   - spoken: At zero microseconds, ninety-three point six percent of polls return empty, and throughput sticks at one hundred twenty-eight point seven million. One microsecond barely moves it, to one hundred thirty-two point two.
+   - source: §E1
+4. `  37.4s` **3 µs** pause: throughput leaps **+26% to 161.6 M/s** — saturating the host core at **24.2 cycles per message**.
+   - spoken: At three microseconds, throughput leaps twenty-six percent to one hundred sixty-one point six million per second, saturating the host core at twenty-four point two cycles per message.
+   - source: §E1
+5. `  49.0s` **Why:** Host counters show **447 writes** queuing **3.47 µs** at 0 µs (**[INF]** landing out of order). `1 µs` wakes inside that band; `3 µs` lets **~900 cells** settle (`360` queued, `2.23 µs`).
+   - spoken: Why? Host counters show four hundred forty-seven writes queuing three point five microseconds, our reading being out-of-order landing. One microsecond wakes inside that band; three lets nine hundred cells settle, cutting the queue to three hundred sixty.
    - source: §E1 [INF]
-4. `  30.2s` Knob = how long the core pauses when it catches up. **0 µs**: it never pauses, **93.6%** of polls come back empty, and throughput sticks at **128.7 M/s**.
-   - spoken: The knob: how long the core pauses when it catches up. At zero it never pauses: ninety-three point six percent of its polls come back empty, and throughput sticks at one hundred twenty-eight point seven.
-   - source: §E1
-5. `  42.3s` **1 µs**: barely better, **132.2 M/s**. One microsecond is shorter than the ~3 µs landing window, so the core wakes up inside it again.
-   - spoken: One microsecond: barely better, one hundred thirty-two point two. That is shorter than the three microsecond landing window, so the core wakes up inside it again.
-   - source: §E1 [INF]
-6. `  52.1s` **3 µs**: **161.6 M/s**. The band has landed; the core grabs **~900 messages** per wake-up, and the host's write queue drops from **447 to 360**.
-   - spoken: Three microseconds: one hundred sixty-one point six. The band has landed, the core grabs about nine hundred messages per wake-up, and the host's write queue drops from four hundred forty-seven to three hundred sixty.
-   - source: §E1
-7. `  64.9s` Now the host core itself is the limit, **~24 cycles per message**. A receiver glued to the frontier slows the sender; backing off gives **+26%**.
-   - spoken: Now the host core itself is the limit, about twenty-four cycles per message. A receiver glued to the frontier slows the sender. Backing off gives twenty-six percent.
-   - source: §E1
+6. `  65.0s` **Next:** Did pausing 3 µs help because the core avoided the **active write band**, or simply because it freed **card L3 read bandwidth**?
+   - spoken: Wait. During a three microsecond pause, the core stopped reading completely. Did pausing help by avoiding the active write band, or simply by freeing card L 3 read bandwidth?
+   - source: §E1 -> §E2
 
-### S04 Exp 2 · Where the core reads (78 s)
+### S04 Exp 2 · Write-band conflict vs L3 bandwidth (80 s)
 
-1. `   0.6s` **Experiment 2.** Why does polling at the frontier hurt? Suspect A: **where** the core reads. Suspect B: **how much** it loads the card's shared L3 cache.
-   - spoken: Experiment two. Why does polling at the frontier hurt? Suspect A is position: where the core reads. Suspect B is bandwidth: how hard it loads the card's shared L 3 cache.
+1. `   0.6s` **Two suspects:** Did the 3 µs pause unlock 161.6 M/s by cutting **card L3 read bandwidth**, or by staying out of the **in-flight write band**?
+   - spoken: Experiment two splits those two suspects: total L 3 read bandwidth on the card, versus colliding with the exact addresses still being written.
    - source: §E2
-2. `  12.6s` Fixed: the fast case, pausing **3 µs**. Knob = what the core reads during each pause. Reading nothing: **160.4 M/s**.
-   - spoken: Fixed: the fast case, pausing three microseconds. The knob: what the core reads during each pause. Reading nothing gives one hundred sixty point four.
+2. `  10.3s` **Fixed:** the fast **3 µs pause** baseline (2 card cores). **One knob:** **where** the core reads during each pause — nothing, cold RAM, old ring slots, or the write band.
+   - spoken: Fixed baseline: the fast three microsecond pause from experiment one. One knob: where the core reads during each pause — nothing, cold memory, old ring slots, or ahead inside the active write band.
    - source: §E2
-3. `  22.5s` Read cold memory **outside** the ring: L3 requests rise from **608 to 815 M/s**, past **1 billion/s** with page strides. Throughput: **160.4–161.4**.
-   - spoken: Read cold memory outside the ring: requests into the shared cache rise from six hundred eight to eight hundred fifteen million per second, past a billion with page strides. Throughput stays near one hundred sixty-one.
+3. `  23.9s` Idle spin gives **160.4 M/s** (`608 M/s` L3). Cold RAM pushes L3 reads to **815–1,033 M/s** (> 1 billion/s), yet forward stays **160.4–161.4 M/s**.
+   - spoken: Reading nothing gives one hundred sixty point four million at six hundred eight million L 3 requests per second. Cold memory pushes L 3 reads past one billion per second, yet forward stays at one hundred sixty-one million.
    - source: §E2
-4. `  36.1s` Read old slots **half a lap behind**: **162.0**. Slots **just behind** the frontier, already landed: **160.2**. Bandwidth is not the problem.
-   - spoken: Old slots half a lap behind: one hundred sixty-two. Slots just behind the frontier, already landed: one hundred sixty point two. Bandwidth is not the problem.
+4. `  38.1s` Old ring slots half a lap back (**162.0–162.6**) and slots just behind (**160.2**) stay full speed. **Only reading ahead inside the write band** crashes to **113.4 M/s**.
+   - spoken: Old ring slots half a lap back stay at one hundred sixty-two million, and slots just behind stay at one hundred sixty point two. Only reading ahead inside the active write band crashes throughput to one hundred thirteen point four.
    - source: §E2
-5. `  46.6s` Now read just **ahead** of the frontier, inside the ~3 µs band still landing. Throughput collapses to **113.4 M/s**.
-   - spoken: Now read just ahead of the frontier, inside the three microsecond band that is still landing. Throughput collapses to one hundred thirteen point four.
-   - source: §E2
-6. `  55.6s` **[INF]** Touching lines still being written forces snoops or blocks inbound writes; host queueing hits **4.0 µs > 3 µs**, so pauses end too early.
-   - spoken: Our reading: touching lines still being written forces cache snoops, or blocks inbound writes. Host queueing grows to four microseconds, longer than the pause, so pauses end too early, and it feeds on itself.
+5. `  52.2s` **Why:** L3 bandwidth is innocent (write band uses only `472 M/s` L3). **[INF]** Touching landing lines spikes snoops (`67.9 → 111.9 M`) and pushes host queueing to **4.03 µs > 3 µs**.
+   - spoken: Verdict: location, not bandwidth. Touching lines still landing spikes snoops and pushes host queuing to four microseconds, longer than the pause. Our reading: snoops or write blocking feed back so pauses end too early.
    - source: §E2 [INF]
-7. `  69.4s` Verdict: **position, not bandwidth**. A receiver should stay behind the landing band; how much else it reads barely matters.
-   - spoken: The verdict: position, not bandwidth. A receiver should stay behind the landing band. How much else it reads barely matters.
-   - source: §E2
+6. `  67.0s` **Next:** One-way is solved: stay behind the ~3 µs band to hit **161.6 M/s**. Now step inside the **13 M/s closed loop**: where do the extra microseconds sit?
+   - spoken: One-way is solved: stay behind the three microsecond band and hit one hundred sixty-one point six million. Now step inside the thirteen million closed loop. Where do the extra microseconds sit?
+   - source: §E2 -> §E3
 
-### S05 Exp 3 · Inside the slow loop (84 s)
+### S05 Exp 3 · Where time sits in the 13 M/s loop (85 s)
 
-1. `   0.6s` **Experiment 3** closes the loop: the host keeps at most **W** messages in flight, and each reply frees a slot for the next request.
-   - spoken: Experiment three closes the loop. The host keeps at most W messages in flight, and each reply frees a slot for the next request.
+1. `   0.6s` **Question:** In a closed loop, the host caps in-flight requests at window **W** and waits for replies. At **13.5 M/s**, which leg is slow: **forward, card, or return**?
+   - spoken: Experiment three opens up the closed loop, where the host caps in-flight requests at window W and waits for replies. At thirteen point five million, which leg is slow: forward, on-card, or return?
    - source: §E3
-2. `   9.5s` Fixed: WC replies, **4 card cores**. Knob = window **W = 1 vs 64**. Card timestamps split each round trip: forward · on card · return.
-   - spoken: Fixed: write combining replies and four card cores. The knob: a window of one, versus sixty-four. Card timestamps split each round trip into forward, on-card, and return.
+2. `  13.6s` **Fixed:** closed loop, WC replies, **4 card cores**, synchronized timestamps. **One knob:** window **W = 1** (no queue) vs **W = 64** (slow state).
+   - spoken: Fixed baseline: closed loop, write-combining replies, four card cores, and synchronized hardware timestamps. One knob: window one with no queueing, versus window sixty-four in the slow state.
    - source: §E3
-3. `  22.2s` **W = 1**, nothing queues: **0.92 µs** round trip = **0.45** forward + **0.04** on card + **0.43** return.
-   - spoken: With a window of one, nothing queues. The round trip is zero point nine two microseconds: zero point four five forward, zero point zero four on the card, and zero point four three back.
+3. `  26.5s` **W = 1** (no queue): median round trip is **0.92 µs** = **0.45 µs** forward + **0.04 µs** on card + **0.43 µs** return.
+   - spoken: At window one, nothing queues. Round trip is zero point nine two microseconds: zero point four five forward, zero point zero four on card, and zero point four three back.
    - source: §E3
-4. `  34.5s` **W = 64**: **13.5 M/s**, round trip **3.7 µs**. On card still **0.04**, return **~0.5**. The extra **~2.7 µs** waits on the **forward** side.
-   - spoken: At sixty-four: thirteen and a half million per second, and a three point seven microsecond round trip. On-card time is unchanged and the return is about half a microsecond, so the extra two point seven waits on the forward side.
+4. `  38.4s` **W = 64** (**13.5 M/s**): round trip swells to **3.7 µs**. On-card stays **0.04 µs**, return **~0.5 µs** (`0.49–0.52`), while forward swells to **3.1–3.2 µs** (`+2.7 µs`).
+   - spoken: At sixty-four, throughput stalls at thirteen point five million and round trip swells to three point seven microseconds. On-card stays zero point zero four and return stays half a microsecond; the extra two point seven waits on the forward leg.
    - source: §E3
-5. `  48.5s` The host fires requests in bursts **9 ns** apart, but they reach the card core one every **~75 ns**. About **42** wait in between.
-   - spoken: The host fires its requests in bursts, nine nanoseconds apart. But they reach the card core only once every seventy-five nanoseconds or so. About forty-two requests wait in between.
-   - source: §E3
-6. `  60.9s` Caveat: two runs that skipped pre-touching memory pages ran at the same **13.4 M/s**, with the queue on the **return** side: **0.7 µs** forward, **2.7 µs** back.
-   - spoken: A caveat: two runs that skipped pre-touching memory pages ran at the same thirteen point four million, but with the queue on the return side: zero point seven microseconds forward, two point seven back.
-   - source: §E3 caveat
-7. `  73.4s` **[INF]** So ~13 M/s is not one stage's speed limit; the queue forms wherever the loop's rhythm puts it.
-   - spoken: So, our reading: thirteen million per second is not the speed limit of any one stage. The queue forms wherever the rhythm of the loop puts it.
+5. `  54.2s` **Why + caveat:** Host sends **9.1 ns** apart; card sees one every **~75 ns** → **~42 queued**. Yet 2 runs without page pre-touch hit **13.4 M/s** with the queue on **return** (`0.7` / `2.7 µs`) — **[INF]** loop rhythm.
+   - spoken: The host sends nine nanoseconds apart while the card sees one every seventy-five nanoseconds, queuing about forty-two messages. Caveat: two runs without pre-touched pages hit the same thirteen point four million, but flipped the queue to return. Our reading: loop rhythm, not one fixed stage limit.
    - source: §E3 [INF]
+6. `  73.4s` **Next:** About **42 messages** pile up in transit at 13 M/s. Are the host CPU or card CPUs actually busy, or are **both sitting idle**?
+   - spoken: About forty-two messages pile up in transit at thirteen million per second. Next question: is either the host or card C P U actually busy, or are both sitting idle?
+   - source: §E3 -> §E4
 
-### S06 Exp 4 · Who sets the pace? (90 s)
+### S06 Exp 4 · Who owns the critical path? (88 s)
 
-1. `   0.6s` **Experiment 4**: who sets the pace? Add a known delay **δ** to every message on one side, and watch the time per message.
-   - spoken: Experiment four asks who sets the pace. The trick: add a known delay, delta, to every message on one side, and watch the time per message.
+1. `   0.6s` **Question:** In the 13 M/s slow state, who sets the pace? **One knob:** inject an un-hideable delay **δ** (`10–59 ns`, fenced multiplies) per message on **one side**.
+   - spoken: Experiment four asks who owns the critical path. One knob: inject an un-hideable delay delta of ten to fifty-nine nanoseconds per message on either the host or the card.
    - source: §E4
-2. `  10.0s` δ is a chain of dependent multiplies between two fences, so the CPU can't hide it. At W = 1 it adds what we ask: **+40 ns → +40.1 ns**.
-   - spoken: Delta is a chain of dependent multiplies between two fences, so the processor cannot hide it. With a window of one, it adds what we ask: forty nanoseconds become forty point one.
+2. `  11.8s` **Calibration:** Average **20M** messages (sub-ns precision). At `W = 1`, `+40 ns` adds `+40.1 ns` (slope **1.01**). **Slope ≈ 1** = bottleneck; **slope ≈ 0** = idle.
+   - spoken: Over twenty million messages we resolve fractions of a nanosecond. At window one, forty nanoseconds adds forty point one, slope one point zero one. Slope one means bottleneck; slope zero means idle.
    - source: §E4
-3. `  21.4s` Each run sends **20 million** messages; time per message = total ÷ 20 M. **Slope 1**: that side is on the critical path. **Slope 0**: it was waiting anyway.
-   - spoken: Each run sends twenty million messages, so time per message resolves changes of a fraction of a nanosecond. Slope one: that side is on the critical path. Slope zero: it was waiting anyway.
+3. `  25.7s` **Fast state** (1 card core, `W = 1024`): both slopes **1.07** (interlocked). **Slow state** (4 cores, `W = 64`, `76.1 ns/msg`): **+59 ns** on card changes nothing (**76.1 → 75.6 ns**, slope **−0.01**).
+   - spoken: Fast state, one core at window ten twenty-four: both slopes are one point zero seven, tightly interlocked. Slow state, four cores at sixty-four: adding fifty-nine nanoseconds on the card changes nothing, seventy-six point one to seventy-five point six.
    - source: §E4
-4. `  33.6s` Fast state (1 card core, W = 1024): host slope **1.07**, card slope **1.07**. Both sides are on the critical path, tightly interlocked.
-   - spoken: Fast state, one card core, window ten twenty-four: both slopes are one point zero seven. Host and card code are both on the critical path, tightly interlocked.
-   - source: §E4
-5. `  44.1s` Slow state (4 card cores, W = 64): adding up to **59 ns** on the card changes nothing, **76.1 → 75.6 ns** per message. The card just waits.
-   - spoken: Slow state, four card cores, window sixty-four: adding up to fifty-nine nanoseconds on the card changes nothing. Seventy-six point one nanoseconds per message becomes seventy-five point six. The card just waits.
-   - source: §E4
-6. `  57.7s` Surprise on the host: **+10 ns makes it faster**, **76.2 → 60.9 ns** per message. **[INF]** The host's bursts, not its code, seem to trigger the slow state.
-   - spoken: The surprise is on the host: adding ten nanoseconds makes it faster, from seventy-six point two to sixty point nine nanoseconds per message. Our reading: the host's bursts, not its code, seem to trigger the slow state.
+4. `  41.9s` **Host surprise:** in the slow state, **+10 ns** makes it **20% faster** (**76.2 → 60.9 ns/msg**)! **[INF]** Both CPUs are idle; spacing host bursts breaks the slow rhythm.
+   - spoken: Surprise on the host: adding ten nanoseconds makes the slow state twenty percent faster, dropping from seventy-six point two to sixty point nine nanoseconds. Our reading: both processors sit idle, and spacing host bursts breaks the slow rhythm.
    - source: §E4 [INF]
-7. `  71.6s` At W = 1024, **4 card cores lose to 1**: **23.9 vs 50.5 M/s**. Sending costs the same **~9 ns**; reply polling grows **13.6 → 32.5 ns** across four rings.
-   - spoken: And at window ten twenty-four, four card cores do worse than one: twenty-three point nine, versus fifty point five million per second. Sending still costs nine nanoseconds, but reply polling grows from thirteen point six to thirty-two point five, waiting across four rings.
+5. `  57.6s` **4-core clue:** At `W = 1024`, **4 card cores lose to 1** (**23.9 vs 50.5 M/s**). Sending stays **9.2–9.3 ns**, while reply polling jumps **13.6 → 32.5 ns** across 4 sub-rings.
+   - spoken: Another four-core clue: at window ten twenty-four, four card cores lose to one, twenty-three point nine versus fifty point five million. Sending stays nine nanoseconds, while reply polling grows from thirteen point six to thirty-two point five across four rings.
    - source: §E4
+6. `  74.5s` **Next:** Four card cores appear in both slowdowns. Before blaming the loop itself, rule out two **4-core hardware suspects**: broken **WC** and **128 B false sharing**.
+   - spoken: Four card cores show up in both slowdowns. Before blaming the closed loop itself, we must rule out two classic four-core hardware suspects: broken write combining, and one-hundred-twenty-eight byte false sharing.
+   - source: §E4 -> §E5
 
-### S07 Exp 5 · Remove the loop (88 s)
+### S07 Exp 5 · Ruling out two 4-core suspects (93 s)
 
-1. `   0.6s` **Experiment 5** removes the loop. Fixed: **one host core, one card core**, WC replies.
-   - spoken: Experiment five removes the loop. Fixed: one host core, one card core, and write combining replies.
+1. `   0.6s` **Suspect 5a (Write-combining):** With 4 card cores, replies scatter across **64 KB host regions** by tag. Does interleaving break 64-byte write-combining?
+   - spoken: Experiment five clears both four-core suspects, one knob each. First: with four card cores, replies scatter across sixty-four kilobyte host regions. Does interleaving break write combining?
+   - source: §E6a
+2. `  13.4s` **Fixed:** closed loop, 4 cores, `W = 64`. **One knob:** contiguous vs interleaved. **Result:** **1.0001 vs 1.0000** full 64 B writes/reply (**99.99%**), **13.14 vs 13.16 M/s**.
+   - spoken: Fixed: closed loop, four cores, window sixty-four. One knob: contiguous versus interleaved regions. Host counters measure ninety-nine point nine nine percent full sixty-four byte writes in both, at thirteen point one four versus thirteen point one six million.
+   - source: §E6a
+3. `  30.7s` **Why 5a is innocent:** Each 64 B reply fills one whole WC line (`4 × 16 B`) and flushes before the next starts. (Caveat: `W = 1024` sees an unexplained `−3%`, `21.88 → 21.22`.)
+   - spoken: Why? Each sixty-four byte reply fills one complete combining buffer by itself and flushes whole. Caveat: window ten twenty-four sees an unexplained three percent dip, but the counter proves write combining stays intact.
+   - source: §E6a
+4. `  44.8s` **Suspect 5b (128 B false sharing):** Linux reports a **128-byte** card L3 coherency line — if true, cores touching adjacent 64 B slots would thrash.
+   - spoken: Second suspect: Linux reports a one hundred twenty-eight byte coherency line for card L 3. If true, cores writing neighboring sixty-four byte slots would thrash.
+   - source: §E6b
+5. `  56.0s` **Fixed:** 2 card cores rewriting own 64 B slots. **One knob:** spacing `d` (`0 B`–`4 KB`). **0 B**: **72.3 M/s** (`17.8 M/s` snoops). **64 B**: full **259.8 M/s** (`0.52 M/s` idle snoops) — same as `128 B–4 KB`.
+   - spoken: Fixed: two card cores rewriting their own sixty-four byte slots. One knob: spacing from zero bytes to four kilobytes. Zero bytes drops to seventy-two point three million with seventeen point eight million snoops. At sixty-four bytes, both hit two hundred fifty-nine point eight million with idle snoops, identical to four kilobytes.
+   - source: §E6b
+6. `  77.9s` **Next:** Card L3 coherence is **64 B** (core-to-core; PCIe beside polling untested). Both 4-core suspects are innocent — one test remains: **break the closed loop**.
+   - spoken: So card-core coherence is sixty-four bytes, though P C I e beside a polling core remains untested. Both four-core suspects are innocent. One decisive test remains: break closed-loop lockstep itself.
+   - source: §E6b -> §E7
+
+### S08 Exp 6 · Breaking the loop (open-loop) (89 s)
+
+1. `   0.6s` **Hypothesis:** If **closed-loop lockstep** (waiting for replies before sending) creates the 13 M/s wall, independent **open-loop** bidirectional traffic should blow past it.
+   - spoken: Experiment six tests the decisive hypothesis. If waiting for replies in lockstep creates the thirteen million wall, independent open-loop bidirectional traffic should blow right past it.
    - source: §E5
-2. `   8.2s` Knob = **lockstep vs open loop**. Lockstep: a new request waits for an earlier reply. Open loop: each side sends at a set rate, independently.
-   - spoken: The knob: lockstep, versus open loop. In lockstep, each new request waits for an earlier reply. In open loop, host and card each send at a set rate, independently, like two people talking at once.
+2. `  12.8s` **Fixed:** **1 host core + 1 card core**, WC replies. **One knob:** **lockstep** vs **open-loop duplex** (both sides transmit independently at target rate `R`).
+   - spoken: Fixed baseline: one host core, one card core, and write-combining replies. One knob: closed-loop lockstep, versus open-loop duplex where both sides send independently at a target rate.
    - source: §E5
-3. `  21.6s` Lockstep: **14.2 M/s**. Open loop: every target from **5 to 35 M/s each way** is delivered exactly. The 13 M/s wall is gone.
-   - spoken: Lockstep gives fourteen point two million per second. Open loop delivers every target exactly, from five up to thirty-five million per second, each way. The thirteen million wall is gone.
+3. `  25.5s` **Wall gone:** Lockstep stalls at **14.2 M/s** (`W = 256`). Open loop hits every target **5–35 M/s each way** (`70 M/s` total) at **~1 µs** median (`0.97` fwd, `1.24 µs` ret at `35 + 35`).
+   - spoken: The wall vanishes. Lockstep stalls at fourteen point two million. Open loop hits every target from five to thirty-five million each way, seventy million combined, at about one microsecond median: zero point nine seven forward and one point two four back.
    - source: §E5
-4. `  33.7s` At **35 + 35 M/s**, median one-way latency is **0.97 µs** forward and **1.24 µs** return.
-   - spoken: At thirty-five plus thirty-five, the median one-way latency is zero point nine seven microseconds forward, and one point two four back.
+4. `  41.8s` **Peak capacity:** Unthrottled, 1 host + 1 card core reaches **41.9 + 41.9 = 83.7 M/s**. Splitting card RX & TX onto 2 cores hits **91.0 M/s** (WC) and **97.3 M/s** (`49.3 + 47.9`, DMA).
+   - spoken: Unthrottled, one host core and one card core hit forty-one point nine each way, eighty-three point seven total. Splitting card receive and send onto two cores hits ninety-one million with write combining, and ninety-seven point three with D M A.
    - source: §E5
-5. `  43.0s` Unthrottled: **41.9 + 41.9 = 83.7 M/s** from one host core and one card core. Card receive and send on two cores: **91 M/s** (97 with DMA replies).
-   - spoken: Unthrottled, one host core and one card core move forty-one point nine each way, eighty-three point seven in total. With the card's receiving and sending split over two cores: ninety-one, or ninety-seven with D M A replies.
-   - source: §E5
-6. `  58.2s` But those are medians. At 35 + 35 the forward **p99 is 38.7 µs**; at 20 + 20 even the median is **16.9 µs**. The tail is unexplained.
-   - spoken: But those are medians. At thirty-five plus thirty-five, the ninety-ninth percentile forward latency is thirty-eight point seven microseconds, and at twenty plus twenty even the median is sixteen point nine. That tail is unexplained.
+5. `  57.4s` **Honest caveat — tails:** Those `~1 µs` numbers are medians (`p50`). At `35 + 35`, forward **p99 spikes to 38.7 µs** (at `20 + 20`, even `p50` hits `16.9 µs`).
+   - spoken: Honest caveat: those one microsecond numbers are medians. At thirty-five plus thirty-five, ninety-ninth percentile forward latency spikes to thirty-eight point seven microseconds, and at twenty plus twenty even the median hits sixteen point nine.
    - source: §E5 tails
-7. `  72.7s` When each reply is **triggered by a request**, p99 jumps to **35 µs** from **13.5 M/s**. Open loop sidesteps the wall; it does not explain it.
-   - spoken: And when each reply is triggered by a request, as in real request-response traffic, the ninety-ninth percentile jumps to thirty-five microseconds from thirteen and a half million per second. Open loop sidesteps the wall; it does not explain it.
+6. `  73.1s` **Echo test:** With request-triggered replies, RTT **p99 jumps** from **1.26 µs** (`10 M/s`) to **35.4 µs** (`13.5 M/s`). **Verdict:** the link is fast; lockstep & tails are our target.
+   - spoken: With request-triggered replies, ninety-ninth percentile round trip jumps from one point two six microseconds at ten million to thirty-five point four at thirteen point five. Verdict: the link can fly; lockstep and tails are our target.
    - source: §E5 echo
 
-### S08 Exp 6a · Interleaved replies (65 s)
+### S09 The complete causal map & what's next (72 s)
 
-1. `   0.6s` **Experiment 6** rules out two suspects. First: with 4 card cores, replies land in different **64 KB regions**. Does that break write-combining?
-   - spoken: Experiment six rules out two suspects. First: with four card cores, replies land in different sixty-four kilobyte regions of host memory. Does jumping around break write combining?
-   - source: §E6a
-2. `  12.4s` Fixed: closed loop, 4 card cores, W = 64. Knob = replies written **contiguously** in one region vs **interleaved** across regions.
-   - spoken: Fixed: the closed loop, four card cores, and a window of sixty-four. The knob: replies written contiguously in one region, versus interleaved across regions.
-   - source: §E6a
-3. `  23.5s` Host counters: full 64-byte line writes per reply **1.0001 vs 1.0000**, i.e. **99.99%** full lines. Throughput **13.14 vs 13.16 M/s**.
-   - spoken: Host counters see one full sixty-four byte line write per reply in both layouts: ninety-nine point nine nine percent full lines. Throughput: thirteen point one four versus thirteen point one six.
-   - source: §E6a
-4. `  36.6s` Why: each reply **is** one aligned 64-byte line. Its four 16-byte stores fill the combining buffer exactly, and it leaves whole before the next reply starts.
-   - spoken: Why? Each reply is itself one aligned sixty-four byte line. Its four stores, of sixteen bytes each, fill the combining buffer exactly, and it leaves as one whole write before the next reply even starts.
-   - source: §E6a
-5. `  50.2s` Caveat: equal throughput in the slow state is weak evidence. At **W = 1024** the same change costs **3%** (**21.88 → 21.22 M/s**), still unexplained.
-   - spoken: One caveat: equal throughput in the slow state is weak evidence, since both sides were waiting. At window ten twenty-four the same change costs three percent, still unexplained. The line count is the real proof.
-   - source: §E6a caveat
-
-### S09 Exp 6b · 64 B or 128 B? (64 s)
-
-1. `   0.6s` Second suspect: Linux reports a **128-byte** coherency line for the card's L3. Then cores writing **neighboring 64-byte slots** would fight.
-   - spoken: Second suspect: Linux reports a one hundred twenty-eight byte coherency line for the card's L 3 cache. If true, two cores writing neighboring sixty-four byte slots would fight over one line.
-   - source: §E6b
-2. `  13.4s` Fixed: two card cores, each rewriting **its own** 64-byte slot. Knob = the distance between the slots: **0 B, 64 B, 128 B, 256 B, 4 KB**.
-   - spoken: Fixed: two card cores, each rewriting its own sixty-four byte slot, as fast as it can. The knob: the distance between the two slots, from zero bytes up to four kilobytes.
-   - source: §E6b
-3. `  25.7s` Same slot (0 B): each core manages only **72.3 M writes/s**, and coherence snoops jump to **17.8 M/s**.
-   - spoken: When both write the same slot, each core manages only seventy-two point three million writes per second, and coherence snoops jump to seventeen point eight million per second.
-   - source: §E6b
-4. `  36.8s` **64 B apart**, inside one 128-byte block: **259.8 M/s** per core, snoops at the idle background, **0.52 M/s**. Same at 128 B, 256 B, 4 KB.
-   - spoken: At sixty-four bytes apart, still inside one Linux-sized line, each core runs at two hundred fifty-nine point eight million, and snoops stay at the idle background. The same at one twenty-eight, two fifty-six, and four kilobytes.
-   - source: §E6b
-5. `  51.1s` So card cores track coherence per **64 bytes**. Still untested: PCIe writes landing right next to a polling core.
-   - spoken: So the card's cores track coherence per sixty-four bytes, and neighboring slots are safe. Still untested: P C I e writes landing right next to a slot that a core is polling.
-   - source: §E6b caveat
-
-### S10 What we learned (67 s)
-
-1. `   0.6s` One way, the path is fast as long as receivers **stay behind the landing band**: **161.6 M/s** from one host core.
-   - spoken: Putting it together. One way, the path is fast as long as receivers stay behind the band of writes still landing: one hundred sixty-one point six million per second from one host core.
-   - source: §E1, §E2
-2. `  11.8s` In a closed loop it settles near **13 M/s**: both sides mostly wait, the queue sits **in transit**, and the host's **send pacing** changes it.
-   - spoken: In a closed loop, it settles near thirteen million. Both sides mostly wait, the queue sits in transit, forward or back, and the pacing of the host's sends changes it.
-   - source: §E3, §E4
-3. `  22.3s` Without the loop, one host core moves **83.7 M/s** both ways at **~1 µs** median latency. But **p99 tails** of tens of µs remain.
-   - spoken: Without the loop, one host core moves eighty-three point seven million per second in both directions, at about one microsecond median latency. But tail latencies of tens of microseconds remain.
+1. `   0.6s` **1 · One-way solved (161.6 M/s):** Return traffic is innocent (`113.1 vs 112.2`). Pausing **3 µs** behind the write band unlocks **+26%** — location conflict, not L3 bandwidth.
+   - spoken: Here is the complete causal map. First, one-way is solved: return traffic is innocent, and pausing three microseconds behind the write band unlocks one hundred sixty-one point six million, driven by write-band conflict, not L 3 bandwidth.
+   - source: §E0, §E1, §E2
+2. `  15.7s` **2 · Closed loop diagnosed (~13 M/s):** Not busy CPUs (`0.04 µs` card, slopes ≈ 0), not broken WC (`99.99%`), not 128 B false sharing (`64 B`). **~42 msgs** queue; `+10 ns` host gap speeds it up **20%**.
+   - spoken: Second, the thirteen million loop is diagnosed: neither C P U is busy, write combining is ninety-nine point nine nine percent intact, and L 3 coherence is sixty-four bytes. Forty-two messages queue in transit, and ten nanoseconds of host spacing speeds it up twenty percent.
+   - source: §E3, §E4, §E6a, §E6b
+3. `  33.7s` **3 · Open loop unlocked (83.7–97.3 M/s):** Breaking lockstep removes the wall (`35 + 35 M/s` at **~1 µs** `p50`, up to **97.3 M/s** combined), leaving a **35–39 µs** `p99` tail.
+   - spoken: Third, breaking lockstep unlocks thirty-five million each way at one microsecond median, up to ninety-seven point three million combined from one host core, leaving a thirty-five to thirty-nine microsecond tail.
    - source: §E5
-4. `  34.0s` Ruled out: reply interleaving does **not** break write-combining, and card cores do **not** interfere at 64-byte spacing.
-   - spoken: Ruled out: interleaving replies does not break write combining, and card cores do not interfere at sixty-four byte spacing.
-   - source: §E6a, §E6b
-5. `  41.7s` Next: explain and remove the slow state (pace host bursts, cap reply polling, sweep the mesh clock), and report p99 over long runs.
-   - spoken: Next, we want to explain and remove the slow state: pace the host's bursts, cap how many replies it polls at once, and sweep the mesh clock. And report tail latency over long runs.
+4. `  47.2s` **Next step 1 — Kill slow state & tail:** Pace host bursts, cap reply-poll batches, sweep the mesh clock, and track long-run **p99**.
+   - spoken: Next step one: kill the slow state and tail by pacing host bursts, capping reply-poll batches, sweeping the mesh clock, and tracking long-run ninety-ninth percentile latency.
    - source: §Next
-6. `  54.0s` Then: let card cores drive the host's **Intel DSA** engine directly, and build a **minimal message layer** with a real request–response workload.
-   - spoken: Then two directions. Let card cores drive the host's Intel D S A copy engine directly, and build a minimal message layer, tested with a real request-response workload.
+5. `  58.7s` **Next step 2 — Build real systems:** Let card cores drive the host's **Intel DSA** copy engine directly, and build a minimal **RPC / message layer** for real offload.
+   - spoken: Next step two: put this direct path to work by letting card cores drive the host's Intel D S A copy engine directly, and building a minimal R P C layer for real offload.
    - source: §Next

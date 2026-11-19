@@ -192,6 +192,65 @@ export function Takeaway({
   );
 }
 
+/** Explicit causal bridge banner (HTML) that links one experiment's finding to the next scene's question. */
+export function NextQuestion({
+  x,
+  y,
+  w,
+  k = 1,
+  color = K.knob,
+  label = "NEXT QUESTION →",
+  size = 26,
+  children,
+}: {
+  x: number;
+  y: number;
+  w: number;
+  k?: number;
+  color?: string;
+  label?: string;
+  size?: number;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: x,
+        top: y,
+        width: w,
+        opacity: k,
+        transform: `translateY(${(1 - k) * 16}px)`,
+        background: "rgba(249,199,79,0.09)",
+        border: `2px solid ${color}`,
+        borderRadius: 14,
+        padding: "12px 22px",
+        boxSizing: "border-box",
+        fontFamily: FONT,
+        display: "flex",
+        alignItems: "center",
+        gap: 18,
+      }}
+    >
+      <span
+        style={{
+          fontSize: 19,
+          fontWeight: 800,
+          letterSpacing: 1.5,
+          color: C.bg,
+          background: color,
+          borderRadius: 8,
+          padding: "5px 12px",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {label}
+      </span>
+      <span style={{ fontSize: size, fontWeight: 600, color: C.text, lineHeight: 1.25 }}>{children}</span>
+    </div>
+  );
+}
+
 /** "[INF]" tag as HTML (inline-block). Pair it with every interpretation shown on screen. */
 export function InfPill({ size = 22, style }: { size?: number; style?: React.CSSProperties }) {
   return (

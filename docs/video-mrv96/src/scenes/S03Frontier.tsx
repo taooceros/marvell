@@ -1,251 +1,511 @@
-import { Arrow, C, Cue, K, Note, SceneDef, Stage, clamp01, fade, lerp, prog, useRealT, useT } from "../lib";
-import { BarChart, Brace, CellState, InfTag, KnobBar, Meter, Takeaway } from "./kit";
-import { Cursor, HostWriter, LegendCell, RS, RS_RIGHT, ScrollStrip, TimerArc, XMark, absC, absX, hash01 } from "./_Mrv96SceneOneWay";
+import React from "react";
+import { C, Cue, FONT, K, MONO, PacketStream, SceneDef, Stage, clamp01, fade, lerp, prog, useRealT, useT } from "../lib";
+import { BarChart, Brace, InfPill, InfTag, KnobBar, Meter, NextQuestion, RingStrip, ringCenter } from "./kit";
 
 // <cues>
 const cues: Cue[] = [
-  [0.60, 8.18, "**Experiment 1.** One-way traffic only. When a card core catches up with the newest writes, should it keep polling, or step back?", "Experiment one. One-way traffic only. When a card core catches up with the newest writes, should it keep polling, or step back?"], // 0
-  [8.53, 18.37, "Fixed: the host core sends; **two card cores** receive, each taking up to **32 messages per poll**. Fewer than 32 means it reached the frontier.", "Fixed: the host core sends, and two card cores receive, each taking up to thirty-two messages per poll. Fewer than thirty-two means it has reached the frontier."], // 1
-  [18.72, 29.90, "The frontier is fuzzy: host counters show **~440 writes in flight**, each queued **~3.5 µs**. **[INF]** They land out of order, leaving holes.", "That frontier is fuzzy. Host counters show about four hundred forty writes in flight, each queued about three and a half microseconds. Our reading: they land out of order, leaving holes."], // 2
-  [30.25, 41.93, "Knob = how long the core pauses when it catches up. **0 µs**: it never pauses, **93.6%** of polls come back empty, and throughput sticks at **128.7 M/s**.", "The knob: how long the core pauses when it catches up. At zero it never pauses: ninety-three point six percent of its polls come back empty, and throughput sticks at one hundred twenty-eight point seven."], // 3
-  [42.28, 51.80, "**1 µs**: barely better, **132.2 M/s**. One microsecond is shorter than the ~3 µs landing window, so the core wakes up inside it again.", "One microsecond: barely better, one hundred thirty-two point two. That is shorter than the three microsecond landing window, so the core wakes up inside it again."], // 4
-  [52.15, 64.57, "**3 µs**: **161.6 M/s**. The band has landed; the core grabs **~900 messages** per wake-up, and the host's write queue drops from **447 to 360**.", "Three microseconds: one hundred sixty-one point six. The band has landed, the core grabs about nine hundred messages per wake-up, and the host's write queue drops from four hundred forty-seven to three hundred sixty."], // 5
-  [64.92, 74.92, "Now the host core itself is the limit, **~24 cycles per message**. A receiver glued to the frontier slows the sender; backing off gives **+26%**.", "Now the host core itself is the limit, about twenty-four cycles per message. A receiver glued to the frontier slows the sender. Backing off gives twenty-six percent."], // 6
+  [0.60, 9.86, "**Question:** Two card cores polling non-stop catch up to the **write frontier** where `MOVDIR64B` writes are landing. Does chasing that frontier slow the host?", "Experiment one. Two card cores polling non-stop catch right up to the write frontier where host writes are still landing. Does chasing that frontier slow the host?"], // 0
+  [10.21, 24.03, "**Fixed:** one-way forward, host **3.9 GHz**, **2 card cores**, up to **32 cells/poll** (`< 32` = caught up). **One knob:** pause when caught up (**0, 1, or 3 µs**).", "Fixed baseline: one-way forward, host three point nine gigahertz, two card cores taking up to thirty-two cells per poll. One knob: how long a core pauses when caught up: zero, one, or three microseconds."], // 1
+  [24.38, 37.00, "**0 µs** (non-stop): **93.6%** of polls are empty; throughput sticks at **128.7 M/s**. **1 µs**: barely moves, **132.2 M/s** (`132–134` across modes).", "At zero microseconds, ninety-three point six percent of polls return empty, and throughput sticks at one hundred twenty-eight point seven million. One microsecond barely moves it, to one hundred thirty-two point two."], // 2
+  [37.35, 48.61, "**3 µs** pause: throughput leaps **+26% to 161.6 M/s** — saturating the host core at **24.2 cycles per message**.", "At three microseconds, throughput leaps twenty-six percent to one hundred sixty-one point six million per second, saturating the host core at twenty-four point two cycles per message."], // 3
+  [48.96, 64.66, "**Why:** Host counters show **447 writes** queuing **3.47 µs** at 0 µs (**[INF]** landing out of order). `1 µs` wakes inside that band; `3 µs` lets **~900 cells** settle (`360` queued, `2.23 µs`).", "Why? Host counters show four hundred forty-seven writes queuing three point five microseconds, our reading being out-of-order landing. One microsecond wakes inside that band; three lets nine hundred cells settle, cutting the queue to three hundred sixty."], // 4
+  [65.01, 75.33, "**Next:** Did pausing 3 µs help because the core avoided the **active write band**, or simply because it freed **card L3 read bandwidth**?", "Wait. During a three microsecond pause, the core stopped reading completely. Did pausing help by avoiding the active write band, or simply by freeing card L 3 read bandwidth?"], // 5
 ];
-const DUR = 76.32; // <dur>
+const DUR = 76.73; // <dur>
 // </cues>
 
 const T = cues.map((c) => c[0]);
 
-// ---------------------------------------------------------------- schematic ring model (script seconds)
-// The window follows the host's write pointer (newest slot at the right). A slot lands D·(0.55..1.15) slots after it is
-// written (out of order); the card cores consume landed slots in order and stop at the first hole (the frontier).
-const RATE = 1.4; // slots written per second (schematic)
-const head = (t: number) => 40 + RATE * t;
-const depth = (t: number) => lerp(9, 7, prog(t, T[5] + 0.6, 3)); // band narrows when the cores back off 3 µs
-const landed = (a: number, t: number) => head(t) - a >= depth(t) * (0.3 + 0.9 * hash01(a));
-/** First slot not landed yet (the frontier). */
-const frontier = (t: number) => {
-  const h = head(t);
-  for (let a = Math.floor(h) - 40; a <= h; a++) if (!landed(a, t)) return a;
-  return Math.floor(h) + 1;
-};
-// Naps (schematic durations ∝ µs): 1 µs from T4, 3 µs from T5. WAKES = wake-up times; before WAKES[0] the cores spin.
-const NAP1 = 2.4;
-const NAP3 = 7.0;
-const SWEEP = 0.8;
-const WAKES: number[] = (() => {
-  const w = [T[4] + 0.4];
-  while (w[w.length - 1] + NAP1 < T[5] + 0.3) w.push(w[w.length - 1] + NAP1);
-  w.push(T[5] + 0.3);
-  while (w[w.length - 1] + NAP3 < DUR + 2) w.push(w[w.length - 1] + NAP3);
-  return w;
-})();
-/** Joint `next` of the two card cores (absolute slot), index of the current wake-up and nap progress 0..1. */
-function cursor(t: number) {
-  if (t < WAKES[0]) return { next: frontier(t), k: -1, from: frontier(t), nap: 0 };
-  let k = 0;
-  while (k + 1 < WAKES.length && WAKES[k + 1] <= t) k++;
-  const to = frontier(WAKES[k]);
-  const from = k === 0 ? frontier(WAKES[0] - 0.01) : frontier(WAKES[k - 1]);
-  const len = k + 1 < WAKES.length ? WAKES[k + 1] - WAKES[k] : NAP3;
-  return { next: lerp(from, to, prog(t, WAKES[k], SWEEP)), k, from, nap: clamp01((t - WAKES[k] - SWEEP) / (len - SWEEP)) };
-}
-
-const CORE_A = C.orange;
-const CORE_B = "#ffc58a";
-const BELOW = RS.y + RS.ch; // bottom edge of the strip
-
-// throughput bars (lower right)
-const BX0 = 1060;
-const BX1 = 1840;
-const BY0 = 815;
-const BY1 = 600;
-const BMAX = 180;
-const by = (v: number) => BY0 - ((BY0 - BY1) * v) / BMAX;
-const BARS = [
-  { label: "0 µs", value: 128.7, color: K.slow },
-  { label: "1 µs", value: 132.2, color: C.orange },
-  { label: "3 µs", value: 161.6, color: K.fast },
-];
-const BAR_AT = [T[3] + 2.4, T[4] + 1.2, T[5] + 1.2];
-
-// host write queue meter (lower left)
-const MX = 110;
-const MW = 800;
-const MY = 690;
-const mx = (v: number) => MX + (MW * v) / 500;
-
 function Body() {
   const t = useT();
   const rt = useRealT();
-  const h = head(t);
-  const cur = cursor(t);
-  const nx = cur.next;
-  const fr = frontier(t);
-  const two = prog(t, T[1] + 0.3, 0.8);
-  const holesOn = t >= T[2] + 0.8;
 
-  const state = (a: number): CellState => {
-    if (a > h) return "empty";
-    if (a < nx) return "consumed";
-    if (landed(a, t)) return "landed";
-    if (!holesOn) return "inflight";
-    for (let b = a + 1; b <= h; b++) if (landed(b, t)) return "hole";
-    return "inflight";
+  // Knob bar timing: appears in cue 1 (-1), selects 0 µs at cue 2 start, slides to 1 µs mid-cue 2, then 3 µs at cue 3.
+  const kKnob = prog(t, T[1], 0.55);
+  const kSel0 = prog(t, T[2], 0.45);
+  const kSel1 = prog(t, T[2] + 6.4, 0.65);
+  const kSel2 = prog(t, T[3], 0.65);
+  const activeKnob = kSel0 < 0.01 ? -1 : lerp(0, 1, kSel1) + lerp(0, 1, kSel2);
+
+  // Phase progresses
+  const kTop = prog(t, T[0], 0.55);
+  const kCue0Lower = fade(t, T[0] + 0.3, T[1], 0.45);
+  const kCue1Lower = fade(t, T[1] + 0.35, T[2], 0.45);
+  const kData = prog(t, T[2] + 0.25, 0.55);
+
+  // Bar & meter growth
+  const kBar0 = prog(t, T[2] + 0.6, 0.85);
+  const kBar1 = prog(t, T[2] + 6.6, 0.85);
+  const kBar2 = prog(t, T[3] + 0.45, 0.9);
+  const kGain = prog(t, T[3] + 1.15, 0.55);
+  const kCue4 = prog(t, T[4] + 0.35, 0.55);
+  const kWhyStrip = fade(t, T[4] + 0.35, T[5], 0.4);
+  const kNextQ = prog(t, T[5] + 0.35, 0.45);
+
+  // Ring geometry: x = 84..1206, y = 308..366
+  const RX = 84;
+  const RY = 308;
+  const RCW = 41;
+  const RCH = 58;
+  const RGAP = 6;
+  const RN = 24;
+
+  // Ring cursor dynamics:
+  // Cue 0..2 early: pressed hard against slot 14 (colliding!) with slight jitter.
+  // Cue 2 late (1 µs): pulls back slightly to ~12.4, still right inside/adjacent to frontier.
+  // Cue 3..5 (3 µs): pulls back cleanly to slot 7.5 behind settled cyan cells.
+  const jitter = Math.sin(rt * 12) * 0.26 * (1 - kSel2);
+  const baseNext = lerp(lerp(13.65, 12.2, kSel1), 7.4, kSel2);
+  const nextAt = baseNext + jitter;
+  const colliding = 1 - kSel2;
+  const nextColor = kSel2 > 0.55 ? K.fast : kSel1 > 0.55 ? K.card : K.slow;
+  const nextLabel = kSel2 > 0.55 ? "next (3 µs)" : kSel1 > 0.55 ? "next (1 µs)" : "next";
+
+  const cellState = (i: number) => {
+    const settledEdge = Math.round(lerp(lerp(13, 12, kSel1), 7, kSel2));
+    if (i < settledEdge) return "consumed" as const;
+    if (i < 14) return "landed" as const;
+    if (i < 21) {
+      // In cue 4+, reveal out-of-order holes inside the ~3.5 µs landing band
+      if (kCue4 > 0.4 && (i === 15 || i === 18)) return "hole" as const;
+      if (kCue4 > 0.4 && (i === 16 || i === 19)) return "landed" as const;
+      return "inflight" as const;
+    }
+    return "empty" as const;
   };
 
-  // in-flight band = frontier .. newest
-  const bandK = prog(t, T[2] + 0.3, 0.8);
-  const bandX0 = absX(fr, h) - RS.gap;
-  const bandX1 = Math.min(RS_RIGHT, absX(h, h) + RS.cw) + RS.gap;
+  // Top-right card crossfades (Cue 0 -> Cue 1 -> Cues 2..5)
+  const kRight0 = fade(t, T[0] + 0.15, T[1], 0.4);
+  const kRight1 = fade(t, T[1] + 0.3, T[2], 0.4);
+  const kRight2 = prog(t, T[2] + 0.25, 0.45);
+  const kRight3 = prog(t, T[3] + 0.35, 0.5);
 
-  // two cursors side by side at the joint `next`
-  const ax = absC(nx, h);
-  const bx = lerp(ax, absC(nx + 1, h), two);
-  const frX = absC(fr, h);
-
-  const active = t < T[3] ? -1 : prog(t, T[4], 0.9) + prog(t, T[5], 0.9);
-  const spinning = t >= T[3] && t < WAKES[0];
-  const blink = Math.sin(rt * 2 * Math.PI * 3) > 0 ? 1 : 0.2;
-  // after a 1 µs wake-up the run ends at a hole again
-  const hitHole = cur.k >= 0 && t < T[5] + 0.3 ? fade(t, WAKES[cur.k] + SWEEP, WAKES[cur.k] + SWEEP + 0.9, 0.2) : 0;
-
-  // meter: 447 → 433 → 360 (entries), time each 3.47 → 3.28 → 2.23 µs
-  const q = lerp(lerp(447, 433, prog(t, T[4] + 0.4, 1)), 360, prog(t, T[5] + 0.6, 1.2));
-  const phase = t < T[4] + 0.4 ? 0 : t < T[5] + 0.6 ? 1 : 2;
-  const qCol = [K.slow, C.orange, K.fast][phase];
-  const qText = ["447 · 3.47 µs", "433 · 3.28 µs", "360 · 2.23 µs"][phase];
-
-  // T1: one poll takes a batch; the brace spans the run it just took
-  const batchK = fade(t, T[1] + 1.0, T[2] - 0.45);
-  // T5: the long jump of the latest 3 µs wake-up (the first one that follows a full 3 µs pause)
-  const first3 = WAKES.indexOf(T[5] + 0.3) + 1;
-  const jumpK = cur.k >= first3 ? fade(t, WAKES[cur.k], (WAKES[cur.k + 1] ?? 1e9) - 0.45, 0.3) : 0;
-
-  const fixed = ["one-way only", "core 40 · 3.9 GHz", "2 card cores", "≤ 32 msgs / poll"];
+  const frontierX = ringCenter(RX, RCW, RGAP, 14);
+  const pulse = 0.5 + 0.5 * Math.sin(rt * 7);
 
   return (
     <>
+      {/* Top experiment frame (cues 1–5) */}
+      <KnobBar
+        y={118}
+        size={22}
+        k={kKnob}
+        fixed={["One-way forward", "Host 3.9 GHz", "2 card cores", "≤ 32 cells/poll"]}
+        knob="Pause when caught up"
+        options={["0 µs", "1 µs", "3 µs"]}
+        active={activeKnob}
+      />
+
+      {/* Full-frame SVG stage */}
       <Stage>
-        <HostWriter rt={rt} opacity={prog(t, T[0], 0.6)} />
-        {bandK > 0 && (
-          <rect x={bandX0} y={RS.y - 10} width={Math.max(0, bandX1 - bandX0)} height={RS.ch + 20} rx={12}
-            fill={K.inflight + "22"} stroke={K.inflight} strokeWidth={2.5} strokeDasharray="8 6" opacity={bandK} />
+        {/* ================= TOP-LEFT: REQUEST RING MECHANISM PANEL (y = 196..442) ================= */}
+        <g opacity={kTop}>
+          <rect x={60} y={196} width={1180} height={246} rx={18} fill={C.panel} stroke={C.line} strokeWidth={2} />
+          <text x={84} y={228} fontSize={23} fontWeight={700} fill={C.text}>
+            Card Request Ring · host MOVDIR64B writes →
+          </text>
+
+          {/* Compact legend top-right of ring panel */}
+          <g transform="translate(808, 212)">
+            <rect x={0} y={0} width={18} height={18} rx={4} fill={K.consumed} stroke={C.line} strokeWidth={1.5} />
+            <text x={24} y={15} fontSize={19} fill={C.muted}>consumed</text>
+
+            <rect x={128} y={0} width={18} height={18} rx={4} fill={K.landed} opacity={0.9} />
+            <text x={152} y={15} fontSize={19} fill={K.landed}>landed</text>
+
+            <rect x={228} y={0} width={18} height={18} rx={4} fill="url(#hatchRed)" stroke={K.inflight} strokeWidth={1.5} />
+            <text x={252} y={15} fontSize={19} fill={K.inflight}>in-flight</text>
+
+            {kCue4 > 0.05 && (
+              <g opacity={kCue4}>
+                <rect x={338} y={0} width={18} height={18} rx={4} fill="#0b1020" stroke={K.inflight} strokeWidth={2} strokeDasharray="4 3" />
+                <text x={362} y={15} fontSize={19} fill={K.inflight}>hole</text>
+              </g>
+            )}
+          </g>
+
+          {/* RingStrip */}
+          <RingStrip
+            x={RX}
+            y={RY}
+            n={RN}
+            cw={RCW}
+            ch={RCH}
+            gap={RGAP}
+            state={cellState}
+            flicker={rt}
+            nextAt={nextAt}
+            nextLabel={nextLabel}
+            nextColor={nextColor}
+            band={{
+              from: 14,
+              to: 21,
+              color: K.inflight,
+              label: kCue4 > 0.5 ? "~3.5 µs landing band" : "active write frontier",
+            }}
+            size={22}
+          />
+
+          {/* Collision pulse at frontier during 0 µs / 1 µs */}
+          {colliding > 0.05 && (
+            <g opacity={colliding * (0.45 + 0.55 * pulse)}>
+              <circle cx={frontierX - 12} cy={RY + RCH / 2} r={22 + pulse * 10} fill="none" stroke={K.slow} strokeWidth={3} />
+              <text x={838} y={272} fontSize={21} fontWeight={700} fill={K.slow}>
+                polling hits landing writes!
+              </text>
+            </g>
+          )}
+
+          {/* Green settled gap brace in cues 3–5 */}
+          {kSel2 > 0.25 && (
+            <Brace
+              x1={RX + 7 * (RCW + RGAP)}
+              x2={RX + 14 * (RCW + RGAP) - RGAP}
+              y={RY + RCH + 10}
+              dir={1}
+              color={K.fast}
+              size={22}
+              label={kCue4 > 0.5 ? "~900 cells settle (3 µs)" : "clean gap behind frontier"}
+              opacity={clamp01((kSel2 - 0.25) / 0.75)}
+            />
+          )}
+
+          {/* [INF] out-of-order landing callout above red band in cue 4–5 */}
+          {kCue4 > 0.05 && (
+            <g opacity={kCue4}>
+              <InfTag x={788} y={248} size={20} />
+              <text x={864} y={268} fontSize={22} fontWeight={700} fill={K.inf}>
+                out-of-order landing
+              </text>
+            </g>
+          )}
+        </g>
+
+        {/* ================= TOP-RIGHT: DYNAMIC POLLING STATUS PANEL (x = 1265..1860, y = 196..442) ================= */}
+        <g opacity={kTop}>
+          <rect x={1265} y={196} width={595} height={246} rx={18} fill={C.panel} stroke={C.line} strokeWidth={2} />
+
+          {/* Cue 0: Frontier collision question */}
+          {kRight0 > 0.02 && (
+            <g opacity={kRight0}>
+              <text x={1294} y={236} fontSize={22} fontWeight={800} fill={K.slow} letterSpacing={1.5}>
+                FRONTIER COLLISION?
+              </text>
+              <text x={1294} y={282} fontSize={26} fontWeight={700} fill={C.text}>
+                2 card cores poll non-stop
+              </text>
+              <text x={1294} y={322} fontSize={23} fill={C.muted}>
+                Read cursor catches up to the exact
+              </text>
+              <text x={1294} y={354} fontSize={23} fill={C.muted}>
+                cache lines still arriving from host.
+              </text>
+              <rect x={1294} y={376} width={536} height={46} rx={10} fill="rgba(249,65,68,0.12)" stroke={K.slow} strokeWidth={1.5} />
+              <text x={1562} y={406} textAnchor="middle" fontSize={23} fontWeight={700} fill={K.slow}>
+                Does chasing the frontier slow the host?
+              </text>
+            </g>
+          )}
+
+          {/* Cue 1: Caught-up rule */}
+          {kRight1 > 0.02 && (
+            <g opacity={kRight1}>
+              <text x={1294} y={236} fontSize={22} fontWeight={800} fill={K.knob} letterSpacing={1.5}>
+                CAUGHT-UP RULE
+              </text>
+              <text x={1294} y={282} fontSize={25} fontWeight={700} fill={C.text}>
+                2 card cores · up to 32 cells/poll
+              </text>
+              <rect x={1294} y={304} width={536} height={54} rx={10} fill="#0f1528" stroke={K.knob} strokeWidth={2} />
+              <text x={1562} y={339} textAnchor="middle" fontSize={24} fontWeight={700} fill={K.knob} fontFamily={MONO}>
+                {"< 32 cells  ⇒  caught up  ⇒  pause"}
+              </text>
+              <text x={1294} y={404} fontSize={22} fill={C.muted}>
+                Sweep one knob: 0 µs · 1 µs · 3 µs pause
+              </text>
+            </g>
+          )}
+
+          {/* Cues 2–5: Empty-poll rate meters */}
+          {kRight2 > 0.02 && (
+            <g opacity={kRight2}>
+              <text x={1294} y={232} fontSize={23} fontWeight={700} fill={C.text}>
+                Card Core Empty-Poll Rate
+              </text>
+              <Meter
+                x={1294}
+                y={278}
+                w={536}
+                h={24}
+                value={93.6}
+                max={100}
+                color={K.slow}
+                label="0 µs (non-stop)"
+                valueText="93.6% empty"
+                k={kBar0}
+                size={22}
+              />
+              <Meter
+                x={1294}
+                y={356}
+                w={536}
+                h={24}
+                value={0.7}
+                max={100}
+                color={K.fast}
+                label="3 µs pause"
+                valueText="0.7% empty"
+                k={kRight3}
+                size={22}
+              />
+              <text
+                x={1294}
+                y={418}
+                fontSize={21}
+                fontWeight={600}
+                fill={kRight3 > 0.5 ? K.fast : K.card}
+                opacity={kRight3 > 0.5 ? kRight3 : kBar1}
+              >
+                {kRight3 > 0.5
+                  ? "Host core saturated: 24.2 cycles/msg"
+                  : "1 µs: 132–134 M/s across modes (inside band)"}
+              </text>
+            </g>
+          )}
+        </g>
+
+        {/* ================= CUE 0 LOWER VISUAL: LIVE HOST -> CARD FRONTIER RACE ================= */}
+        {kCue0Lower > 0.02 && (
+          <g opacity={kCue0Lower}>
+            <rect x={60} y={468} width={1800} height={316} rx={18} fill={C.panel} stroke={C.line} strokeWidth={2} />
+            <text x={96} y={512} fontSize={25} fontWeight={700} fill={C.text}>
+              One-Way Forward Path: Host Streaming Writes vs. Non-Stop Card Polling
+            </text>
+
+            {/* Host box */}
+            <rect x={100} y={548} width={410} height={190} rx={16} fill="#101830" stroke={K.host} strokeWidth={2.5} />
+            <text x={305} y={600} textAnchor="middle" fontSize={28} fontWeight={800} fill={K.host}>
+              Host Core (3.9 GHz)
+            </text>
+            <text x={305} y={644} textAnchor="middle" fontSize={23} fontFamily={MONO} fill={K.fwd}>
+              MOVDIR64B (64 B writes)
+            </text>
+            <text x={305} y={688} textAnchor="middle" fontSize={22} fill={C.muted}>
+              Posted PCIe writes → card ring
+            </text>
+
+            {/* Animated write stream */}
+            <line x1={518} y1={642} x2={790} y2={642} stroke={K.fwd} strokeWidth={4} opacity={0.35} />
+            <PacketStream pts={[[520, 642], [790, 642]]} travel={rt * 190} gap={52} size={13} color={K.fwd} />
+            <text x={655} y={606} textAnchor="middle" fontSize={22} fontWeight={700} fill={K.fwd}>
+              write stream
+            </text>
+
+            {/* Frontier clash zone */}
+            <rect x={800} y={548} width={400} height={190} rx={16} fill="rgba(249,65,68,0.10)" stroke={K.inflight} strokeWidth={2.5} strokeDasharray="8 6" />
+            <text x={1000} y={604} textAnchor="middle" fontSize={27} fontWeight={800} fill={K.inflight}>
+              Active Write Frontier
+            </text>
+            <text x={1000} y={648} textAnchor="middle" fontSize={23} fill={C.text}>
+              Host writes still landing
+            </text>
+            <text x={1000} y={688} textAnchor="middle" fontSize={23} fontWeight={700} fill={K.slow}>
+              ← Card reads collide here →
+            </text>
+
+            {/* Card polling arrows */}
+            <line x1={1412} y1={642} x2={1208} y2={642} stroke={K.card} strokeWidth={4} opacity={0.45} />
+            <PacketStream pts={[[1410, 642], [1208, 642]]} travel={rt * 190} gap={52} size={13} color={K.card} />
+            <text x={1310} y={606} textAnchor="middle" fontSize={22} fontWeight={700} fill={K.card}>
+              non-stop polls
+            </text>
+
+            {/* Card box */}
+            <rect x={1420} y={548} width={400} height={190} rx={16} fill="#101830" stroke={K.card} strokeWidth={2.5} />
+            <text x={1620} y={600} textAnchor="middle" fontSize={28} fontWeight={800} fill={K.card}>
+              2 Card Cores
+            </text>
+            <text x={1620} y={644} textAnchor="middle" fontSize={23} fill={C.text}>
+              Continuous ring-head polling
+            </text>
+            <text x={1620} y={688} textAnchor="middle" fontSize={22} fill={C.muted}>
+              Catches up immediately
+            </text>
+          </g>
         )}
-        <ScrollStrip head={h} state={state} flicker={rt} clipId="s03strip" opacity={prog(t, T[0], 0.6)} />
 
-        {/* which core took a consumed slot: A even, B odd */}
-        {two > 0 &&
-          Array.from({ length: RS.n + 2 }, (_, i) => {
-            const a = Math.floor(h) - RS.n + i;
-            const x = absC(a, h);
-            if (a >= nx || x < RS.x + 10 || x > RS_RIGHT - 10) return null;
-            return <circle key={a} cx={x} cy={RS.y + RS.ch / 2} r={7} fill={a % 2 === 0 ? CORE_A : CORE_B} opacity={two * 0.95} />;
-          })}
+        {/* ================= CUE 1 LOWER VISUAL: SINGLE-VARIABLE SWEEP PREVIEW ================= */}
+        {kCue1Lower > 0.02 && (
+          <g opacity={kCue1Lower}>
+            <rect x={60} y={468} width={1800} height={316} rx={18} fill={C.panel} stroke={C.line} strokeWidth={2} />
+            <text x={96} y={512} fontSize={25} fontWeight={700} fill={K.knob}>
+              Single-Variable Test: Hold everything fixed, vary only the caught-up pause
+            </text>
 
-        <Cursor x={ax} color={CORE_A} tag={two < 0.5 ? "next" : "A"} />
-        <Cursor x={bx} color={CORE_B} tag="B" opacity={two} />
+            {[
+              { x: 100, title: "0 µs Pause", sub: "Non-stop polling", lines: ["Core immediately re-reads the frontier", "on every empty poll."], color: K.slow },
+              { x: 690, title: "1 µs Pause", sub: "Short backoff", lines: ["Core waits 1 µs after seeing", "< 32 ready cells."], color: K.card },
+              { x: 1280, title: "3 µs Pause", sub: "Longer backoff", lines: ["Core waits 3 µs after seeing", "< 32 ready cells."], color: K.fast },
+            ].map((c, idx) => (
+              <g key={idx}>
+                <rect x={c.x} y={544} width={540} height={204} rx={16} fill="#101830" stroke={c.color} strokeWidth={2.5} />
+                <text x={c.x + 28} y={596} fontSize={32} fontWeight={800} fill={c.color}>
+                  {c.title}
+                </text>
+                <text x={c.x + 28} y={636} fontSize={23} fontWeight={700} fill={C.text}>
+                  {c.sub}
+                </text>
+                <text x={c.x + 28} y={684} fontSize={22} fill={C.muted}>
+                  {c.lines[0]}
+                </text>
+                <text x={c.x + 28} y={716} fontSize={22} fill={C.muted}>
+                  {c.lines[1]}
+                </text>
+              </g>
+            ))}
+          </g>
+        )}
 
-        {/* T1 */}
-        <text x={RS.x} y={RS.y - 44} fontSize={26} fontWeight={700} fill={CORE_A} opacity={fade(t, T[1] + 0.5, T[2] - 0.45)}>
-          A + B: alternate slots
-        </text>
-        <Brace x1={absX(nx - 6, h)} x2={absX(nx, h) - RS.gap} y={BELOW + 12} label="one poll: up to 32 msgs" color={CORE_A}
-          opacity={batchK} size={26} />
-        <text x={ax - 40} y={RS.y - 44} fontSize={26} fontWeight={800} fill={CORE_A}
-          opacity={fade(t, T[1] + 4.5, T[2] - 0.45) * (0.7 + 0.3 * Math.sin(rt * 2 * Math.PI * 1.2))}
-          textAnchor="end">
-          fewer than 32 = caught up
-        </text>
+        {/* ================= CUES 2–5 LOWER-LEFT: THROUGHPUT BAR CHART ================= */}
+        {kData > 0.02 && (
+          <g opacity={kData}>
+            <rect x={60} y={464} width={900} height={328} rx={18} fill={C.panel} stroke={C.line} strokeWidth={2} />
+            <text x={90} y={498} fontSize={24} fontWeight={700} fill={C.text}>
+              Forward Throughput (M/s)
+            </text>
 
-        {/* T2: the fuzzy frontier */}
-        <text x={RS_RIGHT} y={BELOW + 52} textAnchor="end" fontSize={26} fontWeight={800} fill={K.inflight}
-          opacity={fade(t, T[2] + 0.6, T[4] - 0.45)}>
-          ~440 writes in flight · ~3.5 µs each
-        </text>
-        <text x={RS_RIGHT} y={BELOW + 52} textAnchor="end" fontSize={26} fontWeight={800} fill={K.inflight} opacity={prog(t, T[4], 0.5)}>
-          still landing
-        </text>
-        <g opacity={prog(t, T[2] + 3.0, 0.6)}>
-          <text x={RS_RIGHT - 88} y={BELOW + 92} textAnchor="end" fontSize={26} fontWeight={600} fill={C.text}>
-            land out of order → holes
-          </text>
-          <InfTag x={RS_RIGHT - 74} y={BELOW + 68} />
-        </g>
+            {/* +26% highlight badge in Cue 3–5 */}
+            {kGain > 0.02 && (
+              <g opacity={kGain}>
+                <rect x={762} y={472} width={174} height={40} rx={10} fill="rgba(67,197,158,0.18)" stroke={K.fast} strokeWidth={2.5} />
+                <text x={849} y={499} textAnchor="middle" fontSize={24} fontWeight={800} fill={K.fast}>
+                  +26% leap!
+                </text>
+              </g>
+            )}
 
-        {/* T3: 0 µs, glued to the frontier */}
-        <XMark x={frX} y={RS.y + RS.ch / 2} s={13} w={6} opacity={spinning ? blink * prog(t, T[3] + 0.6, 0.3) : hitHole} />
-        <text x={ax - 50} y={RS.y - 44} textAnchor="end" fontSize={28} fontWeight={800} fill={K.slow}
-          opacity={fade(t, T[3] + 1.6, T[4] - 0.45)}>
-          93.6 % of polls empty
-        </text>
+            <BarChart
+              x0={100}
+              x1={920}
+              y1={532}
+              y0={714}
+              max={185}
+              unit=" M/s"
+              size={25}
+              labelSize={23}
+              barW={148}
+              refLine={kBar2 > 0.4 ? { value: 161.6, label: "Host core ceiling", color: K.fast } : undefined}
+              bars={[
+                { label: "0 µs", value: 128.7, color: K.slow, sub: "93.6% empty polls" },
+                { label: "1 µs", value: 132.2, color: K.card, sub: "132–134 across modes" },
+                { label: "3 µs", value: 161.6, color: K.fast, sub: "24.2 cycles/msg" },
+              ]}
+              k={(i) => (i === 0 ? kBar0 : i === 1 ? kBar1 : kBar2)}
+            />
+          </g>
+        )}
 
-        {/* T4/T5: nap timer next to the cursors */}
-        <g opacity={cur.k >= 0 ? 1 : 0}>
-          <TimerArc x={ax - 76} y={RS.y - 52} r={20} k={cur.nap} color={K.wait} />
-          <text x={ax - 108} y={RS.y - 44} textAnchor="end" fontSize={26} fontWeight={800} fill={K.wait}>
-            {t < T[5] + 0.3 ? "pause 1 µs" : "pause 3 µs"}
-          </text>
-        </g>
-        <g opacity={jumpK}>
-          <Arrow x1={absC(cur.from, h)} y1={BELOW + 22} x2={ax} y2={BELOW + 22} color={K.fast} w={5} head={14}
-            k={prog(t, WAKES[Math.max(0, cur.k)], SWEEP)} />
-          <text x={absC(cur.from, h) - 10} y={BELOW + 60} textAnchor="start" fontSize={28} fontWeight={800} fill={K.fast}>
-            ~900 per wake-up
-          </text>
-        </g>
+        {/* ================= CUES 2–5 LOWER-RIGHT: HOST WRITE-QUEUE METERS ================= */}
+        {kData > 0.02 && (
+          <g opacity={kData}>
+            <rect x={990} y={464} width={870} height={328} rx={18} fill={C.panel} stroke={C.line} strokeWidth={2} />
+            <text x={1020} y={498} fontSize={24} fontWeight={700} fill={K.host}>
+              Host Write Queue (entries · residence time)
+            </text>
 
-        {/* legend (T0–T5) */}
-        <g opacity={fade(t, T[0] + 1.0, T[6] - 0.45)}>
-          <LegendCell x={110} y={470} s="consumed" label="taken by a card core" />
-          <LegendCell x={480} y={470} s="landed" label="landed, ready" />
-          <LegendCell x={110} y={530} s="inflight" label="host write in flight" opacity={prog(t, T[0] + 1.6, 0.6)} />
-          <LegendCell x={480} y={530} s="hole" label="hole (older slot missing)" opacity={prog(t, T[2] + 3.0, 0.6)} />
-        </g>
+            <Meter
+              x={1022}
+              y={550}
+              w={806}
+              h={26}
+              value={447}
+              max={520}
+              color={K.slow}
+              label="0 µs pause (non-stop)"
+              valueText="447 entries · 3.47 µs"
+              k={kBar0}
+              size={23}
+            />
 
-        {/* host write queue */}
-        <g opacity={prog(t, T[2] + 1.2, 0.8)}>
-          <Meter x={MX} y={MY} w={MW} value={q} max={500} color={qCol} label="host write queue (CHA): entries · time each"
-            valueText={qText} marks={[{ at: 447 }, { at: 433 }, { at: 360 }]} />
-          <text x={mx(447) + 6} y={MY + 56} fontSize={22} fill={C.muted}>447</text>
-          <text x={mx(433) - 6} y={MY + 56} fontSize={22} fill={C.muted} textAnchor="end">433</text>
-          <text x={mx(360)} y={MY + 56} fontSize={22} fill={C.muted} textAnchor="middle">360</text>
-        </g>
+            <Meter
+              x={1022}
+              y={628}
+              w={806}
+              h={26}
+              value={433}
+              max={520}
+              color={K.card}
+              label="1 µs pause"
+              valueText="433 entries · 3.28 µs"
+              k={kBar1}
+              size={23}
+            />
 
-        {/* throughput */}
-        <g opacity={prog(t, T[3] + 1.2, 0.8)}>
-          <text x={BX0} y={BY1 - 44} fontSize={24} fontWeight={600} fill={C.muted}>
-            M/s (median) · 1 host core + 2 card cores
-          </text>
-          <BarChart x0={BX0} x1={BX1} y0={BY0} y1={BY1} bars={BARS} max={BMAX} k={(i) => prog(t, BAR_AT[i], 1.0)} />
-        </g>
-        <g opacity={prog(t, T[6] + 0.4, 0.8)}>
-          <line x1={BX0} y1={by(161.6)} x2={BX1} y2={by(161.6)} stroke={K.host} strokeWidth={2.5} strokeDasharray="8 6" />
-          <text x={BX0 + 8} y={by(161.6) - 12} fontSize={24} fill={K.host} fontWeight={700}>
-            host core limit · ~24 cycles/msg
-          </text>
-        </g>
-        <g opacity={prog(t, T[6] + 3.2, 0.6)}>
-          <line x1={BX0 + 200} y1={by(128.7)} x2={1585} y2={by(128.7)} stroke={C.text} strokeWidth={2} strokeDasharray="4 5" />
-          <Arrow x1={1585} y1={by(128.7)} x2={1585} y2={by(161.6) + 4} color={C.text} w={4} head={12} k={prog(t, T[6] + 3.2, 0.8)} />
-          <text x={1585} y={by(128.7) + 34} textAnchor="middle" fontSize={30} fontWeight={800} fill={C.text}>+26 %</text>
-        </g>
+            <Meter
+              x={1022}
+              y={706}
+              w={806}
+              h={26}
+              value={360}
+              max={520}
+              color={K.fast}
+              label="3 µs pause"
+              valueText="360 entries · 2.23 µs"
+              k={kBar2}
+              size={23}
+            />
+
+            {kCue4 > 0.02 && (
+              <text x={1022} y={770} fontSize={22} fontWeight={600} fill={C.text} opacity={kCue4}>
+                1 µs wakes inside ~3.5 µs band · 3 µs lets ~900 cells settle
+              </text>
+            )}
+          </g>
+        )}
       </Stage>
-      <KnobBar fixed={fixed} knob="pause when caught up" options={["0 µs", "1 µs", "3 µs"]} active={active} k={prog(t, T[0], 0.6)} />
-      <Takeaway x={80} y={458} w={900} k={prog(t, T[6] + 5.0, 0.8)} color={K.fast}>
-        A receiver glued to the frontier slows the sender — back off ~3 µs.
-      </Takeaway>
-      <Note x={60} y={858}>ring strip is schematic (real ring: 65,533 slots)</Note>
+
+      {/* Cue 4 compact bottom explanation strip (fades out cleanly before NextQuestion at cue 5) */}
+      {kWhyStrip > 0.02 && (
+        <div
+          style={{
+            position: "absolute",
+            left: 60,
+            top: 806,
+            width: 1800,
+            opacity: kWhyStrip,
+            transform: `translateY(${(1 - kWhyStrip) * 14}px)`,
+            background: "rgba(94,234,212,0.09)",
+            border: `2px solid ${K.inf}`,
+            borderRadius: 14,
+            padding: "12px 22px",
+            boxSizing: "border-box",
+            fontFamily: FONT,
+            display: "flex",
+            alignItems: "center",
+            gap: 16,
+          }}
+        >
+          <InfPill size={20} />
+          <span style={{ fontSize: 23, fontWeight: 600, color: C.text, lineHeight: 1.25 }}>
+            Out-of-order landing over ~3.5 µs: <strong style={{ color: K.card }}>1 µs</strong> wakes inside the band;{" "}
+            <strong style={{ color: K.fast }}>3 µs</strong> lets ~900 cells settle (0.7% empty, queue 447 → 360).
+          </span>
+        </div>
+      )}
+
+      {/* Cue 5 explicit bridge to Exp 2 */}
+      <NextQuestion x={60} y={806} w={1800} k={kNextQ}>
+        Did pausing 3 µs help by avoiding the active write band — or simply by freeing card L3 read bandwidth?
+      </NextQuestion>
     </>
   );
 }
 
 export const S03: SceneDef = {
   id: "S03",
-  title: "Exp 1 · Chasing the frontier",
+  title: "Exp 1 · Card frontier polling",
   stage: 1,
-  source: "MRV-61 · logs/mrv61-2026-11-18 · 27 runs × 2×10⁸ msgs",
+  source: "One-way forward · 2 card cores · 27 verified runs × 2×10⁸ msgs",
   dur: DUR,
   cues,
   C: Body,
