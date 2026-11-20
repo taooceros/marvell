@@ -93,7 +93,7 @@
   <rect x="24" y="358" width="1072" height="300" rx="10" fill="#F5F9FF" stroke="#0F62FE" stroke-width="2"/>
   <text x="42" y="385" font-size="15.5" font-weight="700" fill="#0F62FE">(c) DirectPush（小包无一致性直推 + 大载荷原生 DPI DMA）</text>
   <rect x="822" y="366" width="258" height="24" rx="12" fill="#0F62FE"/>
-  <text x="951" y="382" text-anchor="middle" font-size="12" font-weight="700" fill="#FFFFFF">低延迟 · 无 HoL · 零拷贝省核</text>
+  <text x="951" y="382" text-anchor="middle" font-size="12" font-weight="700" fill="#FFFFFF">低延迟 · RX 解耦 · 零拷贝省核</text>
 
   <!-- Shared 128 MiB pool on left -->
   <rect x="44" y="406" width="126" height="206" rx="6" fill="#FFFFFF" stroke="#0F62FE" stroke-width="1.6"/>
@@ -106,11 +106,11 @@
   <text x="369" y="431" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0F62FE">≤ 256 B：MOVDIR64B 直推 (1–4 行，无栅栏)</text>
 
   <rect x="202" y="458" width="334" height="40" rx="6" fill="#EEF4FF" stroke="#0F62FE" stroke-width="1.4"/>
-  <text x="369" y="483" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1E3A8A">小包 DDIO 环（独立通道，无 HoL 阻塞）</text>
+  <text x="369" y="483" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1E3A8A">小包 DDIO 环（独立 RX 通道）</text>
 
-  <!-- Host Lane 2 (Large >= 4 KiB): Desc above, DMA RX below -->
+  <!-- Host Lane 2 (Large >= 1 KiB): Desc above, DMA RX below -->
   <rect x="202" y="516" width="334" height="40" rx="6" fill="#FFFFFF" stroke="#0F62FE" stroke-width="1.5"/>
-  <text x="369" y="541" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0F62FE">≥ 4 KiB：1×64 B 描述符（仅传 IOVA，零拷贝）</text>
+  <text x="369" y="541" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0F62FE">≥ 1 KiB：1×64 B 描述符（仅传 IOVA，零拷贝）</text>
 
   <rect x="202" y="572" width="334" height="40" rx="6" fill="#EEF4FF" stroke="#0F62FE" stroke-width="1.4"/>
   <text x="369" y="597" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1E3A8A">大包 RX 环 + 64 B DDIO 完成格</text>
@@ -130,8 +130,8 @@
 
   <!-- Card bottom row: Native DPI DMA engine -->
   <rect x="748" y="544" width="328" height="68" rx="8" fill="#FFFFFF" stroke="#0F62FE" stroke-width="2"/>
-  <text x="912" y="572" text-anchor="middle" font-size="14" font-weight="700" fill="#0F62FE">CN106 原生 DPI DMA 引擎</text>
-  <text x="912" y="594" text-anchor="middle" font-size="11.5" fill="#374151">FromHost 直读留存池 ⇄ ToHost 直写 RX + 完成格</text>
+  <text x="912" y="571" text-anchor="middle" font-size="13.5" font-weight="700" fill="#0F62FE">CN106 原生 DPI DMA（2 VFs: H2C / C2H）</text>
+  <text x="912" y="593" text-anchor="middle" font-size="11.2" fill="#374151">06:00.1 FromHost 留存池 ⇄ 06:00.2 ToHost RX+完成格</text>
 
   <!-- Unobstructed arrows for Tier (c) -->
   <!-- Pool -> Small TX -->
