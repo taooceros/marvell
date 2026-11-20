@@ -1,13 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 436" width="1040" height="436">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 444" width="1040" height="444">
   <defs>
     <style>
       .sans { font-family: "DejaVu Sans", "Droid Sans Fallback", sans-serif; }
       .title { font-size: 15px; font-weight: 700; fill: #1e293b; }
       .title-teal { font-size: 15px; font-weight: 700; fill: #0f766e; }
-      .lbl { font-size: 12px; font-weight: 700; fill: #1e293b; }
+      .lbl { font-size: 12.5px; font-weight: 700; fill: #1e293b; }
       .small { font-size: 11px; fill: #64748b; }
+      .tiny { font-size: 10px; fill: #64748b; }
       .teal-lbl { font-size: 12px; font-weight: 700; fill: #0f766e; }
-      .big-muted { font-size: 27px; font-weight: 700; fill: #64748b; }
+      .big-muted { font-size: 32px; font-weight: 700; fill: #64748b; }
       .big-teal { font-size: 32px; font-weight: 700; fill: #0f766e; }
       .num-sub { font-size: 11px; font-weight: 600; fill: #64748b; }
       .num-sub-teal { font-size: 11px; font-weight: 600; fill: #0f766e; }
@@ -21,89 +22,91 @@
   </defs>
 
   <!-- White background -->
-  <rect x="0" y="0" width="1040" height="436" fill="#ffffff"/>
+  <rect x="0" y="0" width="1040" height="444" fill="#ffffff"/>
 
-  <!-- TOP LANE: Coherent Cache Retention (CC-NIC) -->
-  <rect x="24" y="18" width="992" height="174" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.4"/>
-  <text x="44" y="46" class="sans title">CC-NIC · 一致性缓存留存</text>
+  <!-- TOP LANE: Coherent Cache Retention (CC-NIC ASPLOS'24) -->
+  <rect x="24" y="18" width="992" height="178" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.4"/>
+  <text x="44" y="46" class="sans title">CC-NIC · 一致性域耦合（ASPLOS '24 §3.3 / Fig. 15）</text>
 
   <!-- Host TX pool box -->
-  <rect x="44" y="66" width="166" height="98" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
-  <text x="127" y="100" text-anchor="middle" class="sans lbl">主机 TX 留存池</text>
-  <text x="127" y="122" text-anchor="middle" class="sans small">128 MiB</text>
-  <text x="127" y="142" text-anchor="middle" class="sans small">TCP 重传留存</text>
+  <rect x="44" y="66" width="166" height="104" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="127" y="102" text-anchor="middle" class="sans lbl">主机 TX 留存池</text>
+  <text x="127" y="125" text-anchor="middle" class="sans small">应用发后留存</text>
+  <text x="127" y="146" text-anchor="middle" class="sans small">无法立刻热栈复用</text>
 
   <!-- Bidirectional coherence arrows -->
   <line x1="210" y1="98" x2="378" y2="98" stroke="#64748b" stroke-width="2" marker-end="url(#arr-grey)"/>
-  <line x1="378" y1="132" x2="210" y2="132" stroke="#64748b" stroke-width="2" stroke-dasharray="5,4" marker-end="url(#arr-grey)"/>
-  <text x="294" y="88" text-anchor="middle" class="sans small">一致性获取</text>
-  <text x="294" y="152" text-anchor="middle" class="sans small">Snoop / 撤回</text>
+  <line x1="378" y1="136" x2="210" y2="136" stroke="#64748b" stroke-width="2" stroke-dasharray="5,4" marker-end="url(#arr-grey)"/>
+  <text x="294" y="88" text-anchor="middle" class="sans small">一致读入 (S 态缓存)</text>
+  <text x="294" y="156" text-anchor="middle" class="sans small">重用触发跨互连 RFO 作废</text>
 
-  <!-- NIC coherent cache / directory box -->
-  <rect x="386" y="66" width="190" height="98" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
-  <text x="481" y="100" text-anchor="middle" class="sans lbl">NIC 一致性缓存 + 目录</text>
-  <text x="481" y="122" text-anchor="middle" class="sans small">容量受限 · 无法释放</text>
-  <text x="481" y="142" text-anchor="middle" class="sans small">目录逐出 / 写回冲突</text>
+  <!-- NIC coherent cache box -->
+  <rect x="386" y="66" width="190" height="104" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="481" y="102" text-anchor="middle" class="sans lbl">NIC 一致性缓存</text>
+  <text x="481" y="125" text-anchor="middle" class="sans small">旧行滞留远端缓存</text>
+  <text x="481" y="146" text-anchor="middle" class="sans small">回退共享池分配</text>
 
   <!-- Arrow to coupling block -->
-  <line x1="576" y1="115" x2="626" y2="115" stroke="#64748b" stroke-width="2" marker-end="url(#arr-grey)"/>
+  <line x1="576" y1="118" x2="624" y2="118" stroke="#64748b" stroke-width="2" marker-end="url(#arr-grey)"/>
 
   <!-- Coherent bottleneck block -->
-  <rect x="634" y="66" width="132" height="98" rx="8" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5"/>
+  <rect x="632" y="66" width="136" height="104" rx="8" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5"/>
   <text x="700" y="108" text-anchor="middle" class="sans lbl">一致域耦合</text>
-  <text x="700" y="132" text-anchor="middle" class="sans small">互连阻塞</text>
+  <text x="700" y="132" text-anchor="middle" class="sans small">满载互连失效税</text>
 
-  <!-- Big muted number -->
-  <text x="892" y="114" text-anchor="middle" class="sans big-muted">-20% ~ -46%</text>
-  <text x="892" y="140" text-anchor="middle" class="sans num-sub">CC-NIC Fig.15</text>
+  <!-- Big muted number (corrected CC-NIC Fig. 15 Step 1 only) -->
+  <text x="892" y="114" text-anchor="middle" class="sans big-muted">-20%</text>
+  <text x="892" y="140" text-anchor="middle" class="sans num-sub">CC-NIC Fig.15 · 仅留存步</text>
+  <text x="892" y="159" text-anchor="middle" class="sans tiny">(叠 4 KiB 步长累计 -50%)</text>
 
   <!-- BOTTOM LANE: Non-Coherent Direct Push (MRV-116) -->
-  <rect x="24" y="216" width="992" height="198" rx="12" fill="#f0fdfa" stroke="#0f766e" stroke-width="1.8"/>
-  <text x="44" y="244" class="sans title-teal">本文 · 无一致性直推（MOVDIR64B → BAR4 + WC → DDIO）</text>
+  <rect x="24" y="218" width="992" height="206" rx="12" fill="#f0fdfa" stroke="#0f766e" stroke-width="1.8"/>
+  <text x="44" y="246" class="sans title-teal">本文 · 无一致性直推（MOVDIR64B → BAR4 + WC → DDIO）</text>
 
   <!-- Host TX pool + local DRAM spill -->
-  <rect x="44" y="264" width="166" height="128" rx="8" fill="#ffffff" stroke="#0f766e" stroke-width="1.6"/>
-  <text x="127" y="294" text-anchor="middle" class="sans lbl">主机 TX 留存池</text>
-  <text x="127" y="315" text-anchor="middle" class="sans small">128 MiB (&gt;60 MiB LLC)</text>
-  <rect x="58" y="330" width="138" height="46" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
-  <text x="127" y="350" text-anchor="middle" class="sans small">主机本地换出 DRAM</text>
-  <text x="127" y="367" text-anchor="middle" class="sans small">IMC 0.73 读 / 0.72 写</text>
+  <rect x="44" y="266" width="166" height="134" rx="8" fill="#ffffff" stroke="#0f766e" stroke-width="1.6"/>
+  <text x="127" y="296" text-anchor="middle" class="sans lbl">主机 TX 留存池</text>
+  <text x="127" y="317" text-anchor="middle" class="sans small">128 MiB (&gt;60 MiB LLC)</text>
+  <rect x="56" y="334" width="142" height="50" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="127" y="355" text-anchor="middle" class="sans small">主机本地换出 DRAM</text>
+  <text x="127" y="373" text-anchor="middle" class="sans small">IMC 0.73 读 / 0.72 写</text>
 
-  <!-- Vertical decoupling wall centered at x=298 (well clear of boxes at 210 and 386) -->
-  <line x1="298" y1="262" x2="298" y2="394" stroke="#0f766e" stroke-width="1.8" stroke-dasharray="6,4"/>
+  <!-- Vertical decoupling wall centered at x=298 -->
+  <line x1="298" y1="264" x2="298" y2="402" stroke="#0f766e" stroke-width="1.8" stroke-dasharray="6,4"/>
 
   <!-- One-way MOVDIR64B arrow -->
-  <line x1="210" y1="300" x2="378" y2="300" stroke="#0f766e" stroke-width="3" marker-end="url(#arr-teal)"/>
-  <rect x="244" y="268" width="108" height="22" rx="4" fill="#f0fdfa"/>
-  <text x="298" y="284" text-anchor="middle" class="sans teal-lbl">MOVDIR64B</text>
-  <rect x="234" y="307" width="128" height="20" rx="4" fill="#f0fdfa"/>
-  <text x="298" y="321" text-anchor="middle" class="sans small">64 B 单向 Posted 写</text>
+  <line x1="210" y1="302" x2="378" y2="302" stroke="#0f766e" stroke-width="3" marker-end="url(#arr-teal)"/>
+  <rect x="244" y="270" width="108" height="22" rx="4" fill="#f0fdfa"/>
+  <text x="298" y="286" text-anchor="middle" class="sans teal-lbl">MOVDIR64B</text>
+  <rect x="234" y="310" width="128" height="20" rx="4" fill="#f0fdfa"/>
+  <text x="298" y="324" text-anchor="middle" class="sans small">64 B 单向 Posted 写</text>
 
-  <!-- Decouple badge cleanly centered at x=298 (230..366, clear of 210 and 386) -->
-  <rect x="230" y="344" width="136" height="36" rx="6" fill="#ffffff" stroke="#0f766e" stroke-width="1.3"/>
-  <text x="298" y="366" text-anchor="middle" class="sans teal-lbl">无目录 · 无 Snoop</text>
+  <!-- Decouple badge -->
+  <rect x="230" y="350" width="136" height="36" rx="6" fill="#ffffff" stroke="#0f766e" stroke-width="1.3"/>
+  <text x="298" y="372" text-anchor="middle" class="sans teal-lbl">无目录 · 无 Snoop</text>
 
   <!-- Card BAR4 independent copy -->
-  <rect x="386" y="264" width="190" height="60" rx="8" fill="#ffffff" stroke="#0f766e" stroke-width="1.6"/>
-  <text x="481" y="290" text-anchor="middle" class="sans lbl">卡侧 BAR4 独立副本</text>
-  <text x="481" y="310" text-anchor="middle" class="sans small">零主机回读 · 即时解耦</text>
+  <rect x="386" y="266" width="190" height="60" rx="8" fill="#ffffff" stroke="#0f766e" stroke-width="1.6"/>
+  <text x="481" y="292" text-anchor="middle" class="sans lbl">卡侧 BAR4 独立副本</text>
+  <text x="481" y="312" text-anchor="middle" class="sans small">发后即脱钩 · 零回读</text>
 
   <!-- Card WC -> Host DDIO independent return -->
-  <rect x="386" y="336" width="190" height="56" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
-  <text x="481" y="360" text-anchor="middle" class="sans lbl">卡 WC → 主机 DDIO</text>
-  <text x="481" y="380" text-anchor="middle" class="sans teal-lbl">DDIO 命中 100.00%</text>
+  <rect x="386" y="340" width="190" height="60" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="481" y="365" text-anchor="middle" class="sans lbl">卡 WC → 主机 DDIO</text>
+  <text x="481" y="385" text-anchor="middle" class="sans teal-lbl">0 / 16.6M io_miss_itom</text>
 
   <!-- Arrow to result -->
-  <line x1="576" y1="328" x2="626" y2="328" stroke="#0f766e" stroke-width="2.6" marker-end="url(#arr-teal)"/>
+  <line x1="576" y1="333" x2="624" y2="333" stroke="#0f766e" stroke-width="2.6" marker-end="url(#arr-teal)"/>
 
-  <!-- Zero-degradation status box -->
-  <rect x="634" y="276" width="132" height="104" rx="8" fill="#ccfbf1" stroke="#0f766e" stroke-width="1.5"/>
-  <text x="700" y="310" text-anchor="middle" class="sans teal-lbl">完全脱钩</text>
-  <text x="700" y="334" text-anchor="middle" class="sans small">47.5 → 47.1 M/s</text>
-  <text x="700" y="356" text-anchor="middle" class="sans small">W=1 0.910 µs</text>
+  <!-- Zero coherence penalty box -->
+  <rect x="632" y="276" width="136" height="114" rx="8" fill="#ccfbf1" stroke="#0f766e" stroke-width="1.5"/>
+  <text x="700" y="306" text-anchor="middle" class="sans teal-lbl">零一致惩罚</text>
+  <text x="700" y="330" text-anchor="middle" class="sans small">W=64 顺序 -0.87%</text>
+  <text x="700" y="350" text-anchor="middle" class="sans small">W=1 顺序 +0.0%</text>
+  <text x="700" y="372" text-anchor="middle" class="sans tiny">(仅剩主机本地 DRAM 税)</text>
 
-  <!-- Big accent number -->
-  <text x="892" y="320" text-anchor="middle" class="sans big-teal">-0.87%</text>
-  <text x="892" y="348" text-anchor="middle" class="sans num-sub-teal">W=64 吞吐变化</text>
-  <text x="892" y="370" text-anchor="middle" class="sans num-sub-teal">W=1 延迟 +0.0%</text>
+  <!-- Big accent number: 100.0% DDIO / 0 coherence penalty -->
+  <text x="892" y="322" text-anchor="middle" class="sans big-teal">100.0%</text>
+  <text x="892" y="350" text-anchor="middle" class="sans num-sub-teal">128 MiB RX DDIO 命中</text>
+  <text x="892" y="372" text-anchor="middle" class="sans num-sub-teal">零一致性/NIC 诱发退化</text>
 </svg>
