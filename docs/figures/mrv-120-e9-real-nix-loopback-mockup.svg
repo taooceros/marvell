@@ -1,0 +1,808 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="820.8pt" height="324pt" viewBox="0 0 820.8 324" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-11-20T05:20:56.863107</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 324 
+L 820.8 324 
+L 820.8 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 48.198594 281.562656 
+L 401.76 281.562656 
+L 401.76 62.48625 
+L 48.198594 62.48625 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 64.269567 281.562656 
+L 162.481068 281.562656 
+L 162.481068 236.144377 
+L 64.269567 236.144377 
+z
+" clip-path="url(#pd811550429)" style="fill: url(#hadedc0d681); opacity: 0.85; stroke: #ffffff; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 287.477525 281.562656 
+L 385.689027 281.562656 
+L 385.689027 236.144377 
+L 287.477525 236.144377 
+z
+" clip-path="url(#pd811550429)" style="fill: url(#hadedc0d681); opacity: 0.85; stroke: #ffffff; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 64.269567 236.144377 
+L 162.481068 236.144377 
+L 162.481068 107.904529 
+L 64.269567 107.904529 
+z
+" clip-path="url(#pd811550429)" style="fill: url(#h98e6ac815b); opacity: 0.85; stroke: #ffffff; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 287.477525 236.144377 
+L 385.689027 236.144377 
+L 385.689027 188.054434 
+L 287.477525 188.054434 
+z
+" clip-path="url(#pd811550429)" style="fill: url(#hc1a5ff9e58); opacity: 0.85; stroke: #ffffff; stroke-linejoin: miter"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1">
+      <path d="M 113.375318 281.562656 
+L 113.375318 62.48625 
+" clip-path="url(#pd811550429)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_2">
+      <defs>
+       <path id="m3ade422e74" d="M 0 0 
+L 0 3.5 
+" style="stroke: #000000; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#m3ade422e74" x="113.375318" y="281.562656" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_1">
+      <text style="font-size: 8.8px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'" transform="translate(84.144193 296.593516)">传统 SDP 队列</text>
+      <text style="font-size: 8.8px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'" transform="translate(65.78038 307.653672)">(真实 CN106 NIX 回环)</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_3">
+      <path d="M 336.583276 281.562656 
+L 336.583276 62.48625 
+" clip-path="url(#pd811550429)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_4">
+      <g>
+       <use xlink:href="#m3ade422e74" x="336.583276" y="281.562656" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_2">
+      <text style="font-size: 8.8px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'" transform="translate(287.548714 296.130141)">DirectPush + DPI DMA</text>
+      <text style="font-size: 8.8px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'" transform="translate(288.988339 307.190297)">(真实 CN106 NIX 回环)</text>
+     </g>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_5">
+      <path d="M 48.198594 281.562656 
+L 401.76 281.562656 
+" clip-path="url(#pd811550429)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_6">
+      <defs>
+       <path id="mcbc7a05856" d="M 0 0 
+L -3.5 0 
+" style="stroke: #000000; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#mcbc7a05856" x="48.198594" y="281.562656" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_3">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="41.198594" y="285.361484" transform="rotate(-0 41.198594 285.361484)">0.0</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_7">
+      <path d="M 48.198594 254.846021 
+L 401.76 254.846021 
+" clip-path="url(#pd811550429)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_8">
+      <g>
+       <use xlink:href="#mcbc7a05856" x="48.198594" y="254.846021" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_4">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="41.198594" y="258.644849" transform="rotate(-0 41.198594 258.644849)">0.5</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_9">
+      <path d="M 48.198594 228.129386 
+L 401.76 228.129386 
+" clip-path="url(#pd811550429)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_10">
+      <g>
+       <use xlink:href="#mcbc7a05856" x="48.198594" y="228.129386" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_5">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="41.198594" y="231.928215" transform="rotate(-0 41.198594 231.928215)">1.0</text>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_11">
+      <path d="M 48.198594 201.412752 
+L 401.76 201.412752 
+" clip-path="url(#pd811550429)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_12">
+      <g>
+       <use xlink:href="#mcbc7a05856" x="48.198594" y="201.412752" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_6">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="41.198594" y="205.21158" transform="rotate(-0 41.198594 205.21158)">1.5</text>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_13">
+      <path d="M 48.198594 174.696117 
+L 401.76 174.696117 
+" clip-path="url(#pd811550429)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_14">
+      <g>
+       <use xlink:href="#mcbc7a05856" x="48.198594" y="174.696117" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_7">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="41.198594" y="178.494945" transform="rotate(-0 41.198594 178.494945)">2.0</text>
+     </g>
+    </g>
+    <g id="ytick_6">
+     <g id="line2d_15">
+      <path d="M 48.198594 147.979482 
+L 401.76 147.979482 
+" clip-path="url(#pd811550429)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_16">
+      <g>
+       <use xlink:href="#mcbc7a05856" x="48.198594" y="147.979482" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_8">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="41.198594" y="151.77831" transform="rotate(-0 41.198594 151.77831)">2.5</text>
+     </g>
+    </g>
+    <g id="ytick_7">
+     <g id="line2d_17">
+      <path d="M 48.198594 121.262847 
+L 401.76 121.262847 
+" clip-path="url(#pd811550429)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_18">
+      <g>
+       <use xlink:href="#mcbc7a05856" x="48.198594" y="121.262847" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_9">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="41.198594" y="125.061675" transform="rotate(-0 41.198594 125.061675)">3.0</text>
+     </g>
+    </g>
+    <g id="ytick_8">
+     <g id="line2d_19">
+      <path d="M 48.198594 94.546212 
+L 401.76 94.546212 
+" clip-path="url(#pd811550429)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_20">
+      <g>
+       <use xlink:href="#mcbc7a05856" x="48.198594" y="94.546212" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_10">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="41.198594" y="98.34504" transform="rotate(-0 41.198594 98.34504)">3.5</text>
+     </g>
+    </g>
+    <g id="ytick_9">
+     <g id="line2d_21">
+      <path d="M 48.198594 67.829577 
+L 401.76 67.829577 
+" clip-path="url(#pd811550429)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_22">
+      <g>
+       <use xlink:href="#mcbc7a05856" x="48.198594" y="67.829577" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_11">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="41.198594" y="71.628405" transform="rotate(-0 41.198594 71.628405)">4.0</text>
+     </g>
+    </g>
+    <g id="text_12">
+     <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="18.893125" y="172.024453" transform="rotate(-90 18.893125 172.024453)">端到端 NIX 硬件回环 RPC RTT (µs)</text>
+    </g>
+   </g>
+   <g id="patch_7">
+    <path d="M 48.198594 281.562656 
+L 48.198594 62.48625 
+" style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 48.198594 281.562656 
+L 401.76 281.562656 
+" style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_13">
+    <text style="font-weight: 700; font-size: 9.3px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="113.375318" y="102.561202" transform="rotate(-0 113.375318 102.561202)">~3.25 µs</text>
+   </g>
+   <g id="text_14">
+    <text style="font-weight: 700; font-size: 9.3px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="336.583276" y="182.711107" transform="rotate(-0 336.583276 182.711107)">~1.75 µs</text>
+   </g>
+   <g id="patch_9">
+    <path d="M 242.379016 135.345281 
+Q 275.291398 160.294 307.045506 184.364707 
+" style="fill: none; stroke: #2a9d8f; stroke-width: 1.3; stroke-linecap: round"/>
+    <path d="M 305.382738 180.996146 
+L 307.045506 184.364707 
+L 303.352996 183.673784 
+" style="fill: none; stroke: #2a9d8f; stroke-width: 1.3; stroke-linecap: round"/>
+   </g>
+   <g id="text_15">
+    <text style="font-weight: 700; font-size: 8.4px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; fill: #2a9d8f" transform="translate(166.945228 118.720415)">过真实 NIX 流水线仍</text>
+    <text style="font-weight: 700; font-size: 8.4px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; fill: #2a9d8f" transform="translate(166.945228 129.277837)">净省 ~1.5 µs（免外接网线）</text>
+   </g>
+   <g id="text_16">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="224.979297" y="56.48625" transform="rotate(-0 224.979297 56.48625)">(a) [预期] 真实 CN106 NIX 硬件回环延迟拆解</text>
+   </g>
+   <g id="legend_1">
+    <g id="patch_10">
+     <path d="M 222.318063 92.167812 
+L 396.44 92.167812 
+Q 397.96 92.167812 397.96 90.647812 
+L 397.96 67.80625 
+Q 397.96 66.28625 396.44 66.28625 
+L 222.318063 66.28625 
+Q 220.798063 66.28625 220.798063 67.80625 
+L 220.798063 90.647812 
+Q 220.798063 92.167812 222.318063 92.167812 
+z
+" style="fill: #ffffff; opacity: 0.8; stroke: #cccccc; stroke-linejoin: miter"/>
+    </g>
+    <g id="patch_11">
+     <path d="M 223.838063 75.471563 
+L 239.038062 75.471563 
+L 239.038062 70.151563 
+L 223.838063 70.151563 
+z
+" style="fill: url(#hadedc0d681); opacity: 0.85; stroke: #ffffff; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_17">
+     <text style="font-size: 7.6px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="245.118063" y="75.471563" transform="rotate(-0 245.118063 75.471563)">[预期] CN106 NIX 硬件收发 + LBK 回环</text>
+    </g>
+    <g id="patch_12">
+     <path d="M 223.838063 87.302031 
+L 239.038062 87.302031 
+L 239.038062 81.982031 
+L 223.838063 81.982031 
+z
+" style="fill: url(#h98e6ac815b); opacity: 0.85; stroke: #ffffff; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_18">
+     <text style="font-size: 7.6px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="245.118063" y="87.302031" transform="rotate(-0 245.118063 87.302031)">[锚定] 卡⇄主机接口延迟 (2.40 vs 0.90 µs)</text>
+    </g>
+   </g>
+  </g>
+  <g id="axes_2">
+   <g id="patch_13">
+    <path d="M 456.438594 281.562656 
+L 810 281.562656 
+L 810 62.48625 
+L 456.438594 62.48625 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="matplotlib.axis_3">
+    <g id="xtick_3">
+     <g id="line2d_23">
+      <path d="M 499.294522 281.562656 
+L 499.294522 62.48625 
+" clip-path="url(#p10d58b1fac)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_24">
+      <g>
+       <use xlink:href="#m3ade422e74" x="499.294522" y="281.562656" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_19">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="499.294522" y="296.160313" transform="rotate(-0 499.294522 296.160313)">2.5</text>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_25">
+      <path d="M 543.936113 281.562656 
+L 543.936113 62.48625 
+" clip-path="url(#p10d58b1fac)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_26">
+      <g>
+       <use xlink:href="#m3ade422e74" x="543.936113" y="281.562656" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_20">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="543.936113" y="296.160313" transform="rotate(-0 543.936113 296.160313)">5.0</text>
+     </g>
+    </g>
+    <g id="xtick_5">
+     <g id="line2d_27">
+      <path d="M 588.577705 281.562656 
+L 588.577705 62.48625 
+" clip-path="url(#p10d58b1fac)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_28">
+      <g>
+       <use xlink:href="#m3ade422e74" x="588.577705" y="281.562656" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_21">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="588.577705" y="296.160313" transform="rotate(-0 588.577705 296.160313)">7.5</text>
+     </g>
+    </g>
+    <g id="xtick_6">
+     <g id="line2d_29">
+      <path d="M 633.219297 281.562656 
+L 633.219297 62.48625 
+" clip-path="url(#p10d58b1fac)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_30">
+      <g>
+       <use xlink:href="#m3ade422e74" x="633.219297" y="281.562656" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_22">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="633.219297" y="296.160313" transform="rotate(-0 633.219297 296.160313)">10.0</text>
+     </g>
+    </g>
+    <g id="xtick_7">
+     <g id="line2d_31">
+      <path d="M 677.860889 281.562656 
+L 677.860889 62.48625 
+" clip-path="url(#p10d58b1fac)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_32">
+      <g>
+       <use xlink:href="#m3ade422e74" x="677.860889" y="281.562656" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_23">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="677.860889" y="296.160313" transform="rotate(-0 677.860889 296.160313)">12.5</text>
+     </g>
+    </g>
+    <g id="xtick_8">
+     <g id="line2d_33">
+      <path d="M 722.50248 281.562656 
+L 722.50248 62.48625 
+" clip-path="url(#p10d58b1fac)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_34">
+      <g>
+       <use xlink:href="#m3ade422e74" x="722.50248" y="281.562656" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_24">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="722.50248" y="296.160313" transform="rotate(-0 722.50248 296.160313)">15.0</text>
+     </g>
+    </g>
+    <g id="xtick_9">
+     <g id="line2d_35">
+      <path d="M 767.144072 281.562656 
+L 767.144072 62.48625 
+" clip-path="url(#p10d58b1fac)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_36">
+      <g>
+       <use xlink:href="#m3ade422e74" x="767.144072" y="281.562656" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_25">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="767.144072" y="296.160313" transform="rotate(-0 767.144072 296.160313)">17.5</text>
+     </g>
+    </g>
+    <g id="text_26">
+     <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="633.219297" y="310.726719" transform="rotate(-0 633.219297 310.726719)">NIX 硬件包到达速率 (M pkt/s)</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_4">
+    <g id="ytick_10">
+     <g id="line2d_37">
+      <path d="M 456.438594 281.562656 
+L 810 281.562656 
+" clip-path="url(#p10d58b1fac)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_38">
+      <g>
+       <use xlink:href="#mcbc7a05856" x="456.438594" y="281.562656" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_27">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="449.438594" y="285.361484" transform="rotate(-0 449.438594 285.361484)">0.0</text>
+     </g>
+    </g>
+    <g id="ytick_11">
+     <g id="line2d_39">
+      <path d="M 456.438594 256.088656 
+L 810 256.088656 
+" clip-path="url(#p10d58b1fac)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_40">
+      <g>
+       <use xlink:href="#mcbc7a05856" x="456.438594" y="256.088656" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_28">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="449.438594" y="259.887484" transform="rotate(-0 449.438594 259.887484)">2.5</text>
+     </g>
+    </g>
+    <g id="ytick_12">
+     <g id="line2d_41">
+      <path d="M 456.438594 230.614655 
+L 810 230.614655 
+" clip-path="url(#p10d58b1fac)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_42">
+      <g>
+       <use xlink:href="#mcbc7a05856" x="456.438594" y="230.614655" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_29">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="449.438594" y="234.413483" transform="rotate(-0 449.438594 234.413483)">5.0</text>
+     </g>
+    </g>
+    <g id="ytick_13">
+     <g id="line2d_43">
+      <path d="M 456.438594 205.140654 
+L 810 205.140654 
+" clip-path="url(#p10d58b1fac)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_44">
+      <g>
+       <use xlink:href="#mcbc7a05856" x="456.438594" y="205.140654" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_30">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="449.438594" y="208.939482" transform="rotate(-0 449.438594 208.939482)">7.5</text>
+     </g>
+    </g>
+    <g id="ytick_14">
+     <g id="line2d_45">
+      <path d="M 456.438594 179.666653 
+L 810 179.666653 
+" clip-path="url(#p10d58b1fac)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_46">
+      <g>
+       <use xlink:href="#mcbc7a05856" x="456.438594" y="179.666653" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_31">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="449.438594" y="183.465481" transform="rotate(-0 449.438594 183.465481)">10.0</text>
+     </g>
+    </g>
+    <g id="ytick_15">
+     <g id="line2d_47">
+      <path d="M 456.438594 154.192653 
+L 810 154.192653 
+" clip-path="url(#p10d58b1fac)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_48">
+      <g>
+       <use xlink:href="#mcbc7a05856" x="456.438594" y="154.192653" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_32">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="449.438594" y="157.991481" transform="rotate(-0 449.438594 157.991481)">12.5</text>
+     </g>
+    </g>
+    <g id="ytick_16">
+     <g id="line2d_49">
+      <path d="M 456.438594 128.718652 
+L 810 128.718652 
+" clip-path="url(#p10d58b1fac)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_50">
+      <g>
+       <use xlink:href="#mcbc7a05856" x="456.438594" y="128.718652" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_33">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="449.438594" y="132.51748" transform="rotate(-0 449.438594 132.51748)">15.0</text>
+     </g>
+    </g>
+    <g id="ytick_17">
+     <g id="line2d_51">
+      <path d="M 456.438594 103.244651 
+L 810 103.244651 
+" clip-path="url(#p10d58b1fac)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_52">
+      <g>
+       <use xlink:href="#mcbc7a05856" x="456.438594" y="103.244651" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_34">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="449.438594" y="107.043479" transform="rotate(-0 449.438594 107.043479)">17.5</text>
+     </g>
+    </g>
+    <g id="ytick_18">
+     <g id="line2d_53">
+      <path d="M 456.438594 77.77065 
+L 810 77.77065 
+" clip-path="url(#p10d58b1fac)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_54">
+      <g>
+       <use xlink:href="#mcbc7a05856" x="456.438594" y="77.77065" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_35">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="449.438594" y="81.569479" transform="rotate(-0 449.438594 81.569479)">20.0</text>
+     </g>
+    </g>
+    <g id="text_36">
+     <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="420.770625" y="172.024453" transform="rotate(-90 420.770625 172.024453)">端到端 p99 延迟 (µs)</text>
+    </g>
+   </g>
+   <g id="line2d_55">
+    <path d="M 472.509567 248.955935 
+L 508.22284 243.861135 
+L 561.79275 232.652575 
+L 615.36266 195.970014 
+L 651.075934 82.865451 
+" clip-path="url(#p10d58b1fac)" style="fill: none; stroke-dasharray: 8.14,3.52; stroke-dashoffset: 0; stroke: #d62828; stroke-width: 2.2"/>
+    <defs>
+     <path id="mfd69ac298f" d="M -3.25 3.25 
+L 3.25 3.25 
+L 3.25 -3.25 
+L -3.25 -3.25 
+z
+" style="stroke: #d62828; stroke-linejoin: miter"/>
+    </defs>
+    <g clip-path="url(#p10d58b1fac)">
+     <use xlink:href="#mfd69ac298f" x="472.509567" y="248.955935" style="fill: #d62828; stroke: #d62828; stroke-linejoin: miter"/>
+     <use xlink:href="#mfd69ac298f" x="508.22284" y="243.861135" style="fill: #d62828; stroke: #d62828; stroke-linejoin: miter"/>
+     <use xlink:href="#mfd69ac298f" x="561.79275" y="232.652575" style="fill: #d62828; stroke: #d62828; stroke-linejoin: miter"/>
+     <use xlink:href="#mfd69ac298f" x="615.36266" y="195.970014" style="fill: #d62828; stroke: #d62828; stroke-linejoin: miter"/>
+     <use xlink:href="#mfd69ac298f" x="651.075934" y="82.865451" style="fill: #d62828; stroke: #d62828; stroke-linejoin: miter"/>
+    </g>
+   </g>
+   <g id="line2d_56">
+    <path d="M 472.509567 263.730856 
+L 526.079477 262.711896 
+L 597.506024 260.673976 
+L 668.93257 256.598136 
+L 740.359117 248.446455 
+L 793.929027 222.462975 
+" clip-path="url(#p10d58b1fac)" style="fill: none; stroke-dasharray: 9.25,4; stroke-dashoffset: 0; stroke: #1f6feb; stroke-width: 2.5"/>
+    <defs>
+     <path id="md1617c9139" d="M 0 3.5 
+C 0.928211 3.5 1.81853 3.131218 2.474874 2.474874 
+C 3.131218 1.81853 3.5 0.928211 3.5 0 
+C 3.5 -0.928211 3.131218 -1.81853 2.474874 -2.474874 
+C 1.81853 -3.131218 0.928211 -3.5 0 -3.5 
+C -0.928211 -3.5 -1.81853 -3.131218 -2.474874 -2.474874 
+C -3.131218 -1.81853 -3.5 -0.928211 -3.5 0 
+C -3.5 0.928211 -3.131218 1.81853 -2.474874 2.474874 
+C -1.81853 3.131218 -0.928211 3.5 0 3.5 
+z
+" style="stroke: #1f6feb"/>
+    </defs>
+    <g clip-path="url(#p10d58b1fac)">
+     <use xlink:href="#md1617c9139" x="472.509567" y="263.730856" style="fill: #1f6feb; stroke: #1f6feb"/>
+     <use xlink:href="#md1617c9139" x="526.079477" y="262.711896" style="fill: #1f6feb; stroke: #1f6feb"/>
+     <use xlink:href="#md1617c9139" x="597.506024" y="260.673976" style="fill: #1f6feb; stroke: #1f6feb"/>
+     <use xlink:href="#md1617c9139" x="668.93257" y="256.598136" style="fill: #1f6feb; stroke: #1f6feb"/>
+     <use xlink:href="#md1617c9139" x="740.359117" y="248.446455" style="fill: #1f6feb; stroke: #1f6feb"/>
+     <use xlink:href="#md1617c9139" x="793.929027" y="222.462975" style="fill: #1f6feb; stroke: #1f6feb"/>
+    </g>
+   </g>
+   <g id="patch_14">
+    <path d="M 456.438594 281.562656 
+L 456.438594 62.48625 
+" style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_15">
+    <path d="M 456.438594 281.562656 
+L 810 281.562656 
+" style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_37">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="633.219297" y="56.48625" transform="rotate(-0 633.219297 56.48625)">(b) [预期] 真实 NIX 突发到达下无 13 M/s 悬崖</text>
+   </g>
+   <g id="legend_2">
+    <g id="patch_16">
+     <path d="M 462.038594 93.7925 
+L 650.851094 93.7925 
+Q 652.451094 93.7925 652.451094 92.1925 
+L 652.451094 68.08625 
+Q 652.451094 66.48625 650.851094 66.48625 
+L 462.038594 66.48625 
+Q 460.438594 66.48625 460.438594 68.08625 
+L 460.438594 92.1925 
+Q 460.438594 93.7925 462.038594 93.7925 
+z
+" style="fill: #ffffff; opacity: 0.8; stroke: #cccccc; stroke-linejoin: miter"/>
+    </g>
+    <g id="line2d_57">
+     <path d="M 463.638594 73.4175 
+L 471.638594 73.4175 
+L 479.638594 73.4175 
+" style="fill: none; stroke-dasharray: 8.14,3.52; stroke-dashoffset: 0; stroke: #d62828; stroke-width: 2.2"/>
+     <g>
+      <use xlink:href="#mfd69ac298f" x="471.638594" y="73.4175" style="fill: #d62828; stroke: #d62828; stroke-linejoin: miter"/>
+     </g>
+    </g>
+    <g id="text_38">
+     <text style="font-size: 8px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="486.038594" y="76.2175" transform="rotate(-0 486.038594 76.2175)">[预期] 真实 NIX 回环 + SDP 基线</text>
+    </g>
+    <g id="line2d_58">
+     <path d="M 463.638594 85.870625 
+L 471.638594 85.870625 
+L 479.638594 85.870625 
+" style="fill: none; stroke-dasharray: 9.25,4; stroke-dashoffset: 0; stroke: #1f6feb; stroke-width: 2.5"/>
+     <g>
+      <use xlink:href="#md1617c9139" x="471.638594" y="85.870625" style="fill: #1f6feb; stroke: #1f6feb"/>
+     </g>
+    </g>
+    <g id="text_39">
+     <text style="font-size: 8px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="486.038594" y="88.670625" transform="rotate(-0 486.038594 88.670625)">[预期] 真实 NIX 回环 + DirectPush (含整形)</text>
+    </g>
+   </g>
+  </g>
+  <g id="text_40">
+   <g id="patch_17">
+    <path d="M 86.250938 22.792922 
+L 734.549062 22.792922 
+Q 737.429063 22.792922 737.429063 19.912922 
+L 737.429063 10.368 
+Q 737.429063 7.488 734.549062 7.488 
+L 86.250938 7.488 
+Q 83.370938 7.488 83.370938 10.368 
+L 83.370938 19.912922 
+Q 83.370938 22.792922 86.250938 22.792922 
+z
+" style="fill: #ffe8cc; stroke: #f77f00; stroke-width: 1.4; stroke-linejoin: miter"/>
+   </g>
+   <text style="font-weight: 700; font-size: 9px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle; fill: #7a2e00" x="410.4" y="17.750812" transform="rotate(-0 410.4 17.750812)">预期示意 / EXPECTED MOCKUP — 待上卡实测（虚线/斜线柱为预期目标，非实测数据）  |  MRV-118 CN106 真实 NIX 硬件回环 eth4/LBK（零 DSA）</text>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pd811550429">
+   <rect x="48.198594" y="62.48625" width="353.561406" height="219.076406"/>
+  </clipPath>
+  <clipPath id="p10d58b1fac">
+   <rect x="456.438594" y="62.48625" width="353.561406" height="219.076406"/>
+  </clipPath>
+ </defs>
+ <defs>
+  <pattern id="hadedc0d681" patternUnits="userSpaceOnUse" x="0" y="0" width="72" height="72">
+   <rect x="0" y="0" width="73" height="73" fill="#6c757d"/>
+   <path d="M -36 36 
+L 36 -36 
+M -30 42 
+L 42 -30 
+M -24 48 
+L 48 -24 
+M -18 54 
+L 54 -18 
+M -12 60 
+L 60 -12 
+M -6 66 
+L 66 -6 
+M 0 72 
+L 72 0 
+M 6 78 
+L 78 6 
+M 12 84 
+L 84 12 
+M 18 90 
+L 90 18 
+M 24 96 
+L 96 24 
+M 30 102 
+L 102 30 
+M 36 108 
+L 108 36 
+" style="fill: #ffffff; stroke: #ffffff; stroke-width: 1.0; stroke-linecap: butt; stroke-linejoin: miter; stroke-opacity: 0.85"/>
+  </pattern>
+  <pattern id="h98e6ac815b" patternUnits="userSpaceOnUse" x="0" y="0" width="72" height="72">
+   <rect x="0" y="0" width="73" height="73" fill="#d62828"/>
+   <path d="M -36 36 
+L 36 108 
+M -30 30 
+L 42 102 
+M -24 24 
+L 48 96 
+M -18 18 
+L 54 90 
+M -12 12 
+L 60 84 
+M -6 6 
+L 66 78 
+M 0 0 
+L 72 72 
+M 6 -6 
+L 78 66 
+M 12 -12 
+L 84 60 
+M 18 -18 
+L 90 54 
+M 24 -24 
+L 96 48 
+M 30 -30 
+L 102 42 
+M 36 -36 
+L 108 36 
+" style="fill: #ffffff; stroke: #ffffff; stroke-width: 1.0; stroke-linecap: butt; stroke-linejoin: miter; stroke-opacity: 0.85"/>
+  </pattern>
+  <pattern id="hc1a5ff9e58" patternUnits="userSpaceOnUse" x="0" y="0" width="72" height="72">
+   <rect x="0" y="0" width="73" height="73" fill="#1f6feb"/>
+   <path d="M -36 36 
+L 36 108 
+M -30 30 
+L 42 102 
+M -24 24 
+L 48 96 
+M -18 18 
+L 54 90 
+M -12 12 
+L 60 84 
+M -6 6 
+L 66 78 
+M 0 0 
+L 72 72 
+M 6 -6 
+L 78 66 
+M 12 -12 
+L 84 60 
+M 18 -18 
+L 90 54 
+M 24 -24 
+L 96 48 
+M 30 -30 
+L 102 42 
+M 36 -36 
+L 108 36 
+" style="fill: #ffffff; stroke: #ffffff; stroke-width: 1.0; stroke-linecap: butt; stroke-linejoin: miter; stroke-opacity: 0.85"/>
+  </pattern>
+ </defs>
+</svg>
