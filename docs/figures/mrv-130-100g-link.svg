@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 364" width="980" height="364">
+  <defs>
+    <style>
+      .font { font-family: "Droid Sans Fallback", "DejaVu Sans", sans-serif; }
+      .mono { font-family: "DejaVu Sans Mono", "Droid Sans Fallback", monospace; }
+      .row-tag { font-size: 14px; font-weight: 700; fill: #525252; }
+      .row-tag-accent { font-size: 14px; font-weight: 700; fill: #0f62fe; }
+      .hdr { font-size: 14px; font-weight: 700; fill: #161616; }
+      .title { font-size: 15px; font-weight: 700; fill: #161616; }
+      .sub { font-size: 12px; fill: #525252; }
+      .pill { font-size: 11.5px; font-weight: 700; fill: #ffffff; }
+      .pill-muted { font-size: 11.5px; font-weight: 700; fill: #393939; }
+      .big { font-size: 22px; font-weight: 700; fill: #0f62fe; }
+      .lane { font-size: 11px; fill: #525252; }
+    </style>
+  </defs>
+
+  <!-- White background -->
+  <rect width="980" height="364" fill="#ffffff"/>
+
+  <!-- Column headers -->
+  <text x="230" y="34" text-anchor="middle" class="font hdr">CN106 · QSFP56 (RPM0)</text>
+  <text x="515" y="34" text-anchor="middle" class="font sub">FS QSFP-200G-PC02 · 2m DAC</text>
+  <text x="800" y="34" text-anchor="middle" class="font hdr">mercury · CX5 (3d:00.1)</text>
+
+  <!-- ==================== ROW 1: CURRENT ==================== -->
+  <text x="24" y="108" class="font row-tag">当前</text>
+  <text x="24" y="128" class="font sub">未连通</text>
+
+  <!-- CN106 current: 4x25G split -->
+  <rect x="110" y="56" width="240" height="108" rx="8" fill="#f4f4f4" stroke="#c6c6c6" stroke-width="1.5"/>
+  <rect x="124" y="68" width="212" height="18" rx="3" fill="#e0e0e0"/>
+  <text x="230" y="81" text-anchor="middle" class="mono lane">PORTM0 · eth0 · 25GAUI_C2M</text>
+  <rect x="124" y="90" width="212" height="18" rx="3" fill="#e0e0e0"/>
+  <text x="230" y="103" text-anchor="middle" class="mono lane">PORTM1 · eth1 · 25GAUI_C2M</text>
+  <rect x="124" y="112" width="212" height="18" rx="3" fill="#e0e0e0"/>
+  <text x="230" y="125" text-anchor="middle" class="mono lane">PORTM2 · eth2 · 25GAUI_C2M</text>
+  <rect x="124" y="134" width="212" height="18" rx="3" fill="#e0e0e0"/>
+  <text x="230" y="147" text-anchor="middle" class="mono lane">PORTM3 · eth3 · 25GAUI_C2M</text>
+
+  <!-- Current cable: broken / mismatched -->
+  <line x1="350" y1="110" x2="680" y2="110" stroke="#a8a8a8" stroke-width="3" stroke-dasharray="7 6"/>
+  <rect x="447" y="94" width="136" height="32" rx="16" fill="#f4f4f4" stroke="#a8a8a8" stroke-width="1.2"/>
+  <text x="515" y="114" text-anchor="middle" class="font pill-muted">4×25G ≠ 100G</text>
+
+  <!-- mercury current: DOWN -->
+  <rect x="680" y="56" width="240" height="108" rx="8" fill="#f4f4f4" stroke="#c6c6c6" stroke-width="1.5"/>
+  <text x="800" y="88" text-anchor="middle" class="mono title">ens6f1np1</text>
+  <rect x="752" y="99" width="96" height="22" rx="11" fill="#d0d0d0"/>
+  <text x="800" y="114" text-anchor="middle" class="mono pill-muted">ADMIN DOWN</text>
+  <text x="800" y="144" text-anchor="middle" class="mono sub">AN: on · FEC: Auto</text>
+
+  <!-- Divider -->
+  <line x1="24" y1="190" x2="956" y2="190" stroke="#e0e0e0" stroke-width="1"/>
+
+  <!-- ==================== ROW 2: TARGET ==================== -->
+  <text x="24" y="264" class="font row-tag-accent">目标</text>
+  <text x="24" y="284" class="font sub">100G 互通</text>
+
+  <!-- CN106 target: merged 4-lane 100GBASE-CR4 -->
+  <rect x="110" y="214" width="240" height="118" rx="8" fill="#edf5ff" stroke="#0f62fe" stroke-width="2"/>
+  <text x="230" y="242" text-anchor="middle" class="mono title">PORTM0 · eth0</text>
+  <text x="230" y="265" text-anchor="middle" class="mono" style="font-size:13px;font-weight:700;fill:#0f62fe;">100GBASE-CR4 · RS-FEC</text>
+  <text x="230" y="287" text-anchor="middle" class="mono sub">10.10.100.2/24</text>
+  <rect x="160" y="299" width="140" height="22" rx="11" fill="#0f62fe"/>
+  <text x="230" y="314" text-anchor="middle" class="font pill">需 EBF 保存 + 重启</text>
+
+  <!-- Target cable: active 100 Gbps -->
+  <line x1="350" y1="273" x2="680" y2="273" stroke="#0f62fe" stroke-width="4.5"/>
+  <rect x="421" y="241" width="188" height="64" rx="10" fill="#ffffff" stroke="#0f62fe" stroke-width="1.5"/>
+  <text x="515" y="271" text-anchor="middle" class="font big">100 Gbps</text>
+  <text x="515" y="293" text-anchor="middle" class="mono sub">4×25G NRZ · Cl.91 RS</text>
+
+  <!-- mercury target: UP -->
+  <rect x="680" y="214" width="240" height="118" rx="8" fill="#edf5ff" stroke="#0f62fe" stroke-width="2"/>
+  <text x="800" y="242" text-anchor="middle" class="mono title">ens6f1np1</text>
+  <text x="800" y="265" text-anchor="middle" class="mono" style="font-size:13px;font-weight:700;fill:#0f62fe;">UP · 100GBASE-CR4 · RS</text>
+  <text x="800" y="287" text-anchor="middle" class="mono sub">10.10.100.1/24</text>
+  <rect x="730" y="299" width="140" height="22" rx="11" fill="#0f62fe"/>
+  <text x="800" y="314" text-anchor="middle" class="font pill">需 mercury sudo</text>
+</svg>
