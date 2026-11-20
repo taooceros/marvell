@@ -1,0 +1,162 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 676" width="1120" height="676" font-family="DejaVu Sans, Droid Sans Fallback, sans-serif">
+  <defs>
+    <marker id="arr-grey" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#6B7280"/>
+    </marker>
+    <marker id="arr-dark" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#374151"/>
+    </marker>
+    <marker id="arr-blue" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#0F62FE"/>
+    </marker>
+  </defs>
+
+  <!-- Crisp white background -->
+  <rect x="0" y="0" width="1120" height="676" fill="#FFFFFF"/>
+
+  <!-- Column headers -->
+  <text x="290" y="30" text-anchor="middle" font-size="14.5" font-weight="700" fill="#111827">主机端 · 1 核 (cpu40, 3.90 GHz) · 128 MiB 留存池</text>
+  <text x="580" y="30" text-anchor="middle" font-size="12.5" font-weight="700" fill="#6B7280">PCIe Gen5 ×4</text>
+  <text x="855" y="30" text-anchor="middle" font-size="14.5" font-weight="700" fill="#111827">CN106 商用网卡 · 1 卡核 (2.00 GHz · 零 DSA)</text>
+
+  <!-- ======================== TIER (a): SDP ======================== -->
+  <rect x="24" y="46" width="1072" height="128" rx="10" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1.5"/>
+  <text x="42" y="72" font-size="15" font-weight="700" fill="#374151">(a) 传统 SDP 队列</text>
+  <rect x="896" y="54" width="184" height="24" rx="12" fill="#E5E7EB"/>
+  <text x="988" y="70" text-anchor="middle" font-size="12" font-weight="700" fill="#374151">高延迟 · 满核拷贝</text>
+
+  <rect x="44" y="92" width="126" height="54" rx="6" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="1.3"/>
+  <text x="107" y="115" text-anchor="middle" font-size="12" font-weight="600" fill="#374151">128 MiB 留存池</text>
+  <text x="107" y="133" text-anchor="middle" font-size="11" fill="#6B7280">2 MiB 大页</text>
+
+  <rect x="202" y="92" width="146" height="54" rx="6" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="1.3"/>
+  <text x="275" y="115" text-anchor="middle" font-size="12" font-weight="600" fill="#374151">memcpy + mbuf</text>
+  <text x="275" y="133" text-anchor="middle" font-size="11" fill="#6B7280">逐包分配/拷贝</text>
+
+  <rect x="380" y="92" width="156" height="54" rx="6" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="1.3"/>
+  <text x="458" y="115" text-anchor="middle" font-size="12" font-weight="600" fill="#374151">IQ / OQ 描述符环</text>
+  <text x="458" y="133" text-anchor="middle" font-size="11" fill="#6B7280">门铃 + OUT_CNTS</text>
+
+  <rect x="628" y="92" width="186" height="54" rx="6" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="1.3"/>
+  <text x="721" y="115" text-anchor="middle" font-size="12" font-weight="600" fill="#374151">SDP VF (MTU 9000)</text>
+  <text x="721" y="133" text-anchor="middle" font-size="11" fill="#6B7280">RX/TX 描述符 DMA</text>
+
+  <rect x="866" y="92" width="146" height="54" rx="6" fill="#F3F4F6" stroke="#9CA3AF" stroke-width="1.3"/>
+  <text x="939" y="124" text-anchor="middle" font-size="13.5" font-weight="700" fill="#374151">1 卡核</text>
+
+  <line x1="170" y1="119" x2="200" y2="119" stroke="#6B7280" stroke-width="1.8" marker-end="url(#arr-grey)"/>
+  <line x1="348" y1="119" x2="378" y2="119" stroke="#6B7280" stroke-width="1.8" marker-end="url(#arr-grey)"/>
+  <line x1="536" y1="108" x2="626" y2="108" stroke="#6B7280" stroke-width="1.8" marker-end="url(#arr-grey)"/>
+  <line x1="626" y1="130" x2="538" y2="130" stroke="#6B7280" stroke-width="1.8" stroke-dasharray="4,3" marker-end="url(#arr-grey)"/>
+  <line x1="814" y1="108" x2="864" y2="108" stroke="#6B7280" stroke-width="1.8" marker-end="url(#arr-grey)"/>
+  <line x1="864" y1="130" x2="816" y2="130" stroke="#6B7280" stroke-width="1.8" stroke-dasharray="4,3" marker-end="url(#arr-grey)"/>
+
+  <!-- ======================== TIER (b): Pure MOVDIR64B + WC ======================== -->
+  <rect x="24" y="188" width="1072" height="156" rx="10" fill="#F9FAFB" stroke="#D1D5DB" stroke-width="1.5"/>
+  <text x="42" y="214" font-size="15" font-weight="700" fill="#1F2937">(b) 纯 MOVDIR64B + WC（全尺寸直推）</text>
+  <rect x="842" y="196" width="238" height="24" rx="12" fill="#E5E7EB"/>
+  <text x="961" y="212" text-anchor="middle" font-size="12" font-weight="700" fill="#1F2937">≥1 KiB: LLC 缺失 · 桥阻塞 · HoL</text>
+
+  <!-- Pool spans both TX/RX rows cleanly on left -->
+  <rect x="44" y="232" width="126" height="96" rx="6" fill="#FFFFFF" stroke="#6B7280" stroke-width="1.3"/>
+  <text x="107" y="275" text-anchor="middle" font-size="12" font-weight="600" fill="#1F2937">128 MiB 留存池</text>
+  <text x="107" y="293" text-anchor="middle" font-size="11" fill="#6B7280">CPU 读全量载荷</text>
+
+  <!-- Top TX row on Host (no box in between -> straight unobstructed arrow!) -->
+  <rect x="202" y="232" width="334" height="40" rx="6" fill="#FFFFFF" stroke="#6B7280" stroke-width="1.3"/>
+  <text x="369" y="257" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1F2937">全尺寸 MOVDIR64B (1–128 行，无栅栏)</text>
+
+  <!-- Bottom RX row on Host -->
+  <rect x="202" y="288" width="334" height="40" rx="6" fill="#F3F4F6" stroke="#6B7280" stroke-width="1.3"/>
+  <text x="369" y="313" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1F2937">主机 DDIO RX 环（全尺寸 WC 回写）</text>
+
+  <!-- Card side: BAR4 -> Core -> PEM0 WC -->
+  <rect x="628" y="232" width="132" height="44" rx="6" fill="#FFFFFF" stroke="#6B7280" stroke-width="1.3"/>
+  <text x="694" y="251" text-anchor="middle" font-size="12" font-weight="600" fill="#1F2937">BAR4 槽 15</text>
+  <text x="694" y="267" text-anchor="middle" font-size="11" fill="#6B7280">单环混排大小包</text>
+
+  <rect x="794" y="232" width="114" height="44" rx="6" fill="#F3F4F6" stroke="#6B7280" stroke-width="1.3"/>
+  <text x="851" y="259" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1F2937">1 卡核</text>
+
+  <rect x="942" y="232" width="134" height="44" rx="6" fill="#FFFFFF" stroke="#6B7280" stroke-width="1.3"/>
+  <text x="1009" y="251" text-anchor="middle" font-size="12" font-weight="600" fill="#1F2937">PEM0 WC</text>
+  <text x="1009" y="267" text-anchor="middle" font-size="11" fill="#6B7280">逐行写 1–128 行</text>
+
+  <!-- Unobstructed arrows for Tier (b) -->
+  <line x1="170" y1="252" x2="200" y2="252" stroke="#374151" stroke-width="1.8" marker-end="url(#arr-dark)"/>
+  <line x1="536" y1="252" x2="626" y2="252" stroke="#374151" stroke-width="2" marker-end="url(#arr-dark)"/>
+  <line x1="760" y1="254" x2="792" y2="254" stroke="#374151" stroke-width="1.8" marker-end="url(#arr-dark)"/>
+  <line x1="908" y1="254" x2="940" y2="254" stroke="#374151" stroke-width="1.8" marker-end="url(#arr-dark)"/>
+  <path d="M 1009 276 L 1009 308 L 538 308" fill="none" stroke="#374151" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#arr-dark)"/>
+
+  <!-- ======================== TIER (c): DirectPush + Native DPI DMA ======================== -->
+  <rect x="24" y="358" width="1072" height="300" rx="10" fill="#F5F9FF" stroke="#0F62FE" stroke-width="2"/>
+  <text x="42" y="385" font-size="15.5" font-weight="700" fill="#0F62FE">(c) DirectPush（小包无一致性直推 + 大载荷原生 DPI DMA）</text>
+  <rect x="822" y="366" width="258" height="24" rx="12" fill="#0F62FE"/>
+  <text x="951" y="382" text-anchor="middle" font-size="12" font-weight="700" fill="#FFFFFF">低延迟 · 无 HoL · 零拷贝省核</text>
+
+  <!-- Shared 128 MiB pool on left -->
+  <rect x="44" y="406" width="126" height="206" rx="6" fill="#FFFFFF" stroke="#0F62FE" stroke-width="1.6"/>
+  <text x="107" y="496" text-anchor="middle" font-size="13" font-weight="700" fill="#111827">128 MiB 留存池</text>
+  <text x="107" y="516" text-anchor="middle" font-size="11" fill="#4B5563">2 MiB 大页</text>
+  <text x="107" y="535" text-anchor="middle" font-size="11" font-weight="700" fill="#0F62FE">VFIO IOVA 映射</text>
+
+  <!-- Host Lane 1 (Small <= 256 B): TX above, RX below -->
+  <rect x="202" y="406" width="334" height="40" rx="6" fill="#FFFFFF" stroke="#0F62FE" stroke-width="1.5"/>
+  <text x="369" y="431" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0F62FE">≤ 256 B：MOVDIR64B 直推 (1–4 行，无栅栏)</text>
+
+  <rect x="202" y="458" width="334" height="40" rx="6" fill="#EEF4FF" stroke="#0F62FE" stroke-width="1.4"/>
+  <text x="369" y="483" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1E3A8A">小包 DDIO 环（独立通道，无 HoL 阻塞）</text>
+
+  <!-- Host Lane 2 (Large >= 4 KiB): Desc above, DMA RX below -->
+  <rect x="202" y="516" width="334" height="40" rx="6" fill="#FFFFFF" stroke="#0F62FE" stroke-width="1.5"/>
+  <text x="369" y="541" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0F62FE">≥ 4 KiB：1×64 B 描述符（仅传 IOVA，零拷贝）</text>
+
+  <rect x="202" y="572" width="334" height="40" rx="6" fill="#EEF4FF" stroke="#0F62FE" stroke-width="1.4"/>
+  <text x="369" y="597" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1E3A8A">大包 RX 环 + 64 B DDIO 完成格</text>
+
+  <!-- Card top row: BAR4 -> 1 Core -> PEM0 WC -->
+  <rect x="628" y="406" width="128" height="46" rx="6" fill="#FFFFFF" stroke="#0F62FE" stroke-width="1.5"/>
+  <text x="692" y="426" text-anchor="middle" font-size="12.5" font-weight="700" fill="#111827">BAR4 槽 15</text>
+  <text x="692" y="443" text-anchor="middle" font-size="11" fill="#4B5563">小包 / 64 B 格</text>
+
+  <rect x="790" y="406" width="124" height="46" rx="6" fill="#EEF4FF" stroke="#0F62FE" stroke-width="1.8"/>
+  <text x="852" y="426" text-anchor="middle" font-size="13.5" font-weight="700" fill="#0F62FE">1 卡核</text>
+  <text x="852" y="443" text-anchor="middle" font-size="11" fill="#374151">非阻塞事件循环</text>
+
+  <rect x="948" y="406" width="128" height="46" rx="6" fill="#FFFFFF" stroke="#0F62FE" stroke-width="1.5"/>
+  <text x="1012" y="426" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0F62FE">PEM0 WC</text>
+  <text x="1012" y="443" text-anchor="middle" font-size="11" fill="#374151">仅写 ≤ 256 B</text>
+
+  <!-- Card bottom row: Native DPI DMA engine -->
+  <rect x="748" y="544" width="328" height="68" rx="8" fill="#FFFFFF" stroke="#0F62FE" stroke-width="2"/>
+  <text x="912" y="572" text-anchor="middle" font-size="14" font-weight="700" fill="#0F62FE">CN106 原生 DPI DMA 引擎</text>
+  <text x="912" y="594" text-anchor="middle" font-size="11.5" fill="#374151">FromHost 直读留存池 ⇄ ToHost 直写 RX + 完成格</text>
+
+  <!-- Unobstructed arrows for Tier (c) -->
+  <!-- Pool -> Small TX -->
+  <line x1="170" y1="426" x2="200" y2="426" stroke="#0F62FE" stroke-width="1.8" marker-end="url(#arr-blue)"/>
+  <!-- Small TX -> BAR4 -->
+  <line x1="536" y1="426" x2="626" y2="426" stroke="#0F62FE" stroke-width="2" marker-end="url(#arr-blue)"/>
+  <!-- BAR4 -> Core -> PEM0 WC -->
+  <line x1="756" y1="429" x2="788" y2="429" stroke="#0F62FE" stroke-width="1.8" marker-end="url(#arr-blue)"/>
+  <line x1="914" y1="429" x2="946" y2="429" stroke="#0F62FE" stroke-width="1.8" marker-end="url(#arr-blue)"/>
+  <!-- PEM0 WC -> Small DDIO ring (clean horizontal channel at y=478!) -->
+  <path d="M 1012 452 L 1012 478 L 538 478" fill="none" stroke="#0F62FE" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#arr-blue)"/>
+
+  <!-- Large 64 B descriptor -> BAR4 bottom (routed cleanly at x=692!) -->
+  <path d="M 536 536 L 692 536 L 692 454" fill="none" stroke="#0F62FE" stroke-width="1.8" marker-end="url(#arr-blue)"/>
+  <!-- 1 Core -> DPI DMA trigger (clean vertical drop at x=852!) -->
+  <line x1="852" y1="452" x2="852" y2="542" stroke="#0F62FE" stroke-width="2" marker-end="url(#arr-blue)"/>
+
+  <!-- ToHost DMA: DPI DMA -> Host Large RX + Comp ring (straight unobstructed at y=592!) -->
+  <line x1="748" y1="592" x2="538" y2="592" stroke="#0F62FE" stroke-width="2.6" marker-end="url(#arr-blue)"/>
+  <text x="644" y="584" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0F62FE">ToHost DMA</text>
+
+  <!-- Subtle vertical PCIe divider drawn behind bottom label -->
+  <line x1="580" y1="40" x2="580" y2="660" stroke="#9CA3AF" stroke-width="1.4" stroke-dasharray="5,5" opacity="0.65"/>
+
+  <!-- FromHost DMA: 128 MiB pool -> DPI DMA bottom bus (clean unobstructed channel at y=638!) -->
+  <path d="M 107 612 L 107 638 L 912 638 L 912 614" fill="none" stroke="#0F62FE" stroke-width="2.6" marker-end="url(#arr-blue)"/>
+  <text x="368" y="631" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0F62FE">FromHost 原生 DMA 直读 128 MiB 留存池（旁路主机 CPU）</text>
+</svg>
