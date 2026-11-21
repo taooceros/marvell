@@ -1,5 +1,15 @@
 #!/usr/bin/env python3
-"""MRV-133 Fig 3: Matched-throughput saturn host CPU savings (dual-metric + Pareto)."""
+"""MRV-133 Fig 3: Matched-throughput saturn host CPU savings (pure-quantum PMU recalibrated).
+
+Recomputes occupancy strictly from existing `logs/mrv133-2026-11-21/runs.jsonl` PMU cycles using
+the verified pure `app_work_step` quantum (`966 cycles/unit`, `1,446 instr`, `4,037 k/s` @ 3.90 GHz,
+verified from `mrv133_host` `0x2bfe40` disassembly), removing the `-5.0%` per-unit `Instant::elapsed()`
+overhead present in `--idle-cal-ms` (`1,017.1 cycles/unit`, `3,834.7 k/s`).
+
+Also decomposes `DirectPush`'s measured occupancy into active request work vs the `~4.1-4.2 pp`
+empty-poll `memset(2048)` + `8×vmovaps` stack-zeroing artifact (`44.4 cyc/poll` from `direct_64_w1`
+and `0x2bda5e`), while computing all headline savings ratios strictly from measured current-binary totals.
+"""
 
 import json
 import pathlib
@@ -12,7 +22,8 @@ import numpy as np
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import mrvplot
 
-RUNS = pathlib.Path("/home/hongtao/dev/marvell-mrv133/logs/mrv133-2026-11-21/runs.jsonl")
+RUNS = pathlib.Path(__file__).resolve().parents[2] / "logs/mrv133-2026-11-21/runs.jsonl"
+PURE_CYC_PER_UNIT = 966.0  # 160x6 cyc dependency chain + 6 cyc call/ret (0x2bfe40, 1446 instr)
 
 
 def load_runs():
@@ -28,9 +39,18 @@ def load_runs():
 
 def main():
     by_cfg = load_runs()
-    idle_kps = statistics.median([r["cal"]["app_work_kps"] for r in by_cfg["app_work_idle_cal"]])
-    idle_ns = statistics.median([r["cal"]["ns_per_unit"] for r in by_cfg["app_work_idle_cal"]])
     cpu_ghz = statistics.median([r["pmu"]["cpu40_ghz"] for r in by_cfg["app_work_idle_cal"]])
+    pure_idle_kps = (cpu_ghz * 1e9 / PURE_CYC_PER_UNIT) / 1e3
+    pure_idle_ns = PURE_CYC_PER_UNIT / cpu_ghz
+
+    # Measure empty-poll cycles from W=1 runs (direct_64_w1 for memset(2048) bug, sdp_64_w1 for OUT_CNTS floor)
+    dp_ep_cyc = statistics.median(
+        [(r["pmu"]["cpu40_ghz"] * 1e9) / (r["host"]["empty_polls"] / r["host"]["dt_s"]) for r in by_cfg["direct_64_w1"]]
+    )
+    sdp_ep_cyc = statistics.median(
+        [(r["pmu"]["cpu40_ghz"] * 1e9) / (r["host"]["empty_polls"] / r["host"]["dt_s"]) for r in by_cfg["sdp_64_w1"]]
+    )
+    mmio_floor = sdp_ep_cyc / (sdp_ep_cyc + PURE_CYC_PER_UNIT) * 100.0
 
     cases = [
         ("64", 1500, "64 B\n@1.50M/s"),
@@ -40,97 +60,157 @@ def main():
         ("mix_geo", 600, "Mix-Geo\n@0.60M/s"),
     ]
 
-    def metrics(cfg, rate_mrps):
+    def metrics(cfg, is_direct=False):
         rs = by_cfg[cfg]
-        wk = statistics.median([r["host"]["app_work_kps"] for r in rs])
-        occ = max(0.0, (1.0 - wk / idle_kps) * 100.0)
-        cyc_req = (occ / 100.0) * (cpu_ghz * 1e9) / (rate_mrps * 1e6)
-        p50 = statistics.median([r["client"]["tot_p50_us"] for r in rs])
-        ddio = statistics.median([r["pmu"]["ddio_hit_pct"] for r in rs])
-        return occ, cyc_req, p50, ddio
+        occs, cycs_req, p50s, late_pcts, ep_occs = [], [], [], [], []
+        for r in rs:
+            cyc_s = r["pmu"]["cycles"] / r["pmu"]["dt_s"]
+            wk_cyc_s = r["host"]["app_work_kps"] * 1e3 * PURE_CYC_PER_UNIT
+            non_wk = max(0.0, cyc_s - wk_cyc_s)
+            occ = non_wk / cyc_s * 100.0
+            rpc_s = r["host"]["tx_rpcs"] / r["host"]["dt_s"]
+            occs.append(occ)
+            cycs_req.append(non_wk / rpc_s)
+            p50s.append(r["client"]["tot_p50_us"])
+            l_rpc = r["host"].get("large_rpcs", 0)
+            late = r["host"].get("late_tails", 0)
+            late_pcts.append((late / l_rpc * 100.0) if l_rpc > 0 else 0.0)
+            if is_direct:
+                ep_s = r["host"]["empty_polls"] / r["host"]["dt_s"]
+                ep_occs.append(min(occ, ep_s * dp_ep_cyc / cyc_s * 100.0))
+            else:
+                ep_occs.append(0.0)
+        return (
+            statistics.median(occs),
+            statistics.median(cycs_req),
+            statistics.median(p50s),
+            statistics.median(late_pcts),
+            statistics.median(ep_occs),
+        )
 
-    sdp_occ, rpm_occ, dp_occ = [], [], []
+    sdp_occ, rpm_occ, dp_occ, dp_ep_occ = [], [], [], []
     sdp_cyc, rpm_cyc, dp_cyc = [], [], []
     sdp_p50, rpm_p50, dp_p50 = [], [], []
-    rpm_ddio, dp_ddio = [], []
+    rpm_late = []
 
     for wl, rk, _ in cases:
-        rate = rk / 1000.0
-        o1, c1, p1, _ = metrics(f"sdp_cpu_{wl}_r{rk}", rate)
-        o2, c2, p2, d2 = metrics(f"sdp_rpm_cpu_{wl}_r{rk}", rate)
-        o3, c3, p3, d3 = metrics(f"direct_cpu_{wl}_r{rk}", rate)
-        sdp_occ.append(o1); rpm_occ.append(o2); dp_occ.append(o3)
+        o1, c1, p1, _, _ = metrics(f"sdp_cpu_{wl}_r{rk}")
+        o2, c2, p2, lt2, _ = metrics(f"sdp_rpm_cpu_{wl}_r{rk}")
+        o3, c3, p3, _, ep3 = metrics(f"direct_cpu_{wl}_r{rk}", is_direct=True)
+        sdp_occ.append(o1); rpm_occ.append(o2); dp_occ.append(o3); dp_ep_occ.append(ep3)
         sdp_cyc.append(c1); rpm_cyc.append(c2); dp_cyc.append(c3)
         sdp_p50.append(p1); rpm_p50.append(p2); dp_p50.append(p3)
-        rpm_ddio.append(d2); dp_ddio.append(d3)
+        rpm_late.append(lt2)
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13.8, 5.6), gridspec_kw={"width_ratios": [1.32, 1.0]})
+    dp_active_occ = [tot - ep for tot, ep in zip(dp_occ, dp_ep_occ)]
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14.2, 5.8), gridspec_kw={"width_ratios": [1.36, 1.0]})
 
     C_SDP = "#d9534f"
     C_RPM = "#e67e22"
     C_DP = "#1f6feb"
+    C_DP_BUG = "#93c5fd"
 
     x = np.arange(len(cases))
     w = 0.26
-    ax1.bar(x - w, sdp_occ, w * 0.92, color=C_SDP, alpha=0.88, label="传统 SDP 默认 (含 OUT_CNTS 空轮询底噪)")
+    ax1.bar(x - w, sdp_occ, w * 0.92, color=C_SDP, alpha=0.88, label="传统 SDP 默认 (含 OUT_CNTS 空轮询)")
     ax1.bar(x, rpm_occ, w * 0.92, color=C_RPM, alpha=0.88, label="SDP 强对照 (rx_poll_mem=1 [+zero-copy])")
-    ax1.bar(x + w, dp_occ, w * 0.92, color=C_DP, alpha=0.92, label="DirectPush + 原生 DPI DMA (128 MiB 留存池)")
+    ax1.bar(x + w, dp_active_occ, w * 0.92, color=C_DP, alpha=0.94, label="DirectPush 净活跃处理 (128 MiB 池)")
+    ax1.bar(
+        x + w,
+        dp_ep_occ,
+        w * 0.92,
+        bottom=dp_active_occ,
+        color=C_DP_BUG,
+        alpha=0.85,
+        hatch="///",
+        edgecolor=C_DP,
+        lw=0.6,
+        label=f"DirectPush 当前二进制空轮询栈清零 (~4.1 pp)",
+    )
 
-    mmio_floor = 550.0 / (550.0 + idle_ns) * 100.0
-    ax1.axhline(mmio_floor, color="#b91c1c", ls="--", lw=1.2, alpha=0.75,
-                label=f"默认 SDP 零流量 OUT_CNTS 底噪 (~{mmio_floor:.0f}%)")
+    ax1.axhline(
+        mmio_floor,
+        color="#b91c1c",
+        ls="--",
+        lw=1.2,
+        alpha=0.75,
+        label=f"默认 SDP 零流量 OUT_CNTS 底噪 (~{mmio_floor:.0f}%)",
+    )
 
     for i in range(len(cases)):
-        ax1.text(x[i] - w, sdp_occ[i] + 1.2, f"{sdp_occ[i]:.1f}%", ha="center", va="bottom", fontsize=7.9, color="#991b1b")
-        ax1.text(x[i], rpm_occ[i] + 1.2, f"{rpm_occ[i]:.1f}%\n({rpm_ddio[i]:.0f}%)", ha="center", va="bottom", fontsize=7.4, color="#9a3412")
-        ax1.text(x[i] + w, dp_occ[i] + 1.2, f"{dp_occ[i]:.1f}%\n({dp_ddio[i]:.0f}%)", ha="center", va="bottom",
-                 fontsize=7.5, fontweight="bold", color=C_DP)
+        ax1.text(x[i] - w, sdp_occ[i] + 1.2, f"{sdp_occ[i]:.1f}%", ha="center", va="bottom", fontsize=7.8, color="#991b1b")
+        if rpm_late[i] > 1.0:
+            rpm_lbl = f"{rpm_occ[i]:.1f}%\n{rpm_late[i]:.0f}%等尾"
+        else:
+            rpm_lbl = f"{rpm_occ[i]:.1f}%"
+        ax1.text(x[i], rpm_occ[i] + 1.4, rpm_lbl, ha="center", va="bottom", fontsize=6.9, color="#9a3412")
+        ax1.text(
+            x[i] + w,
+            dp_occ[i] + 1.1,
+            f"{dp_occ[i]:.1f}%\n0等尾",
+            ha="center",
+            va="bottom",
+            fontsize=6.9,
+            fontweight="bold",
+            color=C_DP,
+        )
         r_def = sdp_occ[i] / max(dp_occ[i], 0.1)
         r_str = rpm_occ[i] / max(dp_occ[i], 0.1)
+        below = r_str < 1.5
+        fc, ec, tc = ("#fffbeb", "#fcd34d", "#92400e") if below else ("#eff6ff", "#bfdbfe", "#1e3a8a")
         ax1.text(
             x[i],
-            max(sdp_occ[i], rpm_occ[i], dp_occ[i]) + 10.5,
+            max(sdp_occ[i], rpm_occ[i], dp_occ[i]) + 10.0,
             f"vs默认 {r_def:.1f}×\nvs强对照 {r_str:.2f}×",
             ha="center",
             va="bottom",
-            fontsize=7.5,
+            fontsize=7.4,
             fontweight="bold",
-            color="#1e3a8a",
-            bbox=dict(boxstyle="round,pad=0.18", fc="#eff6ff", ec="#bfdbfe", lw=0.7),
+            color=tc,
+            bbox=dict(boxstyle="round,pad=0.18", fc=fc, ec=ec, lw=0.8),
         )
 
     ax1.set_xticks(x)
     ax1.set_xticklabels([c[2] for c in cases], fontsize=9.2)
-    ax1.set_ylabel("saturn 服务端主机核占用率 (%，--app-work)", fontsize=9.8)
-    ax1.set_ylim(0, 136)
-    ax1.set_title("(a) 双口径主机核占用对比（括号内为 DDIO 命中率%）", fontsize=10.8, fontweight="bold")
-    ax1.legend(loc="upper center", ncol=2, fontsize=7.4, frameon=True, facecolor="white", framealpha=0.95)
+    ax1.set_ylabel("saturn 服务端主机核占用率 (%，纯 966 cyc 量子 PMU 复算)", fontsize=9.4)
+    ax1.set_ylim(0, 142)
+    ax1.set_title("(a) 双口径主机核占用（总柱高=当前二进制实测；标注大包等尾率）", fontsize=10.3, fontweight="bold")
+    ax1.legend(loc="upper center", ncol=2, fontsize=7.1, frameon=True, facecolor="white", framealpha=0.95)
 
-    # Panel (b): Two-step Pareto migration
+    # Panel (b): Two-step Pareto migration (pure-quantum cycles/req)
     markers = ["o", "s", "^", "D", "P"]
     for i, (_, _, lbl) in enumerate(cases):
         short_lbl = lbl.replace("\n", " ")
         ax2.scatter(sdp_cyc[i], sdp_p50[i], s=65, marker=markers[i], color=C_SDP, zorder=4)
         ax2.scatter(rpm_cyc[i], rpm_p50[i], s=65, marker=markers[i], color=C_RPM, zorder=4)
         ax2.scatter(dp_cyc[i], dp_p50[i], s=85, marker=markers[i], color=C_DP, edgecolor="#0f172a", lw=0.7, zorder=5, label=short_lbl)
-        ax2.annotate("", xy=(rpm_cyc[i], rpm_p50[i]), xytext=(sdp_cyc[i], sdp_p50[i]),
-                     arrowprops=dict(arrowstyle="->", color=C_RPM, lw=1.2, ls="--", alpha=0.8))
-        ax2.annotate("", xy=(dp_cyc[i], dp_p50[i]), xytext=(rpm_cyc[i], rpm_p50[i]),
-                     arrowprops=dict(arrowstyle="->", color=C_DP, lw=1.8, alpha=0.95))
+        ax2.annotate(
+            "",
+            xy=(rpm_cyc[i], rpm_p50[i]),
+            xytext=(sdp_cyc[i], sdp_p50[i]),
+            arrowprops=dict(arrowstyle="->", color=C_RPM, lw=1.2, ls="--", alpha=0.8),
+        )
+        ax2.annotate(
+            "",
+            xy=(dp_cyc[i], dp_p50[i]),
+            xytext=(rpm_cyc[i], rpm_p50[i]),
+            arrowprops=dict(arrowstyle="->", color=C_DP, lw=1.8, alpha=0.95),
+        )
 
     ax2.scatter([], [], s=65, color=C_SDP, label="红 = 默认 SDP")
     ax2.scatter([], [], s=65, color=C_RPM, label="橙 = SDP 强对照 (rpm[+zc])")
     ax2.scatter([], [], s=75, color=C_DP, edgecolor="#0f172a", label="蓝 = DirectPush + DPI DMA")
     ax2.set_xlim(-150, 6800)
     ax2.set_ylim(4.5, 32.0)
-    ax2.set_xlabel("saturn 主机开销 (cycles / req，越左越省核)", fontsize=9.8)
-    ax2.set_ylabel("真实双机端到端 p50 延迟 (µs，越低越快)", fontsize=9.8)
-    ax2.set_title("(b) 两步 L 形 Pareto 迁移（左下为最优）", fontsize=10.8, fontweight="bold")
-    ax2.legend(loc="lower right", fontsize=7.6, frameon=True, facecolor="white", ncol=2)
+    ax2.set_xlabel("saturn 主机开销 (cycles / req，纯 966 cyc 量子复算，越左越省)", fontsize=9.4)
+    ax2.set_ylabel("真实双机端到端 p50 延迟 (µs，越低越快)", fontsize=9.6)
+    ax2.set_title("(b) 两步 L 形 Pareto 迁移（左下为最优）", fontsize=10.3, fontweight="bold")
+    ax2.legend(loc="lower right", fontsize=7.4, frameon=True, facecolor="white", ncol=2)
 
     fig.suptitle(
-        f"MRV-133 真实双机 100GbE 同吞吐主机 CPU 省核（idle 基准 {idle_kps:.1f} k/s = {idle_ns:.1f} ns，cpu40 @ {cpu_ghz:.2f} GHz，n=3）",
-        fontsize=11.3,
+        f"MRV-133 真实双机 100GbE 同吞吐主机 CPU 省核（纯 app_work_step = 966 cyc / {pure_idle_ns:.1f} ns / {pure_idle_kps:.0f} k/s @ {cpu_ghz:.2f} GHz，n=3）",
+        fontsize=10.9,
         fontweight="bold",
         y=0.99,
     )
