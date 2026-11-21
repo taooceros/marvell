@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 """MRV-135 Core Single-Variable Figure: 256 B B=8 Micro-Bursts (4C eth0 RSS, W=64)
 Unshaped (C_line=0) vs Card-Cursor In-Flight Line Credit Shaping (C_line=40/48/64).
+Includes wire p99 comparison and marks the FastHist >= 20 ms overload-divergence zone.
 """
 import json
 import statistics
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-import numpy as np
 
 from mrvplot import save
 
-RUNS = Path("/home/hongtao/dev/marvell-mrv135/logs/mrv135-2026-11-21/runs.jsonl")
+REPO = Path(__file__).resolve().parents[2]
+RUNS = REPO / "logs/mrv135-2026-11-21/runs.jsonl"
+OVERFLOW_US = 20_000.0
 
 
 def load_runs():
@@ -35,6 +37,23 @@ def med(vals):
     return statistics.median(vals)
 
 
+def plot_with_overflow(ax, xs, ys, col, mk, ls, label, zorder=4):
+    """Plot continuous line; filled markers for steady state (<20 ms), open markers for FastHist overflow (>=20 ms)."""
+    ax.plot(xs, ys, color=col, ls=ls, lw=2.0, zorder=zorder)
+    xs_ok = [x for x, y in zip(xs, ys) if y < OVERFLOW_US]
+    ys_ok = [y for y in ys if y < OVERFLOW_US]
+    xs_ov = [x for x, y in zip(xs, ys) if y >= OVERFLOW_US]
+    ys_ov = [y for y in ys if y >= OVERFLOW_US]
+    if xs_ok:
+        ax.plot(xs_ok, ys_ok, color=col, marker=mk, ls="None", ms=6.2,
+                markerfacecolor=col, markeredgecolor=col, zorder=zorder + 1)
+    if xs_ov:
+        ax.plot(xs_ov, ys_ov, color=col, marker=mk, ls="None", ms=6.2,
+                markerfacecolor="white", markeredgecolor=col, markeredgewidth=1.6, zorder=zorder + 1)
+    # Proxy for clean legend entry
+    ax.plot([], [], color=col, marker=mk, ls=ls, lw=2.0, ms=6.0, label=label)
+
+
 def main():
     rows = load_runs()
     cfgs = by_cfg(rows)
@@ -49,13 +68,13 @@ def main():
         ("cl64", "边界对照 C_line = 64", "#e67700", "D", ":"),
     ]
 
-    fig, axes = plt.subplots(1, 3, figsize=(15.2, 4.7))
+    fig, axes = plt.subplots(1, 3, figsize=(15.6, 4.9))
 
     # Panel (a): Achieved Line Rate (M lines/s) vs Target Line Rate
     ax = axes[0]
     ax.plot([7.5, 24.5], [7.5, 24.5], color="#adb5bd", ls=":", lw=1.2, label="理想线性 (y = x)")
     ax.axhline(13.4, color="#868e96", ls="--", lw=1.1)
-    ax.text(8.0, 13.75, "13.4 M 行/s 慢崖线", fontsize=8.5, color="#495057")
+    ax.text(7.8, 13.8, "13.4 M 行/s 慢崖线", fontsize=8.3, color="#495057")
 
     for tag, label, col, mk, ls in series:
         xs, ys = [], []
@@ -66,20 +85,31 @@ def main():
             pts = [row["client"]["achieved_mrps"] * 4.0 for row in cfgs[k]]
             xs.append(xm)
             ys.append(med(pts))
-            ax.scatter([xm] * len(pts), pts, color=col, s=16, alpha=0.45, zorder=3)
+            ax.scatter([xm] * len(pts), pts, color=col, s=16, alpha=0.42, zorder=3)
         ax.plot(xs, ys, color=col, marker=mk, ls=ls, lw=2.0, ms=6, label=label, zorder=4)
+
+    ax.text(
+        18.7, 8.7,
+        "稳态容量边界:\n13.3 → 20.2 / 22.5 M 行/s\n(+52% / +69%)",
+        ha="center", va="center", fontsize=8.0, color="#1971c2", fontweight="bold",
+        bbox=dict(boxstyle="round,pad=0.3", fc="#e7f5ff", ec="#1971c2", lw=0.8),
+    )
 
     ax.set_xlabel("目标到达速率 (M 行/s，256 B = 4 行/包)")
     ax.set_ylabel("实测端到端吞吐 (M 行/s)")
     ax.set_title("(a) 吞吐跨慢崖能力 (B = 8, W = 64)")
     ax.set_xlim(7.2, 24.8)
-    ax.set_ylim(6.5, 25.5)
-    ax.legend(loc="upper left", fontsize=8.2, frameon=True, framealpha=0.92)
+    ax.set_ylim(6.5, 25.8)
+    ax.legend(loc="upper left", fontsize=8.0, frameon=True, framealpha=0.93)
 
-    # Panel (b): True End-to-End tot p99 (us, log scale) vs Target Line Rate
+    # Panel (b): True End-to-End tot p99 + Datapath wire p99 (us, log scale)
     ax = axes[1]
-    ax.axvline(13.4, color="#868e96", ls="--", lw=1.1)
-    ax.text(13.65, 14.0, "13.4 M 行/s", fontsize=8.5, color="#495057")
+    ax.axhspan(OVERFLOW_US, 2.8e6, color="#f1f3f5", alpha=0.88, zorder=0)
+    ax.axhline(OVERFLOW_US, color="#868e96", ls=":", lw=1.2, zorder=1)
+    ax.text(7.6, 1.45e6, "FastHist ≥ 20 ms 溢出区\n(过载发散，空心 = 1.5 s max_ns)",
+            fontsize=7.3, color="#495057", va="top")
+    ax.axvline(13.4, color="#868e96", ls="--", lw=1.1, zorder=1)
+    ax.text(13.05, 4000, "13.4 M\n慢崖线", fontsize=7.6, color="#495057", ha="right", va="center")
 
     for tag, label, col, mk, ls in series:
         xs, ys = [], []
@@ -90,32 +120,54 @@ def main():
             pts = [row["client"]["tot_p99_us"] for row in cfgs[k]]
             xs.append(xm)
             ys.append(med(pts))
-            ax.scatter([xm] * len(pts), pts, color=col, s=16, alpha=0.45, zorder=3)
-        ax.plot(xs, ys, color=col, marker=mk, ls=ls, lw=2.0, ms=6, label=label, zorder=4)
+            ax.scatter([xm] * len(pts), pts, color=col, s=14, alpha=0.38, zorder=3)
+        plot_with_overflow(ax, xs, ys, col, mk, ls, label, zorder=4)
 
-    # Annotate key 4.0 Mreq/s (16 M lines/s) drop
-    if "sub_cl0_b8_r4000" in cfgs and "sub_cl40_b8_r4000" in cfgs:
-        u16 = med([r["client"]["tot_p99_us"] for r in cfgs["sub_cl0_b8_r4000"]])
-        c16 = med([r["client"]["tot_p99_us"] for r in cfgs["sub_cl40_b8_r4000"]])
+    # Overlay datapath wire p99 for C_line=40 and C_line=48 (includes saturn DDIO credit wait)
+    for tag, col, ls_w, wlbl in [
+        ("cl40", "#1971c2", ":", "wire p99 (C=40, 含 DDIO 暂留)"),
+        ("cl48", "#2b8a3e", "-.", "wire p99 (C=48, 含 DDIO 暂留)"),
+    ]:
+        xs_w, ys_w = [], []
+        for r, xm in zip(rates, x_mlines):
+            k = f"sub_{tag}_b8_r{r}"
+            if k not in cfgs:
+                continue
+            xs_w.append(xm)
+            ys_w.append(med([row["client"]["wire_p99_us"] for row in cfgs[k]]))
+        ax.plot(xs_w, ys_w, color=col, ls=ls_w, lw=1.5, alpha=0.85, zorder=3, label=wlbl)
+
+    if "sub_cl40_b8_r4000" in cfgs and "sub_cl48_b8_r4000" in cfgs:
+        c40 = med([r["client"]["tot_p99_us"] for r in cfgs["sub_cl40_b8_r4000"]])
+        c48 = med([r["client"]["tot_p99_us"] for r in cfgs["sub_cl48_b8_r4000"]])
         ax.annotate(
-            f"16 M 行/s:\n{u16/1000:.0f} ms → {c16:.1f} µs",
-            xy=(16.0, c16),
-            xytext=(14.2, 3200),
-            fontsize=8.2,
+            f"16 M 稳态:\ntot {c40:.1f} / {c48:.1f} µs\n(无整形已过载发散)",
+            xy=(16.0, c40),
+            xytext=(13.9, 1450),
+            fontsize=7.6,
             color="#1971c2",
             fontweight="bold",
-            arrowprops=dict(arrowstyle="->", color="#1971c2", lw=1.2),
-            bbox=dict(boxstyle="round,pad=0.25", fc="#e7f5ff", ec="#1971c2", lw=0.8),
+            arrowprops=dict(arrowstyle="->", color="#1971c2", lw=1.1),
+            bbox=dict(boxstyle="round,pad=0.24", fc="#e7f5ff", ec="#1971c2", lw=0.8),
         )
+
+    ax.annotate(
+        "虚线 wire p99 全程 < 19 µs\n(20–22M 尾升源自客户端 my_window=16 排队)",
+        xy=(20.0, 15.3),
+        xytext=(13.6, 5.2),
+        fontsize=7.0,
+        color="#2b8a3e",
+        arrowprops=dict(arrowstyle="->", color="#2b8a3e", lw=1.0),
+    )
 
     ax.set_yscale("log")
     ax.set_xlabel("目标到达速率 (M 行/s，256 B = 4 行/包)")
-    ax.set_ylabel("真实端到端 tot p99 (µs，对数轴)")
-    ax.set_title("(b) 真实端到端尾延迟 tot p99")
+    ax.set_ylabel("端到端 tot p99 / 链路 wire p99 (µs，对数轴)")
+    ax.set_title("(b) 稳态 tot p99、链路 wire p99 与过载发散界")
     ax.set_xlim(7.2, 24.8)
-    ax.set_ylim(10, 1e6)
+    ax.set_ylim(4.0, 2.2e6)
 
-    # Panel (c): Card-side CNTVCT host_rtt p99 + Host IIO/CHA Write Ratio (inset/dual)
+    # Panel (c): Card-side CNTVCT host_rtt p99 + Host IIO/CHA Write Ratio
     ax = axes[2]
     ax.axvline(13.4, color="#868e96", ls="--", lw=1.1)
     for tag, label, col, mk, ls in series:
@@ -127,10 +179,9 @@ def main():
             pts = [row["card"]["host_rtt_p99_us"] for row in cfgs[k]]
             xs.append(xm)
             ys.append(med(pts))
-            ax.scatter([xm] * len(pts), pts, color=col, s=16, alpha=0.45, zorder=3)
+            ax.scatter([xm] * len(pts), pts, color=col, s=16, alpha=0.42, zorder=3)
         ax.plot(xs, ys, color=col, marker=mk, ls=ls, lw=2.0, ms=6, label=label, zorder=4)
 
-    # Secondary axis: IIO CPU Write / BAR4 line ratio for cl0 & cl40
     ax2 = ax.twinx()
     ax2.spines["top"].set_visible(False)
     ax2.spines["right"].set_visible(True)
@@ -145,26 +196,26 @@ def main():
             r_iio.append(med([row["steady_window"]["iio_cpu_wr_ratio"] for row in cfgs[k]]))
             r_cha.append(med([row["steady_window"]["cha_wcilf_ratio"] for row in cfgs[k]]))
         ax2.plot(xs, r_iio, color=col, ls=":", lw=1.4, alpha=0.75,
-                 label=f"IIO/行 ({'无整形' if tag=='cl0' else 'C=40'})")
+                 label=f"IIO/行 ({'无整形' if tag == 'cl0' else 'C=40'})")
         ax2.plot(xs, r_cha, color=col, ls="-.", lw=1.1, alpha=0.60,
-                 label=f"CHA/行 ({'无整形' if tag=='cl0' else 'C=40'})")
-    ax2.set_ylabel("IIO & CHA WCILF / BAR4 行比值", color="#495057", fontsize=8.6)
+                 label=f"CHA/行 ({'无整形' if tag == 'cl0' else 'C=40'})")
+    ax2.set_ylabel("IIO & CHA WCILF / BAR4 行比值", color="#495057", fontsize=8.5)
     ax2.set_ylim(0.5, 1.5)
     ax2.tick_params(axis="y", colors="#495057")
 
     ax.set_xlabel("目标到达速率 (M 行/s，256 B = 4 行/包)")
     ax.set_ylabel("卡侧 CNTVCT 主机往返 p99 (µs)")
-    ax.set_title("(c) PCIe/BAR4 往返 p99 与 IIO 行倍率")
+    ax.set_title("(c) PCIe/BAR4 往返 p99 与 IIO/CHA 行倍率")
     ax.set_xlim(7.2, 24.8)
     ax.set_ylim(0, 17.8)
     h1, l1 = ax.get_legend_handles_labels()
-    h2, l2 = ax2.get_legend_handles_labels()
-    ax.legend(h1 + h2[:2], l1 + ["IIO/CHA 行比 = 1.00× (无整形)", "IIO/CHA 行比 = 1.00× (C=40)"],
-              loc="lower right", fontsize=7.2, frameon=True, framealpha=0.93)
+    h2, _ = ax2.get_legend_handles_labels()
+    ax.legend(h1 + h2[:2], l1 + ["IIO/CHA 稳态中位数 = 1.00× (无整形)", "IIO/CHA 稳态中位数 = 1.00× (C=40)"],
+              loc="lower right", fontsize=7.0, frameon=True, framealpha=0.93)
 
     fig.suptitle(
         "MRV-135 核心单变量：真实双机 100GbE 4C RSS (256 B, B = 8, W = 64) 无整形 vs 卡侧游标行信用整形 (n = 3 交错全零错)",
-        fontsize=11.5,
+        fontsize=11.3,
         y=0.99,
     )
     out = save(fig, "mrv-135-burst-cliff")

@@ -20,7 +20,7 @@
 
   <rect width="1180" height="510" fill="#ffffff"/>
 
-  <!-- TOP ROW: Unshaped (C_line = inf, W = 64) -->
+  <!-- TOP ROW: Unshaped (C_line = 0, W = 64) -->
   <rect x="20" y="18" width="1140" height="214" rx="10" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1.5"/>
   <text x="42" y="48" class="t-sec">A. 无信用整形 (仅 W = 64)</text>
 
@@ -28,7 +28,7 @@
   <rect x="42" y="76" width="146" height="86" rx="8" fill="#ffffff" stroke="#868e96" stroke-width="1.5"/>
   <text x="115" y="109" class="t-box">mercury 4-QP</text>
   <text x="115" y="129" class="t-sub">256 B · B = 8</text>
-  <text x="115" y="147" class="t-sub">16–24 M 行/s</text>
+  <text x="115" y="147" class="t-sub">14–24 M 行/s</text>
 
   <!-- 100GbE DAC bidirectional -->
   <line x1="188" y1="106" x2="282" y2="106" stroke="#495057" stroke-width="1.8" marker-end="url(#arr-g)"/>
@@ -51,7 +51,7 @@
   <rect x="568" y="68" width="188" height="102" rx="8" fill="#e9ecef" stroke="#495057" stroke-width="2.2"/>
   <text x="662" y="96" class="t-box">PEM0 / IOBN 慢态</text>
   <text x="662" y="128" class="t-big">13.3 M 行/s</text>
-  <text x="662" y="153" class="t-sub">在途 170+ 行 · 桥内堵死</text>
+  <text x="662" y="153" class="t-sub">稳态上限 · 桥内锁死</text>
 
   <!-- PEM0/IOBN <-> saturn -->
   <line x1="756" y1="100" x2="868" y2="100" stroke="#495057" stroke-width="1.8" marker-end="url(#arr-g)"/>
@@ -67,20 +67,20 @@
   <text x="946" y="147" class="t-sub">W=128 CHA 38.6 条</text>
 
   <!-- Result badge A -->
-  <rect x="1038" y="76" width="102" height="86" rx="8" fill="#e9ecef" stroke="#868e96" stroke-width="1.5"/>
-  <text x="1089" y="104" class="t-sub">16 M 行/s</text>
-  <text x="1089" y="133" class="t-big" style="font-size:20px;">259 ms</text>
-  <text x="1089" y="151" class="t-sub">tot p99</text>
+  <rect x="1036" y="76" width="106" height="86" rx="8" fill="#e9ecef" stroke="#868e96" stroke-width="1.5"/>
+  <text x="1089" y="103" class="t-sub">16 M 行/s</text>
+  <text x="1089" y="131" class="t-big" style="font-size:18px;">过载发散</text>
+  <text x="1089" y="151" class="t-sub">hrtt 14.5 µs</text>
 
   <!-- BOTTOM ROW: Card-Cursor Credit Shaping (C_line = 40) -->
   <rect x="20" y="254" width="1140" height="236" rx="10" fill="#f8f9fa" stroke="#1971c2" stroke-width="2"/>
-  <text x="42" y="284" class="t-sec-a">B. 卡侧游标驱动在途行信用整形 (C_line = 40 ≤ 64)</text>
+  <text x="42" y="284" class="t-sec-a">B. 卡侧游标驱动在途行信用整形 (C_line = 40，安全窗 40–48 行)</text>
 
   <!-- mercury 4-QP -->
   <rect x="42" y="312" width="146" height="86" rx="8" fill="#ffffff" stroke="#868e96" stroke-width="1.5"/>
   <text x="115" y="345" class="t-box">mercury 4-QP</text>
   <text x="115" y="365" class="t-sub">256 B · B = 8</text>
-  <text x="115" y="383" class="t-sub">16–20 M 行/s</text>
+  <text x="115" y="383" class="t-sub">14–20 M 行/s</text>
 
   <!-- 100GbE DAC bidirectional -->
   <line x1="188" y1="342" x2="282" y2="342" stroke="#495057" stroke-width="1.8" marker-end="url(#arr-g)"/>
@@ -116,7 +116,7 @@
   <rect x="874" y="312" width="144" height="86" rx="8" fill="#e7f5ff" stroke="#1971c2" stroke-width="1.8"/>
   <text x="946" y="343" class="t-box" style="fill:#1971c2;">saturn cpu40</text>
   <text x="946" y="363" class="t-sub">DDIO 零拷贝暂留</text>
-  <text x="946" y="381" class="t-lbl-a">CHA 2.1 条</text>
+  <text x="946" y="381" class="t-lbl-a">W=128 CHA 2.1 条</text>
 
   <!-- Credit feedback arc along bottom -->
   <path d="M 379 398 L 379 456 L 946 456 L 946 404" fill="none" stroke="#1971c2" stroke-width="2.2" stroke-dasharray="6,4" marker-end="url(#arr-a)"/>
@@ -124,8 +124,8 @@
   <text x="662" y="458" class="t-lbl-a">PEM0 WC → DDIO 信用游标 (零 PCIe 读)</text>
 
   <!-- Result badge B -->
-  <rect x="1038" y="312" width="102" height="86" rx="8" fill="#1971c2" stroke="#1971c2" stroke-width="1.5"/>
-  <text x="1089" y="340" class="t-sub" style="fill:#e7f5ff;">16 M 行/s</text>
-  <text x="1089" y="369" class="t-big" style="font-size:20px; fill:#ffffff;">45 µs</text>
-  <text x="1089" y="387" class="t-sub" style="fill:#e7f5ff;">tot p99</text>
+  <rect x="1036" y="312" width="106" height="86" rx="8" fill="#1971c2" stroke="#1971c2" stroke-width="1.5"/>
+  <text x="1089" y="339" class="t-sub" style="fill:#e7f5ff;">16 M 行/s 稳态</text>
+  <text x="1089" y="368" class="t-big" style="font-size:20px; fill:#ffffff;">45 µs</text>
+  <text x="1089" y="388" class="t-sub" style="fill:#e7f5ff;">wire 16 µs</text>
 </svg>
