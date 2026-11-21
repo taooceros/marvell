@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 510" width="1180" height="510">
+  <defs>
+    <style>
+      .t-sec   { font-family: "DejaVu Sans", "Droid Sans Fallback", sans-serif; font-size: 15px; font-weight: 700; fill: #343a40; }
+      .t-sec-a { font-family: "DejaVu Sans", "Droid Sans Fallback", sans-serif; font-size: 15px; font-weight: 700; fill: #1971c2; }
+      .t-box   { font-family: "DejaVu Sans", "Droid Sans Fallback", sans-serif; font-size: 13px; font-weight: 700; fill: #212529; text-anchor: middle; }
+      .t-sub   { font-family: "DejaVu Sans", "Droid Sans Fallback", sans-serif; font-size: 11px; fill: #495057; text-anchor: middle; }
+      .t-big   { font-family: "DejaVu Sans", "Droid Sans Fallback", sans-serif; font-size: 24px; font-weight: 700; fill: #343a40; text-anchor: middle; }
+      .t-big-a { font-family: "DejaVu Sans", "Droid Sans Fallback", sans-serif; font-size: 24px; font-weight: 700; fill: #1971c2; text-anchor: middle; }
+      .t-lbl   { font-family: "DejaVu Sans", "Droid Sans Fallback", sans-serif; font-size: 11px; font-weight: 600; fill: #495057; text-anchor: middle; }
+      .t-lbl-a { font-family: "DejaVu Sans", "Droid Sans Fallback", sans-serif; font-size: 11px; font-weight: 700; fill: #1971c2; text-anchor: middle; }
+    </style>
+    <marker id="arr-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#495057"/>
+    </marker>
+    <marker id="arr-a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#1971c2"/>
+    </marker>
+  </defs>
+
+  <rect width="1180" height="510" fill="#ffffff"/>
+
+  <!-- TOP ROW: Unshaped (C_line = inf, W = 64) -->
+  <rect x="20" y="18" width="1140" height="214" rx="10" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1.5"/>
+  <text x="42" y="48" class="t-sec">A. 无信用整形 (仅 W = 64)</text>
+
+  <!-- mercury 4-QP -->
+  <rect x="42" y="76" width="146" height="86" rx="8" fill="#ffffff" stroke="#868e96" stroke-width="1.5"/>
+  <text x="115" y="109" class="t-box">mercury 4-QP</text>
+  <text x="115" y="129" class="t-sub">256 B · B = 8</text>
+  <text x="115" y="147" class="t-sub">16–24 M 行/s</text>
+
+  <!-- 100GbE DAC bidirectional -->
+  <line x1="188" y1="106" x2="282" y2="106" stroke="#495057" stroke-width="1.8" marker-end="url(#arr-g)"/>
+  <line x1="288" y1="132" x2="194" y2="132" stroke="#495057" stroke-width="1.8" marker-end="url(#arr-g)"/>
+  <text x="238" y="96" class="t-lbl">100GbE DAC</text>
+
+  <!-- CN106 eth0 4C RSS -->
+  <rect x="288" y="76" width="182" height="86" rx="8" fill="#ffffff" stroke="#868e96" stroke-width="1.5"/>
+  <text x="379" y="107" class="t-box">CN106 eth0 4C RSS</text>
+  <text x="379" y="127" class="t-sub">4RxQ/4TxQ · 25%×4</text>
+  <text x="379" y="145" class="t-sub">4× PEM0 WC / BAR4</text>
+
+  <!-- CN106 <-> PEM0/IOBN -->
+  <line x1="470" y1="100" x2="562" y2="100" stroke="#495057" stroke-width="1.8" marker-end="url(#arr-g)"/>
+  <text x="516" y="90" class="t-lbl">WC 推送</text>
+  <line x1="568" y1="138" x2="476" y2="138" stroke="#495057" stroke-width="2.0" marker-end="url(#arr-g)"/>
+  <text x="522" y="156" class="t-lbl">75 ns/行 串行</text>
+
+  <!-- PEM0/IOBN Bottleneck -->
+  <rect x="568" y="68" width="188" height="102" rx="8" fill="#e9ecef" stroke="#495057" stroke-width="2.2"/>
+  <text x="662" y="96" class="t-box">PEM0 / IOBN 慢态</text>
+  <text x="662" y="128" class="t-big">13.3 M 行/s</text>
+  <text x="662" y="153" class="t-sub">在途 170+ 行 · 桥内堵死</text>
+
+  <!-- PEM0/IOBN <-> saturn -->
+  <line x1="756" y1="100" x2="868" y2="100" stroke="#495057" stroke-width="1.8" marker-end="url(#arr-g)"/>
+  <text x="812" y="90" class="t-lbl">DDIO 写</text>
+  <line x1="874" y1="138" x2="762" y2="138" stroke="#495057" stroke-width="2.4" marker-end="url(#arr-g)"/>
+  <text x="818" y="156" class="t-lbl">无上限</text>
+  <text x="818" y="170" class="t-lbl">MOVDIR64B</text>
+
+  <!-- saturn host -->
+  <rect x="874" y="76" width="144" height="86" rx="8" fill="#ffffff" stroke="#868e96" stroke-width="1.5"/>
+  <text x="946" y="109" class="t-box">saturn cpu40</text>
+  <text x="946" y="129" class="t-sub">DirectPush</text>
+  <text x="946" y="147" class="t-sub">W=128 CHA 38.6 条</text>
+
+  <!-- Result badge A -->
+  <rect x="1038" y="76" width="102" height="86" rx="8" fill="#e9ecef" stroke="#868e96" stroke-width="1.5"/>
+  <text x="1089" y="104" class="t-sub">16 M 行/s</text>
+  <text x="1089" y="133" class="t-big" style="font-size:20px;">259 ms</text>
+  <text x="1089" y="151" class="t-sub">tot p99</text>
+
+  <!-- BOTTOM ROW: Card-Cursor Credit Shaping (C_line = 40) -->
+  <rect x="20" y="254" width="1140" height="236" rx="10" fill="#f8f9fa" stroke="#1971c2" stroke-width="2"/>
+  <text x="42" y="284" class="t-sec-a">B. 卡侧游标驱动在途行信用整形 (C_line = 40 ≤ 64)</text>
+
+  <!-- mercury 4-QP -->
+  <rect x="42" y="312" width="146" height="86" rx="8" fill="#ffffff" stroke="#868e96" stroke-width="1.5"/>
+  <text x="115" y="345" class="t-box">mercury 4-QP</text>
+  <text x="115" y="365" class="t-sub">256 B · B = 8</text>
+  <text x="115" y="383" class="t-sub">16–20 M 行/s</text>
+
+  <!-- 100GbE DAC bidirectional -->
+  <line x1="188" y1="342" x2="282" y2="342" stroke="#495057" stroke-width="1.8" marker-end="url(#arr-g)"/>
+  <line x1="288" y1="368" x2="194" y2="368" stroke="#1971c2" stroke-width="1.8" marker-end="url(#arr-a)"/>
+  <text x="238" y="332" class="t-lbl">100GbE DAC</text>
+
+  <!-- CN106 eth0 4C RSS -->
+  <rect x="288" y="312" width="182" height="86" rx="8" fill="#ffffff" stroke="#1971c2" stroke-width="1.8"/>
+  <text x="379" y="343" class="t-box">CN106 eth0 4C RSS</text>
+  <text x="379" y="363" class="t-sub">消费 BAR4 子环</text>
+  <text x="379" y="381" class="t-lbl-a">回写 bar_consumed[0..3]</text>
+
+  <!-- CN106 <-> PEM0/IOBN -->
+  <line x1="470" y1="336" x2="562" y2="336" stroke="#495057" stroke-width="1.8" marker-end="url(#arr-g)"/>
+  <text x="516" y="326" class="t-lbl">WC 推送</text>
+  <line x1="568" y1="374" x2="476" y2="374" stroke="#1971c2" stroke-width="2.0" marker-end="url(#arr-a)"/>
+  <text x="522" y="392" class="t-lbl-a">并行流水</text>
+
+  <!-- PEM0/IOBN Fast State -->
+  <rect x="568" y="304" width="188" height="102" rx="8" fill="#e7f5ff" stroke="#1971c2" stroke-width="2.2"/>
+  <text x="662" y="332" class="t-box" style="fill:#1971c2;">PEM0 / IOBN 快态</text>
+  <text x="662" y="364" class="t-big-a">20.2 M 行/s</text>
+  <text x="662" y="389" class="t-lbl-a">在途 ≤ 40 行 · 1.00× 行率</text>
+
+  <!-- PEM0/IOBN <-> saturn -->
+  <line x1="756" y1="336" x2="868" y2="336" stroke="#495057" stroke-width="1.8" marker-end="url(#arr-g)"/>
+  <text x="812" y="326" class="t-lbl">DDIO 写</text>
+  <line x1="874" y1="374" x2="762" y2="374" stroke="#1971c2" stroke-width="2.4" marker-end="url(#arr-a)"/>
+  <text x="818" y="392" class="t-lbl-a">受控</text>
+  <text x="818" y="406" class="t-lbl-a">MOVDIR64B</text>
+
+  <!-- saturn host with DDIO credit loop -->
+  <rect x="874" y="312" width="144" height="86" rx="8" fill="#e7f5ff" stroke="#1971c2" stroke-width="1.8"/>
+  <text x="946" y="343" class="t-box" style="fill:#1971c2;">saturn cpu40</text>
+  <text x="946" y="363" class="t-sub">DDIO 零拷贝暂留</text>
+  <text x="946" y="381" class="t-lbl-a">CHA 2.1 条</text>
+
+  <!-- Credit feedback arc along bottom -->
+  <path d="M 379 398 L 379 456 L 946 456 L 946 404" fill="none" stroke="#1971c2" stroke-width="2.2" stroke-dasharray="6,4" marker-end="url(#arr-a)"/>
+  <rect x="524" y="440" width="276" height="28" rx="6" fill="#ffffff" stroke="#1971c2" stroke-width="1.2"/>
+  <text x="662" y="458" class="t-lbl-a">PEM0 WC → DDIO 信用游标 (零 PCIe 读)</text>
+
+  <!-- Result badge B -->
+  <rect x="1038" y="312" width="102" height="86" rx="8" fill="#1971c2" stroke="#1971c2" stroke-width="1.5"/>
+  <text x="1089" y="340" class="t-sub" style="fill:#e7f5ff;">16 M 行/s</text>
+  <text x="1089" y="369" class="t-big" style="font-size:20px; fill:#ffffff;">45 µs</text>
+  <text x="1089" y="387" class="t-sub" style="fill:#e7f5ff;">tot p99</text>
+</svg>
