@@ -2,6 +2,11 @@
 """Figure 2 (MRV-127): 256 B & 512 B slow-cliff elimination + mixed <= 256 B threshold trade-off.
 
 Reads raw verified runs directly from logs/mrv127-2026-11-22/runs.jsonl.
+Revised per MRV-138 review:
+  - Panel A adds exact W=1 Push vs DMA ratio (2.21x) and single-stream slow-cliff threshold (80->96 lines).
+  - Panel B explicitly marks that NO mix256 config meets <= 2.5 us, calls out shr32 rep 0 bistable crash
+    (2,195 us at 84 lines), attributes C_line=48 crash to concurrent DPI DMA lowering the slow-cliff
+    threshold (13.76 M lines/s), and attributes t=256 overload to 3.5 M/s DMA saturating core 3 + extra sfence.
 """
 import json
 import statistics
@@ -31,7 +36,7 @@ def load_by_cfg():
 
 def main():
     by_cfg = load_by_cfg()
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13.4, 5.4))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13.6, 5.5))
 
     # ---- Panel A: 256 B W=32 single-variable C_line sweep vs dma_threshold=256 vs uncap ----
     items_a = [
@@ -74,21 +79,23 @@ def main():
     w1_push = statistics.median(r["lat_small_tot_us"]["p50"] for r in by_cfg["p2_256_w1_t512_push_rand"])
     w1_dma = statistics.median(r["lat_small_tot_us"]["p50"] for r in by_cfg["p2_256_w1_t256_dma_rand"])
     cl32_rand = statistics.median(r["mreq_s"] for r in by_cfg["p2_256_w32_t512_cl32_rand"])
+    cl32_rand_p99 = statistics.median(r["lat_small_tot_us"]["p99"] for r in by_cfg["p2_256_w32_t512_cl32_rand"])
     ax1.text(
         0.02, 0.97,
         f"512 B W=32: {r512_push:.2f} → {r512_dma:.2f} M/s ({r512_dma/r512_push:.2f}×)\n"
-        f"256 B W=1 p50: Push {w1_push:.2f} vs DMA {w1_dma:.2f} µs\n"
-        f"256 B rand C=32: {cl32_rand:.2f} M/s (p99 1.70 µs)",
-        transform=ax1.transAxes, va="top", ha="left", fontsize=8.0,
+        f"256 B W=1 p50: Push {w1_push:.2f} vs DMA {w1_dma:.2f} µs ({w1_dma/w1_push:.2f}×)\n"
+        f"256 B rand C=32: {cl32_rand:.2f} M/s (p99 {cl32_rand_p99:.2f} µs, 超 SDP +{(cl32_rand/MRV117_SDP_256_W32-1)*100:.1f}%)\n"
+        f"单流无 DMA 慢崖: 80 → 96 行",
+        transform=ax1.transAxes, va="top", ha="left", fontsize=7.8,
         bbox=dict(boxstyle="round,pad=0.35", facecolor="white", edgecolor="#ccc", alpha=0.92),
     )
 
     ax1.set_xticks(xs)
     ax1.set_xticklabels([it[1] for it in items_a], fontsize=8.0)
-    ax1.set_ylim(0, 10.6)
+    ax1.set_ylim(0, 11.2)
     ax1.set_ylabel("256 B 单核闭环吞吐 (Mreq/s，W=32)")
-    ax1.set_title("A · 256 B W=32 慢崖消除：BAR4 行信用上限 C_line vs 降阈值 DMA", fontsize=10.8, fontweight="bold")
-    ax1_r.legend(loc="upper right", fontsize=8.2, frameon=True)
+    ax1.set_title("A · 单流 256 B W=32 慢崖消除：C_line vs 降阈值 DMA", fontsize=10.7, fontweight="bold")
+    ax1_r.legend(loc="upper right", fontsize=8.0, frameon=True)
 
     # ---- Panel B: Mixed <= 256 B (75% 64 B + 25% 256 B) + 4 KiB rand @ 1.5 M/s ----
     groups = [
@@ -96,13 +103,14 @@ def main():
         ("8M + 1.5M", "8m_1p5m"),
     ]
     cfgs_b = [
-        ("shr32_t1024",     "共享 W=32, t=1024",               "#7f8c8d"),
-        ("spl32_t512_cl32", "拆分 (32,32) t=512 C=32（推荐）",  "#1b6ca8"),
-        ("spl32_t512_cl48", "拆分 (32,32) t=512 C=48（混流越崖）", "#f39c12"),
-        ("spl32_t256",      "拆分 (32,32) t=256（DPI HoL）",    "#27ae60"),
+        ("shr32_t1024",     "共享 W=32, t=1024（无 C_line）",           "#7f8c8d"),
+        ("spl32_t512_cl32", "拆分 (32,32) t=512 C=32（最优，仍 >2.5 µs）", "#1b6ca8"),
+        ("spl32_t512_cl48", "拆分 (32,32) t=512 C=48（并发 DMA 压低慢崖）", "#f39c12"),
+        ("spl32_t256",      "拆分 (32,32) t=256（3.5M DMA 过载 + HoL）", "#27ae60"),
     ]
     x_base = np.arange(len(groups))
     bw = 0.19
+    bar_pos = {}
     for ci, (ckey, clabel, col) in enumerate(cfgs_b):
         offset = (ci - 1.5) * bw
         for gi, (_, gtag) in enumerate(groups):
@@ -112,27 +120,61 @@ def main():
             mt = statistics.median(ys_t)
             mw = statistics.median(ys_w)
             xpos = gi + offset
+            bar_pos[(gtag, ckey)] = (xpos, mt, ys_t, rs)
             ax2.bar(xpos, mt, width=bw * 0.9, color=col, alpha=0.88, edgecolor="#333", linewidth=0.7,
                     label=clabel if gi == 0 else None, zorder=3)
-            ax2.scatter([xpos + j for j in (-0.03, 0.0, 0.03)], ys_t, color="#111", s=16, alpha=0.7, zorder=5)
+            ax2.scatter([xpos + j for j in (-0.03, 0.0, 0.03)], ys_t, color="#111", s=16, alpha=0.72, zorder=5)
             ax2.plot([xpos - bw * 0.35, xpos + bw * 0.35], [mw, mw], color="#fff", linewidth=2.2, zorder=6)
             ax2.plot([xpos - bw * 0.35, xpos + bw * 0.35], [mw, mw], color="#111", linewidth=1.0, zorder=7)
             lbl_txt = f"{mt/1000:.2f}ms" if 1000 <= mt < 10000 else (f"{mt/1000:.1f}ms" if mt >= 10000 else f"{mt:.1f}")
-            ax2.text(xpos, mt * 1.20, lbl_txt, ha="center", va="bottom", fontsize=7.8, fontweight="bold")
+            y_txt = mt * 1.24 if not (gtag == "8m_1p5m" and ckey == "spl32_t512_cl48") else mt * 1.32
+            ax2.text(xpos, y_txt, lbl_txt, ha="center", va="bottom", fontsize=7.8, fontweight="bold")
 
-    ax2.axhline(2.5, color="#2e7d32", linestyle="--", linewidth=1.0, alpha=0.8)
+    # Explicitly annotate the three critical review findings on 8M + 1.5M from raw runs.jsonl
+    x_shr, _, ys_shr, rs_shr = bar_pos[("8m_1p5m", "shr32_t1024")]
+    rep0_shr = rs_shr[0]["lat_small_tot_us"]["p99"]
+    rep0_maxl = rs_shr[0]["max_push_lines_inflight"]
+    ax2.annotate(
+        f"rep 0: {rep0_shr/1000:.2f} ms\n({rep0_maxl} 行双稳态坠崖)",
+        xy=(x_shr - 0.03, rep0_shr), xytext=(0.17, 1300),
+        arrowprops=dict(arrowstyle="->", color="#555", lw=1.0), fontsize=7.6, color="#333",
+        bbox=dict(facecolor="white", edgecolor="#ccc", alpha=0.92, pad=1.8),
+    )
+
+    x_cl48, mt_cl48, _, rs_cl48 = bar_pos[("8m_1p5m", "spl32_t512_cl48")]
+    cl48_iio = statistics.median(r["host_pmu"]["iio1_cpu_wr"] / r["secs"] / 1e6 for r in rs_cl48)
+    ax2.annotate(
+        f"并发 DMA 拉低慢崖\n锁死 {cl48_iio:.2f} M行/s",
+        xy=(x_cl48, mt_cl48), xytext=(0.35, 11500),
+        arrowprops=dict(arrowstyle="->", color="#c07300", lw=1.0), fontsize=7.6, color="#9a5c00",
+        bbox=dict(facecolor="white", edgecolor="#f0d5a8", alpha=0.92, pad=1.8),
+    )
+
+    x_t256, mt_t256, _, rs_t256 = bar_pos[("8m_1p5m", "spl32_t256")]
+    t256_sm = statistics.median(r["achieved_small_mrps"] for r in rs_t256)
+    ax2.annotate(
+        f"sm={t256_sm:.2f} M/s\n3.5M DMA 满核\n+ 多余 sfence",
+        xy=(x_t256, mt_t256 * 1.45), xytext=(1.38, 7500), ha="center",
+        arrowprops=dict(arrowstyle="->", color="#1e7e34", lw=1.0), fontsize=7.4, color="#19692c",
+        bbox=dict(facecolor="white", edgecolor="#b8e0c2", alpha=0.94, pad=1.8),
+    )
+
+    ax2.axhline(2.5, color="#2e7d32", linestyle="--", linewidth=1.1, alpha=0.85)
+    ax2.text(0.50, 3.0, "2.5 µs 目标\n(全未达标)", ha="center", va="bottom", fontsize=7.6, color="#2e7d32",
+             bbox=dict(facecolor="white", edgecolor="none", alpha=0.88, pad=1.0))
     ax2.set_yscale("log")
-    ax2.set_ylim(1.0, 140000)
+    ax2.set_ylim(1.0, 280000)
+    ax2.set_xlim(-0.48, 1.72)
     ax2.set_xticks(x_base)
     ax2.set_xticklabels([g[0] for g in groups], fontsize=9.5, fontweight="bold")
     ax2.set_xlabel("混合小包流 (75% 64 B + 25% 256 B) + 4 KiB 随机 KV @ 1.5 Mreq/s")
-    ax2.set_ylabel("小包流 (≤256 B) 端到端 tot p99 (µs，对数；白横线=wire p99)")
-    ax2.set_title("B · 含 256 B 开环混流：t=512+C=32 vs t=512+C=48 vs t=256 DMA", fontsize=10.8, fontweight="bold")
-    ax2.legend(loc="upper left", fontsize=8.0, frameon=True, framealpha=0.92)
+    ax2.set_ylabel("小包流 (mix256) 端到端 tot p99 (µs，对数；横线=wire p99)")
+    ax2.set_title("B · 含 256 B 开环混流：全数 >2.5 µs，t=512+C=32 相对最优", fontsize=10.7, fontweight="bold")
+    ax2.legend(loc="upper left", fontsize=7.6, frameon=True, framealpha=0.92)
 
     fig.suptitle(
-        "MRV-127 256 B 慢崖消除与混流阈值权衡（1H + 1C + 2 DPI VFs，零 SDP，n=3 全散点 + 中位数）",
-        fontsize=11.5, fontweight="bold", y=0.995,
+        "MRV-127 256 B 慢崖消除与含 256 B 混流阈值权衡（1H + 1C + 2 DPI VFs，零 SDP，n=3 全散点 + 中位数）",
+        fontsize=11.3, fontweight="bold", y=0.995,
     )
     out = mrvplot.save(fig, "mrv-127-256b-cliff")
     print(f"Saved {out}")
