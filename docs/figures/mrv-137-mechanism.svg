@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 430" width="960" height="430" font-family="'DejaVu Sans', 'Droid Sans Fallback', sans-serif">
-  <rect width="960" height="430" fill="#ffffff"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 436" width="960" height="436" font-family="'DejaVu Sans', 'Droid Sans Fallback', sans-serif">
+  <rect width="960" height="436" fill="#ffffff"/>
 
   <defs>
     <marker id="arr-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -11,152 +11,153 @@
   </defs>
 
   <!-- Title bar (minimal) -->
-  <text x="480" y="28" text-anchor="middle" font-size="15" font-weight="bold" fill="#212529">128 B 独占子环 + C_line = 64 (16/卡) ：H = 1 轮询交错 vs H = 4 1:1 相位分离</text>
+  <text x="480" y="28" text-anchor="middle" font-size="14.8" font-weight="bold" fill="#212529">128 B 独占子环 + C_line = 64 (16/卡)：1-RPC 轮询交错 (H=1) vs 整窗锁步分离 (H=4)</text>
 
   <!-- ==================== TOP PANEL: H = 1 (GREYS ONLY) ==================== -->
-  <rect x="24" y="46" width="912" height="168" rx="10" fill="#f8f9fa" stroke="#ced4da" stroke-width="1.4"/>
-  <rect x="38" y="58" width="112" height="24" rx="5" fill="#495057"/>
-  <text x="94" y="75" text-anchor="middle" font-size="12" font-weight="bold" fill="#ffffff">H = 1 (1H+4C)</text>
+  <rect x="24" y="46" width="912" height="170" rx="10" fill="#f8f9fa" stroke="#ced4da" stroke-width="1.4"/>
+  <rect x="38" y="58" width="116" height="24" rx="5" fill="#495057"/>
+  <text x="96" y="75" text-anchor="middle" font-size="12" font-weight="bold" fill="#ffffff">H = 1 (1H+4C)</text>
 
   <!-- Host single core -->
-  <rect x="44" y="102" width="100" height="72" rx="7" fill="#e9ecef" stroke="#495057" stroke-width="1.5"/>
-  <text x="94" y="132" text-anchor="middle" font-size="13" font-weight="bold" fill="#212529">cpu40</text>
-  <text x="94" y="152" text-anchor="middle" font-size="10.5" fill="#495057">轮询 4 子环</text>
-  <text x="94" y="166" text-anchor="middle" font-size="9.5" fill="#868e96">L1 栈直写</text>
+  <rect x="44" y="100" width="104" height="78" rx="7" fill="#e9ecef" stroke="#495057" stroke-width="1.5"/>
+  <text x="96" y="128" text-anchor="middle" font-size="13" font-weight="bold" fill="#212529">cpu40</text>
+  <text x="96" y="148" text-anchor="middle" font-size="10.2" fill="#495057">每 1 RPC 切环</text>
+  <text x="96" y="165" text-anchor="middle" font-size="9.5" fill="#868e96">轮询 4 子环</text>
 
   <!-- Fan-out arrows to 4 sub-rings -->
-  <line x1="144" y1="124" x2="210" y2="82" stroke="#495057" stroke-width="1.4" marker-end="url(#arr-g)"/>
-  <line x1="144" y1="133" x2="210" y2="116" stroke="#495057" stroke-width="1.4" marker-end="url(#arr-g)"/>
-  <line x1="144" y1="143" x2="210" y2="150" stroke="#495057" stroke-width="1.4" marker-end="url(#arr-g)"/>
-  <line x1="144" y1="152" x2="210" y2="184" stroke="#495057" stroke-width="1.4" marker-end="url(#arr-g)"/>
+  <line x1="148" y1="124" x2="210" y2="83" stroke="#495057" stroke-width="1.4" marker-end="url(#arr-g)"/>
+  <line x1="148" y1="133" x2="210" y2="117" stroke="#495057" stroke-width="1.4" marker-end="url(#arr-g)"/>
+  <line x1="148" y1="143" x2="210" y2="151" stroke="#495057" stroke-width="1.4" marker-end="url(#arr-g)"/>
+  <line x1="148" y1="152" x2="210" y2="185" stroke="#495057" stroke-width="1.4" marker-end="url(#arr-g)"/>
 
   <!-- 4 BAR4 128B sub-rings (interleaved write timeline) -->
-  <text x="330" y="68" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#495057">BAR4 128 B 子环写时序 (交错分散)</text>
+  <text x="330" y="68" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#495057">BAR4 128 B 子环写时序 (1-RPC 交错)</text>
   <!-- Lane 0 -->
-  <rect x="216" y="74" width="228" height="22" rx="4" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
-  <text x="224" y="89" font-size="9.5" fill="#495057">c0</text>
-  <rect x="244" y="78" width="26" height="14" rx="2" fill="#868e96"/>
-  <rect x="294" y="78" width="26" height="14" rx="2" fill="#868e96"/>
-  <rect x="344" y="78" width="26" height="14" rx="2" fill="#868e96"/>
-  <rect x="394" y="78" width="26" height="14" rx="2" fill="#868e96"/>
+  <rect x="216" y="75" width="228" height="22" rx="4" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+  <text x="224" y="90" font-size="9.5" fill="#495057">c0</text>
+  <rect x="244" y="79" width="26" height="14" rx="2" fill="#868e96"/>
+  <rect x="294" y="79" width="26" height="14" rx="2" fill="#868e96"/>
+  <rect x="344" y="79" width="26" height="14" rx="2" fill="#868e96"/>
+  <rect x="394" y="79" width="26" height="14" rx="2" fill="#868e96"/>
   <!-- Card poll overlap bar -->
-  <rect x="272" y="76" width="144" height="18" rx="3" fill="none" stroke="#495057" stroke-width="1.3" stroke-dasharray="4,2"/>
+  <rect x="272" y="77" width="144" height="18" rx="3" fill="none" stroke="#495057" stroke-width="1.3" stroke-dasharray="4,2"/>
 
   <!-- Lane 1 -->
-  <rect x="216" y="106" width="228" height="22" rx="4" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
-  <text x="224" y="121" font-size="9.5" fill="#495057">c1</text>
-  <rect x="256" y="110" width="26" height="14" rx="2" fill="#adb5bd"/>
-  <rect x="306" y="110" width="26" height="14" rx="2" fill="#adb5bd"/>
-  <rect x="356" y="110" width="26" height="14" rx="2" fill="#adb5bd"/>
-  <rect x="406" y="110" width="26" height="14" rx="2" fill="#adb5bd"/>
+  <rect x="216" y="107" width="228" height="22" rx="4" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+  <text x="224" y="122" font-size="9.5" fill="#495057">c1</text>
+  <rect x="256" y="111" width="26" height="14" rx="2" fill="#adb5bd"/>
+  <rect x="306" y="111" width="26" height="14" rx="2" fill="#adb5bd"/>
+  <rect x="356" y="111" width="26" height="14" rx="2" fill="#adb5bd"/>
+  <rect x="406" y="111" width="26" height="14" rx="2" fill="#adb5bd"/>
 
   <!-- Lane 2 -->
-  <rect x="216" y="138" width="228" height="22" rx="4" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
-  <text x="224" y="153" font-size="9.5" fill="#495057">c2</text>
-  <rect x="268" y="142" width="26" height="14" rx="2" fill="#adb5bd"/>
-  <rect x="318" y="142" width="26" height="14" rx="2" fill="#adb5bd"/>
-  <rect x="368" y="142" width="26" height="14" rx="2" fill="#adb5bd"/>
+  <rect x="216" y="139" width="228" height="22" rx="4" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+  <text x="224" y="154" font-size="9.5" fill="#495057">c2</text>
+  <rect x="268" y="143" width="26" height="14" rx="2" fill="#adb5bd"/>
+  <rect x="318" y="143" width="26" height="14" rx="2" fill="#adb5bd"/>
+  <rect x="368" y="143" width="26" height="14" rx="2" fill="#adb5bd"/>
 
   <!-- Lane 3 -->
-  <rect x="216" y="170" width="228" height="22" rx="4" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
-  <text x="224" y="185" font-size="9.5" fill="#495057">c3</text>
-  <rect x="280" y="174" width="26" height="14" rx="2" fill="#adb5bd"/>
-  <rect x="330" y="174" width="26" height="14" rx="2" fill="#adb5bd"/>
-  <rect x="380" y="174" width="26" height="14" rx="2" fill="#adb5bd"/>
+  <rect x="216" y="171" width="228" height="22" rx="4" fill="#ffffff" stroke="#adb5bd" stroke-width="1"/>
+  <text x="224" y="186" font-size="9.5" fill="#495057">c3</text>
+  <rect x="280" y="175" width="26" height="14" rx="2" fill="#adb5bd"/>
+  <rect x="330" y="175" width="26" height="14" rx="2" fill="#adb5bd"/>
+  <rect x="380" y="175" width="26" height="14" rx="2" fill="#adb5bd"/>
 
   <!-- Arrow to Card -->
-  <line x1="448" y1="133" x2="496" y2="133" stroke="#495057" stroke-width="1.6" marker-end="url(#arr-g)"/>
-  <text x="472" y="123" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#495057">读写重叠</text>
+  <line x1="448" y1="134" x2="494" y2="134" stroke="#495057" stroke-width="1.6" marker-end="url(#arr-g)"/>
+  <text x="471" y="124" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#495057">读写重叠</text>
 
   <!-- Card 4 cores -->
-  <rect x="504" y="76" width="116" height="114" rx="7" fill="#e9ecef" stroke="#495057" stroke-width="1.4"/>
-  <text x="562" y="104" text-anchor="middle" font-size="12" font-weight="bold" fill="#212529">CN106 4C</text>
-  <text x="562" y="125" text-anchor="middle" font-size="10.5" fill="#495057">轮询命中热写格</text>
-  <text x="562" y="145" text-anchor="middle" font-size="10.5" fill="#495057">偶发慢态毛刺</text>
-  <rect x="518" y="157" width="88" height="22" rx="4" fill="#dee2e6"/>
-  <text x="562" y="172" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#212529">在途 54.9 行</text>
+  <rect x="502" y="75" width="122" height="118" rx="7" fill="#e9ecef" stroke="#495057" stroke-width="1.4"/>
+  <text x="563" y="102" text-anchor="middle" font-size="12" font-weight="bold" fill="#212529">CN106 4C</text>
+  <text x="563" y="122" text-anchor="middle" font-size="10.2" fill="#495057">轮询撞热写格</text>
+  <text x="563" y="140" text-anchor="middle" font-size="10.2" fill="#495057">偶发慢态毛刺</text>
+  <rect x="514" y="152" width="98" height="30" rx="4" fill="#dee2e6"/>
+  <text x="563" y="166" text-anchor="middle" font-size="9.8" font-weight="bold" fill="#212529">T_cycle = 1.93 µs</text>
+  <text x="563" y="178" text-anchor="middle" font-size="9" fill="#495057">cw/RPC = 0.25</text>
 
   <!-- Result metrics box (H=1) -->
-  <line x1="624" y1="133" x2="660" y2="133" stroke="#495057" stroke-width="1.4" marker-end="url(#arr-g)"/>
-  <rect x="668" y="64" width="250" height="136" rx="8" fill="#ffffff" stroke="#adb5bd" stroke-width="1.3"/>
+  <line x1="628" y1="134" x2="660" y2="134" stroke="#495057" stroke-width="1.4" marker-end="url(#arr-g)"/>
+  <rect x="668" y="64" width="250" height="138" rx="8" fill="#ffffff" stroke="#adb5bd" stroke-width="1.3"/>
   <text x="793" y="96" text-anchor="middle" font-size="22" font-weight="bold" fill="#495057">33.2 M 行/s</text>
-  <text x="793" y="116" text-anchor="middle" font-size="10.5" fill="#868e96">闭环顶 (每卡 16 行)</text>
+  <text x="793" y="116" text-anchor="middle" font-size="10.2" fill="#868e96">C_line = 64 锁步顶 (1-RPC 轮询)</text>
   <line x1="688" y1="128" x2="898" y2="128" stroke="#e9ecef" stroke-width="1"/>
-  <text x="730" y="154" text-anchor="middle" font-size="15" font-weight="bold" fill="#495057">395 µs</text>
-  <text x="730" y="172" text-anchor="middle" font-size="10" fill="#868e96">28M tot p99</text>
-  <text x="854" y="154" text-anchor="middle" font-size="15" font-weight="bold" fill="#495057">65.2 µs</text>
-  <text x="854" y="172" text-anchor="middle" font-size="10" fill="#868e96">hrtt p99</text>
+  <text x="730" y="155" text-anchor="middle" font-size="15" font-weight="bold" fill="#495057">395 µs</text>
+  <text x="730" y="173" text-anchor="middle" font-size="10" fill="#868e96">28M tot p99</text>
+  <text x="854" y="155" text-anchor="middle" font-size="15" font-weight="bold" fill="#495057">65.2 µs</text>
+  <text x="854" y="173" text-anchor="middle" font-size="10" fill="#868e96">28M hrtt p99</text>
 
   <!-- ==================== BOTTOM PANEL: H = 4 (ACCENT #2b8a3e) ==================== -->
-  <rect x="24" y="232" width="912" height="178" rx="10" fill="#f8f9fa" stroke="#2b8a3e" stroke-width="1.8"/>
-  <rect x="38" y="244" width="126" height="24" rx="5" fill="#2b8a3e"/>
-  <text x="101" y="261" text-anchor="middle" font-size="12" font-weight="bold" fill="#ffffff">H = 4 (4H+4C 1:1)</text>
+  <rect x="24" y="234" width="912" height="180" rx="10" fill="#f8f9fa" stroke="#2b8a3e" stroke-width="1.8"/>
+  <rect x="38" y="246" width="128" height="24" rx="5" fill="#2b8a3e"/>
+  <text x="102" y="263" text-anchor="middle" font-size="12" font-weight="bold" fill="#ffffff">H = 4 (4H+4C 1:1)</text>
 
   <!-- 4 Host cores -->
-  <rect x="44" y="276" width="100" height="24" rx="5" fill="#ebfbee" stroke="#2b8a3e" stroke-width="1.3"/>
-  <text x="94" y="292" text-anchor="middle" font-size="11" font-weight="bold" fill="#2b8a3e">cpu40</text>
-  <rect x="44" y="308" width="100" height="24" rx="5" fill="#ebfbee" stroke="#2b8a3e" stroke-width="1.3"/>
-  <text x="94" y="324" text-anchor="middle" font-size="11" font-weight="bold" fill="#2b8a3e">cpu41</text>
-  <rect x="44" y="340" width="100" height="24" rx="5" fill="#ebfbee" stroke="#2b8a3e" stroke-width="1.3"/>
-  <text x="94" y="356" text-anchor="middle" font-size="11" font-weight="bold" fill="#2b8a3e">cpu42</text>
-  <rect x="44" y="372" width="100" height="24" rx="5" fill="#ebfbee" stroke="#2b8a3e" stroke-width="1.3"/>
-  <text x="94" y="388" text-anchor="middle" font-size="11" font-weight="bold" fill="#2b8a3e">cpu43</text>
+  <rect x="44" y="278" width="104" height="24" rx="5" fill="#ebfbee" stroke="#2b8a3e" stroke-width="1.3"/>
+  <text x="96" y="294" text-anchor="middle" font-size="11" font-weight="bold" fill="#2b8a3e">cpu40</text>
+  <rect x="44" y="310" width="104" height="24" rx="5" fill="#ebfbee" stroke="#2b8a3e" stroke-width="1.3"/>
+  <text x="96" y="326" text-anchor="middle" font-size="11" font-weight="bold" fill="#2b8a3e">cpu41</text>
+  <rect x="44" y="342" width="104" height="24" rx="5" fill="#ebfbee" stroke="#2b8a3e" stroke-width="1.3"/>
+  <text x="96" y="358" text-anchor="middle" font-size="11" font-weight="bold" fill="#2b8a3e">cpu42</text>
+  <rect x="44" y="374" width="104" height="24" rx="5" fill="#ebfbee" stroke="#2b8a3e" stroke-width="1.3"/>
+  <text x="96" y="390" text-anchor="middle" font-size="11" font-weight="bold" fill="#2b8a3e">cpu43</text>
 
   <!-- 1:1 straight arrows -->
-  <line x1="144" y1="288" x2="210" y2="288" stroke="#2b8a3e" stroke-width="1.6" marker-end="url(#arr-a)"/>
-  <line x1="144" y1="320" x2="210" y2="320" stroke="#2b8a3e" stroke-width="1.6" marker-end="url(#arr-a)"/>
-  <line x1="144" y1="352" x2="210" y2="352" stroke="#2b8a3e" stroke-width="1.6" marker-end="url(#arr-a)"/>
-  <line x1="144" y1="384" x2="210" y2="384" stroke="#2b8a3e" stroke-width="1.6" marker-end="url(#arr-a)"/>
+  <line x1="148" y1="290" x2="210" y2="290" stroke="#2b8a3e" stroke-width="1.6" marker-end="url(#arr-a)"/>
+  <line x1="148" y1="322" x2="210" y2="322" stroke="#2b8a3e" stroke-width="1.6" marker-end="url(#arr-a)"/>
+  <line x1="148" y1="354" x2="210" y2="354" stroke="#2b8a3e" stroke-width="1.6" marker-end="url(#arr-a)"/>
+  <line x1="148" y1="386" x2="210" y2="386" stroke="#2b8a3e" stroke-width="1.6" marker-end="url(#arr-a)"/>
 
-  <!-- 4 BAR4 128B sub-rings (clean burst-then-stop) -->
-  <text x="330" y="266" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#2b8a3e">连续突发 16 行 → 停写等游标 (相位分离)</text>
+  <!-- 4 BAR4 128B sub-rings (clean burst-then-stop lockstep) -->
+  <text x="330" y="268" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#2b8a3e">连写 16 行 → 停写等游标 (整窗锁步)</text>
   <!-- Lane 0 -->
-  <rect x="216" y="276" width="228" height="24" rx="4" fill="#ffffff" stroke="#2b8a3e" stroke-width="1.1"/>
-  <text x="224" y="292" font-size="9.5" font-weight="bold" fill="#2b8a3e">c0</text>
-  <rect x="244" y="281" width="84" height="14" rx="2" fill="#2b8a3e"/>
-  <text x="286" y="291" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#ffffff">4 RPC 连写</text>
-  <rect x="338" y="281" width="96" height="14" rx="2" fill="#ebfbee" stroke="#2b8a3e" stroke-width="0.9" stroke-dasharray="3,2"/>
-  <text x="386" y="291" text-anchor="middle" font-size="8.5" fill="#2b8a3e">停写 / 卡排空</text>
+  <rect x="216" y="278" width="228" height="24" rx="4" fill="#ffffff" stroke="#2b8a3e" stroke-width="1.1"/>
+  <text x="224" y="294" font-size="9.5" font-weight="bold" fill="#2b8a3e">c0</text>
+  <rect x="244" y="283" width="76" height="14" rx="2" fill="#2b8a3e"/>
+  <text x="282" y="293" text-anchor="middle" font-size="8.3" font-weight="bold" fill="#ffffff">4 RPC 连写</text>
+  <rect x="326" y="283" width="110" height="14" rx="2" fill="#ebfbee" stroke="#2b8a3e" stroke-width="0.9" stroke-dasharray="3,2"/>
+  <text x="381" y="293" text-anchor="middle" font-size="8.3" fill="#2b8a3e">停写自旋 / 卡排空</text>
 
   <!-- Lane 1 -->
-  <rect x="216" y="308" width="228" height="24" rx="4" fill="#ffffff" stroke="#2b8a3e" stroke-width="1.1"/>
-  <text x="224" y="324" font-size="9.5" font-weight="bold" fill="#2b8a3e">c1</text>
-  <rect x="244" y="313" width="84" height="14" rx="2" fill="#2b8a3e" fill-opacity="0.85"/>
-  <rect x="338" y="313" width="96" height="14" rx="2" fill="#ebfbee" stroke="#2b8a3e" stroke-width="0.9" stroke-dasharray="3,2"/>
+  <rect x="216" y="310" width="228" height="24" rx="4" fill="#ffffff" stroke="#2b8a3e" stroke-width="1.1"/>
+  <text x="224" y="326" font-size="9.5" font-weight="bold" fill="#2b8a3e">c1</text>
+  <rect x="244" y="315" width="76" height="14" rx="2" fill="#2b8a3e" fill-opacity="0.85"/>
+  <rect x="326" y="315" width="110" height="14" rx="2" fill="#ebfbee" stroke="#2b8a3e" stroke-width="0.9" stroke-dasharray="3,2"/>
 
   <!-- Lane 2 -->
-  <rect x="216" y="340" width="228" height="24" rx="4" fill="#ffffff" stroke="#2b8a3e" stroke-width="1.1"/>
-  <text x="224" y="356" font-size="9.5" font-weight="bold" fill="#2b8a3e">c2</text>
-  <rect x="244" y="345" width="84" height="14" rx="2" fill="#2b8a3e" fill-opacity="0.85"/>
-  <rect x="338" y="345" width="96" height="14" rx="2" fill="#ebfbee" stroke="#2b8a3e" stroke-width="0.9" stroke-dasharray="3,2"/>
+  <rect x="216" y="342" width="228" height="24" rx="4" fill="#ffffff" stroke="#2b8a3e" stroke-width="1.1"/>
+  <text x="224" y="358" font-size="9.5" font-weight="bold" fill="#2b8a3e">c2</text>
+  <rect x="244" y="347" width="76" height="14" rx="2" fill="#2b8a3e" fill-opacity="0.85"/>
+  <rect x="326" y="347" width="110" height="14" rx="2" fill="#ebfbee" stroke="#2b8a3e" stroke-width="0.9" stroke-dasharray="3,2"/>
 
   <!-- Lane 3 -->
-  <rect x="216" y="372" width="228" height="24" rx="4" fill="#ffffff" stroke="#2b8a3e" stroke-width="1.1"/>
-  <text x="224" y="388" font-size="9.5" font-weight="bold" fill="#2b8a3e">c3</text>
-  <rect x="244" y="377" width="84" height="14" rx="2" fill="#2b8a3e" fill-opacity="0.85"/>
-  <rect x="338" y="377" width="96" height="14" rx="2" fill="#ebfbee" stroke="#2b8a3e" stroke-width="0.9" stroke-dasharray="3,2"/>
+  <rect x="216" y="374" width="228" height="24" rx="4" fill="#ffffff" stroke="#2b8a3e" stroke-width="1.1"/>
+  <text x="224" y="390" font-size="9.5" font-weight="bold" fill="#2b8a3e">c3</text>
+  <rect x="244" y="379" width="76" height="14" rx="2" fill="#2b8a3e" fill-opacity="0.85"/>
+  <rect x="326" y="379" width="110" height="14" rx="2" fill="#ebfbee" stroke="#2b8a3e" stroke-width="0.9" stroke-dasharray="3,2"/>
 
   <!-- Arrow to Card -->
-  <line x1="448" y1="336" x2="496" y2="336" stroke="#2b8a3e" stroke-width="1.8" marker-end="url(#arr-a)"/>
-  <text x="472" y="325" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#2b8a3e">零碰撞</text>
+  <line x1="448" y1="338" x2="494" y2="338" stroke="#2b8a3e" stroke-width="1.8" marker-end="url(#arr-a)"/>
+  <text x="471" y="327" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#2b8a3e">相位分离</text>
 
   <!-- Card 4 cores -->
-  <rect x="504" y="276" width="116" height="120" rx="7" fill="#ebfbee" stroke="#2b8a3e" stroke-width="1.6"/>
-  <text x="562" y="302" text-anchor="middle" font-size="12" font-weight="bold" fill="#2b8a3e">CN106 4C</text>
-  <text x="562" y="322" text-anchor="middle" font-size="10.5" fill="#212529">即读即回游标</text>
-  <text x="562" y="340" text-anchor="middle" font-size="10.5" fill="#212529">8 行滞回</text>
-  <rect x="516" y="352" width="92" height="32" rx="4" fill="#2b8a3e"/>
-  <text x="562" y="366" text-anchor="middle" font-size="10" font-weight="bold" fill="#ffffff">在途 40.0 行</text>
-  <text x="562" y="379" text-anchor="middle" font-size="9.5" fill="#ebfbee">τ ≈ 1.19 µs</text>
+  <rect x="502" y="278" width="122" height="122" rx="7" fill="#ebfbee" stroke="#2b8a3e" stroke-width="1.6"/>
+  <text x="563" y="303" text-anchor="middle" font-size="12" font-weight="bold" fill="#2b8a3e">CN106 4C</text>
+  <text x="563" y="323" text-anchor="middle" font-size="10.2" fill="#212529">Step 2b 置外</text>
+  <text x="563" y="341" text-anchor="middle" font-size="10.2" fill="#212529">整窗 1 次回写</text>
+  <rect x="514" y="353" width="98" height="34" rx="4" fill="#2b8a3e"/>
+  <text x="563" y="368" text-anchor="middle" font-size="9.8" font-weight="bold" fill="#ffffff">T_cycle = 1.91 µs</text>
+  <text x="563" y="382" text-anchor="middle" font-size="9.2" fill="#ebfbee">cw/RPC = 0.25</text>
 
   <!-- Result metrics box (H=4) -->
-  <line x1="624" y1="336" x2="660" y2="336" stroke="#2b8a3e" stroke-width="1.6" marker-end="url(#arr-a)"/>
-  <rect x="668" y="256" width="250" height="140" rx="8" fill="#ffffff" stroke="#2b8a3e" stroke-width="1.8"/>
-  <text x="793" y="289" text-anchor="middle" font-size="22" font-weight="bold" fill="#2b8a3e">33.5 M 行/s</text>
-  <text x="793" y="309" text-anchor="middle" font-size="10.5" fill="#495057">C_line = 64 顶 (无整形 48.2)</text>
-  <line x1="688" y1="321" x2="898" y2="321" stroke="#d3f9d8" stroke-width="1.2"/>
-  <text x="730" y="349" text-anchor="middle" font-size="16" font-weight="bold" fill="#2b8a3e">72.3 µs</text>
-  <text x="730" y="367" text-anchor="middle" font-size="10" fill="#495057">28M tot p99 (−5.5×)</text>
-  <text x="854" y="349" text-anchor="middle" font-size="16" font-weight="bold" fill="#2b8a3e">26.1 µs</text>
-  <text x="854" y="367" text-anchor="middle" font-size="10" fill="#495057">hrtt p99 (零慢态)</text>
+  <line x1="628" y1="338" x2="660" y2="338" stroke="#2b8a3e" stroke-width="1.6" marker-end="url(#arr-a)"/>
+  <rect x="668" y="258" width="250" height="142" rx="8" fill="#ffffff" stroke="#2b8a3e" stroke-width="1.8"/>
+  <text x="793" y="291" text-anchor="middle" font-size="22" font-weight="bold" fill="#2b8a3e">33.5 M 行/s</text>
+  <text x="793" y="311" text-anchor="middle" font-size="10.2" fill="#495057">占 W=256 card_echo 58.3%</text>
+  <line x1="688" y1="323" x2="898" y2="323" stroke="#d3f9d8" stroke-width="1.2"/>
+  <text x="730" y="351" text-anchor="middle" font-size="16" font-weight="bold" fill="#2b8a3e">72.3 µs</text>
+  <text x="730" y="369" text-anchor="middle" font-size="10" fill="#495057">28M tot p99 (−5.5×)</text>
+  <text x="854" y="351" text-anchor="middle" font-size="16" font-weight="bold" fill="#2b8a3e">26.1 µs</text>
+  <text x="854" y="369" text-anchor="middle" font-size="10" fill="#495057">28M hrtt p99</text>
 </svg>
