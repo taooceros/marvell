@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" width="960" height="420">
+  <defs>
+    <style>
+      .title { font-family: "DejaVu Sans", "Droid Sans Fallback", sans-serif; font-size: 16px; font-weight: 700; fill: #0f172a; }
+      .sec { font-family: "DejaVu Sans", "Droid Sans Fallback", sans-serif; font-size: 13px; font-weight: 700; fill: #334155; }
+      .lbl { font-family: "DejaVu Sans", "Droid Sans Fallback", sans-serif; font-size: 12px; fill: #1e293b; }
+      .sub { font-family: "DejaVu Sans", "Droid Sans Fallback", sans-serif; font-size: 11px; fill: #64748b; }
+      .big { font-family: "DejaVu Sans", "Droid Sans Fallback", sans-serif; font-size: 18px; font-weight: 700; fill: #0f172a; }
+      .big-acc { font-family: "DejaVu Sans", "Droid Sans Fallback", sans-serif; font-size: 20px; font-weight: 700; fill: #1d4ed8; }
+      .acc { font-family: "DejaVu Sans", "Droid Sans Fallback", sans-serif; font-size: 12px; font-weight: 700; fill: #1d4ed8; }
+    </style>
+    <marker id="arr-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+    </marker>
+    <marker id="arr-b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#1d4ed8"/>
+    </marker>
+  </defs>
+
+  <!-- White background -->
+  <rect width="960" height="420" fill="#ffffff"/>
+
+  <!-- Top Section: Case A — W_credit = 32, MAX_DRAIN = 32 (Stop-and-Wait Overload) -->
+  <rect x="24" y="20" width="912" height="175" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.4"/>
+  <text x="44" y="48" class="sec">A. W_credit = 32, MAX_DRAIN = 32（停等整窗排空 → 20 M/s 过载）</text>
+
+  <!-- Box A1 -->
+  <rect x="44" y="70" width="176" height="96" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="132" y="96" text-anchor="middle" class="lbl" font-weight="700">主机 MOVDIR64B</text>
+  <text x="132" y="122" text-anchor="middle" class="big">26–31 条/批</text>
+  <text x="132" y="146" text-anchor="middle" class="sub">触顶 W_credit = 32</text>
+
+  <line x1="220" y1="118" x2="262" y2="118" stroke="#64748b" stroke-width="2" marker-end="url(#arr-g)"/>
+
+  <!-- Box A2 -->
+  <rect x="270" y="70" width="194" height="96" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="367" y="96" text-anchor="middle" class="lbl" font-weight="700">单次 poll (MAX_DRAIN=32)</text>
+  <text x="367" y="122" text-anchor="middle" class="big">32 → 1–6</text>
+  <text x="367" y="146" text-anchor="middle" class="sub">隐式静默 1.1–1.4 µs</text>
+
+  <line x1="464" y1="118" x2="506" y2="118" stroke="#64748b" stroke-width="2" marker-end="url(#arr-g)"/>
+
+  <!-- Box A3 -->
+  <rect x="514" y="70" width="178" height="96" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="603" y="96" text-anchor="middle" class="lbl" font-weight="700">卡核跑空</text>
+  <text x="603" y="122" text-anchor="middle" class="big">B↑ 并发↓</text>
+  <text x="603" y="146" text-anchor="middle" class="sub">1 → 8 → 16 → 32</text>
+
+  <line x1="692" y1="118" x2="734" y2="118" stroke="#64748b" stroke-width="2" marker-end="url(#arr-g)"/>
+
+  <!-- Box A4 -->
+  <rect x="742" y="70" width="174" height="96" rx="8" fill="#f1f5f9" stroke="#64748b" stroke-width="1.8"/>
+  <text x="829" y="96" text-anchor="middle" class="lbl" font-weight="700">过载发散</text>
+  <text x="829" y="123" text-anchor="middle" class="big">17.5–18.2 M/s</text>
+  <text x="829" y="147" text-anchor="middle" class="sub">tot p99: 13–19 ms</text>
+
+  <!-- Bottom Section: Case B — W_credit = 48 > MAX_DRAIN = 32 -->
+  <rect x="24" y="215" width="912" height="185" rx="10" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+  <text x="44" y="243" class="acc">B. W_credit = 48 &gt; MAX_DRAIN = 32（流水恢复，T_pause = 0 仍受 PEM0 → IOBN 串行制约）</text>
+
+  <!-- Box B1 -->
+  <rect x="44" y="265" width="176" height="110" rx="8" fill="#ffffff" stroke="#2563eb" stroke-width="1.6"/>
+  <text x="132" y="291" text-anchor="middle" class="acc">主机滞回 B = 32</text>
+  <text x="132" y="319" text-anchor="middle" class="big-acc">48 → 16</text>
+  <text x="132" y="343" text-anchor="middle" class="sub">按需静默 1.38 µs</text>
+  <text x="132" y="361" text-anchor="middle" class="sub">轻载 0 触发</text>
+
+  <line x1="220" y1="320" x2="262" y2="320" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arr-b)"/>
+
+  <!-- Box B2 -->
+  <rect x="270" y="265" width="194" height="110" rx="8" fill="#ffffff" stroke="#2563eb" stroke-width="1.6"/>
+  <text x="367" y="291" text-anchor="middle" class="lbl" font-weight="700">卡核 T_pause = 0</text>
+  <text x="367" y="319" text-anchor="middle" class="big">空轮询 ↑</text>
+  <text x="367" y="343" text-anchor="middle" class="sub">72.5 → 77.4 M/s</text>
+  <text x="367" y="361" text-anchor="middle" class="sub">持续持行于 L1/L2</text>
+
+  <line x1="464" y1="320" x2="506" y2="320" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arr-b)"/>
+
+  <!-- Box B3 -->
+  <rect x="514" y="265" width="178" height="110" rx="8" fill="#ffffff" stroke="#2563eb" stroke-width="1.6"/>
+  <text x="603" y="291" text-anchor="middle" class="lbl" font-weight="700">开闸突发重入</text>
+  <text x="603" y="319" text-anchor="middle" class="big">PEM0 → IOBN</text>
+  <text x="603" y="343" text-anchor="middle" class="sub">再触发 76 ns 串行</text>
+  <text x="603" y="361" text-anchor="middle" class="sub">wire p99 = 3.23 µs</text>
+
+  <line x1="692" y1="320" x2="734" y2="320" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arr-b)"/>
+
+  <!-- Box B4 -->
+  <rect x="742" y="265" width="174" height="110" rx="8" fill="#dbeafe" stroke="#1d4ed8" stroke-width="2"/>
+  <text x="829" y="291" text-anchor="middle" class="acc">20.0 M/s 最优</text>
+  <text x="829" y="320" text-anchor="middle" class="big-acc">7.01 µs</text>
+  <text x="829" y="344" text-anchor="middle" class="lbl">tot p99（-41%）</text>
+  <text x="829" y="362" text-anchor="middle" class="sub">仍 &gt; 2.5 µs 门槛</text>
+</svg>
