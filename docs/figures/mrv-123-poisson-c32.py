@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import mrvplot  # noqa: E402
 
-ROOT = pathlib.Path("/home/hongtao/dev/marvell-mrv123")
+ROOT = pathlib.Path(__file__).resolve().parents[2]
 RUNS = ROOT / "logs/mrv123-2026-11-22/runs.jsonl"
 
 recs = [json.loads(l) for l in RUNS.read_text().splitlines() if l.strip()]
@@ -60,7 +60,7 @@ for ax, part, title in panels:
         ax.plot(xs, ys, f"{ls}{mk}", color=col, lw=lw, ms=5.8, label=lbl, zorder=4)
 
     ax.set_yscale("log")
-    ax.set_ylim(0.8, 55000)
+    ax.set_ylim(0.8, 60000)
     ax.set_xlim(0.2, 21.6)
     ax.set_xlabel("实测稳态达成吞吐 achieved_mps (M msg/s，泊松到达)")
     ax.set_title(title, fontsize=10.2)
@@ -70,61 +70,69 @@ axes[0].set_ylabel("真实端到端往返尾延迟 tot p99 (µs，对数坐标)"
 
 # Panel A annotations (WC1)
 ax = axes[0]
+wc1_5 = med(("p2_wc1_poisson", "unshaped", 5.0), lambda r: r["tot_us"]["p99"])
+wc1_10 = med(("p2_wc1_poisson", "c32_b16", 10.0), lambda r: r["tot_us"]["p99"])
 ax.annotate(
-    "1–10 M/s 零滞回惩罚\n(10 M/s=2.50 µs 源于 MAX_DRAIN=32)",
-    xy=(10.0, 2.50), xytext=(1.5, 9.5),
-    fontsize=7.8, color="#334155",
+    f"轻载滞回零额外税；但 MAX_DRAIN=32 致\n"
+    f"5 M/s={wc1_5:.2f} µs、10 M/s={wc1_10:.2f} µs\n"
+    f"均超 1.85 µs 门槛（仅 1 M/s 达标）",
+    xy=(5.0, wc1_5), xytext=(0.7, 12.5),
+    fontsize=7.6, color="#334155",
     bbox=dict(boxstyle="round,pad=0.28", fc="white", ec="#94a3b8", lw=0.9),
     arrowprops=dict(arrowstyle="->", color="#64748b", lw=1.0),
 )
 ax.annotate(
-    "20 M/s 全部过载 (<18 M/s)\nB=1: 17.88 M/s, 15.6 ms\nB=8: 17.70 M/s, 17.3 ms\nB=16: 17.64 M/s, 17.8 ms",
-    xy=(17.64, 17774.13), xytext=(8.2, 3200),
-    fontsize=7.9, color="#1e3a8a", fontweight="bold",
-    bbox=dict(boxstyle="round,pad=0.3", fc="#eff6ff", ec="#1d4ed8", lw=1.0),
+    "20 M/s 全部过载 (<18 M/s)\n(MRV-115 MAX_DRAIN=8 为 20.0 M/s)\n"
+    "B=1: 17.88 M/s, 15.6 ms\nB=8/16: 17.70/17.64 M/s, 17.3/17.8 ms",
+    xy=(17.64, 17774.13), xytext=(8.4, 2100),
+    fontsize=7.3, color="#1e3a8a", fontweight="bold",
+    bbox=dict(boxstyle="round,pad=0.28", fc="#eff6ff", ec="#1d4ed8", lw=1.0),
     arrowprops=dict(arrowstyle="->", color="#1d4ed8", lw=1.1),
 )
 ax.annotate(
     "13.5 M/s 无整形\n单轮分化 2.9–31.7 µs",
-    xy=(13.51, 21.81), xytext=(9.3, 120),
-    fontsize=7.6, color="#991b1b",
+    xy=(13.51, 21.81), xytext=(9.6, 130),
+    fontsize=7.5, color="#991b1b",
     bbox=dict(boxstyle="round,pad=0.25", fc="white", ec="#dc2626", lw=0.8),
     arrowprops=dict(arrowstyle="->", color="#dc2626", lw=0.9),
 )
 
 # Panel B annotations (WC4)
 ax = axes[1]
+wc4_5u = med(("p2_wc4_poisson", "unshaped", 5.0), lambda r: r["tot_us"]["p99"])
 ax.scatter([10.0], [1056.58], s=110, facecolors="none", edgecolors="#64748b", linewidths=1.7, zorder=8)
 ax.annotate(
     "r0 (run_id=55): 1056.6 µs\n单次 1.96 ms OS 抢占离群\n(r1/r2 = 2.52 / 2.51 µs)",
-    xy=(10.0, 1056.58), xytext=(1.4, 240),
-    fontsize=7.6, color="#475569",
+    xy=(10.0, 1056.58), xytext=(1.2, 240),
+    fontsize=7.5, color="#475569",
     bbox=dict(boxstyle="round,pad=0.28", fc="white", ec="#64748b", lw=0.9),
     arrowprops=dict(arrowstyle="->", color="#64748b", lw=1.0),
 )
 ax.annotate(
     "20 M/s 全部过载 (<18.2 M/s)\nB=1: 18.16 M/s, 13.3 ms\nB=8: 17.83 M/s, 16.2 ms\nB=16: 17.69 M/s, 17.3 ms",
     xy=(17.69, 17340.55), xytext=(8.6, 2600),
-    fontsize=7.9, color="#1e3a8a", fontweight="bold",
+    fontsize=7.8, color="#1e3a8a", fontweight="bold",
     bbox=dict(boxstyle="round,pad=0.3", fc="#eff6ff", ec="#1d4ed8", lw=1.0),
     arrowprops=dict(arrowstyle="->", color="#1d4ed8", lw=1.1),
 )
 ax.annotate(
-    "13.5–16 M/s C=32 压制 CHA\n44–45 → 3.3–5.6 µs\n但 B=1/8/16 重合",
-    xy=(13.51, 3.31), xytext=(1.4, 14.0),
-    fontsize=7.6, color="#0f766e",
+    f"5/10 M/s ({wc4_5u:.2f}/2.52 µs) 亦超 1.85 µs；\n"
+    f"13.5–16 M/s C=32 压制 44–45→3.3–5.6 µs\n"
+    f"但 B=1/8/16 重合",
+    xy=(13.51, 3.31), xytext=(0.9, 14.0),
+    fontsize=7.5, color="#0f766e",
     bbox=dict(boxstyle="round,pad=0.25", fc="white", ec="#0f766e", lw=0.8),
     arrowprops=dict(arrowstyle="->", color="#0f766e", lw=0.9),
 )
 
 fig.suptitle(
     "MRV-123 Part 2 主实验：固定 W_credit=32 单变量扫 B ∈ {1, 8, 16}（直通 64 B，MAX_DRAIN=32，T_pause=0，n=3 全散点）",
-    fontsize=11.8, fontweight="bold", y=0.98,
+    fontsize=11.6, fontweight="bold", y=0.98,
 )
 fig.text(
     0.5, 0.008,
-    "横轴为稳态活跃到达窗实测吞吐 achieved_mps（排除尾排空，最大 achieved/offered_win = 1.0003）；纵轴为真实端到端 tot p99；全部 144 次运行 lost=bad=torn=0，PMU 100%",
-    ha="center", fontsize=8.0, color="#475569",
+    "横轴为活跃到达窗 achieved_mps（max achieved/offered_win=1.0003）；批末 RDTSCP 在 MAX_DRAIN=32 大批下含 ~0.4–0.6 µs 偏置；unshaped 计数(trips/CHA)含 warmup 冲顶（图中 tot p99 已排除 warmup）；PMU 100%",
+    ha="center", fontsize=7.6, color="#475569",
 )
 fig.tight_layout(rect=[0, 0.03, 1, 0.94])
 png = mrvplot.HERE / "mrv-123-poisson-c32.png"
