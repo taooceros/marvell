@@ -40,7 +40,7 @@ mb = by_cfg("cn106_bare_poll_bench")
 mb_items = [
     ("空 BAR4 轮询\n(L1 ldar)", [r["bench"]["bar4_poll_empty_bare_ns"] for r in mb], "#1F2937"),
     ("NPA mbuf\nalloc+free", [r["bench"]["mbuf_alloc_free_bare_ns"] for r in mb], "#6B7280"),
-    ("CNTVCT 栅栏\nrdtsc_after_loads", [r["bench"]["rdtsc_after_loads_bare_ns"] for r in mb], "#9CA3AF"),
+    ("CNTVCT fence\nrdtsc_after_loads", [r["bench"]["rdtsc_after_loads_bare_ns"] for r in mb], "#9CA3AF"),
     ("空 eth0 RX\n(LDADDA MMIO)", [r["bench"]["eth_rx_empty_bare_ns"] for r in mb], "#C83E31"),
 ]
 y_pos = np.arange(len(mb_items))
@@ -138,10 +138,10 @@ ax3.set_xticklabels([p[0] for p in w32_pairs], fontsize=9.6)
 ax3.set_ylabel("端到端吞吐 (Mreq/s)", fontsize=9.8)
 ax3.set_ylim(0, 3.55)
 ax3.legend(loc="upper right", fontsize=8.6, frameon=True, facecolor="white", edgecolor="#D1D5DB")
-ax3.set_title("C. W = 32 高并发无退化", fontsize=11, fontweight="bold", pad=10)
+ax3.set_title("C. W = 32 自动旁路态对照", fontsize=11, fontweight="bold", pad=10)
 
 fig.suptitle(
-    "MRV-154 根因因果验证与高并发无退化对照（1C@2.0 GHz ⇄ cpu40@3.90 GHz, Uncore 2.20 GHz, n = 3）",
+    "MRV-154 根因因果对照与 W = 32 自动旁路验证（1C@2.0 GHz ⇄ cpu40@3.90 GHz, Uncore 2.20 GHz, n = 3）",
     fontsize=11.5,
     fontweight="bold",
     y=0.99,

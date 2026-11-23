@@ -85,8 +85,8 @@ ax1.text(
 )
 ax1.axhline(1.32, color="#9CA3AF", linestyle=":", linewidth=1.2, zorder=2)
 ax1.text(
-    3.68, 1.345, "CX5 硬件自环 1.32 µs (MRV-152)", ha="center", va="bottom", fontsize=8.6, color="#4B5563",
-    bbox=dict(boxstyle="round,pad=0.16", facecolor="white", edgecolor="none", alpha=0.88), zorder=6,
+    3.48, 1.335, "CX5 全栈硬件自环 1.32 µs\n（含 Verbs/RoCE，保守上界参照）", ha="center", va="bottom", fontsize=8.1, color="#4B5563",
+    bbox=dict(boxstyle="round,pad=0.16", facecolor="white", edgecolor="none", alpha=0.90), zorder=6,
 )
 
 # Separator between 64 B and 256 B
@@ -112,7 +112,7 @@ ax1.text(5.95, y_b256 + 0.025, f"−{abs(d256_ns)} ns", ha="center", va="bottom"
 
 ax1.set_xticks(xs)
 ax1.set_xticklabels(labels, fontsize=9.2)
-ax1.set_ylabel("卡内主机往返延迟 CNTVCT p50 (µs)", fontsize=10.5)
+ax1.set_ylabel("卡内裸 PCIe 环往返 CNTVCT p50 (µs)", fontsize=10.5)
 ax1.set_ylim(0, 1.82)
 ax1.set_xlim(-0.58, 7.05)
 ax1.set_title("A. 卡内往返单变量消融（柱顶标 p50，柱底标在途空 eth_rx 次数）", fontsize=10.8, fontweight="bold", pad=10)
@@ -164,7 +164,7 @@ legend_handles = [
     mpatches.Patch(facecolor="#1F2937", edgecolor="#111827", label="BAR4优先主机往返增量"),
 ]
 ax2.legend(handles=legend_handles, loc="upper left", fontsize=8.5, frameon=True, facecolor="white", edgecolor="#D1D5DB")
-ax2.set_title("B. mercury 端到端 RTT 同步 1:1 下降", fontsize=10.8, fontweight="bold", pad=10)
+ax2.set_title("B. mercury 端到端 RTT 同步 1:1 下降（同轮冷频差分）", fontsize=10.4, fontweight="bold", pad=10)
 
 fig.suptitle(
     "MRV-154 真实双机 100GbE 单变量消融（W = 1, batch = 1, 1C@2.0 GHz ⇄ cpu40@3.90 GHz, Uncore 2.20 GHz, n = 3 零错验真）",
