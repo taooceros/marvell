@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 330" width="940" height="330">
+  <defs>
+    <style>
+      .sans { font-family: "DejaVu Sans", "Droid Sans Fallback", sans-serif; }
+      .mono { font-family: "DejaVu Sans Mono", "DejaVu Sans", monospace; }
+    </style>
+    <pattern id="bar4-spin" width="8" height="48" patternUnits="userSpaceOnUse">
+      <rect width="8" height="48" fill="#F3F4F6"/>
+      <line x1="4" y1="0" x2="4" y2="48" stroke="#E5E7EB" stroke-width="1"/>
+    </pattern>
+    <marker id="arr-red-l" viewBox="0 0 10 10" refX="2" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 8 1 L 2 5 L 8 9" fill="none" stroke="#C83E31" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="arr-red-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 2 1 L 8 5 L 2 9" fill="none" stroke="#C83E31" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <!-- Crisp white background -->
+  <rect x="0" y="0" width="940" height="330" fill="#FFFFFF"/>
+
+  <!-- Subtle vertical reference line at t0 = 0 (x = 155) -->
+  <line x1="155" y1="74" x2="155" y2="286" stroke="#D1D5DB" stroke-width="1.2"/>
+
+  <!-- Vertical dashed reference line: host reply arrives in BAR4 at 0.935 us (x = 622.5) -->
+  <line x1="622.5" y1="54" x2="622.5" y2="286" stroke="#374151" stroke-width="1.4" stroke-dasharray="5,4"/>
+  <text x="622.5" y="42" text-anchor="middle" class="sans" font-size="13" font-weight="700" fill="#374151">主机回复到达 BAR4 · 0.935 µs</text>
+
+  <!-- ==================== TRACK 1: BASELINE ==================== -->
+  <text x="136" y="109" text-anchor="end" class="sans" font-size="16" font-weight="700" fill="#111827">基线</text>
+  <text x="136" y="128" text-anchor="end" class="sans" font-size="12" fill="#6B7280">默认循环</text>
+
+  <!-- WC push + teardown (~130 ns: x = 155..220) -->
+  <rect x="155" y="88" width="65" height="48" rx="4" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.2"/>
+  <text x="187.5" y="116" text-anchor="middle" class="sans" font-size="12" font-weight="600" fill="#374151">WC</text>
+
+  <!-- 1st empty eth0 RX LDADDA (582 ns: x = 223..514) -->
+  <rect x="223" y="88" width="291" height="48" rx="4" fill="#FDECEC" stroke="#C83E31" stroke-width="1.6"/>
+  <text x="368.5" y="109" text-anchor="middle" class="sans" font-size="13" font-weight="700" fill="#C83E31">eth0 空轮询 (LDADDA)</text>
+  <text x="368.5" y="127" text-anchor="middle" class="sans" font-size="14" font-weight="700" fill="#991B1B">582 ns</text>
+
+  <!-- 2nd empty eth0 RX LDADDA (582 ns: x = 517..808) -->
+  <rect x="517" y="88" width="291" height="48" rx="4" fill="#FDECEC" stroke="#C83E31" stroke-width="1.6"/>
+  <text x="715" y="109" text-anchor="middle" class="sans" font-size="13" font-weight="700" fill="#C83E31">eth0 空轮询 (LDADDA)</text>
+  <text x="715" y="127" text-anchor="middle" class="sans" font-size="14" font-weight="700" fill="#991B1B">582 ns</text>
+
+  <!-- Re-draw dashed arrival line across the 2nd stall block so crossing is unmistakable -->
+  <line x1="622.5" y1="88" x2="622.5" y2="136" stroke="#374151" stroke-width="1.6" stroke-dasharray="4,3"/>
+
+  <!-- Hit marker for baseline at 1.305 us (x = 808) -->
+  <circle cx="808" cy="112" r="5.5" fill="#C83E31" stroke="#FFFFFF" stroke-width="1.5"/>
+  <text x="822" y="119" text-anchor="start" class="sans" font-size="22" font-weight="700" fill="#C83E31">1.305 µs</text>
+
+  <!-- ==================== QUANTIZATION GAP CALLOUT (+370 ns) ==================== -->
+  <line x1="626" y1="164" x2="804" y2="164" stroke="#C83E31" stroke-width="2" marker-start="url(#arr-red-l)" marker-end="url(#arr-red-r)"/>
+  <line x1="808" y1="120" x2="808" y2="174" stroke="#C83E31" stroke-width="1.2" stroke-dasharray="3,3"/>
+  <text x="715" y="188" text-anchor="middle" class="sans" font-size="21" font-weight="700" fill="#C83E31">+370 ns</text>
+
+  <!-- TRACK 2: bar4-first -->
+  <text x="136" y="230" text-anchor="end" class="mono" font-size="14.5" font-weight="700" fill="#111827">--bar4-first</text>
+  <text x="136" y="249" text-anchor="end" class="sans" font-size="12" fill="#6B7280">BAR4 优先</text>
+
+  <!-- WC push + teardown (~130 ns: x = 155..220) -->
+  <rect x="155" y="209" width="65" height="48" rx="4" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.2"/>
+  <text x="187.5" y="237" text-anchor="middle" class="sans" font-size="12" font-weight="600" fill="#374151">WC</text>
+
+  <!-- Tight BAR4 L1 polling (0.52 ns/poll: x = 223..622.5) -->
+  <rect x="223" y="209" width="399.5" height="48" rx="4" fill="url(#bar4-spin)" stroke="#4B5563" stroke-width="1.5"/>
+  <text x="422.75" y="230" text-anchor="middle" class="sans" font-size="13.5" font-weight="700" fill="#1F2937">紧盯 BAR4 回复环</text>
+  <text x="422.75" y="248" text-anchor="middle" class="sans" font-size="12.5" fill="#4B5563">0.52 ns / 次 (快 1,119×)</text>
+
+  <!-- Immediate hit marker at 0.935 us (x = 622.5) -->
+  <circle cx="622.5" cy="233" r="6" fill="#111827" stroke="#FFFFFF" stroke-width="1.5"/>
+  <text x="638" y="241" text-anchor="start" class="sans" font-size="24" font-weight="700" fill="#111827">0.935 µs</text>
+
+  <!-- ==================== TIME AXIS ==================== -->
+  <line x1="155" y1="286" x2="865" y2="286" stroke="#6B7280" stroke-width="1.2"/>
+  <!-- Ticks: 0, 0.5, 1.0, 1.4 us -->
+  <line x1="155" y1="286" x2="155" y2="293" stroke="#6B7280" stroke-width="1.2"/>
+  <text x="155" y="310" text-anchor="middle" class="sans" font-size="12" fill="#4B5563">0 (t0)</text>
+
+  <line x1="405" y1="286" x2="405" y2="293" stroke="#6B7280" stroke-width="1.2"/>
+  <text x="405" y="310" text-anchor="middle" class="sans" font-size="12" fill="#4B5563">0.5 µs</text>
+
+  <line x1="655" y1="286" x2="655" y2="293" stroke="#6B7280" stroke-width="1.2"/>
+  <text x="655" y="310" text-anchor="middle" class="sans" font-size="12" fill="#4B5563">1.0 µs</text>
+
+  <line x1="855" y1="286" x2="855" y2="293" stroke="#6B7280" stroke-width="1.2"/>
+  <text x="855" y="310" text-anchor="middle" class="sans" font-size="12" fill="#4B5563">1.4 µs</text>
+</svg>
