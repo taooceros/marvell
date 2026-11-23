@@ -67,21 +67,21 @@
   <text x="44" y="266" class="sec-accent">方案 B：128 MiB 突发留主动网卡（主机只留 256 KiB 热环）</text>
 
   <!-- Active Card box B (wide sub-boxes for crisp padding) -->
-  <rect x="44" y="284" width="272" height="116" rx="8" fill="#ffffff" stroke="#0f766e" stroke-width="1.8"/>
-  <text x="180" y="307" text-anchor="middle" class="box-title">CN106 主动网卡</text>
-  <rect x="56" y="317" width="118" height="74" rx="6" fill="#ccfbf1" stroke="#0f766e" stroke-width="1.2"/>
-  <text x="115" y="338" text-anchor="middle" class="lbl-accent">卡 L3 48 MiB</text>
-  <text x="115" y="359" text-anchor="middle" class="box-sub-sm">≤32 MiB 真消</text>
-  <text x="115" y="378" text-anchor="middle" class="box-sub-sm">全系统零 DDR</text>
-  <rect x="186" y="317" width="118" height="74" rx="6" fill="#f1f5f9" stroke="#64748b" stroke-width="1.2"/>
-  <text x="245" y="338" text-anchor="middle" class="box-sub">卡 DDR5 48 GB</text>
-  <text x="245" y="359" text-anchor="middle" class="box-sub-sm">承接 1.98 次/包</text>
-  <text x="245" y="378" text-anchor="middle" class="box-sub-sm">175.4 M/s 排空</text>
+  <rect x="44" y="284" width="286" height="116" rx="8" fill="#ffffff" stroke="#0f766e" stroke-width="1.8"/>
+  <text x="187" y="307" text-anchor="middle" class="box-title">CN106 主动网卡</text>
+  <rect x="54" y="317" width="130" height="74" rx="6" fill="#ccfbf1" stroke="#0f766e" stroke-width="1.2"/>
+  <text x="119" y="338" text-anchor="middle" class="lbl-accent">卡 L3 48 MiB</text>
+  <text x="119" y="359" text-anchor="middle" class="box-sub-sm">≤32 MiB 蓄水</text>
+  <text x="119" y="378" text-anchor="middle" class="box-sub-sm">全系统 ≈0.02 次/包</text>
+  <rect x="194" y="317" width="126" height="74" rx="6" fill="#f1f5f9" stroke="#64748b" stroke-width="1.2"/>
+  <text x="257" y="338" text-anchor="middle" class="box-sub">卡 DDR5 48 GB</text>
+  <text x="257" y="359" text-anchor="middle" class="box-sub-sm">承接 1.98 次/包</text>
+  <text x="257" y="378" text-anchor="middle" class="box-sub-sm">175.4 M/s 排空</text>
 
   <!-- Arrow Card B -> Host Hot Ring B -->
-  <line x1="316" y1="342" x2="416" y2="342" stroke="#0f766e" stroke-width="2.5" marker-end="url(#arr-teal)"/>
-  <text x="366" y="328" text-anchor="middle" class="lbl-accent">按额 WC 直推</text>
-  <text x="366" y="362" text-anchor="middle" class="box-sub">同一条快路径</text>
+  <line x1="330" y1="342" x2="416" y2="342" stroke="#0f766e" stroke-width="2.5" marker-end="url(#arr-teal)"/>
+  <text x="378" y="328" text-anchor="middle" class="lbl-accent">按额 WC 直推</text>
+  <text x="378" y="362" text-anchor="middle" class="box-sub">同一条快路径</text>
 
   <!-- Host Hot Ring B (inside DDIO) -->
   <rect x="426" y="284" width="324" height="116" rx="8" fill="#ccfbf1" stroke="#0f766e" stroke-width="2"/>

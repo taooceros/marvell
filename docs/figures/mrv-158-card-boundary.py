@@ -123,10 +123,10 @@ def main():
     ax2_r.text(
         1.1,
         0.09,
-        "≤32 MiB：卡 L3 全吸收，全系统零额外 DDR",
+        "≤32 MiB：卡 L3 全吸收\n卡 DDR 0.00（全系统 ≈0.02 次/包）",
         ha="left",
         va="bottom",
-        fontsize=8.4,
+        fontsize=8.2,
         fontweight="bold",
         color=c_teal,
     )
@@ -147,8 +147,8 @@ def main():
     ax2.legend(handles=[l1, l2, l3, l4], loc="center left", bbox_to_anchor=(0.01, 0.43), fontsize=8.3, frameon=True, facecolor="white")
 
     fig.suptitle(
-        "图 3：方案 B 卡侧边界——≤32 MiB 真消 DDR，>48 MiB 卸载至卡 DDR5 (1.98 次/包) 且排空不掉速（n=3）",
-        fontsize=11.4,
+        "图 3：方案 B 卡侧边界——≤32 MiB 全系统 ≈0.02 次/包，>48 MiB 卸载至卡 DDR5 (1.98 次/包) 且排空不掉速（n=3）",
+        fontsize=11.1,
         fontweight="bold",
         y=0.985,
     )
