@@ -178,7 +178,7 @@ from matplotlib.patches import Patch
 legend_handles = [
     Patch(facecolor="#475569", label="实色：单包核心净处理（SDP 异步档为 DPDK mbuf/refill/TX 栈软件税）"),
     Patch(facecolor="#FEF3C7", edgecolor="#B45309", hatch="...", label=f"点纹* [推算]：CN106 双行读尾串行税（1 KiB 实测 +{TAIL_SERIAL_TAX_1K:.0f} cyc / rx_b）"),
-    Patch(facecolor="#E2E8F0", edgecolor="#475569", hatch="///", label="斜线：空轮询开销（τ_app = 330.6 ns 实测，5 µs 时显著缩水）"),
+    Patch(facecolor="#E2E8F0", edgecolor="#475569", hatch="///", label="斜线：空轮询开销（单次业务 τ_app=330.6 ns 实测；5 µs [推算] 显著缩水）"),
     Patch(facecolor="#0F62FE", label="蓝色：DirectPush（原生 DPI DMA + 单行 64 B 完成格）"),
 ]
 ax.legend(handles=legend_handles, loc="center right", fontsize=8.0, frameon=True, framealpha=0.96, bbox_to_anchor=(0.99, 0.54))

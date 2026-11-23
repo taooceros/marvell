@@ -146,18 +146,18 @@ llc_b1 = statistics.median([r["host_pmu"]["llc_loads"] / r["measured"] for r in 
 llc_b8 = statistics.median([r["host_pmu"]["llc_loads"] / r["measured"] for r in by_cfg[("part3_size_cpu", "directpush_b8_64_r1500")]])
 d8_64 = statistics.median(cyc_vals("part3_size_cpu", "directpush_b8_64_r1500"))
 ax1.annotate(
-    f"批收割触发 RX DDIO 槽\nL2 预取 + 循环摊薄\n(llc_loads {llc_b1:.2f}→{llc_b8:.2f})",
+    f"批收割触发 +256 B RX 槽\nL2 步长预取 + 循环摊薄\n(llc_loads {llc_b1:.2f}→{llc_b8:.2f})",
     xy=(X[0] + 2.5 * W, d8_64 + 85),
     xytext=(X[0] + 2.15 * W, 620),
-    ha="center", va="bottom", fontsize=7.2, color="#0369A1", fontweight="bold",
+    ha="center", va="bottom", fontsize=7.1, color="#0369A1", fontweight="bold",
     bbox=dict(boxstyle="round,pad=0.20", fc="#F0F9FF", ec="#0284C7", lw=0.9),
     arrowprops=dict(arrowstyle="->", color="#0284C7", lw=1.1, connectionstyle="arc3,rad=-0.10"),
 )
 
 ax1.text(
     0.015, 0.77,
-    "*扣尾税 [推算] = 扣 CN106 双行读尾串行税后剩 DPDK 栈软件税（1–4 KiB 对标裸环网卡同构）\n τ_app = 5 µs 时总倍率收窄至 1.35×–1.81×（净处理 1.33×–1.79×）",
-    transform=ax1.transAxes, ha="left", va="top", fontsize=7.3, color="#475569",
+    "*扣尾税 [推算] = 扣 CN106 双行读尾串行税后剩 DPDK 栈软件税（1–4 KiB 对标裸环同构）\n单次业务 τ_app 扩至 5 µs [推算] 总倍率 1.35×–1.81×（扣空轮询净处理 1.33×–1.79×）",
+    transform=ax1.transAxes, ha="left", va="top", fontsize=7.2, color="#475569",
     bbox=dict(boxstyle="round,pad=0.22", fc="#F8FAFC", ec="#CBD5E1", lw=0.8),
 )
 
