@@ -67,12 +67,12 @@
   <text x="376" y="207" text-anchor="middle" font-size="12" font-weight="bold" fill="#1E293B">切回 app_work (late=0%)</text>
 
   <!-- DPDK mbuf + refill -->
-  <rect x="480" y="182" width="165" height="42" rx="4" fill="#94A3B8" stroke="#475569" stroke-width="1.2"/>
-  <text x="562" y="207" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#FFFFFF">mbuf / refill / TX</text>
+  <rect x="480" y="182" width="188" height="42" rx="4" fill="#94A3B8" stroke="#475569" stroke-width="1.2"/>
+  <text x="574" y="207" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#FFFFFF">双行查尾 + mbuf / refill</text>
 
   <!-- Remaining app_work -->
-  <rect x="651" y="182" width="222" height="42" rx="4" fill="#E2E8F0" stroke="#94A3B8" stroke-width="1"/>
-  <text x="762" y="207" text-anchor="middle" font-size="11.5" fill="#334155">app_work</text>
+  <rect x="674" y="182" width="199" height="42" rx="4" fill="#E2E8F0" stroke="#94A3B8" stroke-width="1"/>
+  <text x="773" y="207" text-anchor="middle" font-size="11.5" fill="#334155">app_work</text>
 
   <!-- ================= ROW 3: DirectPush ================= -->
   <text x="24" y="304" font-size="14" font-weight="bold" fill="#0F62FE">DirectPush</text>
@@ -86,7 +86,7 @@
 
   <!-- Compact DirectPush handler (no mbuf, no refill) -->
   <rect x="480" y="288" width="82" height="42" rx="4" fill="#0F62FE"/>
-  <text x="521" y="306" text-anchor="middle" font-size="11" font-weight="bold" fill="#FFFFFF">轮询 CQE</text>
+  <text x="521" y="306" text-anchor="middle" font-size="11" font-weight="bold" fill="#FFFFFF">单行 CQE</text>
   <text x="521" y="321" text-anchor="middle" font-size="10.5" fill="#DBEAFE">无 mbuf</text>
   <!-- Extra reclaimed app_work -->
   <rect x="568" y="288" width="305" height="42" rx="4" fill="#DBEAFE" stroke="#0F62FE" stroke-width="1.2"/>
