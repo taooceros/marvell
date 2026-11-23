@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 448" width="980" height="448">
+  <defs>
+    <style>
+      .t { font-family: "DejaVu Sans", "Droid Sans Fallback", sans-serif; }
+      .hd { font-size: 17px; font-weight: 700; fill: #0f172a; }
+      .band-hd { font-size: 14px; font-weight: 700; fill: #1e293b; }
+      .band-hd-b { font-size: 14px; font-weight: 700; fill: #1d4ed8; }
+      .stat { font-size: 13.5px; font-weight: 700; fill: #334155; }
+      .stat-b { font-size: 13.5px; font-weight: 700; fill: #1f6feb; }
+      .box-t { font-size: 12.5px; font-weight: 600; fill: #475569; }
+      .box-tb { font-size: 12.5px; font-weight: 700; fill: #1e40af; }
+      .num { font-size: 16px; font-weight: 800; fill: #0f172a; }
+      .num-b { font-size: 16px; font-weight: 800; fill: #1f6feb; }
+      .sub { font-size: 11.5px; fill: #64748b; }
+      .sub-b { font-size: 11.5px; font-weight: 600; fill: #1e40af; }
+      .tick { font-size: 11.5px; font-weight: 700; fill: #64748b; }
+      .tick-b { font-size: 11.5px; font-weight: 700; fill: #1f6feb; }
+    </style>
+    <marker id="arr-g" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#475569"/>
+    </marker>
+    <marker id="arr-b" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#1f6feb"/>
+    </marker>
+  </defs>
+
+  <rect width="980" height="448" fill="#ffffff"/>
+  <text x="490" y="32" text-anchor="middle" class="t hd">入向桥串行拥塞（~13 M/s 掉速）与主机在途额度限流（64 B · 20 M/s）</text>
+
+  <!-- Band 1: Unshaped -->
+  <rect x="24" y="52" width="932" height="134" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <rect x="24" y="52" width="7" height="134" rx="3.5" fill="#475569"/>
+  <text x="48" y="77" class="t band-hd">无主机限流（允许大量消息同时涌入）</text>
+  <text x="936" y="77" text-anchor="end" class="t stat">端到端 p99 = 46.3 µs（泊松 44.5 µs）</text>
+
+  <rect x="48" y="94" width="128" height="72" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.3"/>
+  <text x="112" y="121" text-anchor="middle" class="t box-t">主机 CPU</text>
+  <text x="112" y="146" text-anchor="middle" class="t sub">直写 MOVDIR64B</text>
+
+  <line x1="176" y1="130" x2="208" y2="130" stroke="#475569" stroke-width="2" marker-end="url(#arr-g)"/>
+
+  <rect x="212" y="94" width="160" height="72" rx="8" fill="#f1f5f9" stroke="#334155" stroke-width="1.8"/>
+  <text x="292" y="116" text-anchor="middle" class="t box-t">主机片上队列 (CHA)</text>
+  <text x="292" y="140" text-anchor="middle" class="t num">48.5 条积压</text>
+  <text x="292" y="157" text-anchor="middle" class="t sub">被下游反压顶满</text>
+
+  <line x1="372" y1="122" x2="412" y2="122" stroke="#475569" stroke-width="2" marker-end="url(#arr-g)"/>
+  <line x1="412" y1="142" x2="376" y2="142" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr-g)"/>
+  <text x="394" y="157" text-anchor="middle" class="t sub">反压</text>
+
+  <rect x="416" y="94" width="218" height="72" rx="8" fill="#f1f5f9" stroke="#334155" stroke-width="1.8"/>
+  <text x="525" y="116" text-anchor="middle" class="t box-t">网卡入向桥 (PEM0 / IOBN)</text>
+  <text x="525" y="140" text-anchor="middle" class="t num">340–4032 条排队</text>
+  <text x="525" y="157" text-anchor="middle" class="t sub">退化为 77 ns/条单通道串行</text>
+
+  <line x1="634" y1="130" x2="664" y2="130" stroke="#475569" stroke-width="2" marker-end="url(#arr-g)"/>
+
+  <rect x="668" y="94" width="124" height="72" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.3"/>
+  <text x="730" y="118" text-anchor="middle" class="t box-t">网卡缓存 L3</text>
+  <text x="730" y="142" text-anchor="middle" class="t num">0.65 条</text>
+  <text x="730" y="158" text-anchor="middle" class="t sub">几乎空转</text>
+
+  <line x1="792" y1="130" x2="820" y2="130" stroke="#475569" stroke-width="2" marker-end="url(#arr-g)"/>
+
+  <rect x="824" y="94" width="112" height="72" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.3"/>
+  <text x="880" y="121" text-anchor="middle" class="t box-t">卡核回写</text>
+  <text x="880" y="146" text-anchor="middle" class="t sub">WC → DDIO</text>
+
+  <!-- Band 2: Host Credit Gate -->
+  <rect x="24" y="200" width="932" height="150" rx="12" fill="#f8fafc" stroke="#93c5fd" stroke-width="1.6"/>
+  <rect x="24" y="200" width="7" height="150" rx="3.5" fill="#1f6feb"/>
+  <text x="48" y="225" class="t band-hd-b">主机在途额度限流（同时在路上的消息上限 W = 32）</text>
+  <text x="936" y="225" text-anchor="end" class="t stat-b">端到端 p99 = 7.91 µs（泊松最优 7.01 µs）</text>
+
+  <rect x="48" y="240" width="122" height="68" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.3"/>
+  <text x="109" y="264" text-anchor="middle" class="t box-t">主机发送等待</text>
+  <text x="109" y="288" text-anchor="middle" class="t num">6.38 µs</text>
+
+  <line x1="170" y1="274" x2="196" y2="274" stroke="#1f6feb" stroke-width="2" marker-end="url(#arr-b)"/>
+
+  <rect x="200" y="240" width="136" height="68" rx="8" fill="#eff6ff" stroke="#1f6feb" stroke-width="2"/>
+  <text x="268" y="264" text-anchor="middle" class="t box-tb">在途额度闸门</text>
+  <text x="268" y="289" text-anchor="middle" class="t num-b">W = 32</text>
+
+  <line x1="336" y1="274" x2="362" y2="274" stroke="#1f6feb" stroke-width="2" marker-end="url(#arr-b)"/>
+
+  <rect x="366" y="240" width="130" height="68" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.3"/>
+  <text x="431" y="264" text-anchor="middle" class="t box-t">主机 CHA</text>
+  <text x="431" y="288" text-anchor="middle" class="t num-b">2.04 条</text>
+
+  <line x1="496" y1="274" x2="522" y2="274" stroke="#475569" stroke-width="1.8" marker-end="url(#arr-g)"/>
+
+  <rect x="526" y="240" width="138" height="68" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.3"/>
+  <text x="595" y="264" text-anchor="middle" class="t box-t">网卡入向桥</text>
+  <text x="595" y="288" text-anchor="middle" class="t num">≤ 32 条</text>
+
+  <line x1="664" y1="274" x2="690" y2="274" stroke="#475569" stroke-width="1.8" marker-end="url(#arr-g)"/>
+
+  <rect x="694" y="240" width="114" height="68" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.3"/>
+  <text x="751" y="264" text-anchor="middle" class="t box-t">网卡 L3</text>
+  <text x="751" y="288" text-anchor="middle" class="t num">0.96 条</text>
+
+  <line x1="808" y1="274" x2="834" y2="274" stroke="#475569" stroke-width="1.8" marker-end="url(#arr-g)"/>
+
+  <rect x="838" y="240" width="98" height="68" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.3"/>
+  <text x="887" y="264" text-anchor="middle" class="t box-t">卡核回写</text>
+  <text x="887" y="288" text-anchor="middle" class="t sub">返还额度</text>
+
+  <!-- Return credit path -->
+  <path d="M 887 308 L 887 332 L 268 332 L 268 312" fill="none" stroke="#1f6feb" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#arr-b)"/>
+  <text x="578" y="326" text-anchor="middle" class="t sub-b">每收到回复返还额度（消除主机 CHA 拥堵反压）</text>
+
+  <!-- Band 3: Feasibility Gap -->
+  <rect x="24" y="364" width="932" height="68" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.3"/>
+  <text x="48" y="403" class="t band-hd">20 M/s 约束缺口</text>
+
+  <rect x="196" y="384" width="212" height="30" rx="6" fill="#e2e8f0"/>
+  <text x="302" y="403" text-anchor="middle" class="t box-t">W ≤ 18（串行排空 ≤ 2 µs）</text>
+
+  <rect x="412" y="382" width="104" height="34" rx="6" fill="#eff6ff" stroke="#1f6feb" stroke-width="2"/>
+  <text x="464" y="404" text-anchor="middle" class="t num-b">[18, 25]</text>
+  <text x="412" y="376" text-anchor="middle" class="t tick-b">18</text>
+  <text x="516" y="376" text-anchor="middle" class="t tick-b">25</text>
+
+  <rect x="520" y="384" width="416" height="30" rx="6" fill="#e2e8f0"/>
+  <text x="728" y="403" text-anchor="middle" class="t box-t">W ≥ 25（20 M/s 所需最小并发 · 无法与左侧兼得）</text>
+  <text x="610" y="376" text-anchor="middle" class="t tick">32</text>
+  <text x="750" y="376" text-anchor="middle" class="t tick">48</text>
+  <text x="920" y="376" text-anchor="middle" class="t tick">64</text>
+</svg>

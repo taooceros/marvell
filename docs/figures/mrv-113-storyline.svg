@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 388" width="1120" height="388">
+  <defs>
+    <style>
+      .t { font-family: "DejaVu Sans", "Droid Sans Fallback", sans-serif; }
+      .hd { font-size: 18px; font-weight: 700; fill: #0f172a; }
+      .sub { font-size: 12.5px; fill: #64748b; }
+      .step-num { font-size: 12px; font-weight: 700; fill: #ffffff; }
+      .card-hd { font-size: 14.5px; font-weight: 700; fill: #0f172a; }
+      .card-hd-b { font-size: 14.5px; font-weight: 700; fill: #1d4ed8; }
+      .big { font-size: 25px; font-weight: 800; fill: #0f172a; }
+      .big-b { font-size: 25px; font-weight: 800; fill: #1f6feb; }
+      .mid { font-size: 13px; font-weight: 700; fill: #334155; }
+      .mid-b { font-size: 13px; font-weight: 700; fill: #1e40af; }
+      .tag { font-size: 12px; fill: #475569; }
+      .tag-b { font-size: 12px; fill: #1e40af; }
+      .foot { font-size: 12.5px; font-weight: 600; fill: #334155; }
+    </style>
+    <marker id="arr" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#94a3b8"/>
+    </marker>
+    <marker id="arr-b" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#1f6feb"/>
+    </marker>
+  </defs>
+
+  <rect width="1120" height="388" fill="#ffffff"/>
+
+  <!-- Header -->
+  <text x="560" y="34" text-anchor="middle" class="t hd">CC-NIC 不需要缓存一致性：DirectPush 五步研究脉络</text>
+  <text x="560" y="56" text-anchor="middle" class="t sub">纯商用 PCIe Gen5 网卡（Marvell CN106 · 零一致性 · 零 Intel DSA · 全程 IOMMU）</text>
+
+  <!-- Step 1 -->
+  <rect x="24" y="80" width="194" height="242" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.6"/>
+  <rect x="40" y="96" width="58" height="22" rx="11" fill="#475569"/>
+  <text x="69" y="111.5" text-anchor="middle" class="t step-num">报告 1</text>
+  <text x="121" y="144" text-anchor="middle" class="t card-hd">推翻前提 · 摸清硬件</text>
+  <line x1="44" y1="158" x2="198" y2="158" stroke="#e2e8f0" stroke-width="1.2"/>
+  <text x="121" y="198" text-anchor="middle" class="t big">897 ns</text>
+  <text x="121" y="220" text-anchor="middle" class="t mid">单核 175.2 M/s</text>
+  <rect x="40" y="242" width="162" height="26" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.1"/>
+  <text x="121" y="259" text-anchor="middle" class="t tag">双端缓存默认命中</text>
+  <rect x="40" y="276" width="162" height="26" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.1"/>
+  <text x="121" y="293" text-anchor="middle" class="t tag">定位 PEM0 入向拥塞</text>
+
+  <!-- Arrow 1->2 -->
+  <line x1="222" y1="201" x2="240" y2="201" stroke="#94a3b8" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- Step 2 -->
+  <rect x="244" y="80" width="194" height="242" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.6"/>
+  <rect x="260" y="96" width="58" height="22" rx="11" fill="#475569"/>
+  <text x="289" y="111.5" text-anchor="middle" class="t step-num">报告 2</text>
+  <text x="341" y="144" text-anchor="middle" class="t card-hd">去掉一致性反而更省</text>
+  <line x1="264" y1="158" x2="418" y2="158" stroke="#e2e8f0" stroke-width="1.2"/>
+  <text x="341" y="198" text-anchor="middle" class="t big">99.9999%</text>
+  <text x="341" y="220" text-anchor="middle" class="t mid">128 MiB 池 DDIO</text>
+  <rect x="260" y="242" width="162" height="26" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.1"/>
+  <text x="341" y="259" text-anchor="middle" class="t tag">零一致性重传税</text>
+  <rect x="260" y="276" width="162" height="26" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.1"/>
+  <text x="341" y="293" text-anchor="middle" class="t tag">对照 CC-NIC −20%</text>
+
+  <!-- Arrow 2->3 -->
+  <line x1="442" y1="201" x2="460" y2="201" stroke="#94a3b8" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- Step 3 -->
+  <rect x="464" y="80" width="194" height="242" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.6"/>
+  <rect x="480" y="96" width="58" height="22" rx="11" fill="#475569"/>
+  <text x="509" y="111.5" text-anchor="middle" class="t step-num">报告 3</text>
+  <text x="561" y="144" text-anchor="middle" class="t card-hd">压住入向桥拥塞</text>
+  <line x1="484" y1="158" x2="638" y2="158" stroke="#e2e8f0" stroke-width="1.2"/>
+  <text x="561" y="198" text-anchor="middle" class="t big">6–64×</text>
+  <text x="561" y="220" text-anchor="middle" class="t mid">高载 p99 压降</text>
+  <rect x="480" y="242" width="162" height="26" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.1"/>
+  <text x="561" y="259" text-anchor="middle" class="t tag">主机在途额度限流</text>
+  <rect x="480" y="276" width="162" height="26" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.1"/>
+  <text x="561" y="293" text-anchor="middle" class="t tag">探明纯主机上限边界</text>
+
+  <!-- Arrow 3->4 -->
+  <line x1="662" y1="201" x2="680" y2="201" stroke="#94a3b8" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- Step 4 -->
+  <rect x="684" y="80" width="194" height="242" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.6"/>
+  <rect x="700" y="96" width="58" height="22" rx="11" fill="#475569"/>
+  <text x="729" y="111.5" text-anchor="middle" class="t step-num">报告 4</text>
+  <text x="781" y="144" text-anchor="middle" class="t card-hd">拼出 DirectPush</text>
+  <line x1="704" y1="158" x2="858" y2="158" stroke="#e2e8f0" stroke-width="1.2"/>
+  <text x="781" y="198" text-anchor="middle" class="t big">5.6×</text>
+  <text x="781" y="220" text-anchor="middle" class="t mid">小包空载低延迟</text>
+  <rect x="700" y="242" width="162" height="26" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.1"/>
+  <text x="781" y="259" text-anchor="middle" class="t tag">小包直推 + 大包 DMA</text>
+  <rect x="700" y="276" width="162" height="26" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.1"/>
+  <text x="781" y="293" text-anchor="middle" class="t tag">双信用窗 14,701× 防堵</text>
+
+  <!-- Arrow 4->5 (Accent Blue) -->
+  <line x1="882" y1="201" x2="900" y2="201" stroke="#1f6feb" stroke-width="2.4" marker-end="url(#arr-b)"/>
+
+  <!-- Step 5 (Climax, Accent Blue) -->
+  <rect x="904" y="80" width="192" height="242" rx="12" fill="#eff6ff" stroke="#1f6feb" stroke-width="2"/>
+  <rect x="920" y="96" width="58" height="22" rx="11" fill="#1f6feb"/>
+  <text x="949" y="111.5" text-anchor="middle" class="t step-num">报告 5</text>
+  <text x="1000" y="144" text-anchor="middle" class="t card-hd-b">真 100GbE 实网落地</text>
+  <line x1="924" y1="158" x2="1076" y2="158" stroke="#bfdbfe" stroke-width="1.2"/>
+  <text x="1000" y="198" text-anchor="middle" class="t big-b">−4.25 µs</text>
+  <text x="1000" y="220" text-anchor="middle" class="t mid-b">实省 1.61–3.24× 核</text>
+  <rect x="920" y="242" width="160" height="26" rx="6" fill="#ffffff" stroke="#93c5fd" stroke-width="1.1"/>
+  <text x="1000" y="259" text-anchor="middle" class="t tag-b">NIX 回环 → 双机 100G</text>
+  <rect x="920" y="276" width="160" height="26" rx="6" fill="#ffffff" stroke="#93c5fd" stroke-width="1.1"/>
+  <text x="1000" y="293" text-anchor="middle" class="t tag-b">4 核破拥塞 · 48.2 M 行/s</text>
+
+  <!-- Bottom summary bar -->
+  <rect x="24" y="340" width="1072" height="32" rx="8" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.1"/>
+  <text x="560" y="360.5" text-anchor="middle" class="t foot">总收口（MRV-120）：15 项纯网卡实测 · 3,050 轮零错 · 13 页 Overleaf USENIX/OSDI 稿件</text>
+</svg>
