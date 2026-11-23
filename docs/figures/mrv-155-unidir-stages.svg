@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 350" width="1020" height="350">
+  <defs>
+    <style>
+      text { font-family: 'DejaVu Sans', 'Droid Sans Fallback', sans-serif; }
+    </style>
+  </defs>
+  <rect width="1020" height="350" fill="#ffffff"/>
+
+  <text x="510" y="32" text-anchor="middle" font-size="16" font-weight="bold" fill="#1a1f29">1 核主机 → 100GbE 单向四级流水线与实测上限（64 B）</text>
+
+  <!-- Stage 1: saturn 1 core (accent blue) -->
+  <rect x="24" y="62" width="204" height="162" rx="10" fill="#edf4ff" stroke="#1f6feb" stroke-width="2.2"/>
+  <text x="126" y="88" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f6feb">Stage 1 · saturn</text>
+  <text x="126" y="108" text-anchor="middle" font-size="11" fill="#3b4351">严格 1 核 (cpu40 3.9 GHz)</text>
+  <text x="126" y="140" text-anchor="middle" font-size="22" font-weight="bold" fill="#1f6feb">161.4 Mpps</text>
+  <text x="126" y="160" text-anchor="middle" font-size="11" fill="#1f6feb">DirectPush (MOVDIR64B)</text>
+  <line x1="44" y1="174" x2="208" y2="174" stroke="#c8daf8" stroke-width="1"/>
+  <text x="126" y="194" text-anchor="middle" font-size="12" font-weight="bold" fill="#525c6a">SDP: 50.5 Mpps</text>
+  <text x="126" y="212" text-anchor="middle" font-size="10.5" fill="#6b7280">官方 ISM=1 (testpmd 64.7M)</text>
+
+  <!-- Arrow 1 -> 2 -->
+  <line x1="228" y1="143" x2="288" y2="143" stroke="#4a5568" stroke-width="2.2"/>
+  <polygon points="288,137 300,143 288,149" fill="#4a5568"/>
+  <text x="263" y="128" text-anchor="middle" font-size="10.5" fill="#525c6a">Gen5×4</text>
+  <text x="263" y="163" text-anchor="middle" font-size="10" fill="#6b7280">BAR4 / SDP</text>
+
+  <!-- CN106 ARM cores -->
+  <rect x="302" y="62" width="184" height="162" rx="10" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.6"/>
+  <text x="394" y="88" text-anchor="middle" font-size="13" font-weight="bold" fill="#24292f">CN106 ARM 核</text>
+  <text x="394" y="108" text-anchor="middle" font-size="11" fill="#57606a">4 核 (2.0 GHz, 独立池)</text>
+  <text x="394" y="142" text-anchor="middle" font-size="18" font-weight="bold" fill="#24292f">不构成瓶颈</text>
+  <text x="394" y="164" text-anchor="middle" font-size="11" fill="#57606a">批门铃 + alloc_bulk 64</text>
+  <text x="394" y="184" text-anchor="middle" font-size="11" fill="#57606a">MBUF_FAST_FREE</text>
+  <text x="394" y="208" text-anchor="middle" font-size="10.5" fill="#6b7280">C ≥ 6 受 SQB 争用回落</text>
+
+  <!-- Arrow 2 -> 3 -->
+  <line x1="486" y1="143" x2="532" y2="143" stroke="#4a5568" stroke-width="2.2"/>
+  <polygon points="532,137 544,143 532,149" fill="#4a5568"/>
+  <text x="514" y="128" text-anchor="middle" font-size="10" fill="#525c6a">LMTST</text>
+
+  <!-- Stage 0: CN106 NIX0/RPM0 (bottleneck for 64 B L2) -->
+  <rect x="546" y="62" width="198" height="162" rx="10" fill="#f6f8fa" stroke="#24292f" stroke-width="2.2"/>
+  <text x="645" y="88" text-anchor="middle" font-size="13" font-weight="bold" fill="#24292f">Stage 0 · NIX0/RPM0</text>
+  <text x="645" y="108" text-anchor="middle" font-size="11" fill="#57606a">eth0 100GbE (sclk 1.0 GHz)</text>
+  <text x="645" y="140" text-anchor="middle" font-size="22" font-weight="bold" fill="#24292f">99.8 Mpps</text>
+  <text x="645" y="160" text-anchor="middle" font-size="11" fill="#57606a">硬硅顶 (64 B L2 = 67.0G)</text>
+  <line x1="566" y1="174" x2="724" y2="174" stroke="#d0d7de" stroke-width="1"/>
+  <text x="645" y="194" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f6feb">≥ 106 B L2 → 100 Gbps</text>
+  <text x="645" y="212" text-anchor="middle" font-size="10.5" fill="#57606a">64 B UDP/RoCE 满线速</text>
+
+  <!-- Arrow 3 -> 4 -->
+  <line x1="744" y1="143" x2="798" y2="143" stroke="#4a5568" stroke-width="2.2"/>
+  <polygon points="798,137 810,143 798,149" fill="#4a5568"/>
+  <text x="776" y="128" text-anchor="middle" font-size="10" fill="#525c6a">3m DAC</text>
+  <text x="776" y="163" text-anchor="middle" font-size="10" fill="#6b7280">100GbE</text>
+
+  <!-- Stage 3: mercury CX5 -->
+  <rect x="812" y="62" width="184" height="162" rx="10" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.6"/>
+  <text x="904" y="88" text-anchor="middle" font-size="13" font-weight="bold" fill="#24292f">Stage 3 · mercury</text>
+  <text x="904" y="108" text-anchor="middle" font-size="11" fill="#57606a">CX5 Gen3×16 (16 核)</text>
+  <text x="904" y="140" text-anchor="middle" font-size="21" font-weight="bold" fill="#24292f">100.0 Gbps</text>
+  <text x="904" y="160" text-anchor="middle" font-size="11" fill="#57606a">PHY 实收 (CRC 错 = 0)</text>
+  <line x1="832" y1="174" x2="976" y2="174" stroke="#d0d7de" stroke-width="1"/>
+  <text x="904" y="194" text-anchor="middle" font-size="12" font-weight="bold" fill="#525c6a">UD 用户态 61.6 Mpps</text>
+  <text x="904" y="212" text-anchor="middle" font-size="10.5" fill="#6b7280">256 B–4 KiB 全满线速</text>
+
+  <!-- Bottom E2E Summary Strip -->
+  <rect x="24" y="248" width="972" height="78" rx="8" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1.3"/>
+  <text x="48" y="278" font-size="12.5" font-weight="bold" fill="#1f6feb">Stage 2 端到端（1H DirectPush）</text>
+  <text x="308" y="278" font-size="12.5" font-weight="bold" fill="#24292f">64 B L2: 99.2 Mpps (卡顶 99.5%)</text>
+  <text x="612" y="278" font-size="12.5" font-weight="bold" fill="#1f6feb">64 B UDP: 99.8 Gbps · 64 B RoCE: 99.7 Gbps</text>
+
+  <text x="48" y="308" font-size="12" font-weight="bold" fill="#57606a">Stage 2 对照（1H 最优 SDP ISM=1）</text>
+  <text x="308" y="308" font-size="12" fill="#57606a">64 B L2: 50.3 Mpps (DirectPush 1.97×)</text>
+  <text x="612" y="308" font-size="12" fill="#57606a">64 B UDP: 52.6 Gbps · 64 B RoCE: 50.9 Gbps</text>
+</svg>

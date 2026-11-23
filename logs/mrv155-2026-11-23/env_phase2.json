@@ -1,0 +1,48 @@
+{
+  "before": {
+    "saturn": {
+      "cpu40_gov": "performance",
+      "uncore_khz": {
+        "package_00_die_00": 2200000,
+        "package_01_die_01": 2200000
+      },
+      "edac_ue_sum": 0
+    },
+    "cn106": {
+      "freq": "2000000",
+      "edac_ue": "0",
+      "sei_uer": "0",
+      "bar4_idx7": "0x2fef1"
+    },
+    "mercury": {
+      "rx_packets_phy": 35672015305,
+      "rx_crc_errors_phy": 111,
+      "rx_bytes_phy": 7650660931623,
+      "tx_global_pause": 1585959
+    }
+  },
+  "after": {
+    "saturn": {
+      "cpu40_gov": "performance",
+      "uncore_khz": {
+        "package_00_die_00": 2200000,
+        "package_01_die_01": 2200000
+      },
+      "edac_ue_sum": 0
+    },
+    "cn106": {
+      "freq": "2000000",
+      "edac_ue": "0",
+      "sei_uer": "0",
+      "bar4_idx7": "0x2fef1"
+    },
+    "mercury": {
+      "rx_packets_phy": 52620112308,
+      "rx_crc_errors_phy": 150,
+      "rx_bytes_phy": 10288075476935,
+      "tx_global_pause": 2354120
+    }
+  },
+  "done": 177,
+  "failed": 6
+}
