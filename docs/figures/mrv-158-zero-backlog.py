@@ -131,12 +131,12 @@ def main():
 
     ax2.axvline(0.86, color="#cbd5e1", linestyle="--", linewidth=1.2)
     ax2.set_xticks([0.19, 1.32])
-    ax2.set_xticklabels(["双向闭环（W=32）\n关闭 vs 打开额度", "单向卡→主机推流\n打开额度 + 20M 全校验"], fontsize=10.5)
+    ax2.set_xticklabels(["双向闭环（W=32）\n关闭 vs 打开额度", "单向推流上限验证（单柱）\n仅测开额度 · 20M 全校验"], fontsize=10.0)
     ax2.set_ylabel("双向闭环吞吐 (M 条/s)", fontsize=10.5, color="#334155")
     ax2_r.set_ylabel("单向推流吞吐 (M 条/s)", fontsize=10.5, color="#0f766e")
     ax2.set_ylim(0, 17.8)
     ax2_r.set_ylim(0, 238.0)
-    ax2.set_title("(b) 零积压吞吐（无退化，单向推流达 176.9 M/s）", fontsize=11.8, fontweight="bold", pad=8)
+    ax2.set_title("(b) 零积压吞吐（W=32 对照 + 开额度推流单柱验证）", fontsize=11.2, fontweight="bold", pad=8)
 
     fig.suptitle(
         "图 1：零积压时打开额度检查几乎零代价（64 B、256 KiB 环、1 主机核 3.90 GHz + 1 卡核 2.00 GHz、n=3）",

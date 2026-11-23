@@ -46,8 +46,8 @@ def main():
 
     ax1.axvline(48.0, color="#94a3b8", linestyle="--", linewidth=1.3, zorder=1)
     ax1.axhline(w1_on_p50, color="#94a3b8", linestyle=":", linewidth=1.3, zorder=1, label=f"空载 W=1 参考 ({w1_on_p50:.3f} µs)")
-    ax1.plot(xr, p50s, "-s", color=c_teal, lw=2.4, ms=5.2, label="后续连续补推 p50（0.905 µs）")
-    ax1.plot(xr, p99s, "--o", color="#14b8a6", lw=1.8, ms=4.5, label="后续连续补推 p99（0.945 µs）")
+    ax1.plot(xr, p50s, "-s", color=c_teal, lw=2.4, ms=5.2, label=f"单队列顺序补推 p50 ({p50s[-1]:.3f} µs)")
+    ax1.plot(xr, p99s, "--o", color="#14b8a6", lw=1.8, ms=4.5, label=f"单队列顺序补推 p99 ({p99s[-1]:.3f} µs)")
     ax1.plot(xr, f_meds, "-^", color=c_amber, lw=1.9, ms=5.2, label="停顿恢复首包冷读中位数 (n=12)")
     ax1.fill_between(xr, f_los, f_his, color=c_amber, alpha=0.12)
 
@@ -60,22 +60,31 @@ def main():
     ax1.set_title("(a) 还额补推单跳延迟（全程走亚微秒快路径）", fontsize=11.5, fontweight="bold", pad=8)
     ax1.text(48.0 * 0.90, 1.46, "卡侧 L3\n48 MiB", ha="right", va="top", fontsize=9, color="#64748b")
     ax1.annotate(
-        f"首包中位 {f_meds[-1]:.3f} µs",
+        f"首包冷读 {f_meds[-1]:.3f} µs\n（跨流切流上界）",
         xy=(128, f_meds[-1]),
-        xytext=(24, 1.24),
+        xytext=(14, 1.21),
         ha="center",
         arrowprops=dict(arrowstyle="->", color=c_amber, lw=1.2),
-        fontsize=9.0,
+        fontsize=8.6,
         fontweight="bold",
         color=c_amber,
     )
-    ax1.text(128, 0.84, "后续连续补推全程 0.905 µs", ha="right", fontsize=9.3, fontweight="bold", color=c_teal)
+    ax1.text(
+        128,
+        0.83,
+        "单队列顺序补推全程 0.905 µs（硬件预取掩盖）",
+        ha="right",
+        fontsize=8.8,
+        fontweight="bold",
+        color=c_teal,
+        bbox=dict(boxstyle="square,pad=0.10", fc="white", ec="none", alpha=0.90),
+    )
     ax1.legend(loc="upper left", fontsize=8.4, frameon=True, facecolor="white")
 
     # ---- Panel (b): Card drain rate (upper band) + Card L3 miss & DDR traffic (lower band) ----
     xd = np.array(DRAIN_MIB)
     c_drn, c_drn_lo, c_drn_hi = [], [], []
-    c_llm, c_ddr_r, c_ddr_w = [], [], []
+    c_llm, c_ddr_r, c_ddr_w, c_ddr_tot = [], [], [], []
     for sz in DRAIN_SIZES:
         rs = [r for r in p2b if r["size_label"] == sz]
         assert len(rs) == 3
@@ -86,6 +95,7 @@ def main():
         c_llm.append(statistics.median(r["card_pmu"]["core"]["ll_cache_miss_rd"] / r["measured_cells"] for r in rs))
         c_ddr_r.append(statistics.median(r["card_pmu"]["ddr_reads"] / r["measured_cells"] for r in rs))
         c_ddr_w.append(statistics.median(r["card_pmu"]["ddr_writes"] / r["measured_cells"] for r in rs))
+        c_ddr_tot.append(statistics.median((r["card_pmu"]["ddr_reads"] + r["card_pmu"]["ddr_writes"]) / r["measured_cells"] for r in rs))
 
     ax2.axvline(48.0, color="#94a3b8", linestyle="--", linewidth=1.3, zorder=1)
     l1, = ax2.plot(xd, c_drn, "-s", color=c_teal, lw=2.5, ms=5.2, label="卡侧排空速率 (左轴，M 条/s)")
@@ -111,11 +121,22 @@ def main():
     ax2.text(48.0 * 0.88, 152, "卡侧 L3\n48 MiB", ha="right", va="top", fontsize=9, color="#64748b")
     ax2.text(1.1, 183.5, "全程平稳 175.4–177.0 M/s (11.2–11.3 GB/s)", ha="left", fontsize=9.2, fontweight="bold", color=c_teal)
     ax2_r.text(
+        1.1,
+        0.09,
+        "≤32 MiB：卡 L3 全吸收，全系统零额外 DDR",
+        ha="left",
+        va="bottom",
+        fontsize=8.4,
+        fontweight="bold",
+        color=c_teal,
+    )
+    ax2_r.text(
         128,
-        c_ddr_r[-1] + 0.09,
-        f"DDR 读/写 {c_ddr_r[-1]:.2f}/{c_ddr_w[-1]:.2f}",
+        c_ddr_r[-1] + 0.06,
+        f"卡 DDR5 读/写 {c_ddr_r[-1]:.2f}/{c_ddr_w[-1]:.2f}\n（合计 {c_ddr_tot[-1]:.2f} 次/包，卸载离主机）",
         ha="right",
-        fontsize=8.8,
+        va="bottom",
+        fontsize=8.4,
         fontweight="bold",
         color=c_slate,
         bbox=dict(boxstyle="square,pad=0.14", fc="white", ec="none", alpha=0.90),
@@ -126,8 +147,8 @@ def main():
     ax2.legend(handles=[l1, l2, l3, l4], loc="center left", bbox_to_anchor=(0.01, 0.43), fontsize=8.3, frameon=True, facecolor="white")
 
     fig.suptitle(
-        "图 3：方案 B 卡侧快路径与 48 MiB L3 边界——还额单跳恒定 0.905 µs，溢出由卡 6 通道 DDR5 兜底且排空不掉速（n=3）",
-        fontsize=11.8,
+        "图 3：方案 B 卡侧边界——≤32 MiB 真消 DDR，>48 MiB 卸载至卡 DDR5 (1.98 次/包) 且排空不掉速（n=3）",
+        fontsize=11.4,
         fontweight="bold",
         y=0.985,
     )

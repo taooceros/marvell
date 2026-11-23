@@ -6,7 +6,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-11-23T13:42:56.713926</dc:date>
+    <dc:date>2026-11-23T14:16:53.556905</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -30,8 +30,8 @@ z
   </g>
   <g id="axes_1">
    <g id="patch_2">
-    <path d="M 49.102578 300.820977 
-L 392.786328 300.820977 
+    <path d="M 49.102578 302.453906 
+L 392.786328 302.453906 
 L 392.786328 51.832812 
 L 49.102578 51.832812 
 z
@@ -40,233 +40,233 @@ z
    <g id="matplotlib.axis_1">
     <g id="xtick_1">
      <g id="line2d_1">
-      <path d="M 125.688425 300.820977 
+      <path d="M 125.688425 302.453906 
 L 125.688425 51.832812 
-" clip-path="url(#p1c4fa8b7d9)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+" clip-path="url(#p4cb91aaaed)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="line2d_2">
       <defs>
-       <path id="m7b13d9bdcb" d="M 0 0 
+       <path id="m92f332b648" d="M 0 0 
 L 0 3.5 
 " style="stroke: #000000; stroke-width: 0.8"/>
       </defs>
       <g>
-       <use xlink:href="#m7b13d9bdcb" x="125.688425" y="300.820977" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m92f332b648" x="125.688425" y="302.453906" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_1">
-      <text style="font-size: 11px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="125.688425" y="316.758477" transform="rotate(-0 125.688425 316.758477)">中位延迟 p50</text>
+      <text style="font-size: 11px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="125.688425" y="318.391406" transform="rotate(-0 125.688425 318.391406)">中位延迟 p50</text>
      </g>
     </g>
     <g id="xtick_2">
      <g id="line2d_3">
-      <path d="M 316.200481 300.820977 
+      <path d="M 316.200481 302.453906 
 L 316.200481 51.832812 
-" clip-path="url(#p1c4fa8b7d9)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+" clip-path="url(#p4cb91aaaed)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="line2d_4">
       <g>
-       <use xlink:href="#m7b13d9bdcb" x="316.200481" y="300.820977" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m92f332b648" x="316.200481" y="302.453906" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_2">
-      <text style="font-size: 11px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="316.200481" y="316.672539" transform="rotate(-0 316.200481 316.672539)">尾延迟 p99</text>
+      <text style="font-size: 11px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="316.200481" y="318.305469" transform="rotate(-0 316.200481 318.305469)">尾延迟 p99</text>
      </g>
     </g>
    </g>
    <g id="matplotlib.axis_2">
     <g id="ytick_1">
      <g id="line2d_5">
-      <path d="M 49.102578 300.820977 
-L 392.786328 300.820977 
-" clip-path="url(#p1c4fa8b7d9)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+      <path d="M 49.102578 302.453906 
+L 392.786328 302.453906 
+" clip-path="url(#p4cb91aaaed)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="line2d_6">
       <defs>
-       <path id="md2e29606dd" d="M 0 0 
+       <path id="mcdd5bfa1f1" d="M 0 0 
 L -3.5 0 
 " style="stroke: #000000; stroke-width: 0.8"/>
       </defs>
       <g>
-       <use xlink:href="#md2e29606dd" x="49.102578" y="300.820977" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#mcdd5bfa1f1" x="49.102578" y="302.453906" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_3">
-      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="42.102578" y="304.619805" transform="rotate(-0 42.102578 304.619805)">0.0</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="42.102578" y="306.252734" transform="rotate(-0 42.102578 306.252734)">0.0</text>
      </g>
     </g>
     <g id="ytick_2">
      <g id="line2d_7">
-      <path d="M 49.102578 260.661595 
-L 392.786328 260.661595 
-" clip-path="url(#p1c4fa8b7d9)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+      <path d="M 49.102578 262.031149 
+L 392.786328 262.031149 
+" clip-path="url(#p4cb91aaaed)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="line2d_8">
       <g>
-       <use xlink:href="#md2e29606dd" x="49.102578" y="260.661595" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#mcdd5bfa1f1" x="49.102578" y="262.031149" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_4">
-      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="42.102578" y="264.460423" transform="rotate(-0 42.102578 264.460423)">0.2</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="42.102578" y="265.829977" transform="rotate(-0 42.102578 265.829977)">0.2</text>
      </g>
     </g>
     <g id="ytick_3">
      <g id="line2d_9">
-      <path d="M 49.102578 220.502214 
-L 392.786328 220.502214 
-" clip-path="url(#p1c4fa8b7d9)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+      <path d="M 49.102578 221.608392 
+L 392.786328 221.608392 
+" clip-path="url(#p4cb91aaaed)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="line2d_10">
       <g>
-       <use xlink:href="#md2e29606dd" x="49.102578" y="220.502214" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#mcdd5bfa1f1" x="49.102578" y="221.608392" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_5">
-      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="42.102578" y="224.301042" transform="rotate(-0 42.102578 224.301042)">0.4</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="42.102578" y="225.40722" transform="rotate(-0 42.102578 225.40722)">0.4</text>
      </g>
     </g>
     <g id="ytick_4">
      <g id="line2d_11">
-      <path d="M 49.102578 180.342833 
-L 392.786328 180.342833 
-" clip-path="url(#p1c4fa8b7d9)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+      <path d="M 49.102578 181.185635 
+L 392.786328 181.185635 
+" clip-path="url(#p4cb91aaaed)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="line2d_12">
       <g>
-       <use xlink:href="#md2e29606dd" x="49.102578" y="180.342833" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#mcdd5bfa1f1" x="49.102578" y="181.185635" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_6">
-      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="42.102578" y="184.141661" transform="rotate(-0 42.102578 184.141661)">0.6</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="42.102578" y="184.984463" transform="rotate(-0 42.102578 184.984463)">0.6</text>
      </g>
     </g>
     <g id="ytick_5">
      <g id="line2d_13">
-      <path d="M 49.102578 140.183451 
-L 392.786328 140.183451 
-" clip-path="url(#p1c4fa8b7d9)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+      <path d="M 49.102578 140.762878 
+L 392.786328 140.762878 
+" clip-path="url(#p4cb91aaaed)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="line2d_14">
       <g>
-       <use xlink:href="#md2e29606dd" x="49.102578" y="140.183451" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#mcdd5bfa1f1" x="49.102578" y="140.762878" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_7">
-      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="42.102578" y="143.982279" transform="rotate(-0 42.102578 143.982279)">0.8</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="42.102578" y="144.561706" transform="rotate(-0 42.102578 144.561706)">0.8</text>
      </g>
     </g>
     <g id="ytick_6">
      <g id="line2d_15">
-      <path d="M 49.102578 100.02407 
-L 392.786328 100.02407 
-" clip-path="url(#p1c4fa8b7d9)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+      <path d="M 49.102578 100.340121 
+L 392.786328 100.340121 
+" clip-path="url(#p4cb91aaaed)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="line2d_16">
       <g>
-       <use xlink:href="#md2e29606dd" x="49.102578" y="100.02407" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#mcdd5bfa1f1" x="49.102578" y="100.340121" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_8">
-      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="42.102578" y="103.822898" transform="rotate(-0 42.102578 103.822898)">1.0</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="42.102578" y="104.138949" transform="rotate(-0 42.102578 104.138949)">1.0</text>
      </g>
     </g>
     <g id="ytick_7">
      <g id="line2d_17">
-      <path d="M 49.102578 59.864689 
-L 392.786328 59.864689 
-" clip-path="url(#p1c4fa8b7d9)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+      <path d="M 49.102578 59.917364 
+L 392.786328 59.917364 
+" clip-path="url(#p4cb91aaaed)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="line2d_18">
       <g>
-       <use xlink:href="#md2e29606dd" x="49.102578" y="59.864689" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#mcdd5bfa1f1" x="49.102578" y="59.917364" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_9">
-      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="42.102578" y="63.663517" transform="rotate(-0 42.102578 63.663517)">1.2</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="42.102578" y="63.716192" transform="rotate(-0 42.102578 63.716192)">1.2</text>
      </g>
     </g>
     <g id="text_10">
-     <text style="font-size: 11px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="19.556875" y="176.326895" transform="rotate(-90 19.556875 176.326895)">空载往返延迟 (µs)</text>
+     <text style="font-size: 11px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="19.556875" y="177.143359" transform="rotate(-90 19.556875 177.143359)">空载往返延迟 (µs)</text>
     </g>
    </g>
    <g id="patch_3">
-    <path d="M 49.102578 300.820977 
+    <path d="M 49.102578 302.453906 
 L 49.102578 51.832812 
 " style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="patch_4">
-    <path d="M 49.102578 300.820977 
-L 392.786328 300.820977 
+    <path d="M 49.102578 302.453906 
+L 392.786328 302.453906 
 " style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="patch_5">
-    <path d="M 64.724567 300.820977 
-L 125.688425 300.820977 
-L 125.688425 123.115714 
-L 64.724567 123.115714 
+    <path d="M 64.724567 302.453906 
+L 125.688425 302.453906 
+L 125.688425 123.583206 
+L 64.724567 123.583206 
 z
-" clip-path="url(#p1c4fa8b7d9)" style="fill: #64748b"/>
+" clip-path="url(#p4cb91aaaed)" style="fill: #64748b"/>
    </g>
    <g id="patch_6">
-    <path d="M 255.236623 300.820977 
-L 316.200481 300.820977 
-L 316.200481 113.075869 
-L 255.236623 113.075869 
+    <path d="M 255.236623 302.453906 
+L 316.200481 302.453906 
+L 316.200481 113.477517 
+L 255.236623 113.477517 
 z
-" clip-path="url(#p1c4fa8b7d9)" style="fill: #64748b"/>
+" clip-path="url(#p4cb91aaaed)" style="fill: #64748b"/>
    </g>
    <g id="patch_7">
-    <path d="M 125.688425 300.820977 
-L 186.652283 300.820977 
-L 186.652283 121.107745 
-L 125.688425 121.107745 
+    <path d="M 125.688425 302.453906 
+L 186.652283 302.453906 
+L 186.652283 121.562068 
+L 125.688425 121.562068 
 z
-" clip-path="url(#p1c4fa8b7d9)" style="fill: #0f766e"/>
+" clip-path="url(#p4cb91aaaed)" style="fill: #0f766e"/>
    </g>
    <g id="patch_8">
-    <path d="M 316.200481 300.820977 
-L 377.164339 300.820977 
-L 377.164339 111.0679 
-L 316.200481 111.0679 
+    <path d="M 316.200481 302.453906 
+L 377.164339 302.453906 
+L 377.164339 111.456379 
+L 316.200481 111.456379 
 z
-" clip-path="url(#p1c4fa8b7d9)" style="fill: #0f766e"/>
+" clip-path="url(#p4cb91aaaed)" style="fill: #0f766e"/>
    </g>
    <g id="text_11">
-    <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle; fill: #334155" x="95.206496" y="115.693448" transform="rotate(-0 95.206496 115.693448)">0.885</text>
+    <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle; fill: #334155" x="95.206496" y="116.128018" transform="rotate(-0 95.206496 116.128018)">0.885</text>
    </g>
    <g id="text_12">
-    <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle; fill: #334155" x="285.718552" y="105.653603" transform="rotate(-0 285.718552 105.653603)">0.935</text>
+    <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle; fill: #334155" x="285.718552" y="106.022329" transform="rotate(-0 285.718552 106.022329)">0.935</text>
    </g>
    <g id="text_13">
-    <text style="font-weight: 700; font-size: 9.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; fill: #0f766e" transform="translate(141.146252 101.452813)">0.895</text>
-    <text style="font-weight: 700; font-size: 9.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; fill: #0f766e" transform="translate(133.376291 112.854668)">(+10 ns)</text>
+    <text style="font-weight: 700; font-size: 9.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; fill: #0f766e" transform="translate(141.146252 101.874214)">0.895</text>
+    <text style="font-weight: 700; font-size: 9.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; fill: #0f766e" transform="translate(133.376291 113.276069)">(+10 ns)</text>
    </g>
    <g id="text_14">
-    <text style="font-weight: 700; font-size: 9.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; fill: #0f766e" transform="translate(331.658309 91.412967)">0.945</text>
-    <text style="font-weight: 700; font-size: 9.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; fill: #0f766e" transform="translate(323.888348 102.814823)">(+10 ns)</text>
+    <text style="font-weight: 700; font-size: 9.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; fill: #0f766e" transform="translate(331.658309 91.768525)">0.945</text>
+    <text style="font-weight: 700; font-size: 9.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; fill: #0f766e" transform="translate(323.888348 103.17038)">(+10 ns)</text>
    </g>
    <g id="text_15">
     <g id="patch_9">
-     <path d="M 55.976253 76.267377 
-L 208.888878 76.267377 
-Q 211.188878 76.267377 211.188878 73.967377 
-L 211.188878 64.282221 
-Q 211.188878 61.982221 208.888878 61.982221 
-L 55.976253 61.982221 
-Q 53.676253 61.982221 53.676253 64.282221 
-L 53.676253 73.967377 
-Q 53.676253 76.267377 55.976253 76.267377 
+     <path d="M 55.976253 76.349023 
+L 208.888878 76.349023 
+Q 211.188878 76.349023 211.188878 74.049023 
+L 211.188878 64.363867 
+Q 211.188878 62.063867 208.888878 62.063867 
+L 55.976253 62.063867 
+Q 53.676253 62.063867 53.676253 64.363867 
+L 53.676253 74.049023 
+Q 53.676253 76.349023 55.976253 76.349023 
 z
 " style="fill: #f8fafc; stroke: #cbd5e1; stroke-width: 0.8; stroke-linejoin: miter"/>
     </g>
-    <text style="font-size: 9.2px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start; fill: #334155" x="55.976253" y="71.757221" transform="rotate(-0 55.976253 71.757221)">均值：0.887 → 0.893 µs（+6 ns）</text>
+    <text style="font-size: 9.2px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start; fill: #334155" x="55.976253" y="71.838867" transform="rotate(-0 55.976253 71.838867)">均值：0.887 → 0.893 µs（+6 ns）</text>
    </g>
    <g id="text_16">
     <text style="font-weight: 700; font-size: 11.8px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="220.944453" y="43.832812" transform="rotate(-0 220.944453 43.832812)">(a) 零积压单包往返延迟（W=1）</text>
    </g>
    <g id="PathCollection_1">
     <defs>
-     <path id="m8612c21322" d="M 0 2.12132 
+     <path id="m2361a6d1b9" d="M 0 2.12132 
 C 0.562581 2.12132 1.102195 1.897805 1.5 1.5 
 C 1.897805 1.102195 2.12132 0.562581 2.12132 0 
 C 2.12132 -0.562581 1.897805 -1.102195 1.5 -1.5 
@@ -278,23 +278,23 @@ C -1.102195 1.897805 -0.562581 2.12132 0 2.12132
 z
 " style="stroke: #1e293b"/>
     </defs>
-    <g clip-path="url(#p1c4fa8b7d9)">
-     <use xlink:href="#m8612c21322" x="95.206496" y="123.115714" style="fill: #1e293b; stroke: #1e293b"/>
+    <g clip-path="url(#p4cb91aaaed)">
+     <use xlink:href="#m2361a6d1b9" x="95.206496" y="123.583206" style="fill: #1e293b; stroke: #1e293b"/>
     </g>
    </g>
    <g id="PathCollection_2">
-    <g clip-path="url(#p1c4fa8b7d9)">
-     <use xlink:href="#m8612c21322" x="95.206496" y="123.115714" style="fill: #1e293b; stroke: #1e293b"/>
+    <g clip-path="url(#p4cb91aaaed)">
+     <use xlink:href="#m2361a6d1b9" x="95.206496" y="123.583206" style="fill: #1e293b; stroke: #1e293b"/>
     </g>
    </g>
    <g id="PathCollection_3">
-    <g clip-path="url(#p1c4fa8b7d9)">
-     <use xlink:href="#m8612c21322" x="95.206496" y="123.115714" style="fill: #1e293b; stroke: #1e293b"/>
+    <g clip-path="url(#p4cb91aaaed)">
+     <use xlink:href="#m2361a6d1b9" x="95.206496" y="123.583206" style="fill: #1e293b; stroke: #1e293b"/>
     </g>
    </g>
    <g id="PathCollection_4">
     <defs>
-     <path id="md9a7a1f10e" d="M 0 2.12132 
+     <path id="m92378658ce" d="M 0 2.12132 
 C 0.562581 2.12132 1.102195 1.897805 1.5 1.5 
 C 1.897805 1.102195 2.12132 0.562581 2.12132 0 
 C 2.12132 -0.562581 1.897805 -1.102195 1.5 -1.5 
@@ -306,92 +306,92 @@ C -1.102195 1.897805 -0.562581 2.12132 0 2.12132
 z
 " style="stroke: #042f2e"/>
     </defs>
-    <g clip-path="url(#p1c4fa8b7d9)">
-     <use xlink:href="#md9a7a1f10e" x="156.170354" y="121.107745" style="fill: #042f2e; stroke: #042f2e"/>
+    <g clip-path="url(#p4cb91aaaed)">
+     <use xlink:href="#m92378658ce" x="156.170354" y="121.562068" style="fill: #042f2e; stroke: #042f2e"/>
     </g>
    </g>
    <g id="PathCollection_5">
-    <g clip-path="url(#p1c4fa8b7d9)">
-     <use xlink:href="#md9a7a1f10e" x="156.170354" y="121.107745" style="fill: #042f2e; stroke: #042f2e"/>
+    <g clip-path="url(#p4cb91aaaed)">
+     <use xlink:href="#m92378658ce" x="156.170354" y="121.562068" style="fill: #042f2e; stroke: #042f2e"/>
     </g>
    </g>
    <g id="PathCollection_6">
-    <g clip-path="url(#p1c4fa8b7d9)">
-     <use xlink:href="#md9a7a1f10e" x="156.170354" y="121.107745" style="fill: #042f2e; stroke: #042f2e"/>
+    <g clip-path="url(#p4cb91aaaed)">
+     <use xlink:href="#m92378658ce" x="156.170354" y="121.562068" style="fill: #042f2e; stroke: #042f2e"/>
     </g>
    </g>
    <g id="PathCollection_7">
-    <g clip-path="url(#p1c4fa8b7d9)">
-     <use xlink:href="#m8612c21322" x="285.718552" y="113.075869" style="fill: #1e293b; stroke: #1e293b"/>
+    <g clip-path="url(#p4cb91aaaed)">
+     <use xlink:href="#m2361a6d1b9" x="285.718552" y="113.477517" style="fill: #1e293b; stroke: #1e293b"/>
     </g>
    </g>
    <g id="PathCollection_8">
-    <g clip-path="url(#p1c4fa8b7d9)">
-     <use xlink:href="#m8612c21322" x="285.718552" y="113.075869" style="fill: #1e293b; stroke: #1e293b"/>
+    <g clip-path="url(#p4cb91aaaed)">
+     <use xlink:href="#m2361a6d1b9" x="285.718552" y="113.477517" style="fill: #1e293b; stroke: #1e293b"/>
     </g>
    </g>
    <g id="PathCollection_9">
-    <g clip-path="url(#p1c4fa8b7d9)">
-     <use xlink:href="#m8612c21322" x="285.718552" y="113.075869" style="fill: #1e293b; stroke: #1e293b"/>
+    <g clip-path="url(#p4cb91aaaed)">
+     <use xlink:href="#m2361a6d1b9" x="285.718552" y="113.477517" style="fill: #1e293b; stroke: #1e293b"/>
     </g>
    </g>
    <g id="PathCollection_10">
-    <g clip-path="url(#p1c4fa8b7d9)">
-     <use xlink:href="#md9a7a1f10e" x="346.68241" y="111.0679" style="fill: #042f2e; stroke: #042f2e"/>
+    <g clip-path="url(#p4cb91aaaed)">
+     <use xlink:href="#m92378658ce" x="346.68241" y="111.456379" style="fill: #042f2e; stroke: #042f2e"/>
     </g>
    </g>
    <g id="PathCollection_11">
-    <g clip-path="url(#p1c4fa8b7d9)">
-     <use xlink:href="#md9a7a1f10e" x="346.68241" y="111.0679" style="fill: #042f2e; stroke: #042f2e"/>
+    <g clip-path="url(#p4cb91aaaed)">
+     <use xlink:href="#m92378658ce" x="346.68241" y="111.456379" style="fill: #042f2e; stroke: #042f2e"/>
     </g>
    </g>
    <g id="PathCollection_12">
-    <g clip-path="url(#p1c4fa8b7d9)">
-     <use xlink:href="#md9a7a1f10e" x="346.68241" y="111.0679" style="fill: #042f2e; stroke: #042f2e"/>
+    <g clip-path="url(#p4cb91aaaed)">
+     <use xlink:href="#m92378658ce" x="346.68241" y="111.456379" style="fill: #042f2e; stroke: #042f2e"/>
     </g>
    </g>
    <g id="legend_1">
     <g id="patch_10">
-     <path d="M 293.786328 295.820977 
-L 385.786328 295.820977 
-Q 387.786328 295.820977 387.786328 293.820977 
-L 387.786328 263.688164 
-Q 387.786328 261.688164 385.786328 261.688164 
-L 293.786328 261.688164 
-Q 291.786328 261.688164 291.786328 263.688164 
-L 291.786328 293.820977 
-Q 291.786328 295.820977 293.786328 295.820977 
+     <path d="M 293.786328 297.453906 
+L 385.786328 297.453906 
+Q 387.786328 297.453906 387.786328 295.453906 
+L 387.786328 265.321094 
+Q 387.786328 263.321094 385.786328 263.321094 
+L 293.786328 263.321094 
+Q 291.786328 263.321094 291.786328 265.321094 
+L 291.786328 295.453906 
+Q 291.786328 297.453906 293.786328 297.453906 
 z
 " style="fill: #ffffff; opacity: 0.8; stroke: #cccccc; stroke-linejoin: miter"/>
     </g>
     <g id="patch_11">
-     <path d="M 295.786328 273.891289 
-L 315.786328 273.891289 
-L 315.786328 266.891289 
-L 295.786328 266.891289 
+     <path d="M 295.786328 275.524219 
+L 315.786328 275.524219 
+L 315.786328 268.524219 
+L 295.786328 268.524219 
 z
 " style="fill: #64748b"/>
     </g>
     <g id="text_17">
-     <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="323.786328" y="273.891289" transform="rotate(-0 323.786328 273.891289)">关闭额度检查</text>
+     <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="323.786328" y="275.524219" transform="rotate(-0 323.786328 275.524219)">关闭额度检查</text>
     </g>
     <g id="patch_12">
-     <path d="M 295.786328 289.418633 
-L 315.786328 289.418633 
-L 315.786328 282.418633 
-L 295.786328 282.418633 
+     <path d="M 295.786328 291.051562 
+L 315.786328 291.051562 
+L 315.786328 284.051562 
+L 295.786328 284.051562 
 z
 " style="fill: #0f766e"/>
     </g>
     <g id="text_18">
-     <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="323.786328" y="289.418633" transform="rotate(-0 323.786328 289.418633)">打开额度检查</text>
+     <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="323.786328" y="291.051562" transform="rotate(-0 323.786328 291.051562)">打开额度检查</text>
     </g>
    </g>
   </g>
   <g id="axes_2">
    <g id="patch_13">
-    <path d="M 438.933789 300.820977 
-L 782.617539 300.820977 
+    <path d="M 438.933789 302.453906 
+L 782.617539 302.453906 
 L 782.617539 51.832812 
 L 438.933789 51.832812 
 z
@@ -400,247 +400,247 @@ z
    <g id="matplotlib.axis_3">
     <g id="xtick_3">
      <g id="line2d_19">
-      <path d="M 520.431633 300.820977 
+      <path d="M 520.431633 302.453906 
 L 520.431633 51.832812 
-" clip-path="url(#pb019218fb8)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+" clip-path="url(#p7e7dfbdab5)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="line2d_20">
       <g>
-       <use xlink:href="#m7b13d9bdcb" x="520.431633" y="300.820977" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m92f332b648" x="520.431633" y="302.453906" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_19">
-      <text style="font-size: 10.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'" transform="translate(472.660735 317.485283)">双向闭环（W=32）</text>
-      <text style="font-size: 10.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'" transform="translate(479.752337 330.723076)">关闭 vs 打开额度</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'" transform="translate(474.93554 318.658008)">双向闭环（W=32）</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'" transform="translate(481.689446 331.26543)">关闭 vs 打开额度</text>
      </g>
     </g>
     <g id="xtick_4">
      <g id="line2d_21">
-      <path d="M 733.116539 300.820977 
+      <path d="M 733.116539 302.453906 
 L 733.116539 51.832812 
-" clip-path="url(#pb019218fb8)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+" clip-path="url(#p7e7dfbdab5)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="line2d_22">
       <g>
-       <use xlink:href="#m7b13d9bdcb" x="733.116539" y="300.820977" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m92f332b648" x="733.116539" y="302.453906" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_20">
-      <text style="font-size: 10.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'" transform="translate(691.967203 317.444268)">单向卡→主机推流</text>
-      <text style="font-size: 10.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'" transform="translate(675.751265 330.641045)">打开额度 + 20M 全校验</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'" transform="translate(673.116539 318.618945)">单向推流上限验证（单柱）</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'" transform="translate(676.083726 331.187305)">仅测开额度 · 20M 全校验</text>
      </g>
     </g>
    </g>
    <g id="matplotlib.axis_4">
     <g id="ytick_8">
      <g id="line2d_23">
-      <path d="M 438.933789 300.820977 
-L 782.617539 300.820977 
-" clip-path="url(#pb019218fb8)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+      <path d="M 438.933789 302.453906 
+L 782.617539 302.453906 
+" clip-path="url(#p7e7dfbdab5)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="line2d_24">
       <g>
-       <use xlink:href="#md2e29606dd" x="438.933789" y="300.820977" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#mcdd5bfa1f1" x="438.933789" y="302.453906" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_21">
-      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="431.933789" y="304.619805" transform="rotate(-0 431.933789 304.619805)">0</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="431.933789" y="306.252734" transform="rotate(-0 431.933789 306.252734)">0</text>
      </g>
     </g>
     <g id="ytick_9">
      <g id="line2d_25">
-      <path d="M 438.933789 272.844778 
-L 782.617539 272.844778 
-" clip-path="url(#pb019218fb8)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+      <path d="M 438.933789 274.294233 
+L 782.617539 274.294233 
+" clip-path="url(#p7e7dfbdab5)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="line2d_26">
       <g>
-       <use xlink:href="#md2e29606dd" x="438.933789" y="272.844778" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#mcdd5bfa1f1" x="438.933789" y="274.294233" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_22">
-      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="431.933789" y="276.643606" transform="rotate(-0 431.933789 276.643606)">2</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="431.933789" y="278.093061" transform="rotate(-0 431.933789 278.093061)">2</text>
      </g>
     </g>
     <g id="ytick_10">
      <g id="line2d_27">
-      <path d="M 438.933789 244.86858 
-L 782.617539 244.86858 
-" clip-path="url(#pb019218fb8)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+      <path d="M 438.933789 246.134559 
+L 782.617539 246.134559 
+" clip-path="url(#p7e7dfbdab5)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="line2d_28">
       <g>
-       <use xlink:href="#md2e29606dd" x="438.933789" y="244.86858" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#mcdd5bfa1f1" x="438.933789" y="246.134559" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_23">
-      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="431.933789" y="248.667408" transform="rotate(-0 431.933789 248.667408)">4</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="431.933789" y="249.933387" transform="rotate(-0 431.933789 249.933387)">4</text>
      </g>
     </g>
     <g id="ytick_11">
      <g id="line2d_29">
-      <path d="M 438.933789 216.892382 
-L 782.617539 216.892382 
-" clip-path="url(#pb019218fb8)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+      <path d="M 438.933789 217.974886 
+L 782.617539 217.974886 
+" clip-path="url(#p7e7dfbdab5)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="line2d_30">
       <g>
-       <use xlink:href="#md2e29606dd" x="438.933789" y="216.892382" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#mcdd5bfa1f1" x="438.933789" y="217.974886" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_24">
-      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="431.933789" y="220.69121" transform="rotate(-0 431.933789 220.69121)">6</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="431.933789" y="221.773714" transform="rotate(-0 431.933789 221.773714)">6</text>
      </g>
     </g>
     <g id="ytick_12">
      <g id="line2d_31">
-      <path d="M 438.933789 188.916184 
-L 782.617539 188.916184 
-" clip-path="url(#pb019218fb8)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+      <path d="M 438.933789 189.815212 
+L 782.617539 189.815212 
+" clip-path="url(#p7e7dfbdab5)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="line2d_32">
       <g>
-       <use xlink:href="#md2e29606dd" x="438.933789" y="188.916184" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#mcdd5bfa1f1" x="438.933789" y="189.815212" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_25">
-      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="431.933789" y="192.715012" transform="rotate(-0 431.933789 192.715012)">8</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="431.933789" y="193.614041" transform="rotate(-0 431.933789 193.614041)">8</text>
      </g>
     </g>
     <g id="ytick_13">
      <g id="line2d_33">
-      <path d="M 438.933789 160.939986 
-L 782.617539 160.939986 
-" clip-path="url(#pb019218fb8)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+      <path d="M 438.933789 161.655539 
+L 782.617539 161.655539 
+" clip-path="url(#p7e7dfbdab5)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="line2d_34">
       <g>
-       <use xlink:href="#md2e29606dd" x="438.933789" y="160.939986" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#mcdd5bfa1f1" x="438.933789" y="161.655539" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_26">
-      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="431.933789" y="164.738814" transform="rotate(-0 431.933789 164.738814)">10</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="431.933789" y="165.454367" transform="rotate(-0 431.933789 165.454367)">10</text>
      </g>
     </g>
     <g id="ytick_14">
      <g id="line2d_35">
-      <path d="M 438.933789 132.963787 
-L 782.617539 132.963787 
-" clip-path="url(#pb019218fb8)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+      <path d="M 438.933789 133.495866 
+L 782.617539 133.495866 
+" clip-path="url(#p7e7dfbdab5)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="line2d_36">
       <g>
-       <use xlink:href="#md2e29606dd" x="438.933789" y="132.963787" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#mcdd5bfa1f1" x="438.933789" y="133.495866" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_27">
-      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="431.933789" y="136.762615" transform="rotate(-0 431.933789 136.762615)">12</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="431.933789" y="137.294694" transform="rotate(-0 431.933789 137.294694)">12</text>
      </g>
     </g>
     <g id="ytick_15">
      <g id="line2d_37">
-      <path d="M 438.933789 104.987589 
-L 782.617539 104.987589 
-" clip-path="url(#pb019218fb8)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+      <path d="M 438.933789 105.336192 
+L 782.617539 105.336192 
+" clip-path="url(#p7e7dfbdab5)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="line2d_38">
       <g>
-       <use xlink:href="#md2e29606dd" x="438.933789" y="104.987589" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#mcdd5bfa1f1" x="438.933789" y="105.336192" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_28">
-      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="431.933789" y="108.786417" transform="rotate(-0 431.933789 108.786417)">14</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="431.933789" y="109.13502" transform="rotate(-0 431.933789 109.13502)">14</text>
      </g>
     </g>
     <g id="ytick_16">
      <g id="line2d_39">
-      <path d="M 438.933789 77.011391 
-L 782.617539 77.011391 
-" clip-path="url(#pb019218fb8)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
+      <path d="M 438.933789 77.176519 
+L 782.617539 77.176519 
+" clip-path="url(#p7e7dfbdab5)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.3; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="line2d_40">
       <g>
-       <use xlink:href="#md2e29606dd" x="438.933789" y="77.011391" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#mcdd5bfa1f1" x="438.933789" y="77.176519" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_29">
-      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="431.933789" y="80.810219" transform="rotate(-0 431.933789 80.810219)">16</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="431.933789" y="80.975347" transform="rotate(-0 431.933789 80.975347)">16</text>
      </g>
     </g>
     <g id="text_30">
-     <text style="font-size: 10.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle; fill: #334155" x="412.686328" y="176.326895" transform="rotate(-90 412.686328 176.326895)">双向闭环吞吐 (M 条/s)</text>
+     <text style="font-size: 10.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle; fill: #334155" x="412.686328" y="177.143359" transform="rotate(-90 412.686328 177.143359)">双向闭环吞吐 (M 条/s)</text>
     </g>
    </g>
    <g id="line2d_41">
-    <path d="M 646.536843 300.820977 
+    <path d="M 646.536843 302.453906 
 L 646.536843 51.832812 
-" clip-path="url(#pb019218fb8)" style="fill: none; stroke-dasharray: 4.44,1.92; stroke-dashoffset: 0; stroke: #cbd5e1; stroke-width: 1.2"/>
+" clip-path="url(#p7e7dfbdab5)" style="fill: none; stroke-dasharray: 4.44,1.92; stroke-dashoffset: 0; stroke: #cbd5e1; stroke-width: 1.2"/>
    </g>
    <g id="patch_14">
-    <path d="M 438.933789 300.820977 
+    <path d="M 438.933789 302.453906 
 L 438.933789 51.832812 
 " style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="patch_15">
-    <path d="M 438.933789 300.820977 
-L 782.617539 300.820977 
+    <path d="M 438.933789 302.453906 
+L 782.617539 302.453906 
 " style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="patch_16">
-    <path d="M 454.555778 300.820977 
-L 514.785131 300.820977 
-L 514.785131 118.287152 
-L 454.555778 118.287152 
+    <path d="M 454.555778 302.453906 
+L 514.785131 302.453906 
+L 514.785131 118.722977 
+L 454.555778 118.722977 
 z
-" clip-path="url(#pb019218fb8)" style="fill: #64748b"/>
+" clip-path="url(#p7e7dfbdab5)" style="fill: #64748b"/>
    </g>
    <g id="patch_17">
-    <path d="M 526.078135 300.820977 
-L 586.307489 300.820977 
-L 586.307489 114.772572 
-L 526.078135 114.772572 
+    <path d="M 526.078135 302.453906 
+L 586.307489 302.453906 
+L 586.307489 115.185348 
+L 526.078135 115.185348 
 z
-" clip-path="url(#pb019218fb8)" style="fill: #0f766e"/>
+" clip-path="url(#p7e7dfbdab5)" style="fill: #0f766e"/>
    </g>
    <g id="text_31">
-    <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; fill: #334155" transform="translate(470.356392 97.986044)">13.05</text>
-    <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; fill: #334155" transform="translate(476.06733 109.987997)">M/s</text>
+    <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; fill: #334155" transform="translate(470.356392 98.389761)">13.05</text>
+    <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; fill: #334155" transform="translate(476.06733 110.391714)">M/s</text>
    </g>
    <g id="text_32">
-    <text style="font-weight: 700; font-size: 9.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; fill: #0f766e" transform="translate(541.168711 95.241728)">13.30</text>
-    <text style="font-weight: 700; font-size: 9.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; fill: #0f766e" transform="translate(523.754023 106.643583)">M/s (+1.9%)</text>
+    <text style="font-weight: 700; font-size: 9.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; fill: #0f766e" transform="translate(541.168711 95.622395)">13.30</text>
+    <text style="font-weight: 700; font-size: 9.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; fill: #0f766e" transform="translate(523.754023 107.02425)">M/s (+1.9%)</text>
    </g>
    <g id="text_33">
-    <text style="font-weight: 700; font-size: 11.8px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="610.775664" y="43.832812" transform="rotate(-0 610.775664 43.832812)">(b) 零积压吞吐（无退化，单向推流达 176.9 M/s）</text>
+    <text style="font-weight: 700; font-size: 11.2px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="610.775664" y="43.832812" transform="rotate(-0 610.775664 43.832812)">(b) 零积压吞吐（W=32 对照 + 开额度推流单柱验证）</text>
    </g>
    <g id="PathCollection_13">
-    <g clip-path="url(#pb019218fb8)">
-     <use xlink:href="#m8612c21322" x="484.670455" y="117.710716" style="fill: #1e293b; stroke: #1e293b"/>
+    <g clip-path="url(#p7e7dfbdab5)">
+     <use xlink:href="#m2361a6d1b9" x="484.670455" y="118.142761" style="fill: #1e293b; stroke: #1e293b"/>
     </g>
    </g>
    <g id="PathCollection_14">
-    <g clip-path="url(#pb019218fb8)">
-     <use xlink:href="#m8612c21322" x="484.670455" y="118.42334" style="fill: #1e293b; stroke: #1e293b"/>
+    <g clip-path="url(#p7e7dfbdab5)">
+     <use xlink:href="#m2361a6d1b9" x="484.670455" y="118.860058" style="fill: #1e293b; stroke: #1e293b"/>
     </g>
    </g>
    <g id="PathCollection_15">
-    <g clip-path="url(#pb019218fb8)">
-     <use xlink:href="#m8612c21322" x="484.670455" y="118.287152" style="fill: #1e293b; stroke: #1e293b"/>
+    <g clip-path="url(#p7e7dfbdab5)">
+     <use xlink:href="#m2361a6d1b9" x="484.670455" y="118.722977" style="fill: #1e293b; stroke: #1e293b"/>
     </g>
    </g>
    <g id="PathCollection_16">
-    <g clip-path="url(#pb019218fb8)">
-     <use xlink:href="#md9a7a1f10e" x="556.192812" y="113.975362" style="fill: #042f2e; stroke: #042f2e"/>
+    <g clip-path="url(#p7e7dfbdab5)">
+     <use xlink:href="#m92378658ce" x="556.192812" y="114.38291" style="fill: #042f2e; stroke: #042f2e"/>
     </g>
    </g>
    <g id="PathCollection_17">
-    <g clip-path="url(#pb019218fb8)">
-     <use xlink:href="#md9a7a1f10e" x="556.192812" y="115.120344" style="fill: #042f2e; stroke: #042f2e"/>
+    <g clip-path="url(#p7e7dfbdab5)">
+     <use xlink:href="#m92378658ce" x="556.192812" y="115.535401" style="fill: #042f2e; stroke: #042f2e"/>
     </g>
    </g>
    <g id="PathCollection_18">
-    <g clip-path="url(#pb019218fb8)">
-     <use xlink:href="#md9a7a1f10e" x="556.192812" y="114.772572" style="fill: #042f2e; stroke: #042f2e"/>
+    <g clip-path="url(#p7e7dfbdab5)">
+     <use xlink:href="#m92378658ce" x="556.192812" y="115.185348" style="fill: #042f2e; stroke: #042f2e"/>
     </g>
    </g>
   </g>
@@ -649,98 +649,98 @@ z
     <g id="ytick_17">
      <g id="line2d_42">
       <defs>
-       <path id="m63c574f311" d="M 0 0 
+       <path id="mabe0de4a87" d="M 0 0 
 L 3.5 0 
 " style="stroke: #000000; stroke-width: 0.8"/>
       </defs>
       <g>
-       <use xlink:href="#m63c574f311" x="782.617539" y="300.820977" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#mabe0de4a87" x="782.617539" y="302.453906" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_34">
-      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="789.617539" y="304.619805" transform="rotate(-0 789.617539 304.619805)">0</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="789.617539" y="306.252734" transform="rotate(-0 789.617539 306.252734)">0</text>
      </g>
     </g>
     <g id="ytick_18">
      <g id="line2d_43">
       <g>
-       <use xlink:href="#m63c574f311" x="782.617539" y="248.512539" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#mabe0de4a87" x="782.617539" y="249.802416" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_35">
-      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="789.617539" y="252.311367" transform="rotate(-0 789.617539 252.311367)">50</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="789.617539" y="253.601244" transform="rotate(-0 789.617539 253.601244)">50</text>
      </g>
     </g>
     <g id="ytick_19">
      <g id="line2d_44">
       <g>
-       <use xlink:href="#m63c574f311" x="782.617539" y="196.204101" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#mabe0de4a87" x="782.617539" y="197.150926" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_36">
-      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="789.617539" y="200.002929" transform="rotate(-0 789.617539 200.002929)">100</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="789.617539" y="200.949754" transform="rotate(-0 789.617539 200.949754)">100</text>
      </g>
     </g>
     <g id="ytick_20">
      <g id="line2d_45">
       <g>
-       <use xlink:href="#m63c574f311" x="782.617539" y="143.895663" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#mabe0de4a87" x="782.617539" y="144.499435" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_37">
-      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="789.617539" y="147.694491" transform="rotate(-0 789.617539 147.694491)">150</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="789.617539" y="148.298264" transform="rotate(-0 789.617539 148.298264)">150</text>
      </g>
     </g>
     <g id="ytick_21">
      <g id="line2d_46">
       <g>
-       <use xlink:href="#m63c574f311" x="782.617539" y="91.587225" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#mabe0de4a87" x="782.617539" y="91.847945" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_38">
-      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="789.617539" y="95.386053" transform="rotate(-0 789.617539 95.386053)">200</text>
+      <text style="font-size: 10px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="789.617539" y="95.646773" transform="rotate(-0 789.617539 95.646773)">200</text>
      </g>
     </g>
     <g id="text_39">
-     <text style="font-size: 10.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle; fill: #0f766e" x="821.277305" y="176.326895" transform="rotate(-90 821.277305 176.326895)">单向推流吞吐 (M 条/s)</text>
+     <text style="font-size: 10.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle; fill: #0f766e" x="821.277305" y="177.143359" transform="rotate(-90 821.277305 177.143359)">单向推流吞吐 (M 条/s)</text>
     </g>
    </g>
    <g id="patch_18">
-    <path d="M 438.933789 300.820977 
+    <path d="M 438.933789 302.453906 
 L 438.933789 51.832812 
 " style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="patch_19">
-    <path d="M 438.933789 300.820977 
-L 782.617539 300.820977 
+    <path d="M 438.933789 302.453906 
+L 782.617539 302.453906 
 " style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="patch_20">
-    <path d="M 699.237527 300.820977 
-L 766.99555 300.820977 
-L 766.99555 115.744549 
-L 699.237527 115.744549 
+    <path d="M 699.237527 302.453906 
+L 766.99555 302.453906 
+L 766.99555 116.163699 
+L 699.237527 116.163699 
 z
-" clip-path="url(#pb019218fb8)" style="fill: #0d9488; opacity: 0.9"/>
+" clip-path="url(#p7e7dfbdab5)" style="fill: #0d9488; opacity: 0.9"/>
    </g>
    <g id="text_40">
-    <text style="font-weight: 700; font-size: 9.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; fill: #0f766e" transform="translate(707.149625 83.430671)">176.9 M/s</text>
-    <text style="font-weight: 700; font-size: 9.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; fill: #0f766e" transform="translate(700.015719 94.832526)">(11.32 GB/s)</text>
-    <text style="font-weight: 700; font-size: 9.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; fill: #0f766e" transform="translate(703.096539 106.234382)">DDIO 100%</text>
+    <text style="font-weight: 700; font-size: 9.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; fill: #0f766e" transform="translate(707.149625 83.808654)">176.9 M/s</text>
+    <text style="font-weight: 700; font-size: 9.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; fill: #0f766e" transform="translate(700.015719 95.21051)">(11.32 GB/s)</text>
+    <text style="font-weight: 700; font-size: 9.5px; font-family: 'DejaVu Sans', 'Droid Sans Fallback'; fill: #0f766e" transform="translate(703.096539 106.612365)">DDIO 100%</text>
    </g>
    <g id="PathCollection_19">
-    <g clip-path="url(#pb019218fb8)">
-     <use xlink:href="#md9a7a1f10e" x="733.116539" y="115.738236" style="fill: #042f2e; stroke: #042f2e"/>
+    <g clip-path="url(#p7e7dfbdab5)">
+     <use xlink:href="#m92378658ce" x="733.116539" y="116.157345" style="fill: #042f2e; stroke: #042f2e"/>
     </g>
    </g>
    <g id="PathCollection_20">
-    <g clip-path="url(#pb019218fb8)">
-     <use xlink:href="#md9a7a1f10e" x="733.116539" y="115.748628" style="fill: #042f2e; stroke: #042f2e"/>
+    <g clip-path="url(#p7e7dfbdab5)">
+     <use xlink:href="#m92378658ce" x="733.116539" y="116.167804" style="fill: #042f2e; stroke: #042f2e"/>
     </g>
    </g>
    <g id="PathCollection_21">
-    <g clip-path="url(#pb019218fb8)">
-     <use xlink:href="#md9a7a1f10e" x="733.116539" y="115.744549" style="fill: #042f2e; stroke: #042f2e"/>
+    <g clip-path="url(#p7e7dfbdab5)">
+     <use xlink:href="#m92378658ce" x="733.116539" y="116.163699" style="fill: #042f2e; stroke: #042f2e"/>
     </g>
    </g>
   </g>
@@ -749,11 +749,11 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="p1c4fa8b7d9">
-   <rect x="49.102578" y="51.832812" width="343.68375" height="248.988164"/>
+  <clipPath id="p4cb91aaaed">
+   <rect x="49.102578" y="51.832812" width="343.68375" height="250.621094"/>
   </clipPath>
-  <clipPath id="pb019218fb8">
-   <rect x="438.933789" y="51.832812" width="343.68375" height="248.988164"/>
+  <clipPath id="p7e7dfbdab5">
+   <rect x="438.933789" y="51.832812" width="343.68375" height="250.621094"/>
   </clipPath>
  </defs>
 </svg>

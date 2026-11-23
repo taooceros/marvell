@@ -85,7 +85,7 @@ def main():
     ax.plot(x, b_m * 100, "-s", color=c_b, lw=2.4, ms=5.2, label="方案 B：留网卡 + 256 KiB 热环")
     add_guides(ax)
     ax.set_ylim(-5, 108)
-    ax.set_ylabel("主机 LLC 读缺失率 (% / 包，含硬件预取)", fontsize=10.5)
+    ax.set_ylabel("主机每包 LLC 读缺失 (% / 包，含硬件预取)", fontsize=10.2)
     ax.set_title("(b) 主机 LLC 读缺失（保住主机缓存）", fontsize=11.5, fontweight="bold", pad=8)
     ax.text(128, a_m[-1] * 100 + 3.5, f"{a_m[-1]*100:.1f}%", ha="right", fontsize=10, fontweight="bold", color=c_a)
     ax.text(128, 5.5, "全程 0.0%", ha="right", fontsize=10, fontweight="bold", color=c_b)
@@ -105,9 +105,31 @@ def main():
     ax.plot(x, br_m, "-s", color=c_b, lw=2.3, ms=4.8, label="方案 B：主存读 (≈0.01)")
     ax.plot(x, bw_m, ":", color="#14b8a6", lw=2.0, label="方案 B：主存写 (≈0.01)")
     add_guides(ax)
-    ax.set_ylim(-0.06, 1.18)
+    ax.set_ylim(-0.06, 1.28)
+    ax.set_yticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
     ax.set_ylabel("主机 IMC 主存流量 (64 B 行/包)", fontsize=10.5)
-    ax.set_title("(c) 主机主存读写（−98.9% DRAM 流量）", fontsize=11.5, fontweight="bold", pad=8)
+    ax.set_title("(c) 主机 IMC 主存读写（−98.9% 主机 DRAM）", fontsize=11.2, fontweight="bold", pad=8)
+    a128 = [r for r in p2 if r["size_label"] == "128MiB" and r["scheme"] == "scheme_a_128m"]
+    b128 = [r for r in p2 if r["size_label"] == "128MiB" and r["scheme"] == "scheme_b_256k"]
+    pay_mib = a128[0]["measured_cells"] * 64 / (1024 * 1024)
+    bursts_128 = a128[0]["bursts"]
+    a_tot_mib = statistics.median(r["host_pmu"]["imc_rd_mib"] + r["host_pmu"]["imc_wr_mib"] for r in a128)
+    a_tot_line = statistics.median((r["host_pmu"]["imc_cas_rd"] + r["host_pmu"]["imc_cas_wr"]) / r["measured_cells"] for r in a128)
+    b_tot_mib = statistics.median(r["host_pmu"]["imc_rd_mib"] + r["host_pmu"]["imc_wr_mib"] for r in b128)
+    b_card_ddr = statistics.median((r["card_pmu"]["ddr_reads"] + r["card_pmu"]["ddr_writes"]) / r["measured_cells"] for r in b128)
+    ax.text(
+        0.02,
+        0.97,
+        f"128M（{bursts_128} 轮共 {pay_mib:.0f} MiB 载荷）：\n"
+        f"A 主机 {a_tot_mib:.1f} MiB ({a_tot_line:.2f} 行/包)\n"
+        f"B 主机 {b_tot_mib:.1f} MiB（卡 DDR5 承接 {b_card_ddr:.2f} 次/包）",
+        transform=ax.transAxes,
+        va="top",
+        ha="left",
+        fontsize=7.9,
+        color="#334155",
+        bbox=dict(boxstyle="round,pad=0.25", fc="#f8fafc", ec="#cbd5e1", lw=0.8),
+    )
     ax.text(128, aw_m[-1] + 0.05, f"写 {aw_m[-1]:.2f}", ha="right", fontsize=9.2, fontweight="bold", color="#64748b")
     ax.annotate(
         f"读 {ar_m[-1]:.2f}",
