@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 390" width="920" height="390" font-family="DejaVu Sans, Droid Sans Fallback, sans-serif">
+  <defs>
+    <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="8" stroke="#64748B" stroke-width="2.2"/>
+    </pattern>
+    <marker id="arr-grey" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#475569"/>
+    </marker>
+    <marker id="arr-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#0F62FE"/>
+    </marker>
+  </defs>
+
+  <rect width="920" height="390" fill="#FFFFFF"/>
+
+  <!-- Time axis header -->
+  <line x1="175" y1="34" x2="882" y2="34" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr-grey)"/>
+  <text x="890" y="38" font-size="12" fill="#475569" font-weight="bold">t</text>
+
+  <!-- Vertical PCIe arrival guide lines -->
+  <line x1="255" y1="42" x2="255" y2="352" stroke="#CBD5E1" stroke-width="1.2" stroke-dasharray="4,4"/>
+  <text x="255" y="24" text-anchor="middle" font-size="11.5" fill="#475569">包头 info 落盘</text>
+
+  <line x1="475" y1="42" x2="475" y2="352" stroke="#CBD5E1" stroke-width="1.2" stroke-dasharray="4,4"/>
+  <text x="475" y="24" text-anchor="middle" font-size="11.5" fill="#475569">4 KiB 包尾落盘</text>
+
+  <!-- ================= ROW 1: SDP sync-tail ================= -->
+  <text x="24" y="92" font-size="14" font-weight="bold" fill="#1E293B">SDP (sync-tail)</text>
+  <text x="24" y="110" font-size="11.5" fill="#64748B">rx_poll_mem=1</text>
+
+  <!-- Row 1 timeline base -->
+  <rect x="175" y="68" width="705" height="58" rx="6" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1.2"/>
+
+  <!-- app_work before head -->
+  <rect x="182" y="76" width="66" height="42" rx="4" fill="#E2E8F0" stroke="#94A3B8" stroke-width="1"/>
+  <text x="215" y="101" text-anchor="middle" font-size="11.5" fill="#334155">app_work</text>
+
+  <!-- spin_loop wasted -->
+  <rect x="255" y="76" width="220" height="42" rx="4" fill="url(#hatch)" stroke="#475569" stroke-width="1.5"/>
+  <rect x="285" y="85" width="160" height="24" rx="3" fill="#FFFFFF" fill-opacity="0.92"/>
+  <text x="365" y="101" text-anchor="middle" font-size="12" font-weight="bold" fill="#1E293B">spin_loop() 原地等尾</text>
+
+  <!-- DPDK mbuf + refill -->
+  <rect x="480" y="76" width="165" height="42" rx="4" fill="#94A3B8" stroke="#475569" stroke-width="1.2"/>
+  <text x="562" y="101" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#FFFFFF">mbuf / refill / TX</text>
+
+  <!-- Remaining app_work -->
+  <rect x="651" y="76" width="222" height="42" rx="4" fill="#E2E8F0" stroke="#94A3B8" stroke-width="1"/>
+  <text x="762" y="101" text-anchor="middle" font-size="11.5" fill="#334155">app_work</text>
+
+  <!-- ================= ROW 2: SDP async-tail / fair-full ================= -->
+  <text x="24" y="198" font-size="14" font-weight="bold" fill="#1E293B">SDP (async-tail)</text>
+  <text x="24" y="216" font-size="11.5" fill="#64748B">+rx_poll_tail_off=16</text>
+
+  <rect x="175" y="174" width="705" height="58" rx="6" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1.2"/>
+
+  <!-- app_work before head -->
+  <rect x="182" y="182" width="66" height="42" rx="4" fill="#E2E8F0" stroke="#94A3B8" stroke-width="1"/>
+  <text x="215" y="207" text-anchor="middle" font-size="11.5" fill="#334155">app_work</text>
+
+  <!-- Non-blocking break marker -->
+  <rect x="255" y="182" width="18" height="42" rx="3" fill="#475569"/>
+  <text x="264" y="166" text-anchor="middle" font-size="11" font-weight="bold" fill="#334155">tail≠seq → break</text>
+
+  <!-- Recovered app_work during tail flight -->
+  <rect x="278" y="182" width="197" height="42" rx="4" fill="#E2E8F0" stroke="#334155" stroke-width="1.4" stroke-dasharray="5,3"/>
+  <text x="376" y="207" text-anchor="middle" font-size="12" font-weight="bold" fill="#1E293B">切回 app_work (late=0%)</text>
+
+  <!-- DPDK mbuf + refill -->
+  <rect x="480" y="182" width="165" height="42" rx="4" fill="#94A3B8" stroke="#475569" stroke-width="1.2"/>
+  <text x="562" y="207" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#FFFFFF">mbuf / refill / TX</text>
+
+  <!-- Remaining app_work -->
+  <rect x="651" y="182" width="222" height="42" rx="4" fill="#E2E8F0" stroke="#94A3B8" stroke-width="1"/>
+  <text x="762" y="207" text-anchor="middle" font-size="11.5" fill="#334155">app_work</text>
+
+  <!-- ================= ROW 3: DirectPush ================= -->
+  <text x="24" y="304" font-size="14" font-weight="bold" fill="#0F62FE">DirectPush</text>
+  <text x="24" y="322" font-size="11.5" fill="#0F62FE">DPI DMA + 64B 完成格</text>
+
+  <rect x="175" y="280" width="705" height="58" rx="6" fill="#F8FAFC" stroke="#0F62FE" stroke-width="1.4"/>
+
+  <!-- Continuous app_work until 64B CQE lands -->
+  <rect x="182" y="288" width="293" height="42" rx="4" fill="#DBEAFE" stroke="#0F62FE" stroke-width="1.2"/>
+  <text x="328" y="313" text-anchor="middle" font-size="12" font-weight="bold" fill="#1E3A8A">连续 app_work (无早醒)</text>
+
+  <!-- Compact DirectPush handler (no mbuf, no refill) -->
+  <rect x="480" y="288" width="82" height="42" rx="4" fill="#0F62FE"/>
+  <text x="521" y="306" text-anchor="middle" font-size="11" font-weight="bold" fill="#FFFFFF">轮询 CQE</text>
+  <text x="521" y="321" text-anchor="middle" font-size="10.5" fill="#DBEAFE">无 mbuf</text>
+  <!-- Extra reclaimed app_work -->
+  <rect x="568" y="288" width="305" height="42" rx="4" fill="#DBEAFE" stroke="#0F62FE" stroke-width="1.2"/>
+  <text x="720" y="313" text-anchor="middle" font-size="12" font-weight="bold" fill="#1E3A8A">app_work</text>
+
+  <!-- Compact Legend -->
+  <rect x="175" y="360" width="16" height="12" rx="2" fill="url(#hatch)" stroke="#475569" stroke-width="1"/>
+  <text x="197" y="370" font-size="11" fill="#475569">同步等尾自旋</text>
+
+  <rect x="305" y="360" width="16" height="12" rx="2" fill="#94A3B8" stroke="#475569" stroke-width="1"/>
+  <text x="327" y="370" font-size="11" fill="#475569">DPDK 协议栈/队列开销</text>
+
+  <rect x="475" y="360" width="16" height="12" rx="2" fill="#0F62FE"/>
+  <text x="497" y="370" font-size="11" fill="#0F62FE">DirectPush 极简处理</text>
+
+  <rect x="635" y="360" width="16" height="12" rx="2" fill="#E2E8F0" stroke="#94A3B8" stroke-width="1"/>
+  <text x="657" y="370" font-size="11" fill="#475569">同核业务 (app_work)</text>
+</svg>
