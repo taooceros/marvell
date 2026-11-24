@@ -1,0 +1,142 @@
+{
+  "issue": "MRV-185",
+  "campaign": "opus-5-5-tricks-1-3",
+  "started_utc": "2026-11-24T23:00:02Z",
+  "host_before": {
+    "cpu40": {
+      "governor": "performance",
+      "scaling_min_freq": 3900000,
+      "scaling_max_freq": 3900000,
+      "scaling_cur_freq": 3300000
+    },
+    "uncore_khz": {
+      "package_00_die_00": {
+        "min": 2200000,
+        "max": 2200000,
+        "current": 2200000,
+        "initial_min": 800000,
+        "initial_max": 2200000
+      },
+      "package_01_die_01": {
+        "min": 2200000,
+        "max": 2200000,
+        "current": 2200000,
+        "initial_min": 800000,
+        "initial_max": 2200000
+      }
+    },
+    "perf_event_paranoid": 0,
+    "rp_98_01_0_aer": {
+      "cor": 0,
+      "nonfatal": 0,
+      "fatal": 0,
+      "link_speed": "32.0 GT/s PCIe",
+      "link_width": 4
+    },
+    "host_edac_ue": {
+      "mc0": 0,
+      "mc1": 0,
+      "mc2": 0,
+      "mc3": 0,
+      "mc4": 0,
+      "mc5": 0,
+      "mc6": 0,
+      "mc7": 0
+    },
+    "host_edac_ce": {
+      "mc0": 0,
+      "mc1": 0,
+      "mc2": 0,
+      "mc3": 0,
+      "mc4": 0,
+      "mc5": 0,
+      "mc6": 0,
+      "mc7": 0
+    },
+    "host_bin_sha256": "8ed63027df94f04cb7c798ada233ff87b14dbce036512dcd3b1b66aaadacc5ed"
+  },
+  "card_before": {
+    "card_cpu3_khz": 2000000,
+    "pem_wc_loaded": 0,
+    "mc0_ce": 0,
+    "mc0_ue": 0,
+    "sei_uer": 0,
+    "eth0_driver": "rvu_nicpf",
+    "eth0_link": "100000Mb/s_yes",
+    "refl_tmux": "running",
+    "card_bin_sha256": "b7addcb0b926144dd62153bccb6f48c86cc9d439c141ea5b1b11a5ef09dc3df1"
+  },
+  "card_start": {
+    "pid": "154793",
+    "log": "mrv182_card: BAR4 slot 15 -> pa 0x1ff800000 (was 0x2ff71), lease 10.10.0.2:7526, sync 10.10.0.2:7527, ddr_ch 6, cntfrq 1000000000"
+  },
+  "card_restore_out": "mrv182_card --restore: already at firmware defaults",
+  "refl_restored_pane": "EAL: Detected CPU lcores: 24\nEAL: Detected NUMA nodes: 1\nEAL: Detected static linkage of DPDK\nEAL: Multi-process socket /var/run/dpdk/refl/mp_socket\nEAL: Selected IOVA mode 'VA'\nEAL: VFIO support initialized\nEAL: Using IOMMU type 1 (Type 1)\nCNXK: RoC Model: cn10ka_b0 (HW_PLATFORM)\nreflector running on port 0",
+  "finished_utc": "2026-11-24T23:00:36Z",
+  "total_accepted_runs": 16,
+  "restore_errors": [],
+  "host_after": {
+    "cpu40": {
+      "governor": "performance",
+      "scaling_min_freq": 3900000,
+      "scaling_max_freq": 3900000,
+      "scaling_cur_freq": 3900000
+    },
+    "uncore_khz": {
+      "package_00_die_00": {
+        "min": 2200000,
+        "max": 2200000,
+        "current": 2200000,
+        "initial_min": 800000,
+        "initial_max": 2200000
+      },
+      "package_01_die_01": {
+        "min": 2200000,
+        "max": 2200000,
+        "current": 2200000,
+        "initial_min": 800000,
+        "initial_max": 2200000
+      }
+    },
+    "perf_event_paranoid": 0,
+    "rp_98_01_0_aer": {
+      "cor": 0,
+      "nonfatal": 0,
+      "fatal": 0,
+      "link_speed": "32.0 GT/s PCIe",
+      "link_width": 4
+    },
+    "host_edac_ue": {
+      "mc0": 0,
+      "mc1": 0,
+      "mc2": 0,
+      "mc3": 0,
+      "mc4": 0,
+      "mc5": 0,
+      "mc6": 0,
+      "mc7": 0
+    },
+    "host_edac_ce": {
+      "mc0": 0,
+      "mc1": 0,
+      "mc2": 0,
+      "mc3": 0,
+      "mc4": 0,
+      "mc5": 0,
+      "mc6": 0,
+      "mc7": 0
+    },
+    "host_bin_sha256": "8ed63027df94f04cb7c798ada233ff87b14dbce036512dcd3b1b66aaadacc5ed"
+  },
+  "card_after": {
+    "card_cpu3_khz": 2000000,
+    "pem_wc_loaded": 0,
+    "mc0_ce": 0,
+    "mc0_ue": 0,
+    "sei_uer": 0,
+    "eth0_driver": "rvu_nicpf",
+    "eth0_link": "100000Mb/s_yes",
+    "refl_tmux": "running",
+    "card_bin_sha256": "b7addcb0b926144dd62153bccb6f48c86cc9d439c141ea5b1b11a5ef09dc3df1"
+  }
+}
