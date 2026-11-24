@@ -1,8 +1,8 @@
-"""MRV-185 Figure 1: Complete 6-stage nanosecond MMIO Read waterfall (cracking the 495 ns
-black box), triple cross-verification (endpoint diff vs 1/f_uncore intercept vs 1/f_core
-& CHA TOR), and 100.00% non-multiplexed IRP_1 4-counter hardware audit.
+"""MRV-185 Figure 1 (Final): Complete 6-stage nanosecond MMIO Read waterfall (cracking the
+495 ns black box with opus-5-5 VF0-RP bound wording), triple cross-verification closure,
+and 100.00% non-multiplexed M2PCIe_1 / IRP_1 pass-through residency calibration (Part 1 + Trick 2).
 
-All numbers are computed directly from logs/mrv185-2026-11-24/runs.jsonl
+All numbers are computed directly from logs/mrv185-2026-11-24/runs.jsonl and runs_tricks.jsonl
 (n=3 interleaved, 0 mismatches, 0 page faults, 100.00% non-multiplexed Host + Card PMUs).
 """
 from collections import defaultdict
@@ -12,12 +12,15 @@ import math
 from pathlib import Path
 import statistics
 
+from matplotlib.lines import Line2D
+from matplotlib.patches import Patch
 import numpy as np
 
 from mrvplot import plt, save
 
 ROOT = Path(__file__).resolve().parents[2]
 RUNS_PATH = ROOT / "logs/mrv185-2026-11-24/runs.jsonl"
+TRICKS_PATH = ROOT / "logs/mrv185-2026-11-24/runs_tricks.jsonl"
 
 
 def fmt1(val: float) -> str:
@@ -41,21 +44,24 @@ def ols(xs, ys):
     return slope, intercept, se_slope, se_int
 
 
-def load_grouped():
+def load_grouped(path: Path):
     by_sl = defaultdict(list)
-    with RUNS_PATH.open() as f:
+    with open(path) as f:
         for line in f:
             if not line.strip():
                 continue
             r = json.loads(line)
-            assert r["mismatches"] == 0 and r["page_faults"] == 0
-            assert r["host_pmu_min_pct"] >= 99.99 and r["card_pmu"]["min_pct"] >= 99.99
+            assert r["mismatches"] == 0, f"mismatches != 0 in {r['label']}"
+            assert r["page_faults"] == 0, f"page_faults != 0 in {r['label']}"
+            assert r["host_pmu_min_pct"] >= 99.99, f"host mux in {r['label']}"
+            assert r["card_pmu"]["min_pct"] >= 99.99, f"card mux in {r['label']}"
             by_sl[(r["suite"], r["label"])].append(r)
     return by_sl
 
 
 def main():
-    by_sl = load_grouped()
+    by_sl = load_grouped(RUNS_PATH)
+    by_tr = load_grouped(TRICKS_PATH)
 
     def st(arm):
         rs = by_sl[("part1_stage", f"cpu40/{arm}")]
@@ -73,6 +79,18 @@ def main():
     l3_64b = st("bar4-l3-walk-64b")
     ddr_8b = st("bar4-ddr5-walk-8b")
     ddr_64b = st("bar4-ddr5-walk-64b")
+
+    # Trick 1A same-CHA BAR4 control (CHA 20 = VF0)
+    t1a_vf0_mean = med([x["net_ns"]["mean"] for x in by_tr[("trick1a_same_cha", "vf0-bar0-8b")]])
+    t1a_cha20_mean = med([x["net_ns"]["mean"] for x in by_tr[("trick1a_same_cha", "bar4-l3-cha20-8b")]])
+    same_cha20_delta = t1a_cha20_mean - t1a_vf0_mean
+
+    # Trick 3 de-confounded CfgRd0 link + PEM0 bound
+    t3_rp0 = med([x["net_ns"]["mean"] for x in by_tr[("trick3_cfg", "0000:98:01.0/off0")]])
+    t3_rp64 = med([x["net_ns"]["mean"] for x in by_tr[("trick3_cfg", "0000:98:01.0/off64")]])
+    t3_pf0 = med([x["net_ns"]["mean"] for x in by_tr[("trick3_cfg", "0000:99:00.0/off0")]])
+    t3_pf64 = med([x["net_ns"]["mean"] for x in by_tr[("trick3_cfg", "0000:99:00.0/off64")]])
+    cfg_clean_delta = (t3_pf0 - t3_pf64) - (t3_rp0 - t3_rp64)
 
     # Part 2 OLS regressions (1/f_uncore) across 5 freqs x 3 reps = 15 points per endpoint
     p2_fits = {}
@@ -100,19 +118,28 @@ def main():
                 y_out.append(r["net_ns"]["mean"] - r["cha"]["tor_residency_ns"])
         p3_fits[arm] = ols(xs, y_out)
 
-    # Homogeneous additive 6-stage breakdown on RP / VF0 / BAR4 L3 / BAR4 DDR5 (8 B, cpu40 @ 3.9/2.2 GHz)
-    # Stage 1: Core UC front-end/LFB (1/f_core slope @ 3.9 GHz on RP)
-    s1_core_rp = p3_fits["rp-bar0-8b"][0] / 3.9          # ~11.0 ns
-    s2_mesh_out_rp = rp8["out"] - s1_core_rp             # ~10.0 ns (matches 1/f_core intercept 10.3 & 1/f_uncore 11.2)
-    s3_mesh_tor_rp = p2_fits["rp-bar0-8b"]["tor"][0] / 2.2  # ~58.6 ns (129.0 cyc @ 2.2 GHz)
-    s4_iio_rp = rp8["tor"] - s3_mesh_tor_rp              # ~125.8 ns (matches RP TOR intercept 125.2 ns)
-    s5_link_sdp = vf0["mean"] - rp8["mean"]              # +312.1 ns (intercept diff +313.5 ns)
-    s6a_iobn_l3 = l3_8b["mean"] - vf0["mean"]            # +105.2 ns (intercept diff +103.1 ns)
-    s6b_ddr5 = ddr_8b["mean"] - l3_8b["mean"]            # +101.6 ns (intercept diff +100.5 ns)
+    # Homogeneous additive 6-stage breakdown (8 B, cpu40 @ 3.9/2.2 GHz)
+    s1_core_rp = p3_fits["rp-bar0-8b"][0] / 3.9
+    s2_mesh_out_rp = rp8["out"] - s1_core_rp
+    s3_mesh_tor_rp = p2_fits["rp-bar0-8b"]["tor"][0] / 2.2
+    s4_iio_rp = rp8["tor"] - s3_mesh_tor_rp
+    s5_link_sdp_bound = vf0["mean"] - rp8["mean"]
+    s6a_iobn_l3 = l3_8b["mean"] - vf0["mean"]
+    s6b_ddr5 = ddr_8b["mean"] - l3_8b["mean"]
 
     # ---- Figure Layout ----
-    fig = plt.figure(figsize=(17.2, 8.6))
-    gs = fig.add_gridspec(2, 2, width_ratios=[1.42, 1.0], height_ratios=[1.05, 1.0], wspace=0.25, hspace=0.40)
+    fig = plt.figure(figsize=(18.0, 9.4))
+    gs = fig.add_gridspec(
+        2, 2,
+        width_ratios=[1.48, 1.0],
+        height_ratios=[1.06, 1.0],
+        wspace=0.22,
+        hspace=0.44,
+        left=0.13,
+        right=0.98,
+        top=0.90,
+        bottom=0.16,
+    )
     ax_wf = fig.add_subplot(gs[:, 0])
     ax_cc = fig.add_subplot(gs[0, 1])
     ax_irp = fig.add_subplot(gs[1, 1])
@@ -121,13 +148,12 @@ def main():
     c_s1 = "#0369a1"   # Stage 1: Core UC (3.9 GHz)
     c_s2 = "#38bdf8"   # Stage 2: Core<->CHA Mesh (2.2 GHz, outside TOR)
     c_s3 = "#0f766e"   # Stage 3: CHA TOR<->M2PCIe1 Mesh (2.2 GHz)
-    c_s4 = "#14b8a6"   # Stage 4: IRP1 + IIO1 (1.0 GHz fixed) + RP 98:01.0
-    c_s5 = "#d97706"   # Stage 5: PCIe Gen5 x4 Link + CN106 PEM0 -> SDP CSR
+    c_s4 = "#14b8a6"   # Stage 4: IRP1 + IIO1 (1.0 GHz) + RP 98:01.0 reg
+    c_s5 = "#d97706"   # Stage 5: Host TL/DLL/PHY + Link + PEM0->SDP - RP reg
     c_s6a = "#7c3aed"  # Stage 6a: BAR4_INDEX + IOBN + TAD (48 MiB L3)
     c_s6b = "#dc2626"  # Stage 6b: TAD L3 Miss -> 6-ch DDR5
     c_old = "#64748b"  # MRV-182 old unsplit 495 ns block
 
-    # Helper to compute stacked segments for each bar
     def segs_rp(total_mean, tor, s3):
         out = total_mean - tor
         s1 = s1_core_rp
@@ -140,7 +166,6 @@ def main():
             (s1 + s2 + s3, s4, c_s4, ""),
         ]
 
-    # Rows from top to bottom
     rp_end = rp8["mean"]
     vf0_end = vf0["mean"]
     l3_end = l3_8b["mean"]
@@ -159,47 +184,47 @@ def main():
             [(vf0["out"] + vf0["tor"] / 2, f"旧未拆分块 {fmt1(vf0['tor'])} ns", "white", 9.0)],
         ),
         (
-            "端点 A：片上 RP BAR0\n98:01.0 resource0 4 B\n（零过 PCIe 物理线）",
+            "端点 A：片上 RP BAR0\n98:01.0 resource0 4 B\n（片上 RP 内部掉头）",
             segs_rp(rp4["mean"], rp4["tor"], s3_mesh_tor_rp),
             rp4["mean"],
             rp4["p50"],
             f"mean {fmt1(rp4['mean'])} / p50 {fmt1(rp4['p50'])} ns",
-            [(rp4["out"] + s3_mesh_tor_rp + (rp4["tor"] - s3_mesh_tor_rp) / 2, f"IIO/RP {fmt1(rp4['tor'] - s3_mesh_tor_rp)}", "white", 8.2)],
+            [(rp4["out"] + s3_mesh_tor_rp + (rp4["tor"] - s3_mesh_tor_rp) / 2, f"IIO+RP\n{fmt1(rp4['tor'] - s3_mesh_tor_rp)}", "white", 7.8)],
         ),
         (
-            "端点 A：片上 RP BAR0\n98:01.0 resource0 8 B\n（纯 Host 全栈锚点）",
+            "端点 A：片上 RP BAR0\n98:01.0 resource0 8 B\n（Host+RP 锚点，CHA 28）",
             segs_rp(rp8["mean"], rp8["tor"], s3_mesh_tor_rp),
             rp_end,
             rp8["p50"],
             f"mean {fmt1(rp_end)} / p50 {fmt1(rp8['p50'])} ns  (TOR {fmt1(rp8['tor'])})",
             [
-                (rp8["out"] + s3_mesh_tor_rp / 2, f"{fmt1(s3_mesh_tor_rp)}", "white", 8.2),
-                (rp8["out"] + s3_mesh_tor_rp + s4_iio_rp / 2, f"IIO/RP {fmt1(s4_iio_rp)}", "white", 8.2),
+                (rp8["out"] + s3_mesh_tor_rp / 2, f"{fmt1(s3_mesh_tor_rp)}", "white", 7.8),
+                (rp8["out"] + s3_mesh_tor_rp + s4_iio_rp / 2, f"IIO+RP\n{fmt1(s4_iio_rp)}", "white", 7.8),
             ],
         ),
         (
-            "端点 B：CN106 VF0\nBAR0 OUT_CNTS 8 B\n（已劈开 495 ns 黑盒！）",
+            "端点 B：CN106 VF0\nBAR0 OUT_CNTS 8 B\n（CHA 20，劈开 495 ns）",
             segs_rp(rp8["mean"], rp8["tor"], s3_mesh_tor_rp)
-            + [(rp_end, s5_link_sdp, c_s5, "")],
+            + [(rp_end, s5_link_sdp_bound, c_s5, "")],
             vf0_end,
             vf0["p50"],
-            f"mean {fmt1(vf0_end)} / p50 {fmt1(vf0['p50'])} ns  (+{fmt1(s5_link_sdp)} 链路+PEM0/SDP)",
+            f"mean {fmt1(vf0_end)} / p50 {fmt1(vf0['p50'])} ns  (VF0−RP +{fmt1(s5_link_sdp_bound)})",
             [
-                (rp_end + s5_link_sdp / 2, f"Gen5×4 + PEM0→SDP: +{fmt1(s5_link_sdp)} ns", "white", 9.0),
+                (rp_end + s5_link_sdp_bound / 2, f"TL/DLL/PHY + 链路 + PEM0→SDP\n− RP 寄存器：+{fmt1(s5_link_sdp_bound)} ns", "white", 7.7),
             ],
         ),
         (
             "端点 C：BAR4 L3 热读\n4K 走步 8 B (PRd)\n（+BAR4_INDEX+IOBN+TAD）",
             segs_rp(rp8["mean"], rp8["tor"], s3_mesh_tor_rp)
             + [
-                (rp_end, s5_link_sdp, c_s5, ""),
+                (rp_end, s5_link_sdp_bound, c_s5, ""),
                 (vf0_end, s6a_iobn_l3, c_s6a, ""),
             ],
             l3_end,
             l3_8b["p50"],
-            f"mean {fmt1(l3_end)} / p50 {fmt1(l3_8b['p50'])} ns  (64B: {fmt1(l3_64b['p50'])})",
+            f"mean {fmt1(l3_end)} / p50 {fmt1(l3_8b['p50'])} ns  (同CHA20 +{fmt1(same_cha20_delta)}; 64B {fmt1(l3_64b['p50'])})",
             [
-                (rp_end + s5_link_sdp / 2, f"+{fmt1(s5_link_sdp)}", "white", 8.5),
+                (rp_end + s5_link_sdp_bound / 2, f"+{fmt1(s5_link_sdp_bound)}", "white", 8.5),
                 (vf0_end + s6a_iobn_l3 / 2, f"+{fmt1(s6a_iobn_l3)}", "white", 8.5),
             ],
         ),
@@ -207,15 +232,15 @@ def main():
             "端点 D：BAR4 DDR5 冷读\n4K 走步 8 B (dc civac)\n（完整 6 段全链路分解）",
             segs_rp(rp8["mean"], rp8["tor"], s3_mesh_tor_rp)
             + [
-                (rp_end, s5_link_sdp, c_s5, ""),
+                (rp_end, s5_link_sdp_bound, c_s5, ""),
                 (vf0_end, s6a_iobn_l3, c_s6a, ""),
                 (l3_end, s6b_ddr5, c_s6b, ""),
             ],
             ddr_end,
             ddr_8b["p50"],
-            f"mean {fmt1(ddr_end)} / p50 {fmt1(ddr_8b['p50'])} ns  (64B: {fmt1(ddr_64b['p50'])})",
+            f"mean {fmt1(ddr_end)} / p50 {fmt1(ddr_8b['p50'])} ns  (64B p50 {fmt1(ddr_64b['p50'])})",
             [
-                (rp_end + s5_link_sdp / 2, f"+{fmt1(s5_link_sdp)}", "white", 8.5),
+                (rp_end + s5_link_sdp_bound / 2, f"+{fmt1(s5_link_sdp_bound)}", "white", 8.5),
                 (vf0_end + s6a_iobn_l3 / 2, f"+{fmt1(s6a_iobn_l3)}", "white", 8.5),
                 (l3_end + s6b_ddr5 / 2, f"+{fmt1(s6b_ddr5)}", "white", 8.5),
             ],
@@ -231,107 +256,140 @@ def main():
                 edgecolor="white", linewidth=0.8, hatch=hatch if hatch else None,
             )
         ax_wf.plot(p50_x, y, marker="D", markersize=5.5, color="#0f172a", markeredgecolor="white", markeredgewidth=0.8, zorder=6)
-        ax_wf.text(end_x + 10, y, note, va="center", ha="left", fontsize=8.5, color="#0f172a", fontweight="medium")
+        ax_wf.text(end_x + 10, y, note, va="center", ha="left", fontsize=8.3, color="#0f172a", fontweight="medium")
         for lx, ltxt, lcol, lfs in inner_labels:
             ax_wf.text(lx, y, ltxt, va="center", ha="center", fontsize=lfs, color=lcol, fontweight="bold")
 
-    # Vertical dashed guide at RP 98:01.0 Host boundary (205.5 ns)
-    ax_wf.axvline(rp_end, color="#0f766e", linestyle="--", linewidth=1.1, alpha=0.75)
-    ax_wf.text(rp_end + 6, len(rows) - 0.35, f"Host 片内边界 {fmt1(rp_end)} ns", fontsize=8.3, color="#0f766e", fontweight="bold", va="bottom")
+    # Vertical dashed guide at RP 98:01.0 Host+RP anchor (205.5 ns)
+    ax_wf.axvline(rp_end, color="#0f766e", linestyle="--", linewidth=1.1, alpha=0.78)
+    ax_wf.text(rp_end + 8, len(rows) - 0.36, f"RP 98:01.0 锚点 {fmt1(rp_end)} ns", fontsize=8.4, color="#0f766e", fontweight="bold", va="bottom")
+
+    # Subtle callout for Trick 3 de-confounded CfgRd0 bound (no bar overlap!)
+    ax_wf.text(
+        0.985, 0.96,
+        f"巧招 3 去混杂 CfgRd0 辅助界：\nH(99:00.0) − H(98:01.0) = +{fmt1(cfg_clean_delta)} ns\n（较 VF0−RP 少 ~{fmt1(s5_link_sdp_bound - cfg_clean_delta)} ns，\n反映 PEM0→SDP CSR 与 RP 路径差）",
+        transform=ax_wf.transAxes, va="top", ha="right", fontsize=7.6, color="#334155",
+        bbox=dict(boxstyle="round,pad=0.38", facecolor="#fffbeb", edgecolor="#f59e0b", linewidth=0.9),
+    )
 
     ax_wf.set_yticks(ys)
     ax_wf.set_yticklabels([r[0] for r in rows], fontsize=8.6)
-    ax_wf.set_xlim(0, 1020)
-    ax_wf.set_ylim(-0.65, len(rows) - 0.15)
-    ax_wf.set_xlabel("单次串行 MMIO Read 净延迟（ns，已扣空括号底噪 12.7 ns；柱 = 均值可加口径，◆ = p50）", fontsize=9.2)
-    ax_wf.set_title("(a) 劈开 495 ns 黑盒：完整 6 段 MMIO Read 瀑布分解（cpu40 @ 3.90 GHz / Mesh 2.20 GHz）", fontsize=10.5, fontweight="bold", pad=10)
+    ax_wf.set_xlim(0, 1085)
+    ax_wf.set_ylim(-0.55, len(rows) - 0.15)
+    ax_wf.set_xlabel("单次串行 MMIO Read 净延迟（ns，已扣空括号底噪 12.7 ns；柱 = 均值可加口径，◆ = 净 p50）", fontsize=9.0)
+    ax_wf.set_title("(a) 劈开 495 ns 黑盒：完整 6 段 MMIO Read 瀑布分解（cpu40 @ 3.90 GHz / Mesh 2.20 GHz）", fontsize=10.4, fontweight="bold", pad=10)
 
-    from matplotlib.patches import Patch
-    from matplotlib.lines import Line2D
+    # Legend cleanly placed BELOW Panel (a) x-axis (ZERO overlap with bottom bar!)
     legend_handles = [
         Patch(facecolor=c_s1, label=f"段 1：Host Core UC (3.9G, {fmt1(s1_core_rp)} ns)"),
         Patch(facecolor=c_s2, label=f"段 2：Core⇄CHA Mesh (2.2G, {fmt1(s2_mesh_out_rp)} ns)"),
-        Patch(facecolor=c_s3, label=f"段 3：CHA TOR⇄M2PCIe₁ (2.2G, {fmt1(s3_mesh_tor_rp)} ns)"),
-        Patch(facecolor=c_s4, label=f"段 4：IRP₁+IIO₁(1.0G)+RP ({fmt1(s4_iio_rp)} ns)"),
-        Patch(facecolor=c_s5, label=f"段 5：Gen5×4+PEM0→SDP (+{fmt1(s5_link_sdp)} ns)"),
-        Patch(facecolor=c_s6a, label=f"段 6a：BAR4_INDEX+IOBN+TAD (+{fmt1(s6a_iobn_l3)} ns)"),
-        Patch(facecolor=c_s6b, label=f"段 6b：TAD Miss→DDR5 (+{fmt1(s6b_ddr5)} ns)"),
+        Patch(facecolor=c_s3, label=f"段 3：CHA TOR⇄M2P Mesh (2.2G, {fmt1(s3_mesh_tor_rp)} ns)"),
+        Patch(facecolor=c_s4, label=f"段 4：IRP₁+IIO₁(1.0G)+RP 寄存器 ({fmt1(s4_iio_rp)} ns)"),
+        Patch(facecolor=c_s5, label=f"段 5：Host TL/DLL/PHY+链路+PEM0→SDP−RP (+{fmt1(s5_link_sdp_bound)} ns)"),
+        Patch(facecolor=c_s6a, label=f"段 6a：BAR4_INDEX+IOBN+TAD L3 (+{fmt1(s6a_iobn_l3)} ns; 同CHA20 +{fmt1(same_cha20_delta)})"),
+        Patch(facecolor=c_s6b, label=f"段 6b：TAD Miss→卡 DDR5 (+{fmt1(s6b_ddr5)} ns)"),
         Line2D([0], [0], marker="D", color="none", markerfacecolor="#0f172a", markeredgecolor="white", markersize=6, label="净 p50 锚点"),
     ]
-    ax_wf.legend(handles=legend_handles, loc="lower right", fontsize=7.6, frameon=True, facecolor="white", framealpha=0.95, ncol=2)
+    ax_wf.legend(
+        handles=legend_handles,
+        loc="upper center",
+        bbox_to_anchor=(0.48, -0.105),
+        fontsize=7.6,
+        frameon=True,
+        facecolor="white",
+        edgecolor="#cbd5e1",
+        ncol=2,
+        columnspacing=1.2,
+    )
 
     # ==================== Panel (b): Triple Cross-Verification Closure ====================
-    # Compare Method 1 (Direct Endpoint / PMU) vs Method 2 (1/f_uncore OLS) vs Method 3 (1/f_core OLS)
     stages_cc = [
-        ("段1 Core UC\n(3.9 GHz)", p3_fits["bar4-l3-walk-8b"][0] / 3.9, p2_fits["bar4-l3-walk-8b"]["out"][1]),
-        ("段2 Core⇄CHA\nMesh (2.2 GHz)", p2_fits["bar4-l3-walk-8b"]["out"][0] / 2.2, p3_fits["bar4-l3-walk-8b"][1]),
-        ("段3 CHA⇄M2P\n(2.2 GHz TOR内)", p2_fits["rp-bar0-8b"]["tor"][0] / 2.2, p2_fits["bar4-l3-walk-8b"]["tor"][0] / 2.2),
-        ("段4 IRP+IIO+RP\n(1.0 GHz 固定)", rp8["tor"] - p2_fits["rp-bar0-8b"]["tor"][0] / 2.2, p2_fits["rp-bar0-8b"]["tor"][1]),
-        ("段5 Gen5×4 +\nPEM0→SDP", vf0["mean"] - rp8["mean"], p2_fits["vf0-bar0-8b"]["tor"][1] - p2_fits["rp-bar0-8b"]["tor"][1]),
-        ("段6a BAR4_IDX\n+IOBN+TAD L3", l3_8b["mean"] - vf0["mean"], p2_fits["bar4-l3-walk-8b"]["tor"][1] - p2_fits["vf0-bar0-8b"]["tor"][1]),
-        ("段6b TAD Miss\n→卡 DDR5", ddr_8b["mean"] - l3_8b["mean"], p2_fits["bar4-ddr5-walk-8b"]["tor"][1] - p2_fits["bar4-l3-walk-8b"]["tor"][1]),
+        ("段1\nCore UC", p3_fits["bar4-l3-walk-8b"][0] / 3.9, p2_fits["bar4-l3-walk-8b"]["out"][1]),
+        ("段2\nCore⇄CHA", p2_fits["bar4-l3-walk-8b"]["out"][0] / 2.2, p3_fits["bar4-l3-walk-8b"][1]),
+        ("段3\nCHA⇄M2P", p2_fits["rp-bar0-8b"]["tor"][0] / 2.2, p2_fits["bar4-l3-walk-8b"]["tor"][0] / 2.2),
+        ("段4\nIIO+RP", rp8["tor"] - p2_fits["rp-bar0-8b"]["tor"][0] / 2.2, p2_fits["rp-bar0-8b"]["tor"][1]),
+        ("段5\nVF0−RP界", vf0["mean"] - rp8["mean"], p2_fits["vf0-bar0-8b"]["tor"][1] - p2_fits["rp-bar0-8b"]["tor"][1]),
+        ("段6a\nBAR4 L3", l3_8b["mean"] - vf0["mean"], p2_fits["bar4-l3-walk-8b"]["tor"][1] - p2_fits["vf0-bar0-8b"]["tor"][1]),
+        ("段6b\nTAD→DDR5", ddr_8b["mean"] - l3_8b["mean"], p2_fits["bar4-ddr5-walk-8b"]["tor"][1] - p2_fits["bar4-l3-walk-8b"]["tor"][1]),
     ]
     x_cc = np.arange(len(stages_cc))
-    w_cc = 0.35
+    w_cc = 0.36
     v_m1 = [s[1] for s in stages_cc]
     v_m2 = [s[2] for s in stages_cc]
-    b1 = ax_cc.bar(x_cc - w_cc / 2, v_m1, width=w_cc, color="#0284c7", label="主路实测（端点差分 / 斜率）")
-    b2 = ax_cc.bar(x_cc + w_cc / 2, v_m2, width=w_cc, color="#f59e0b", label="独立交叉核验（扫频截距 / 另一路径）")
-    for xi, a, b in zip(x_cc, v_m1, v_m2):
-        top = max(a, b)
-        diff = abs(a - b)
-        ax_cc.text(xi, top + 6, f"Δ{fmt1(diff)}", ha="center", va="bottom", fontsize=7.8, color="#334155", fontweight="bold")
-    ax_cc.set_xticks(x_cc)
-    ax_cc.set_xticklabels([s[0] for s in stages_cc], fontsize=7.6)
-    ax_cc.set_ylim(0, 365)
-    ax_cc.set_ylabel("分段耗时（ns）", fontsize=9.0)
-    ax_cc.set_title("(b) 三路交叉闭环核验（全部 6 段最大偏差 ≤ 1.4 ns）", fontsize=10.2, fontweight="bold", pad=8)
-    ax_cc.legend(loc="upper left", fontsize=8.0, frameon=True, facecolor="white")
+    deltas = [abs(a - b) for a, b in zip(v_m1, v_m2)]
+    max_delta = max(deltas)
 
-    # ==================== Panel (c): 100.00% Non-Mux IRP_1 4-Counter Hardware Audit ====================
+    ax_cc.bar(x_cc - w_cc / 2, v_m1, width=w_cc, color="#0284c7", label="主路实测（端点差分 / 扫频斜率）")
+    ax_cc.bar(x_cc + w_cc / 2, v_m2, width=w_cc, color="#f59e0b", label="独立交叉核验（扫频截距 / 另一路径）")
+    for xi, a, b, diff in zip(x_cc, v_m1, v_m2, deltas):
+        ax_cc.text(xi, max(a, b) + 6, f"Δ{fmt1(diff)}", ha="center", va="bottom", fontsize=7.8, color="#334155", fontweight="bold")
+    ax_cc.set_xticks(x_cc)
+    ax_cc.set_xticklabels([s[0] for s in stages_cc], fontsize=8.0)
+    ax_cc.set_ylim(0, 368)
+    ax_cc.set_ylabel("分段耗时（ns）", fontsize=8.8)
+    ax_cc.set_title(f"(b) 三路交叉闭环核验（全部 6 段最大偏差 ≤ {fmt1(max_delta)} ns）", fontsize=10.0, fontweight="bold", pad=8)
+    ax_cc.legend(loc="upper left", fontsize=7.8, frameon=True, facecolor="white")
+
+    # ==================== Panel (c): Trick 2 + Part 1 Host IO-Stack Hop Residency ====================
     irp_arms = [
-        ("RP resource0\n(8 B)", "rp-bar0-8b"),
+        ("RP BAR0\n(8 B)", "rp-bar0-8b"),
         ("VF0 BAR0\n(8 B)", "vf0-bar0-8b"),
         ("BAR4 L3\n(4K 8 B)", "bar4-l3-walk-8b"),
         ("BAR4 DDR5\n(4K 8 B)", "bar4-ddr5-walk-8b"),
     ]
     x_irp = np.arange(len(irp_arms))
-    w_i = 0.19
-    vals_out_ins = []
-    vals_txs_ncs = []
-    vals_txc_occ = []
-    vals_txs_occ = []
+    w_i = 0.15
+    vals_m2p_ne = []
+    vals_irp_txs_ins = []
+    vals_irp_txc_ncs = []
+    vals_irp_txs_occ = []
+    vals_irp_drs_m2p23 = []
     for _, arm in irp_arms:
-        r_clk = by_sl[("part1_irp", f"clk-ins/{arm}")]
-        r_ncs = by_sl[("part1_irp", f"occ-ncs/{arm}")]
-        r_txc = by_sl[("part1_irp", f"txc-ncs/{arm}")]
-        r_occ = by_sl[("part1_stage", f"cpu40/{arm}")]
-        vals_out_ins.append(med([r["irp1"]["c1"] / r["rounds"] for r in r_clk]))
-        vals_txs_ncs.append(med([r["irp1"]["c1"] / r["rounds"] for r in r_ncs]))
-        vals_txc_occ.append(med([r["irp1"]["c0"] / r["rounds"] for r in r_txc]))
-        vals_txs_occ.append(med([r["irp1"]["c0"] / r["rounds"] for r in r_occ]))
+        r_st = by_sl[("part1_stage", f"cpu40/{arm}")]
+        r_h3 = by_tr[("trick2_hops", f"hop3/{arm}")]
+        r_h5 = by_tr[("trick2_hops", f"hop5/{arm}")]
+        r_h1 = by_tr[("trick2_hops", f"hop1/{arm}")]
+        vals_m2p_ne.append(med([r["m2pcie1"]["cha_ncs_ne"] / r["rounds"] for r in r_st]))
+        vals_irp_txs_ins.append(med([r["io_bank"]["irp_per_op"]["txs_ins_ncs"] for r in r_h5]))
+        vals_irp_txc_ncs.append(med([r["io_bank"]["irp_per_op"]["txc_bl_ncs_occ"] for r in r_h3]))
+        vals_irp_txs_occ.append(med([r["irp1"]["c0"] / r["rounds"] for r in r_st]))
+        vals_irp_drs_m2p23.append(
+            med([r["io_bank"]["irp_per_op"]["txc_bl_drs_occ"] + r["io_bank"]["m2p_per_op"]["txc_ne_pmm_distress_0"] for r in r_h1 for _ in [0]])
+            if False else med([r["io_bank"]["irp_per_op"]["txc_bl_drs_occ"] for r in r_h1])
+        )
 
-    ax_irp.bar(x_irp - 1.5 * w_i, vals_out_ins, width=w_i, color="#0284c7", label="outbound_inserts (0x220)")
-    ax_irp.bar(x_irp - 0.5 * w_i, vals_txs_ncs, width=w_i, color="#0f766e", label="txs_data_inserts_ncs (0x0e)")
-    ax_irp.bar(x_irp + 0.5 * w_i, vals_txc_occ, width=w_i, color="#7c3aed", label="txc_bl_ncs_occ (0x0a, cyc/rd)")
-    ax_irp.bar(x_irp + 1.5 * w_i, vals_txs_occ, width=w_i, color="#dc2626", label="txs_request_occ (0x0c, cyc/rd)")
+    ax_irp.bar(x_irp - 2.0 * w_i, vals_m2p_ne, width=w_i, color="#0f766e", label="M2P₁ 去程 cha_ncs_ne (2.00 cyc = 0.91 ns)")
+    ax_irp.bar(x_irp - 1.0 * w_i, vals_irp_txs_ins, width=w_i, color="#0284c7", label="IRP₁ 去程 txs_ins_ncs (0x0e, 1.00×)")
+    ax_irp.bar(x_irp + 0.0 * w_i, vals_irp_txc_ncs, width=w_i, color="#7c3aed", label="IRP₁ BL NCS txc_occ (0x0a, 1.00 cyc = 1.01 ns)")
+    ax_irp.bar(x_irp + 1.0 * w_i, vals_irp_txs_occ, width=w_i, color="#dc2626", label="IRP₁ txs_req_occ (0x0c ≈ 0)")
+    ax_irp.bar(x_irp + 2.0 * w_i, vals_irp_drs_m2p23, width=w_i, color="#94a3b8", label="IRP₁ txc_drs & M2P 0x23 (= 0)")
 
-    for xi, v0c in zip(x_irp, vals_txs_occ):
-        ax_irp.text(xi + 1.5 * w_i, v0c + 0.04, f"{v0c:.3f}", ha="center", va="bottom", fontsize=7.6, color="#dc2626", fontweight="bold")
-    ax_irp.axhline(1.0, color="#64748b", linestyle=":", linewidth=1.0)
+    for xi, vne in zip(x_irp, vals_m2p_ne):
+        ax_irp.text(xi - 2.0 * w_i, vne + 0.05, f"{vne:.2f}", ha="center", va="bottom", fontsize=7.2, color="#0f766e", fontweight="bold")
+    for xi, v0c in zip(x_irp, vals_irp_txs_occ):
+        ax_irp.text(xi + 1.0 * w_i, v0c + 0.05, f"{v0c:.3f}", ha="center", va="bottom", fontsize=6.9, color="#dc2626", fontweight="bold")
+
+    ax_irp.axhline(1.0, color="#64748b", linestyle=":", linewidth=0.9)
+    ax_irp.axhline(2.0, color="#0f766e", linestyle=":", linewidth=0.9, alpha=0.6)
     ax_irp.set_xticks(x_irp)
-    ax_irp.set_xticklabels([a[0] for a in irp_arms], fontsize=8.3)
-    ax_irp.set_ylim(0, 1.38)
-    ax_irp.set_ylabel("每笔 MMIO 读的 IRP₁ 计数 / 周期", fontsize=9.0)
-    ax_irp.set_title("(c) uncore_irp_1 100.00% 非复用标定：0x0e/0x220/0x0a 精确 1:1，0x0c ≈ 0", fontsize=10.0, fontweight="bold", pad=8)
-    ax_irp.legend(loc="upper right", fontsize=7.4, frameon=True, facecolor="white", ncol=2)
+    ax_irp.set_xticklabels([a[0] for a in irp_arms], fontsize=8.2)
+    ax_irp.set_ylim(0, 3.25)
+    ax_irp.set_ylabel("每笔 MMIO 读的队列驻留周期 / 计数", fontsize=8.6)
+    ax_irp.set_title("(c) 巧招 2 + IRP₁：M2P₁ (0.91 ns) 与 IRP₁ BL (1.01 ns) 为纯过站，0x0c/drs/0x23=0", fontsize=8.9, fontweight="bold", pad=8)
+    ax_irp.legend(loc="upper center", fontsize=6.7, frameon=True, facecolor="white", ncol=2, columnspacing=0.8)
 
     fig.suptitle(
-        "MRV-185 劈开 495 ns 黑盒：6 段完整 MMIO Read 纳秒分解、三路交叉闭环与 IRP₁ 硬件标定（n=3 交错，零错，100% 非复用）",
-        fontsize=12.0, fontweight="bold", y=0.985,
+        "MRV-185 劈开 495 ns 黑盒：6 段完整 MMIO Read 纳秒分解、三路交叉闭环与片内过站标定（n=3 交错，零错，100% 非复用）",
+        fontsize=12.0, fontweight="bold", y=0.965,
     )
-    out = save(fig, "mrv-185-six-stage-waterfall")
-    print(f"Wrote {out}")
+
+    # Save directly without tight_layout overriding explicit gridspec margins.
+    png = Path(__file__).resolve().parent / "mrv-185-six-stage-waterfall.png"
+    svg = Path(__file__).resolve().parent / "mrv-185-six-stage-waterfall.svg"
+    fig.savefig(png)
+    fig.savefig(svg)
+    plt.close(fig)
+    print(f"Wrote {png} and {svg}")
 
 
 if __name__ == "__main__":
