@@ -1,18 +1,20 @@
 import React from "react";
-import { Cue, FONT, Pt, SceneDef, clamp01, lerp, lin, prog, useT } from "../lib";
-import { Cell, Flow, P, Stage, TAB, Tag, Text, alpha } from "./kit";
+import { Cue, FONT, Pt, SceneDef, clamp01, lerp, lin, pathD, prog, useT } from "../lib";
+import { Cell, Flow, P, Stage, TAB, Tag, Text, alpha, win } from "./kit";
 import { Brace, ends, passGlow, stream } from "./_CcSceneProof";
 
 // <cues>
 const cues: Cue[] = [
-  [0.60, 9.64, "So far the NIC only echoed messages. Does the gain survive a real network? We wired it to a second server over **100GbE**.", "So far, the card only echoed messages back. Does the gain survive a real network? We connected it to a second server over a hundred gigabit Ethernet cable."], // 0
-  [9.99, 19.83, "Now every request crosses the full path: client NIC, cable, our NIC's Ethernet engine, PCIe, the host, and back.", "Now every request crosses the full path: the client's card, the cable, our card's Ethernet engine, P C I express, and the host, and then all the way back."], // 1
-  [20.18, 34.36, "64-byte round trip: **10.21 µs** with the standard interface, **5.96 µs** with DirectPush: **−4.25 µs** (−42%).", "For sixty-four byte requests, the round trip drops from ten point two one microseconds with the standard interface to five point nine six with DirectPush. That saves four and a quarter microseconds, forty-two percent, with the wire included."], // 2
-  [34.71, 45.33, "About **4.3 µs** of that is cable and Ethernet hardware. The host–NIC part itself fell from **5.9 µs to 1.7 µs**.", "About four point three microseconds of that is the fixed cost of the cable and the Ethernet hardware. The host to card part itself fell from five point nine to one point seven microseconds."], // 3
-  [45.68, 57.02, "Can **one host core** fill a 100GbE link with small packets? With 64-byte UDP payloads: **99.76 Gbps**, line rate.", "And can a single host core keep a hundred gigabit link full of small packets? With sixty-four byte U D P payloads, one core drives ninety-nine point seven six gigabits per second: line rate."], // 4
-  [57.37, 67.65, "The best-tuned standard interface gets about **half** of that. For bare 64 B frames, the NIC's own scheduler is the limit.", "The best-tuned standard interface reaches only about half of that on one core. And for bare sixty-four byte frames, the limit becomes the card's own transmit scheduler, not the host."], // 5
+  [0.60, 9.52, "So far the NIC only echoed messages. Does the gain survive a real network? We wired it to a second server over **100GbE**.", "So far, the nick only echoed messages back. Does the gain survive a real network? We connected it to a second server over a hundred gigabit Ethernet cable."], // 0
+  [9.87, 19.25, "Now every request crosses the full path: client NIC, cable, our NIC's Ethernet engine, PCIe, the host, and back.", "Now every request crosses the full path: the client's nick, the cable, our card's Ethernet engine, P C I E, and the host, and then all the way back."], // 1
+  [19.60, 33.78, "64-byte round trip: **10.21 µs** with the standard interface, **5.96 µs** with DirectPush: **−4.25 µs** (−42%).", "For sixty-four byte requests, the round trip drops from ten point two one microseconds with the standard interface to five point nine six with DirectPush. That saves four and a quarter microseconds, forty-two percent, with the wire included."], // 2
+  [34.13, 44.51, "About **4.3 µs** of that is cable and Ethernet hardware. The host–NIC part itself fell from **5.9 µs to 1.7 µs**.", "About four point three microseconds of that is the fixed cost of the cable and the Ethernet hardware. The host to nick part itself fell from five point nine to one point seven microseconds."], // 3
+  [44.86, 56.00, "The gain holds at every size: **10.4 → 6.6 µs** at 256 B, **15.1 → 11.9 µs** at 4 KiB.", "The gain holds at every message size: from ten point four to six point six microseconds at two hundred fifty-six bytes, and from fifteen point one to eleven point nine at four kilobytes."], // 4
+  [56.35, 68.37, "Under load, the tail stays low: at **2 M requests/s**, the 64 B p99 is **12.6 µs** instead of **26.3 µs**.", "It holds under load, too. At two million requests per second, the ninety-ninth percentile latency for sixty-four byte requests is twelve point six microseconds, instead of twenty-six point three."], // 5
+  [68.72, 80.06, "Can **one host core** fill a 100GbE link with small packets? With 64-byte UDP payloads: **99.76 Gbps**, line rate.", "And can a single host core keep a hundred gigabit link full of small packets? With sixty-four byte U D P payloads, one core drives ninety-nine point seven six gigabits per second: line rate."], // 6
+  [80.41, 93.11, "The best-tuned standard interface gets about **half** of that. Bare 64 B frames hit the NIC's own ~100 Mpps send limit.", "The best-tuned standard interface reaches only about half of that on one core. And for bare sixty-four byte frames, the limit becomes the card's own transmit path, at about a hundred million packets per second, not the host."], // 7
 ];
-const DUR = 69.05; // <dur>
+const DUR = 94.51; // <dur>
 // </cues>
 
 const T = cues.map((c) => c[0]);
@@ -55,6 +57,32 @@ const X_STD = BX + 10.21 * US;
 const X_DP = BX + 5.96 * US;
 const X_LINE = BX + 100 * GB;
 
+// b4: round trip at every message size (W=1 p50, µs), drawn to scale from the same origin as the b2 bars
+const SIZES = [
+  { label: "64 B", std: 10.21, dp: 5.96, stdText: "10.21 µs", dpText: "5.96 µs" },
+  { label: "256 B", std: 10.38, dp: 6.62, stdText: "10.4", dpText: "6.6" },
+  { label: "1 KiB", std: 10.95, dp: 9.84, stdText: "10.9", dpText: "9.8" },
+  { label: "4 KiB", std: 15.11, dp: 11.94, stdText: "15.1", dpText: "11.9" },
+];
+const SZ_US = 66; // px per µs
+const SZ_BAR = 32;
+const SZ_GAP = 6; // between the two bars of one size
+const SZ_GH = 2 * SZ_BAR + SZ_GAP;
+const szY = (g: number) => 452 + 104 * g; // top of size g's bar pair
+// b5: 64 B p99 (µs) vs offered load (M requests/s); the standard interface was measured up to 2.75 M/s
+const LOAD_STD: Pt[] = [[0.5, 14.32], [1.0, 16.42], [1.5, 20.05], [2.0, 26.25], [2.5, 29.05], [2.75, 36.05]];
+const LOAD_DP: Pt[] = [[0.5, 7.83], [1.0, 9.21], [1.5, 11.11], [2.0, 12.62], [2.5, 16.4], [3.0, 19.1], [3.5, 22.55]];
+const LX = (v: number) => 630 + ((v - 0.5) / 3) * 1000; // 0.5 → 630, 3.5 → 1630
+const LY = (v: number) => 818 - 9 * v; // 0 → 818, 40 µs → 458
+const LX1 = 1670; // right end of the grid
+const PX_STD = LOAD_STD.map(([v, us]): Pt => [LX(v), LY(us)]);
+const PX_DP = LOAD_DP.map(([v, us]): Pt => [LX(v), LY(us)]);
+/** b5: the two narrated points at 2 M requests/s */
+const LIT = [
+  { p: [LX(2), LY(12.62)] as Pt, color: P.push, text: "12.6 µs" },
+  { p: [LX(2), LY(26.25)] as Pt, color: GREY, text: "26.3 µs" },
+];
+
 /** Glow of a stage while one request (network → host) and its reply (host → network) cross it; the loop starts at ls. */
 function loopGlow(t: number, ls: number, key: Stg) {
   const [x0, x1] = XR[key];
@@ -63,6 +91,21 @@ function loopGlow(t: number, ls: number, key: Stg) {
   const tq = (x: number) => ls + frac(XS - x) * DQ;
   const tr = (x: number) => ls + DQ + DWELL + frac(x - XH) * DQ;
   return Math.max(passGlow(t, tq(x1), tq(x0)), passGlow(t, tr(x0), tr(x1)));
+}
+
+/** The part of a left-to-right polyline with x ≤ xc (the sweep that draws the b5 curves). */
+function upTo(pts: Pt[], xc: number): Pt[] {
+  const out: Pt[] = [];
+  for (let i = 0; i < pts.length; i++) {
+    const [x, y] = pts[i];
+    if (x <= xc) {
+      out.push(pts[i]);
+      continue;
+    }
+    if (i > 0) out.push([xc, lerp(pts[i - 1][1], y, (xc - pts[i - 1][0]) / (x - pts[i - 1][0]))]);
+    break;
+  }
+  return out;
 }
 
 /** One machine of the topology row (SVG, local coordinates). */
@@ -97,11 +140,11 @@ function Body() {
   const yc = lerp(Y_HOME, Y_UP, prog(t, T[2] + 0.1, 0.9));
   const echoK = lin(t, T[0] + 1.3, 2.0);
 
-  // stage glows: the b1 request loop, the b3 fixed vs host–NIC split, b4–b5 line rate from one host core
+  // stage glows: the b1 request loop, the b3 fixed vs host–NIC split, b6–b7 line rate from one host core
   const g1 = (key: Stg) => Math.max(...LOOPS_B1.map((ls) => loopGlow(t, ls, key)));
   const tint = prog(t, T[3] + 1.4, 0.7) * (1 - prog(t, T[4], 0.5));
-  const rate = prog(t, T[4] + 1.0, 1.4);
-  const core = prog(t, T[4] + 0.8, 0.6);
+  const rate = prog(t, T[6] + 1.0, 1.4);
+  const core = prog(t, T[6] + 0.8, 0.6);
   const glow: Record<Stg, number> = {
     host: Math.max(g1("host"), 0.7 * tint, core),
     pcie: Math.max(g1("pcie"), 0.7 * tint, 0.6 * rate),
@@ -124,13 +167,26 @@ function Body() {
   const heads = prog(t, T[3] + 1.0, 0.6);
   const parts = prog(t, T[3] + 5.2, 0.6);
 
-  // ---------------------------------------------------------------- throughput bars (b4–b5)
-  const thr = prog(t, T[4] + 0.6, 0.7);
-  const marker = prog(t, T[4] + 2.4, 0.6);
-  const rowB = lerp(540, ROW2, prog(t, T[5] + 0.1, 0.8));
-  const kB = prog(t, T[4] + 4.6, 1.6);
-  const rowA = prog(t, T[5] + 0.4, 0.6);
-  const kA = prog(t, T[5] + 0.8, 1.2);
+  // ---------------------------------------------------------------- every message size (b4)
+  const sizes = win(t, T[4], T[5]);
+  // the narrated size stays bright while the others dim: 256 B over its span (+2.2–6.0), 4 KiB over its own (+7.2–10.6)
+  const focus = [0, win(t, T[4] + 2.2, T[4] + 5.5), 0, win(t, T[4] + 7.2, T[4] + 10.1)];
+  const dimOthers = focus[1] + focus[3]; // the two windows never overlap
+  const legend = win(t, T[4] + 0.5, T[6]);
+
+  // ---------------------------------------------------------------- tail under load (b5)
+  const load = win(t, T[5] + 0.4, T[6]);
+  const sweep = lerp(LX(0.5), LX(3.5), prog(t, T[5] + 0.45, 1.6));
+  const guide = prog(t, T[5] + 1.9, 0.5);
+  const lit = [prog(t, T[5] + 7.5, 0.5), prog(t, T[5] + 10.2, 0.5)];
+
+  // ---------------------------------------------------------------- throughput bars (b6–b7)
+  const thr = prog(t, T[6] + 0.6, 0.7);
+  const marker = prog(t, T[6] + 2.4, 0.6);
+  const rowB = lerp(540, ROW2, prog(t, T[7] + 0.1, 0.8));
+  const kB = prog(t, T[6] + 4.6, 1.6);
+  const rowA = prog(t, T[7] + 0.4, 0.6);
+  const kA = prog(t, T[7] + 0.8, 1.2);
 
   return (
     <>
@@ -186,8 +242,8 @@ function Body() {
               </g>
             );
           })}
-          {/* b4–b5: one host core keeps the link full */}
-          {stream(t, T[4] + 1.0, 1e9, 0.085, DQ).map(({ i, k }) => (
+          {/* b6–b7: one host core keeps the link full */}
+          {stream(t, T[6] + 1.0, 1e9, 0.085, DQ).map(({ i, k }) => (
             <Cell key={i} pts={R_REP} k={k} color={P.push} w={22} h={15} opacity={ends(k, 0.04, 0.05)} />
           ))}
         </g>
@@ -239,7 +295,80 @@ function Body() {
           </text>
         </g>
 
-        {/* ---------------- throughput from one host core (b4–b5) */}
+        {/* ---------------- round trip at every message size (b4): the narrated size stays bright */}
+        <g opacity={sizes} fontFamily={FONT}>
+          {[1, 3].map((g) => (
+            <rect key={g} x={452} y={szY(g) - 13} width={1262} height={SZ_GH + 26} rx={18} fill={alpha(P.ink, 0.035)} stroke={alpha(P.ink, 0.1)} strokeWidth={1.5} opacity={focus[g]} />
+          ))}
+          {SIZES.map((r, g) => {
+            const y = szY(g);
+            const kS = prog(t, T[4] + 0.3 + 0.22 * g, 0.9);
+            const kD = prog(t, T[4] + 0.42 + 0.22 * g, 0.9);
+            const wS = r.std * SZ_US * kS;
+            const wD = r.dp * SZ_US * kD;
+            return (
+              <g key={r.label} opacity={1 - 0.62 * (dimOthers - focus[g])}>
+                <text x={LAB_X} y={y + SZ_GH / 2 + 1} textAnchor="end" dominantBaseline="central" fontSize={27} fill={P.ink} opacity={prog(t, T[4] + 0.5 + 0.22 * g, 0.5)}>
+                  {r.label}
+                </text>
+                <rect x={BX} y={y} width={wS} height={SZ_BAR} rx={SZ_BAR / 2} fill={GREY} opacity={0.92} />
+                <rect x={BX} y={y + SZ_BAR + SZ_GAP} width={wD} height={SZ_BAR} rx={SZ_BAR / 2} fill={P.push} opacity={0.92} />
+                <text x={BX + wS + 16} y={y + SZ_BAR / 2 + 1} dominantBaseline="central" fontSize={26} fontWeight={700} fill={GREY} style={TAB} opacity={clamp01((kS - 0.6) / 0.4)}>
+                  {r.stdText}
+                </text>
+                <text x={BX + wD + 16} y={y + SZ_BAR + SZ_GAP + SZ_BAR / 2 + 1} dominantBaseline="central" fontSize={26} fontWeight={700} fill={P.push} style={TAB} opacity={clamp01((kD - 0.6) / 0.4)}>
+                  {r.dpText}
+                </text>
+              </g>
+            );
+          })}
+        </g>
+
+        {/* ---------------- 64 B p99 vs offered load (b5): two curves, then the two points at 2 M requests/s */}
+        <g opacity={load} fontFamily={FONT}>
+          {[0, 20, 40].map((v) => (
+            <g key={v}>
+              <line x1={BX} y1={LY(v)} x2={LX1} y2={LY(v)} stroke={v ? P.hair : P.hair2} strokeWidth={v ? 1.5 : 2} />
+              <text x={LAB_X} y={LY(v) + 1} textAnchor="end" dominantBaseline="central" fontSize={22} fill={P.sub} style={TAB}>
+                {v === 40 ? "40 µs" : v}
+              </text>
+            </g>
+          ))}
+          {[1, 2, 3].map((v) => (
+            <g key={v}>
+              <line x1={LX(v)} y1={LY(0)} x2={LX(v)} y2={LY(0) + 8} stroke={P.hair2} strokeWidth={2} />
+              <text x={LX(v)} y={LY(0) + 30} textAnchor="middle" dominantBaseline="central" fontSize={22} fill={P.sub} style={TAB}>
+                {v}
+              </text>
+            </g>
+          ))}
+          <text x={LX1} y={LY(0) + 30} textAnchor="end" dominantBaseline="central" fontSize={22} fill={P.sub}>
+            M requests/s
+          </text>
+          <line x1={LX(2)} y1={LY(0)} x2={LX(2)} y2={LY(40)} stroke={alpha(P.ink, 0.55)} strokeWidth={1.5} strokeDasharray="6 6" opacity={guide} />
+          {([[PX_STD, GREY], [PX_DP, P.push]] as [Pt[], string][]).map(([pts, c]) => {
+            const drawn = upTo(pts, sweep);
+            return (
+              <g key={c}>
+                {drawn.length > 1 && <path d={pathD(drawn)} fill="none" stroke={c} strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />}
+                {pts.map(([x, y]) => (
+                  <circle key={x} cx={x} cy={y} r={5.5} fill={c} opacity={clamp01((sweep - x + 12) / 24)} />
+                ))}
+              </g>
+            );
+          })}
+          {LIT.map((d, i) => (
+            <g key={d.text} opacity={lit[i]}>
+              <circle cx={d.p[0]} cy={d.p[1]} r={20} fill={alpha(d.color, 0.35)} filter="url(#ccSoft)" />
+              <circle cx={d.p[0]} cy={d.p[1]} r={11} fill="none" stroke={d.color} strokeWidth={2.5} />
+              <text x={d.p[0] - 22} y={d.p[1] - 32} textAnchor="end" dominantBaseline="central" fontSize={30} fontWeight={700} fill={d.color} style={TAB}>
+                {d.text}
+              </text>
+            </g>
+          ))}
+        </g>
+
+        {/* ---------------- throughput from one host core (b6–b7) */}
         <g opacity={thr} fontFamily={FONT}>
           <g opacity={marker}>
             <line x1={X_LINE} y1={458} x2={X_LINE} y2={664} stroke={alpha(P.ink, 0.6)} strokeWidth={2} strokeDasharray="6 6" />
@@ -295,12 +424,29 @@ function Body() {
         <div style={{ fontSize: 20, color: P.sub, marginTop: 6 }}>with the wire included</div>
       </div>
 
+      {/* message sizes (b4) and load (b5) overlays: the kickers take turns, one legend serves both charts */}
+      <Text x={KICK_X} y={398} size={17} color={P.sub} opacity={win(t, T[4] + 0.5, T[5])} style={{ letterSpacing: 2.6, fontWeight: 600 }}>
+        ROUND TRIP · W=1 · p50 · LOWER IS BETTER
+      </Text>
+      <Text x={KICK_X} y={398} size={17} color={P.sub} opacity={win(t, T[5] + 0.5, T[6])} style={{ letterSpacing: 2.6, fontWeight: 600 }}>
+        64 B · p99 vs OFFERED LOAD
+      </Text>
+      <div style={{ position: "absolute", left: 1100, top: 396, width: 600, display: "flex", justifyContent: "flex-end", gap: 36, fontFamily: FONT, fontSize: 22, color: P.ink, opacity: legend }}>
+        {([["standard interface", GREY], ["DirectPush", P.push]] as const).map(([name, c]) => (
+          <div key={name} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ width: 28, height: 12, borderRadius: 6, background: c }} />
+            {name}
+          </div>
+        ))}
+      </div>
+
       {/* throughput overlays */}
-      <Text x={KICK_X} y={398} size={17} color={P.sub} opacity={thr * prog(t, T[4] + 3.8, 0.6)} style={{ letterSpacing: 2.6, fontWeight: 600 }}>
+      <Text x={KICK_X} y={398} size={17} color={P.sub} opacity={thr * prog(t, T[6] + 3.8, 0.6)} style={{ letterSpacing: 2.6, fontWeight: 600 }}>
         64-BYTE UDP PAYLOADS · HIGHER IS BETTER
       </Text>
-      <Text x={KICK_X} y={700} w={1400} size={20} color={P.sub} opacity={thr * prog(t, T[5] + 4.4, 0.7)}>
-        bare 64 B frames: 99.2 Mpps, at the NIC's own transmit-scheduler limit (99.8 Mpps)
+      <Text x={KICK_X} y={700} w={1400} size={20} color={P.sub} opacity={thr}>
+        <span style={{ opacity: prog(t, T[7] + 4.4, 0.7) }}>bare 64 B frames: 99.2 Mpps</span>
+        <span style={{ opacity: prog(t, T[7] + 9.1, 0.7) }}>, at the NIC's own send limit (~100 Mpps)</span>
       </Text>
     </>
   );

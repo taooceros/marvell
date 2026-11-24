@@ -4,13 +4,13 @@ import { Cell, P, Stage, Text, alpha, win } from "./kit";
 
 // <cues>
 const cues: Cue[] = [
-  [0.60, 10.30, "**CC-NIC does not need cache coherence**: how should a host CPU and its network card talk?", "This is the story behind our paper, C C nick does not need cache coherence. It is about one question: how should a host C P U and its network card talk to each other?"], // 0
-  [10.65, 19.69, "A recent line of work says fast NICs must join the CPU's **cache-coherence domain**. We argue the opposite.", "A recent line of work argues that fast network cards must join the C P U's cache coherence domain, over links like C X L. We argue the opposite."], // 1
-  [20.04, 31.14, "The speedup comes from **how data is handed over**, not from coherence. Plain PCIe can already do that hand-over.", "The speedup comes from how data is handed from one side to the other, not from coherence itself. And plain P C I express, the link inside every server today, can already do that hand-over."], // 2
-  [31.49, 42.29, "Everything is measured on real hardware: a Xeon host and a **Marvell CN106** NIC on PCIe Gen5, IOMMU on.", "Everything here is measured on real hardware: an Intel Xeon host and a Marvell C N one oh six network card on P C I express gen five, with the I O M M U turned on."], // 3
-  [42.64, 52.34, "The plan: the debate → why coherence is **not needed** → why it is **not free** → what real hardware adds → end to end.", "Here is the plan. First, the debate. Then why coherence is not needed, and why it is not free. Then what real hardware taught us, and finally the end-to-end result."], // 4
+  [0.60, 11.24, "**CC-NIC does not need cache coherence**: how should a host CPU and its network card talk?", "This is the story behind our paper, C C nick does not need cache coherence. It is about one question: how should a host C P U and its network card, the nick, talk to each other?"], // 0
+  [11.59, 20.05, "A recent line of work says fast NICs must join the CPU's **cache-coherence domain**. We argue the opposite.", "A recent line of work argues that fast nicks must join the C P U's cache coherence domain, over links like C X L. We argue the opposite."], // 1
+  [20.40, 31.20, "The speedup comes from **how data is handed over**, not from coherence. Plain PCIe can already do that hand-over.", "The speedup comes from how data is handed from one side to the other, not from coherence itself. And plain P C I E, the link inside every server today, can already do that hand-over."], // 2
+  [31.55, 41.71, "Everything is measured on real hardware: a Xeon host and a **Marvell CN106** NIC on PCIe Gen5, IOMMU on.", "Everything here is measured on real hardware: an Intel Xeon host and a Marvell C N one oh six nick over P C I E gen five, with the I O M M U enabled."], // 3
+  [42.06, 51.76, "The plan: the debate → why coherence is **not needed** → why it is **not free** → what real hardware adds → end to end.", "Here is the plan. First, the debate. Then why coherence is not needed, and why it is not free. Then what real hardware taught us, and finally the end-to-end result."], // 4
 ];
-const DUR = 53.74; // <dur>
+const DUR = 53.16; // <dur>
 // </cues>
 
 const T = cues.map((c) => c[0]);

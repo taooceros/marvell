@@ -6,14 +6,14 @@ import { Shield, TagC, XMark, landOp, phase, stream } from "./_CcSceneCost";
 // <cues>
 const cues: Cue[] = [
   [0.60, 6.22, "Coherence isn't only unnecessary here. It also carries a **cost** that push simply avoids.", "Coherence is not only unnecessary here. It also carries a cost that push simply avoids."], // 0
-  [6.57, 16.65, "A coherent NIC caches host buffers it has read. When the host reuses one, each copy must be **invalidated over the link**.", "A coherent card keeps copies of the host buffers it has read in its own cache. When the host writes to those buffers again, each stale copy must first be invalidated across the link."], // 1
+  [6.57, 16.65, "A coherent NIC caches host buffers it has read. When the host reuses one, each copy must be **invalidated over the link**.", "A coherent nick holds copies of the host buffers it has read in its own cache. When the host writes to those buffers again, each stale copy must first be invalidated across the link."], // 1
   [17.00, 27.32, "Real stacks keep sent buffers: TCP holds each one until it is acked. CC-NIC measured **−20%** throughput from that alone.", "Real network stacks keep sent buffers around. T C P, for example, holds every sent packet until it is acknowledged. C C nick measured a twenty percent throughput drop from that alone."], // 2
-  [27.67, 34.75, "With push, data arrives **by value**: the NIC never caches host memory, so there is nothing to invalidate.", "With push, data arrives by value. The card never caches host memory, so there is never anything to invalidate."], // 3
-  [35.10, 48.92, "It frees the sender too: a pushed buffer can be **reused at once**. One core rewriting one 64 B buffer: **174.8 M/s**.", "Push frees the sender, too. Since the card never reads a buffer back, the C P U can reuse it the moment it is pushed. One core rewriting a single sixty-four byte buffer still pushes one hundred seventy-four point eight million messages per second."], // 4
-  [49.27, 60.23, "We grew the retained pool **2,000×**, from 64 KiB to 128 MiB, past the 60 MiB host cache. Throughput: **−0.9%**.", "We grew the retained buffer pool two thousand times, from sixty-four kilobytes to one hundred twenty-eight megabytes, larger than the entire host cache. Throughput moved by less than one percent."], // 5
-  [60.58, 75.22, "Isolation stays too: every run kept the **IOMMU on**. CC-NIC leaves it to future work; CXL devices bypass it.", "Isolation stays, too. Every run here kept the I O M M U on. C C nick leaves protection to future work, and the C X L nick paper notes that C X L devices are not protected by the I O M M U the way P C I express devices are."], // 6
+  [27.67, 34.67, "With push, data arrives **by value**: the NIC never caches host memory, so there is nothing to invalidate.", "With push, data arrives by value. The nick never caches host memory, so there is never anything to invalidate."], // 3
+  [35.02, 48.70, "It frees the sender too: a pushed buffer can be **reused at once**. One core rewriting one 64 B buffer: **174.8 M/s**.", "Push frees the sender, too. Since the nick never reads a buffer back, the C P U can reuse it the moment it is pushed. One core rewriting a single sixty-four byte buffer still pushes one hundred seventy-four point eight million messages per second."], // 4
+  [49.05, 60.01, "We grew the retained pool **2,000×**, from 64 KiB to 128 MiB, past the 60 MiB host cache. Throughput: **−0.9%**.", "We grew the retained buffer pool two thousand times, from sixty-four kilobytes to one hundred twenty-eight megabytes, larger than the entire host cache. Throughput moved by less than one percent."], // 5
+  [60.36, 74.74, "Isolation stays too: every run kept the **IOMMU on**. CC-NIC leaves it to future work; CXL devices bypass it.", "Isolation stays, too. Every run here kept the I O M M U on. C C nick leaves protection to future work, and the C X L nick paper notes that C X L devices are not protected by the I O M M U the way P C I E devices are."], // 6
 ];
-const DUR = 76.62; // <dur>
+const DUR = 76.14; // <dur>
 // </cues>
 
 const T = cues.map((c) => c[0]);

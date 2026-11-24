@@ -6,14 +6,14 @@ import { Token, ends, headD } from "./_CcSceneProof";
 // <cues>
 const cues: Cue[] = [
   [0.60, 10.02, "Back to the question: the speedup came from **putting data in the reader's cache without round trips**.", "So, back to our question. The speedup came from putting each message into the reader's cache, with no round trips. Coherence was one way to get there, not the reason it works."], // 0
-  [10.37, 20.19, "Plain PCIe gets there with **writes pushed both ways**, **credits** against congestion, and the **NIC's DMA** for bulk.", "Plain P C I express gets there with three simple pieces: writes pushed in both directions, credits to avoid congestion, and the card's own D M A for bulk data."], // 1
-  [20.54, 31.28, "The result: sub-µs round trips, line rate from one core, no coherence tax, and the IOMMU stays on.", "What we get: sub-microsecond round trips, line rate from a single core, no coherence tax on retained buffers, and full I O M M U isolation, on hardware you can buy today."], // 2
-  [31.63, 43.01, "Coherence still matters for **truly shared state**, such as atomics on a shared buffer allocator. We don't claim that.", "Coherence still matters where host and card truly share mutable state, such as atomic operations on a shared buffer allocator. P C I express cannot do that, and we do not claim it can."], // 3
-  [43.36, 55.96, "Related work proposed new PCIe and CPU extensions for write-based datapaths. We show **unmodified hardware** suffices.", "This builds on recent work that treats device writes as a data path, which proposed new P C I express and C P U extensions. We show that unmodified hardware is already enough, and what it takes to make it robust."], // 4
-  [56.31, 63.61, "Open next step: let the NIC **back off on demand**, to keep sub-2 µs tails at higher load.", "The main open step is on the card side: backing off on demand, so tails stay under two microseconds at higher load."], // 5
-  [63.96, 72.98, "**CC-NIC does not need cache coherence.** It needs a better hand-over, and PCIe already provides one.", "Our one-sentence takeaway: C C nick does not need cache coherence. It needs a better hand-over, and plain P C I express already provides one."], // 6
+  [10.37, 19.87, "Plain PCIe gets there with **writes pushed both ways**, **credits** against congestion, and the **NIC's DMA** for bulk.", "Plain P C I E gets there with three simple pieces: writes pushed in both directions, credits to avoid congestion, and the card's own D M A for bulk data."], // 1
+  [20.22, 30.96, "The result: sub-µs round trips, line rate from one core, no coherence tax, and the IOMMU stays on.", "What we get: sub-microsecond round trips, line rate from a single core, no coherence tax on retained buffers, and full I O M M U isolation, on hardware you can buy today."], // 2
+  [31.31, 42.15, "Coherence still matters for **truly shared state**, such as atomics on a shared buffer allocator. We don't claim that.", "Coherence still matters where host and nick truly share mutable state, such as atomic operations on a shared buffer allocator. P C I E cannot do that, and we do not claim it can."], // 3
+  [42.50, 55.62, "Related work orders device writes at the receiver with new PCIe/CPU extensions. **Unmodified hardware** suffices.", "This builds on recent work that also orders device writes at the receiver, but proposed new P C I E and C P U extensions to do it. We show that unmodified hardware is already enough, and what it takes to make it robust."], // 4
+  [55.97, 63.19, "Open next step: let the NIC **back off on demand**, to keep sub-2 µs tails at higher load.", "The main open step is on the nick side: backing off on demand, so tails stay under two microseconds at higher load."], // 5
+  [63.54, 72.30, "**CC-NIC does not need cache coherence.** It needs a better hand-over, and PCIe already provides one.", "Our one-sentence takeaway: C C nick does not need cache coherence. It needs a better hand-over, and plain P C I E already provides one."], // 6
 ];
-const DUR = 74.38; // <dur>
+const DUR = 73.70; // <dur>
 // </cues>
 
 const T = cues.map((c) => c[0]);

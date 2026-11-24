@@ -5,14 +5,14 @@ import { Live, PartFill, PartGlow, Token, ends, stream } from "./_CcSceneProof";
 
 // <cues>
 const cues: Cue[] = [
-  [0.60, 8.24, "Push has a bonus: the **NIC is the writer**, so it decides where data lands, even during a receive burst.", "Push has a bonus. Because the card is the one writing, it decides where data lands, and that matters most during a receive burst."], // 0
-  [8.59, 18.51, "A passive NIC pours the burst into a big host ring. At 128 MiB, it overflows the host cache and spills to DRAM.", "A passive card pours the whole burst into a big ring in host memory. At one hundred twenty-eight megabytes, that overflows the host cache, and the data spills to D RAM."], // 1
-  [18.86, 28.30, "An **active NIC** keeps the backlog in its own memory and refills a small **256 KiB** host ring as credits return.", "An active card instead keeps the backlog in its own memory, and refills a small, two hundred fifty-six kilobyte host ring as the host returns credits."], // 2
-  [28.65, 38.67, "Same 128 MiB burst: host cache misses **91.4% → 0%**, host DRAM traffic **−98.9%**.", "With the same one hundred twenty-eight megabyte burst, the host's cache misses fall from ninety-one percent to zero, and host D RAM traffic falls by ninety-eight point nine percent."], // 3
-  [39.02, 49.72, "Bursts up to 32 MiB fit in the NIC's **48 MiB cache** and touch no DRAM at all; larger ones go to the **NIC's own DRAM**.", "Bursts up to thirty-two megabytes fit entirely in the card's forty-eight megabyte cache, and touch no D RAM at all. Larger bursts land in the card's own D RAM, not the host's."], // 4
-  [50.07, 55.87, "With no burst at all, the extra bookkeeping costs just **6 ns** per round trip.", "And when there is no burst, the extra credit bookkeeping costs only six nanoseconds per round trip."], // 5
+  [0.60, 8.20, "Push has a bonus: the **NIC is the writer**, so it decides where data lands, even during a receive burst.", "Push has a bonus. Because the nick is the one writing, it decides where data lands, and that matters most during a receive burst."], // 0
+  [8.55, 18.29, "A passive NIC pours the burst into a big host ring. At 128 MiB, it overflows the host cache and spills to DRAM.", "A passive nick pours the whole burst into a big ring in host memory. At one hundred twenty-eight megabytes, that overflows the host cache, and the data spills to D RAM."], // 1
+  [18.64, 27.94, "An **active NIC** keeps the backlog in its own memory and refills a small **256 KiB** host ring as credits return.", "An active nick instead keeps the backlog in its own memory, and refills a small, two hundred fifty-six kilobyte host ring as the host returns credits."], // 2
+  [28.29, 38.31, "Same 128 MiB burst: host cache misses **91.4% → 0%**, host DRAM traffic **−98.9%**.", "With the same one hundred twenty-eight megabyte burst, the host's cache misses fall from ninety-one percent to zero, and host D RAM traffic falls by ninety-eight point nine percent."], // 3
+  [38.66, 49.36, "Bursts up to 32 MiB fit in the NIC's **48 MiB cache** and touch no DRAM at all; larger ones go to the **NIC's own DRAM**.", "Bursts up to thirty-two megabytes fit entirely in the card's forty-eight megabyte cache, and touch no D RAM at all. Larger bursts land in the card's own D RAM, not the host's."], // 4
+  [49.71, 55.51, "With no burst at all, the extra bookkeeping costs just **6 ns** per round trip.", "And when there is no burst, the extra credit bookkeeping costs only six nanoseconds per round trip."], // 5
 ];
-const DUR = 57.27; // <dur>
+const DUR = 56.91; // <dur>
 // </cues>
 
 const T = cues.map((c) => c[0]);

@@ -5,15 +5,15 @@ import { BoxTitle, LinkText, PartText, tagW } from "./_CcSceneDebate";
 
 // <cues>
 const cues: Cue[] = [
-  [0.60, 8.22, "**CC-NIC** (ASPLOS '24) proposed a fix: move the NIC inside the CPU's **cache-coherence domain**.", "In twenty twenty four, the C C nick paper proposed a fix: move the network card inside the C P U's cache coherence domain."], // 0
-  [8.57, 18.91, "Host and NIC then share cache lines, and coherence hardware moves each line to whoever touches it next.", "Host and card would then share cache lines, and the coherence hardware moves each line to whichever side touches it next. Just loads and stores: no doorbells, and no D M A."], // 1
-  [19.26, 32.20, "Modeled on a two-socket Xeon, one socket playing the NIC: **490–650 ns**, about **77% lower** than PCIe NICs.", "They modeled it on a two-socket Xeon server, with one socket playing the network card, and measured four hundred ninety to six hundred fifty nanoseconds, about seventy-seven percent lower than P C I express network cards."], // 2
-  [32.55, 43.93, "Yet in their own control, the **old interface over the coherent link** moved fewer packets than plain PCIe.", "But one of their own experiments is telling. When they ran the old network card interface over the coherent link, unchanged, it delivered a lower packet rate than the same card on plain P C I express."], // 3
-  [44.28, 53.50, "The win came with a **redesigned interface**: signals packed into the descriptors, rings placed with whoever writes them.", "In other words, the gain arrived together with a redesigned interface: signals packed into the descriptors themselves, and rings placed in the memory of whoever writes them."], // 4
-  [53.85, 67.65, "A real coherent NIC (**CXL-NIC**, MICRO '25) was fastest using **mostly non-coherent pushes**: about **1.3 µs**.", "And when a later paper built a real coherent network card on a C X L F P G A, its fastest design relied mostly on non-coherent requests, pushing packets straight into the host cache, at about one point three microseconds."], // 5
-  [68.00, 77.44, "So the real question: does the speedup come from **coherence**, or from **how data is handed over**?", "So the real question is this. Does the speedup come from coherence, or from redesigning how data is handed over? If it is the hand-over, we may not need coherence at all."], // 6
+  [0.60, 7.72, "**CC-NIC** (ASPLOS '24) proposed a fix: move the NIC inside the CPU's **cache-coherence domain**.", "In twenty twenty four, the C C nick paper proposed a fix: move the nick inside the C P U's cache coherence domain."], // 0
+  [8.07, 18.31, "Host and NIC then share cache lines, and coherence hardware moves each line to whoever touches it next.", "Host and nick would then share cache lines, and the coherence hardware moves each line to whichever side touches it next. Just loads and stores: no doorbells, and no D M A."], // 1
+  [18.66, 30.00, "Modeled on a two-socket Xeon, one socket playing the NIC: **490–650 ns**, about **77% lower** than PCIe NICs.", "They modeled it on a two-socket Xeon server, with one socket playing the nick, and measured four hundred ninety to six hundred fifty nanoseconds, about seventy-seven percent lower than P C I E nicks."], // 2
+  [30.35, 40.65, "Yet in their own control, the **old interface over the coherent link** moved fewer packets than plain PCIe.", "But one of their own experiments is telling. When they ran the old nick interface over the coherent link, unchanged, it delivered a lower packet rate than the same nick on plain P C I E."], // 3
+  [41.00, 50.22, "The win came with a **redesigned interface**: signals packed into the descriptors, rings placed with whoever writes them.", "In other words, the gain arrived together with a redesigned interface: signals packed into the descriptors themselves, and rings placed in the memory of whoever writes them."], // 4
+  [50.57, 63.97, "A real coherent NIC (**CXL-NIC**, MICRO '25) was fastest using **mostly non-coherent pushes**: about **1.3 µs**.", "And when a later paper built a real coherent nick on a C X L F P G A, its fastest design relied mostly on non-coherent requests, pushing packets straight into the host cache, at about one point three microseconds."], // 5
+  [64.32, 73.76, "So the real question: does the speedup come from **coherence**, or from **how data is handed over**?", "So the real question is this. Does the speedup come from coherence, or from redesigning how data is handed over? If it is the hand-over, we may not need coherence at all."], // 6
 ];
-const DUR = 78.84; // <dur>
+const DUR = 75.16; // <dur>
 // </cues>
 
 const T = cues.map((c) => c[0]);

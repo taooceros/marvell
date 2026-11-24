@@ -5,14 +5,14 @@ import { PartText, fracAtX, mapPts, tagW } from "./_CcSceneDebate";
 
 // <cues>
 const cues: Cue[] = [
-  [0.60, 8.60, "Every request a server handles crosses the boundary between the **host CPU** and the **network card**.", "Every request a server handles crosses the boundary between the host C P U and the network card, once on the way in and once on the way out."], // 0
-  [8.95, 15.95, "Today that boundary is **PCIe**, and NICs talk across it through descriptor rings that live in host memory.", "Today that boundary is P C I express, and network cards talk across it through descriptor rings that live in host memory."], // 1
-  [16.30, 25.26, "To send, the CPU writes a descriptor and rings a **doorbell**. The NIC then **reads** the descriptor, then the payload.", "To send a message, the C P U writes a descriptor and rings a doorbell on the card. The card then reads the descriptor, and then the payload, back across the link."], // 2
-  [25.61, 33.95, "Each read is a **full round trip** over the link, so one message pays several crossings before it even leaves.", "Each of those reads is a full round trip over P C I express. So a single message pays for several crossings before it even leaves the machine."], // 3
-  [34.30, 42.82, "Receiving mirrors it: the NIC writes the packet, then a **completion**, and the CPU keeps checking for it.", "Receiving works the same way in reverse. The card writes the packet into host memory, then a completion record, and the C P U keeps checking for it."], // 4
-  [43.17, 54.71, "A 64-byte round trip through today's NICs takes **2.1–3.8 µs**. For microsecond services, the interface is the bottleneck.", "The result: a sixty-four byte round trip through a modern network card takes two point one to three point eight microseconds. For microsecond-scale services, the interface itself is the bottleneck."], // 5
+  [0.60, 8.14, "Every request a server handles crosses the boundary between the **host CPU** and the **network card**.", "Every request a server handles crosses the boundary between the host C P U and the nick, once on the way in and once on the way out."], // 0
+  [8.49, 14.65, "Today that boundary is **PCIe**, and NICs talk across it through descriptor rings that live in host memory.", "Today that boundary is P C I E, and nicks talk across it through descriptor rings that live in host memory."], // 1
+  [15.00, 23.80, "To send, the CPU writes a descriptor and rings a **doorbell**. The NIC then **reads** the descriptor, then the payload.", "To send a message, the C P U writes a descriptor and rings a doorbell on the nick. The nick then reads the descriptor, and then the payload, back across the link."], // 2
+  [24.15, 32.13, "Each read is a **full round trip** over the link, so one message pays several crossings before it even leaves.", "Each of those reads is a full round trip over P C I E. So a single message pays for several crossings before it even leaves the machine."], // 3
+  [32.48, 40.86, "Receiving mirrors it: the NIC writes the packet, then a **completion**, and the CPU keeps checking for it.", "Receiving works the same way in reverse. The nick writes the packet into host memory, then a completion record, and the C P U keeps checking for it."], // 4
+  [41.21, 52.09, "A 64-byte round trip through today's NICs takes **2.1–3.8 µs**. For microsecond services, the interface is the bottleneck.", "The result: a sixty-four byte round trip through a modern nick takes two point one to three point eight microseconds. For microsecond-scale services, the interface itself is the bottleneck."], // 5
 ];
-const DUR = 56.11; // <dur>
+const DUR = 53.49; // <dur>
 // </cues>
 
 const T = cues.map((c) => c[0]);

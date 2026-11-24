@@ -46,8 +46,30 @@ any claim that we beat CC-NIC's emulated numbers.
   fence every write 8.10 M/s (8.1043); no fence 175.20 M/s (175.2022) → 21.6×; 64 B write ceiling of PCIe Gen5 ×4
   = 179.02 M/s → 97.9 %.
 - **F-ORDER**: each 64 B cell carries the sequence number at head and tail; the receiver accepts it only when both
-  match. Messages/frames verified with torn = 0 across the CC-NIC experiments ≈ 35.2 billion (≈ 13.2 billion without
-  the one-way bulk datasets mrv89, mrv76, mrv155 phase 2) → said as "more than 2.5 billion" (the paper's figure).
+  match (and its payload checks out). Messages/frames verified with torn = 0 across the CC-NIC experiments ≈ 35.2 billion
+  (≈ 13.2 billion without the one-way bulk datasets mrv89, mrv76, mrv155 phase 2) → said as "more than 2.5 billion"
+  (the paper's figure) and "not one was read torn" (a part still landing is waited for, never consumed).
+- **F-ORDER-ATOMIC**: MOVDIR64B is one 64-byte direct store with 64-byte write atomicity, not cached and weakly ordered
+  with other stores (Intel SDM, MOVDIR64B; `testbed/crates/testbed/src/mmio.rs`, `movdir64b` doc). The receiver still
+  checks every cell: no torn cell in 600 M open-loop cells (MRV-22) is a measurement, not a guarantee
+  (`~/dev/datapath-kb/docs/report/x86-mmio/001.movdir64b-ordering.md`).
+- **F-ORDER-PARTS**: NIC replies through a write-combining window are normally one gathered 64 B write; "when gathering
+  fails the pieces land in any order, which the host's every-part check absorbs" (`inline_reflector.rs`,
+  `StoreReplies`); `inline.rs` `RingReplies` checks every part (sequence number at both ends, tag, payload) and retries
+  a reply that does not match yet, reporting it torn only after `TAIL_WAIT_US`. Multi-line pushes (≤ 256 B inline;
+  MRV-117/127 `mrv127_host.rs` `send_one`) write the middle lines, then the tail line, then the header line, each one
+  MOVDIR64B with no fence; the receiver takes the message only when the header's head/tail sequence numbers, the tail
+  line's sequence number and the lines in between check out (`mrv127_card.rs`, `partial`; host side `late`), e.g.
+  MRV-117 `directpush` 256 B W=16: 13 replies first seen incomplete, 0 torn.
+- **F-ORDER-SEQ**: unfenced MOVDIR64B to different lines can arrive out of order (datapath-kb `x86-mmio/001`, DSA portals
+  on saturn: two adjacent lines inverted in 200/200 trials); every receiver reads its ring strictly in sequence
+  (`inline.rs` `RingReplies`; `mrv127_card.rs` polls `bar_pos` in order), so a cell that lands early waits in its slot.
+  The numbers 42/43 on screen are schematic.
+- **F-ORDER-COH**: CC-NIC §3.2: "The descriptor metadata includes a ready flag, which the host sets after other
+  descriptor fields are written. Once the flag is set, the NIC receives the signal and the descriptor content in one
+  access." Background (standard): coherence keeps the copies of one cache line consistent; the order in which writes to
+  different lines become visible is the memory-consistency model's job (Sorin, Hill & Wood, *A Primer on Memory
+  Consistency and Cache Coherence*).
 - **F-CACHES** (MRV-97, `logs/mrv97-2026-11-19/runs.jsonl`, `cond=base`): card L3 hit 99.943 % for the card's reads of
   pushed cells; card write-combined replies land in the host LLC via DDIO (1.00 ItoM per message).
 - **F-RTT** (MRV-97): 64 B W=1 round trip p50 897.27 ns ("897 ns"; "0.9 µs" in bar charts), IOMMU on.
@@ -76,6 +98,15 @@ any claim that we beat CC-NIC's emulated numbers.
 - **F-BULK** (MRV-117, `part3_cpu`, 4 KiB @ 1.0 M/s): host CPU share full-size push 46.60 % vs DirectPush (NIC DPI DMA
   for the payload) 16.32 %; size split ≤ 256 B inline, ≥ 512 B by DMA (MRV-127 `dma_threshold=512`). A 4 KiB payload
   = 64 lines of 64 B.
+- **F-ORDER-DMA**: host (MRV-117/127 `mrv127_host.rs` `send_one`, `OP_DMA`): one `sfence()` before the 64 B command per
+  message, whose payload was written with ordinary stores; without it a MOVDIR64B can overtake older ordinary stores and
+  the device reads stale data (datapath-kb `x86-mmio/001`, DSA on saturn: up to 4.2–5.2 % stale under memory load, 0 in
+  268 M with SFENCE). NIC (`mrv127_card.rs`): the reply payload, then the 64 B completion, on the same ToHost DPI queue
+  (one requester, posted writes); PCIe does not let a posted write pass an earlier one unless Relaxed Ordering/IDO
+  applies (PCIe Base Spec ordering rules). The host polls only the completion, then checks the payload's first and last
+  words: a completion seen before its payload (`late`) = 0 and torn = 0 in every bulk-only run (MRV-117 `directpush`
+  1/4/8 KiB W=1/16 and `part3_cpu` 4 KiB; MRV-127 `p1_4k_*`, `p2_512_w32_t512_dma_rand`, `p4_aw*_0m_*`; MRV-166
+  `directpush` 1/4 KiB).
 - **F-HOL** (MRV-127, `p3_8m_2p5m_shr64` vs `p3_8m_2p5m_spl32`): 64 B p99 under saturating 4 KiB traffic 40,500 µs
   ("40.5 ms") with one shared window vs 2.755 µs ("2.75 µs") with separate windows (32, 32) + line cap 32.
 - **F-CPU** (MRV-166, fair-full SDP vs DirectPush, host cycles per packet, B=1): 64 B 731 → 474 (1.54×),
@@ -92,7 +123,16 @@ any claim that we beat CC-NIC's emulated numbers.
   5.93 µs vs 1.68 µs.
 - **F-1CORE** (MRV-155 phase 2, `runs_phase2.jsonl`, measured at mercury's PHY, strictly 1 host core): 64 B UDP payloads
   (110 B L2) 99.764 Gbps / 95.93 Mpps vs best SDP (`ism_enable=1`) 52.62 Gbps / 50.60 Mpps; bare 64 B frames
-  99.23 Mpps vs SDP 50.27 Mpps (1.97×), at the card's default single-scheduler TX ceiling 99.77 Mpps (`s0_raw64`).
+  99.23 Mpps vs SDP 50.27 Mpps (1.97×), at the card's default TX ceiling 99.77 Mpps (`s0_raw64`). MRV-163 (3 reps, lost =
+  bad = torn = 0): per-queue SMQ and every RLIMIT variant stay at ~99.6–100.1 Mpps, so the cap sits upstream of the
+  single scheduler [inference] → said as "the card's own transmit path, about a hundred million packets per second".
+- **F-E2E-SIZES** (MRV-133 `part1_decomp`, same session as F-E2E, W=1, 3 reps each, all verified, lost = torn = 0;
+  median of the per-rep p50): SDP vs DirectPush 64 B 10.205 vs 5.955 µs, 256 B 10.375 vs 6.615, 1 KiB 10.945 vs 9.835,
+  4 KiB 15.105 vs 11.935 µs (card-only echo 4.275 / 5.015 / 5.445 / 7.575 µs). Newer sessions (MRV-152/154/161) ran
+  DirectPush only (5.2–6.0 µs p50 at 64 B, session-dependent), so MRV-133 stays the latest same-session pair.
+- **F-E2E-LOAD** (MRV-133 `part3_openloop`, 64 B Poisson, 3 reps each, verified): p99 vs offered load, SDP / DirectPush:
+  0.5 M/s 14.315 / 7.825 µs, 1.0 M/s 16.415 / 9.205, 1.5 M/s 20.05 / 11.105, 2.0 M/s 26.25 / 12.615, 2.5 M/s 29.05 /
+  16.395; SDP 2.75 M/s 36.05; DirectPush 3.0 M/s 19.095, 3.5 M/s 22.55 µs. Said: at 2 M/s, 12.6 vs 26.3 µs.
 
 ## Scope and positioning (C11)
 - **F-SCOPE**: non-coherent PCIe cannot do host–NIC atomics on a shared allocator (CC-NIC §3.4) or fine-grained shared

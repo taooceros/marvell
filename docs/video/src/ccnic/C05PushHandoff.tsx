@@ -4,15 +4,15 @@ import { BigStat, Cell, Flow, HBar, HBars, HostNic, P, Stage, TAB, Tag, Text, al
 
 // <cues>
 const cues: Cue[] = [
-  [0.60, 11.16, "What is host–NIC traffic, really? **One side writes, the other reads**, then the buffer changes hands.", "Look at what host to card traffic actually is. One side writes a message, the other side reads it, and then the buffer changes hands. Nothing is shared back and forth. It is a hand-off."], // 0
-  [11.51, 19.55, "A hand-off doesn't need coherence. It needs each write to **land in the reader's cache**.", "A hand-off does not need a protocol that tracks every copy of every cache line. It only needs each write to land directly in the reader's cache."], // 1
-  [19.90, 30.10, "PCIe already does this: a 64-byte host write lands in the **NIC's cache** — 99.94% of reads hit.", "And P C I express already does this. A sixty-four byte write from the host lands in the network card's own cache: ninety-nine point nine four percent of the card's reads hit there."], // 2
-  [30.45, 42.13, "Replies go the same way: the NIC's write lands in the **host's cache** (Intel DDIO). Each side polls only its own cache.", "Replies travel the same way in reverse: the card's write lands in the host's last level cache, through Intel's D D I O. So each side only ever polls its own cache, and nothing is read across the link."], // 3
-  [42.48, 53.04, "We call it **DirectPush**: one write per message, no doorbell, no read across the link. Round trip: **897 ns**.", "We call this DirectPush: one write per message in each direction, with no doorbell and no read across the link. A sixty-four byte round trip takes eight hundred ninety-seven nanoseconds."], // 4
-  [53.39, 63.67, "Same card, same link, standard descriptor interface: **4.6 µs**. Changing only the interface: **5.2× faster**.", "On the very same card and link, the standard descriptor interface takes four point six microseconds. Changing only the interface makes the round trip five point two times faster."], // 5
-  [64.02, 78.10, "For scale: real CXL coherent NIC **~1.3–2.1 µs**, no IOMMU. CC-NIC's 490 ns was **emulated** on two CPUs.", "For scale, the real C X L coherent network card measures about one point three to two point one microseconds, without I O M M U protection. C C nick's faster numbers were emulated with two C P U sockets, and we do not claim to beat them."], // 6
+  [0.60, 11.02, "What is host–NIC traffic, really? **One side writes, the other reads**, then the buffer changes hands.", "Look at what host to nick traffic actually is. One side writes a message, the other side reads it, and then the buffer changes hands. Nothing is shared back and forth. It is a hand-off."], // 0
+  [11.37, 19.41, "A hand-off doesn't need coherence. It needs each write to **land in the reader's cache**.", "A hand-off does not need a protocol that tracks every copy of every cache line. It only needs each write to land directly in the reader's cache."], // 1
+  [19.76, 28.82, "PCIe already does this: a 64-byte host write lands in the **NIC's cache** — 99.94% of reads hit.", "And P C I E already does this. A sixty-four byte write from the host lands in the nick's own cache: ninety-nine point nine four percent of its reads hit there."], // 2
+  [29.17, 40.81, "Replies go the same way: the NIC's write lands in the **host's cache** (Intel DDIO). Each side polls only its own cache.", "Replies travel the same way in reverse: what the nick writes lands in the host's last level cache, through Intel's D D I O. So each side only ever polls its own cache, and nothing is read across the link."], // 3
+  [41.16, 51.72, "We call it **DirectPush**: one write per message, no doorbell, no read across the link. Round trip: **897 ns**.", "We call this DirectPush: one write per message in each direction, with no doorbell and no read across the link. A sixty-four byte round trip takes eight hundred ninety-seven nanoseconds."], // 4
+  [52.07, 62.35, "Same card, same link, standard descriptor interface: **4.6 µs**. Changing only the interface: **5.2× faster**.", "On the very same card and link, the standard descriptor interface takes four point six microseconds. Changing only the interface makes the round trip five point two times faster."], // 5
+  [62.70, 76.36, "For scale: real CXL coherent NIC **~1.3–2.1 µs**, no IOMMU. CC-NIC's 490 ns was **emulated** on two CPUs.", "For scale, the real C X L coherent nick measures about one point three to two point one microseconds, without I O M M U protection. C C nick's faster numbers were emulated with two C P U sockets, and we do not claim to beat them."], // 6
 ];
-const DUR = 79.50; // <dur>
+const DUR = 77.76; // <dur>
 // </cues>
 
 const T = cues.map((c) => c[0]);
