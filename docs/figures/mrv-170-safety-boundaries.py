@@ -148,7 +148,7 @@ def main():
 
     cats_c = [
         "B2 硬件错包\n检出率\n(OL3/OL4/CHK)",
-        "B2 0段 CQE\n脱死锁率\n(回退 LDADDA)",
+        "B2 0段/非RX\n慢路径入口\n(停队单测)",
         "B4 停启残留\n清零率\n(32 脏槽)",
         "B4 50轮停启\n+22.5万包\n零错率",
         "B4 1000万包\n单线程零重放\n通过率",
@@ -167,27 +167,28 @@ def main():
         100.0 * b4_ss["total_pkts_verified"] / (50 * 4500),
         100.0 * b4_10m["verified_ok"] / b4_10m["target"],
     ]
-    x_c = np.arange(len(cats_c))
+    x_c = np.arange(len(cats_c), dtype=float)
     w_c = 0.34
+    safe_x_c = np.array([x_c[0] + w_c / 2, x_c[1] + w_c / 2, x_c[2] + w_c / 2, x_c[3], x_c[4]])
     ax.bar(x_c[:3] - w_c / 2, naive_vals_c[:3], width=w_c, color="#94a3b8", alpha=0.85, label="旧版 / 未清零基线", zorder=3)
-    ax.bar(x_c + w_c / 2, safe_vals_c, width=w_c, color="#1d6fa5", alpha=0.92, label="加固版 --cqe-direct-safe + sync", zorder=3)
+    ax.bar(safe_x_c, safe_vals_c, width=w_c, color="#1d6fa5", alpha=0.92, label="加固版 --cqe-direct-safe + sync", zorder=3)
     for i in range(3):
         ax.text(x_c[i] - w_c / 2, naive_vals_c[i] + 2.5, f"{naive_vals_c[i]:.0f}%", ha="center", va="bottom", fontsize=8.0, color="#64748b", fontweight="bold")
     ann_safe = [
         f"100%\n({b2_safe['cqe_stats']['err_rx_cqes']}/30)",
-        f"100%\n(fb={b2_syn['zero_seg']['safe_fallback_ldadda']})",
+        f"仅入口\n(fb={b2_syn['zero_seg']['safe_fallback_ldadda']},ahead={b2_syn['zero_seg']['safe_w0_ahead_of_tail']})",
         f"100%\n({b4_ss['oracle_dirty_repro']['free_dirty_w0']}→0)",
         f"100%\n({b4_ss['total_pkts_verified']//1000}k)",
         f"100%\n(10M,0重放)",
     ]
     for i, txt in enumerate(ann_safe):
-        ax.text(x_c[i] + w_c / 2, safe_vals_c[i] + 2.5, txt, ha="center", va="bottom", fontsize=7.6, color="#1d6fa5", fontweight="bold")
+        ax.text(safe_x_c[i], safe_vals_c[i] + 2.5, txt, ha="center", va="bottom", fontsize=7.2, color="#1d6fa5", fontweight="bold")
     ax.set_xticks(x_c)
     ax.set_xticklabels(cats_c, fontsize=8.0)
     ax.set_ylabel("安全门控通过率 (%)", fontsize=9.8)
     ax.set_ylim(0, 145)
     ax.legend(loc="upper center", ncol=2, frameon=True, facecolor="white", fontsize=8.2)
-    ax.set_title("C. 边界 2 与边界 4：错包/死锁/脏槽停启/千万绕环实测对照", fontsize=10.6, fontweight="bold", pad=8)
+    ax.set_title("C. 边界 2 与边界 4：错包/慢路径入口/脏槽停启/千万绕环对照", fontsize=10.5, fontweight="bold", pad=8)
 
     # ------------------------------------------------------------------
     # Panel D: Boundary 3 CQ Overflow & NPA Drop Recovery + DOOR_ERR Finding
@@ -222,12 +223,12 @@ def main():
     ax.text(
         0.02, 0.96,
         f"DOOR_ERR 实卡证伪（关键发现）：\n"
-        f"强写 cq_door(+1) 触发 QINT 中断，但\n"
-        f"CQ_OP_STATUS bit46 始终为 {door['door_err_cq_err_bit46']}（0–20 ms），\n"
-        f"且硬件钳位 hw_head，后续仍收 {door['post_door_err_rx']}/4 包",
+        f"强写 cq_door(+1) 仅走 QINT（cq_ctx->cq_err=0），\n"
+        f"CQ_OP_STATUS bit46 始终为 {door['door_err_cq_err_bit46']}（0–20 ms）且钳位 hw_head，\n"
+        f"后续仍收 {door['post_door_err_rx']}/4 包；生产须配 QINT + wd=4096（补空轮询超时）",
         transform=ax.transAxes,
         ha="left", va="top",
-        fontsize=7.8,
+        fontsize=7.3,
         color="#0f172a",
         bbox=dict(boxstyle="round,pad=0.35", facecolor="#f8fafc", edgecolor="#64748b", lw=1.1),
         zorder=6,
@@ -235,7 +236,7 @@ def main():
     ax.set_xticks(x_d)
     ax.set_xticklabels([lbl for _, lbl in b3_cases], fontsize=8.8)
     ax.set_ylabel("30×15 ms 停顿压测总包数 (M pkts)", fontsize=9.8)
-    ax.set_ylim(0, 17.2)
+    ax.set_ylim(0, 17.8)
     ax.legend(loc="upper right", frameon=True, facecolor="white", fontsize=7.4)
     ax.set_title("D. 边界 3：满环溢出零漂移恢复 + DOOR_ERR 不可见性实测", fontsize=10.6, fontweight="bold", pad=8)
 

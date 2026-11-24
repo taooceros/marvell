@@ -52,9 +52,9 @@ def main():
 
     fig, axes = plt.subplots(2, 2, figsize=(15.0, 9.6))
     fig.suptitle(
-        "MRV-170 加固后双机 100GbE DirectPush 性能复测：64 B / 256 B / 1.5 KiB（1536 B）\n"
-        "CN106 1C 2.0 GHz (scalar_enable=1) ⇄ saturn cpu40 3.9 GHz (Uncore 2.2 GHz) ⇄ mercury cpu0 · 预热后复位 · n=3 中位数（竖线为 min–max）",
-        fontsize=12.0,
+        "MRV-170 加固后双机 100GbE DirectPush 性能复测：相对 --cqe-peek 全 12/12 胜出\n"
+        "CN106 1C 2.0 GHz (scalar_enable=1, 单段快路径) ⇄ saturn cpu40 3.9 GHz (Uncore 2.2 GHz) ⇄ mercury cpu0 (max_tx_batch=16) · n=3 中位数 (min–max)",
+        fontsize=11.5,
         fontweight="bold",
         y=0.985,
     )
@@ -79,15 +79,18 @@ def main():
                     fontweight="bold" if pol.startswith("cqe_direct") else "normal",
                     color=color if pol != "default" else "#334155")
 
-    m64_wd0 = stats(rows, "direct_cqe_direct_wd0_64_w1", lambda r: r["client"]["tot_p50_us"])[0]
-    m64_wd4k = stats(rows, "direct_cqe_direct_wd4096_64_w1", lambda r: r["client"]["tot_p50_us"])[0]
+    d64_pk = round((stats(rows, "direct_cqe_peek_64_w1", lambda r: r["client"]["tot_p50_us"])[0] -
+                    stats(rows, "direct_cqe_direct_wd4096_64_w1", lambda r: r["client"]["tot_p50_us"])[0]) * 1000)
+    d256_pk = round((stats(rows, "direct_cqe_peek_256_w1", lambda r: r["client"]["tot_p50_us"])[0] -
+                     stats(rows, "direct_cqe_direct_wd4096_256_w1", lambda r: r["client"]["tot_p50_us"])[0]) * 1000)
+    d15_pk = round((stats(rows, "direct_cqe_peek_1536_w1", lambda r: r["client"]["tot_p50_us"])[0] -
+                    stats(rows, "direct_cqe_direct_wd4096_1536_w1", lambda r: r["client"]["tot_p50_us"])[0]) * 1000)
     ax.set_xticks(x_s)
     ax.set_xticklabels([lbl for _, lbl in sizes], fontsize=9.2)
     ax.set_ylabel("mercury 端到端往返 p50 (µs)", fontsize=9.8)
     ax.set_ylim(0, 12.8)
     ax.legend(loc="upper left", ncol=2, frameon=True, facecolor="white", fontsize=7.8)
-    ax.set_title(f"A. W=1 端到端延迟 p50（64 B 保持 {m64_wd0:.3f} / {m64_wd4k:.3f} µs ≈ 4.76 µs）", fontsize=10.4, fontweight="bold", pad=8)
-
+    ax.set_title(f"A. W=1 端到端 p50（wd=4096 较 --cqe-peek 降 {d64_pk} / {d256_pk} / {d15_pk} ns）", fontsize=10.2, fontweight="bold", pad=8)
     # ------------------------------------------------------------------
     # Panel B: 64 B Throughput across W = 1, 4, 8, 32
     # ------------------------------------------------------------------
@@ -108,7 +111,9 @@ def main():
                     color=color if pol != "default" else "#334155")
 
     r64_w8_def = stats(rows, "direct_default_64_w8", lambda r: r["client"]["achieved_mrps"])[0]
+    r64_w8_pk = stats(rows, "direct_cqe_peek_64_w8", lambda r: r["client"]["achieved_mrps"])[0]
     r64_w8_wd0 = stats(rows, "direct_cqe_direct_wd0_64_w8", lambda r: r["client"]["achieved_mrps"])[0]
+    r64_w8_wd4k = stats(rows, "direct_cqe_direct_wd4096_64_w8", lambda r: r["client"]["achieved_mrps"])[0]
     r64_w32_def = stats(rows, "direct_default_64_w32", lambda r: r["client"]["achieved_mrps"])[0]
     r64_w32_wd0 = stats(rows, "direct_cqe_direct_wd0_64_w32", lambda r: r["client"]["achieved_mrps"])[0]
     ax.set_xticks(x_w)
@@ -116,10 +121,9 @@ def main():
     ax.set_ylabel("端到端吞吐 (Mreq/s)", fontsize=9.8)
     ax.set_ylim(0, 3.85)
     ax.set_title(
-        f"B. 64 B 吞吐（W=8 +{100*(r64_w8_wd0/r64_w8_def-1):.1f}% · W=32 +{100*(r64_w32_wd0/r64_w32_def-1):.1f}% vs default）",
-        fontsize=10.3, fontweight="bold", pad=8,
+        f"B. 64 B 吞吐（W=8 +{100*(r64_w8_wd0/r64_w8_def-1):.1f}% · W=32 +{100*(r64_w32_wd0/r64_w32_def-1):.1f}% vs def；W=8 +{100*(r64_w8_wd4k/r64_w8_pk-1):.1f}% vs peek）",
+        fontsize=9.5, fontweight="bold", pad=8,
     )
-
     # ------------------------------------------------------------------
     # Panel C: 256 B Throughput across W = 1, 4, 8, 32
     # ------------------------------------------------------------------
@@ -137,13 +141,18 @@ def main():
                     fontweight="bold" if pol.startswith("cqe_direct") else "normal",
                     color=color if pol != "default" else "#334155")
     r256_w8_def = stats(rows, "direct_default_256_w8", lambda r: r["client"]["achieved_mrps"])[0]
-    r256_w8_wd0 = stats(rows, "direct_cqe_direct_wd0_256_w8", lambda r: r["client"]["achieved_mrps"])[0]
+    r256_w8_pk = stats(rows, "direct_cqe_peek_256_w8", lambda r: r["client"]["achieved_mrps"])[0]
+    r256_w8_wd4k = stats(rows, "direct_cqe_direct_wd4096_256_w8", lambda r: r["client"]["achieved_mrps"])[0]
+    r256_w32_pk = stats(rows, "direct_cqe_peek_256_w32", lambda r: r["client"]["achieved_mrps"])[0]
+    r256_w32_wd4k = stats(rows, "direct_cqe_direct_wd4096_256_w32", lambda r: r["client"]["achieved_mrps"])[0]
     ax.set_xticks(x_w)
     ax.set_xticklabels([f"W={w}" for w in ws], fontsize=9.5)
     ax.set_ylabel("端到端吞吐 (Mreq/s)", fontsize=9.8)
     ax.set_ylim(0, 3.30)
-    ax.set_title(f"C. 256 B 吞吐（W=8 +{100*(r256_w8_wd0/r256_w8_def-1):.1f}% vs default）", fontsize=10.4, fontweight="bold", pad=8)
-
+    ax.set_title(
+        f"C. 256 B 吞吐（W=8 +{100*(r256_w8_wd4k/r256_w8_def-1):.1f}% vs def；W=8 +{100*(r256_w8_wd4k/r256_w8_pk-1):.1f}% · W=32 +{100*(r256_w32_wd4k/r256_w32_pk-1):.1f}% vs peek）",
+        fontsize=9.5, fontweight="bold", pad=8,
+    )
     # ------------------------------------------------------------------
     # Panel D: 1.5 KiB (1536 B, 2x768 B OP_DMA) Throughput across W = 1, 4, 8, 32
     # ------------------------------------------------------------------
@@ -161,17 +170,32 @@ def main():
                     fontweight="bold" if pol.startswith("cqe_direct") else "normal",
                     color=color if pol != "default" else "#334155")
     r15_w8_def = stats(rows, "direct_default_1536_w8", lambda r: r["client"]["achieved_mrps"])[0]
+    r15_w8_pk = stats(rows, "direct_cqe_peek_1536_w8", lambda r: r["client"]["achieved_mrps"])[0]
     r15_w8_wd0 = stats(rows, "direct_cqe_direct_wd0_1536_w8", lambda r: r["client"]["achieved_mrps"])[0]
-    r15_w32_wd0 = stats(rows, "direct_cqe_direct_wd0_1536_w32", lambda r: r["client"]["achieved_mrps"])[0]
+    r15_w8_wd4k = stats(rows, "direct_cqe_direct_wd4096_1536_w8", lambda r: r["client"]["achieved_mrps"])[0]
+    r15_w32_pk = stats(rows, "direct_cqe_peek_1536_w32", lambda r: r["client"]["achieved_mrps"])[0]
+    r15_w32_wd4k = stats(rows, "direct_cqe_direct_wd4096_1536_w32", lambda r: r["client"]["achieved_mrps"])[0]
     ax.set_xticks(x_w)
     ax.set_xticklabels([f"W={w}" for w in ws], fontsize=9.5)
     ax.set_ylabel("端到端吞吐 (Mreq/s)", fontsize=9.8)
     ax.set_ylim(0, 2.35)
-    ax.set_title(
-        f"D. 1.5 KiB (1536 B OP_DMA) 吞吐（W=8 +{100*(r15_w8_wd0/r15_w8_def-1):.1f}% · W=32 {r15_w32_wd0:.3f} Mreq/s）",
-        fontsize=10.2, fontweight="bold", pad=8,
+    ax.text(
+        0.02, 0.96,
+        "加固对照要点：\n"
+        "• wd=4096 相对 --cqe-peek 12/12 组 min–max 零重叠全胜\n"
+        "• 扣 --sync-reset 偏移后相对 naive 加固净成本仅 ~0.5% (~5 ns)\n"
+        "• wd=4096 与 wd=0 全档差 < 0.5%（生产须补空轮询超时触发）",
+        transform=ax.transAxes,
+        ha="left", va="top",
+        fontsize=7.8,
+        color="#0f172a",
+        bbox=dict(boxstyle="round,pad=0.35", facecolor="#f8fafc", edgecolor="#94a3b8", lw=1.0),
+        zorder=6,
     )
-
+    ax.set_title(
+        f"D. 1.5 KiB (2×768B OP_DMA) 吞吐（W=8 +{100*(r15_w8_wd0/r15_w8_def-1):.1f}% vs def；+{100*(r15_w8_wd4k/r15_w8_pk-1):.1f}% · W=32 +{100*(r15_w32_wd4k/r15_w32_pk-1):.1f}% vs peek）",
+        fontsize=9.2, fontweight="bold", pad=8,
+    )
     out = mrvplot.save(fig, "mrv-170-perf-comparison")
     print(f"Saved {out}")
 
