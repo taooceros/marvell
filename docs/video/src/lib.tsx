@@ -100,14 +100,14 @@ export type Warp = {
 };
 
 /** Piecewise-linear map: the segment starting at cue i lasts max(script length, clip + PAD). */
-export function makeWarp(id: string, cues: Cue[], dur: number): Warp {
+export function makeWarp(id: string, cues: Cue[], dur: number, voiceMap: Record<string, number> = voiceLen): Warp {
   const starts = cues.map((c) => c[0]);
   const knots = Array.from(new Set([0, ...starts, dur])).sort((a, b) => a - b);
   const real = [0];
   for (let j = 0; j + 1 < knots.length; j++) {
     const len = knots[j + 1] - knots[j];
     const i = starts.indexOf(knots[j]);
-    const clip = i >= 0 ? voiceLen[cueKey(id, i)] : undefined;
+    const clip = i >= 0 ? voiceMap[cueKey(id, i)] : undefined;
     real.push(real[j] + (clip === undefined ? len : Math.max(len, clip + PAD)));
   }
   const map = (x: number, from: number[], to: number[]) => {
@@ -255,7 +255,19 @@ function Captions() {
 /** Mono clips duplicated into a stereo mix measure ~2 dB hot; this brings the mix to about -16 LUFS. */
 const VOICE_GAIN = Math.pow(10, -2.1 / 20);
 
-export function Scene({ def, warp }: { def: SceneDef; warp: Warp }) {
+export function Scene({
+  def,
+  warp,
+  voiceMap = voiceLen,
+  stages = STAGES,
+  railBracket,
+}: {
+  def: SceneDef;
+  warp: Warp;
+  voiceMap?: Record<string, number>;
+  stages?: { label: string; color: string }[];
+  railBracket?: string;
+}) {
   const f = useCurrentFrame();
   const total = Math.ceil(warp.realDur * FPS);
   const fadeK = Math.min(clamp01(f / 12), clamp01((total - 1 - f) / 10));
@@ -293,11 +305,11 @@ export function Scene({ def, warp }: { def: SceneDef; warp: Warp }) {
             {def.source}
           </div>
         )}
-        {def.stage !== undefined && <PipelineRail active={def.stage} />}
+        {def.stage !== undefined && <PipelineRail active={def.stage} stages={stages} bracketLabel={railBracket} />}
         <Captions />
         {def.cues.map((_, i) => {
           const k = cueKey(def.id, i);
-          if (voiceLen[k] === undefined) return null;
+          if (voiceMap[k] === undefined) return null;
           return (
             <Sequence key={k} from={Math.round(warp.toReal(def.cues[i][0]) * FPS)} layout="none">
               <Audio src={staticFile(`voice/${k}.wav`)} volume={VOICE_GAIN} />
@@ -321,9 +333,17 @@ export const STAGES: { label: string; color: string }[] = [
 ];
 
 /** Top-right progress rail (x 760–1860, y 30–74) with paper brackets underneath (y ≤ 100). Drawn by Scene. */
-export function PipelineRail({ active }: { active: number }) {
+export function PipelineRail({
+  active,
+  stages = STAGES,
+  bracketLabel = "64 B messages · batch 1 · closed loop · host ⇄ CN106xx",
+}: {
+  active: number;
+  stages?: { label: string; color: string }[];
+  bracketLabel?: string;
+}) {
   const x0 = 760;
-  const w = 1100 / STAGES.length;
+  const w = 1100 / stages.length;
   const bracket = (i0: number, i1: number, label: string, color: string) => {
     const a = x0 + i0 * w + 8;
     const b = x0 + (i1 + 1) * w - 12;
@@ -338,7 +358,7 @@ export function PipelineRail({ active }: { active: number }) {
   };
   return (
     <svg width={W} height={112} style={{ position: "absolute", left: 0, top: 0 }}>
-      {STAGES.map((s, i) => {
+      {stages.map((s, i) => {
         const on = i === active;
         const done = i < active;
         const x = x0 + i * w;
@@ -370,7 +390,7 @@ export function PipelineRail({ active }: { active: number }) {
           </g>
         );
       })}
-      {bracket(0, 4, "64 B messages · batch 1 · closed loop · host ⇄ CN106xx", C.muted)}
+      {bracket(0, stages.length - 1, bracketLabel, C.muted)}
     </svg>
   );
 }

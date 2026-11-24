@@ -5,11 +5,31 @@ import "@fontsource/jetbrains-mono/400.css";
 import { Composition } from "remotion";
 import { FPS, H, W } from "./lib";
 import { SCENES, PcieVideo, totalFrames } from "./Video";
+import { CCNIC_SCENES, CcnicPaperStoryVideo, ccnicTotalFrames } from "./ccnic/Video";
 
 export const Root = () => (
   <>
     <Composition id="PcieDatapath" component={PcieVideo} durationInFrames={totalFrames} fps={FPS} width={W} height={H} />
     {SCENES.map((s) => (
+      <Composition
+        key={s.def.id}
+        id={s.def.id}
+        component={s.Only}
+        durationInFrames={s.frames}
+        fps={FPS}
+        width={W}
+        height={H}
+      />
+    ))}
+    <Composition
+      id="CcnicPaperStory"
+      component={CcnicPaperStoryVideo}
+      durationInFrames={ccnicTotalFrames}
+      fps={FPS}
+      width={W}
+      height={H}
+    />
+    {CCNIC_SCENES.map((s) => (
       <Composition
         key={s.def.id}
         id={s.def.id}
