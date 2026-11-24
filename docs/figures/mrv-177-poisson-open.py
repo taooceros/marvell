@@ -88,31 +88,47 @@ def main():
             p20_un = med_err([r["tot_us"]["p99"] for r in by_cfg[("1C", "p20", "db_adp_f")]])[0]
             p25_un = med_err([r["tot_us"]["p99"] for r in by_cfg[("1C", "p25", "db_adp_f")]])[0]
             p20_c64 = med_err([r["tot_us"]["p99"] for r in by_cfg[("1C", "p20", "db_adp_f_c64")]])[0]
+            c64_25_rs = by_cfg[("1C", "p25", "db_adp_f_c64")]
+            r2_run = max(c64_25_rs, key=lambda r: r["tot_us"]["p99"])
+            no_stall_p999 = sorted(r["tot_us"]["p999"] for r in c64_25_rs if r is not r2_run)
+            cap_1c_c64 = med_err([r["achieved_mps"] for r in by_cfg[("1C", "w64", "db_adp_f")]])[0]
+            catchup = cap_1c_c64 - 25.0
             ax.annotate(
                 f"1C 无整形 20/25 M/s:\n{p20_un:.2f} / {p25_un:.2f} µs\n(C_line=64 20M: {p20_c64:.2f} µs)",
-                xy=(25.0, p25_un), xytext=(21.2, 420.0),
+                xy=(25.0, p25_un), xytext=(22.0, 520.0),
                 ha="center",
-                fontsize=8.0, fontweight="bold", color="#0F766E",
-                bbox=dict(boxstyle="round,pad=0.28", facecolor="#F0FDFA", edgecolor="#0F766E", lw=0.9),
+                fontsize=7.7, fontweight="bold", color="#0F766E",
+                bbox=dict(boxstyle="round,pad=0.25", facecolor="#F0FDFA", edgecolor="#0F766E", lw=0.9),
                 arrowprops=dict(arrowstyle="->", color="#0F766E", lw=1.0),
+            )
+            ax.annotate(
+                f"C_line=64 25M r2 ({r2_run['tot_us']['p99']:.1f} µs):\n"
+                f"单次 {r2_run['wire_us']['max']:.2f} µs 系统线停顿 + {catchup:.2f} M/s 追赶余量\n"
+                f"(无停顿 r0/r1 p99.9 = {no_stall_p999[0]:.2f}–{no_stall_p999[1]:.2f} µs)",
+                xy=(25.0, r2_run["tot_us"]["p99"]), xytext=(20.7, 11.2),
+                ha="center",
+                fontsize=6.7, fontweight="bold", color="#0F766E",
+                bbox=dict(boxstyle="round,pad=0.20", facecolor="#ECFDF5", edgecolor="#0F766E", lw=0.8),
+                arrowprops=dict(arrowstyle="->", color="#0F766E", lw=0.9),
             )
         else:
             p20_c64 = med_err([r["tot_us"]["p99"] for r in by_cfg[("4C", "p20", "db_adp_f_c64")]])[0]
             p25_c64 = med_err([r["tot_us"]["p99"] for r in by_cfg[("4C", "p25", "db_adp_f_c64")]])[0]
             p25_un = med_err([r["tot_us"]["p99"] for r in by_cfg[("4C", "p25", "db_adp_f")]])[0]
+            c64_all = [r["tot_us"]["p99"] for r in by_cfg[("4C", "p20", "db_adp_f_c64")] + by_cfg[("4C", "p25", "db_adp_f_c64")]]
             ax.annotate(
-                f"4C C_line=64 20/25 M/s:\n{p20_c64:.2f} / {p25_c64:.2f} µs\n(n=3 极紧 [2.46, 2.67])",
-                xy=(25.0, p25_c64), xytext=(20.6, 11.5),
+                f"4C C_line=64 20/25 M/s:\n{p20_c64:.2f} / {p25_c64:.2f} µs\n(n=3 极紧 [{min(c64_all):.2f}, {max(c64_all):.2f}])",
+                xy=(25.0, p25_c64), xytext=(20.4, 11.5),
                 ha="center",
-                fontsize=8.0, fontweight="bold", color="#0F766E",
-                bbox=dict(boxstyle="round,pad=0.28", facecolor="#F0FDFA", edgecolor="#0F766E", lw=0.9),
+                fontsize=7.9, fontweight="bold", color="#0F766E",
+                bbox=dict(boxstyle="round,pad=0.26", facecolor="#F0FDFA", edgecolor="#0F766E", lw=0.9),
                 arrowprops=dict(arrowstyle="->", color="#0F766E", lw=1.0),
             )
             ax.annotate(
-                f"4C 无整形单门铃行\n25M 退化至 {p25_un/1000:.1f} ms",
-                xy=(25.0, p25_un), xytext=(21.8, 720.0),
+                f"4C 无整形高在途 (>64)\n25M 退化至 {p25_un/1000:.1f} ms\n(128B L3 共行 + L2 预取越界)",
+                xy=(25.0, p25_un), xytext=(22.3, 420.0),
                 ha="center",
-                fontsize=7.8, color="#0369A1", fontweight="bold",
+                fontsize=7.2, color="#0369A1", fontweight="bold",
                 bbox=dict(boxstyle="round,pad=0.22", facecolor="#F0F9FF", edgecolor="#0284C7", lw=0.8),
                 arrowprops=dict(arrowstyle="->", color="#0284C7", lw=1.0),
             )
@@ -154,12 +170,15 @@ def main():
             ys.append(m); los.append(lo); his.append(hi)
         ax.errorbar(xs, ys, yerr=[los, his], label=lbl, color=color, marker=mk, linestyle=ls, linewidth=lw, markersize=5.8, capsize=2.5)
 
+    m25_full = med_err([r["achieved_mid80_mps"] for r in by_cfg[("4C", "p25", "db_adp_f_c64")]])[0]
+    q99_4c_c64 = med_err([r["queue_us"]["p99"] for r in by_cfg[("4C", "p25", "db_adp_f_c64")]])[0]
+    q99_1c_un = med_err([r["queue_us"]["p99"] for r in by_cfg[("1C", "p25", "db_adp_f")]])[0]
     ax.annotate(
-        "稳态跟满 24.99 M/s\nqueue p99 ≤ 1.07 µs",
-        xy=(25.0, 24.99), xytext=(19.2, 24.0),
+        f"4C(C=64) / 1C(无整形) 跟满 {m25_full:.2f} M/s\nqueue p99: {q99_4c_c64:.2f} / {q99_1c_un:.2f} µs",
+        xy=(25.0, m25_full), xytext=(19.0, 24.1),
         ha="center",
-        fontsize=8.2, fontweight="bold", color="#0F766E",
-        bbox=dict(boxstyle="round,pad=0.25", facecolor="#F0FDFA", edgecolor="#0F766E", lw=0.9),
+        fontsize=7.7, fontweight="bold", color="#0F766E",
+        bbox=dict(boxstyle="round,pad=0.24", facecolor="#F0FDFA", edgecolor="#0F766E", lw=0.9),
         arrowprops=dict(arrowstyle="->", color="#0F766E", lw=1.0),
     )
     ax.set_xticks(xs)
@@ -168,7 +187,7 @@ def main():
     ax.set_ylim(0, 27.5)
     ax.set_xlabel("开环泊松目标速率 (Mmsg/s)", fontsize=9.3)
     ax.set_ylabel("中段 80% 稳态吞吐 achieved_mid80 (Mmsg/s)", fontsize=9.2)
-    ax.set_title("中段 80% 稳态吞吐：仅批合并门铃完整跟满 20 / 25 M/s", fontsize=10.3, fontweight="bold")
+    ax.set_title("中段 80% 稳态吞吐：对称 C_line=64 下仅批合并门铃跟满 20/25 M/s", fontsize=10.1, fontweight="bold")
     ax.legend(loc="upper left", fontsize=7.5, frameon=True)
 
     # Bottom-right: 25 M/s hardware PMU comparison (Host CHA inflight + Doorbell rate / pkts_per_db)
@@ -205,9 +224,15 @@ def main():
                 fontsize=7.5, fontweight="bold" if "Arm B2" in pmu_cases[i][0] else "normal",
                 color="#0F766E" if "Arm B2" in pmu_cases[i][0] else "#1E293B")
 
+    pkt_rs = by_cfg[("4C", "p25", "db_pkt_f_c64")]
+    pkt_mid80 = med_err([r["achieved_mid80_mps"] for r in pkt_rs])[0]
+    pkt_snp = med_err([
+        r["card_pmu"]["tad"]["tad_snp_msh_out_any"]["val"] / max(1, sum(c["taken"] for c in r["card_pmu"]["cores"]))
+        for r in pkt_rs
+    ])[0]
     ax.text(
         0.98, 0.94,
-        "*4C 逐包门铃因 1W4R 冲撞\n实得仅 4.74 M/s，故 CHA 低；\nsnoop 达 8.53/包且触发 TAD 重试",
+        f"*4C 逐包门铃因 1W4R 冲撞\n实得仅 {pkt_mid80:.2f} M/s，故 CHA 低；\nsnoop 达 {pkt_snp:.2f}/包且触发 TAD 重试",
         transform=ax.transAxes, ha="right", va="top", fontsize=7.6, color="#991B1B",
         bbox=dict(boxstyle="round,pad=0.3", facecolor="#FEF2F2", edgecolor="#DC2626", lw=0.8),
     )

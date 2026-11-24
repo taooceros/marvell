@@ -155,6 +155,7 @@ def main():
         w = 0.25
 
         res_tail, res_t_lo, res_t_hi = [], [], []
+        res_tail_p50 = []
         res_burst, res_b_lo, res_b_hi = [], [], []
         pau_tail, pau_t_lo, pau_t_hi = [], [], []
 
@@ -162,6 +163,7 @@ def main():
             rs_res = by_cfg[(phase, "burst32_resid2", arm)]
             m, lo, hi = med_err([r["tail_us"]["p99"] for r in rs_res])
             res_tail.append(m); res_t_lo.append(lo); res_t_hi.append(hi)
+            res_tail_p50.append(med_err([r["tail_us"]["p50"] for r in rs_res])[0])
             m, lo, hi = med_err([r["burst_us"]["p99"] for r in rs_res])
             res_burst.append(m); res_b_lo.append(lo); res_b_hi.append(hi)
 
@@ -198,16 +200,31 @@ def main():
             bbox=dict(boxstyle="round,pad=0.25", facecolor="#FEF2F2", edgecolor="#DC2626", lw=0.8),
             arrowprops=dict(arrowstyle="->", color="#DC2626", lw=1.0),
         )
-        if phase == "4C":
+        dp50 = res_tail_p50[4] - res_tail_p50[0]
+        if phase == "1C":
             ax.annotate(
-                f"4C 紧接尾包 p99 最优\n{res_tail[4]:.2f} µs vs Base {res_tail[0]:.2f}",
+                f"1C 紧接尾包 p99\n{res_tail[4]:.2f} vs Base {res_tail[0]:.2f} µs\n"
+                f"(p50: {res_tail_p50[4]:.2f} vs {res_tail_p50[0]:.2f}, +{dp50:.2f})",
                 xy=(4 - w, res_tail[4] + 0.36),
-                xytext=(3.92, 3.65),
-                ha="center",
-                fontsize=8.0,
+                xytext=(4.46, 3.60),
+                ha="right",
+                fontsize=7.3,
                 color="#0F766E",
                 fontweight="bold",
-                bbox=dict(boxstyle="round,pad=0.25", facecolor="#F0FDFA", edgecolor="#0F766E", lw=0.9),
+                bbox=dict(boxstyle="round,pad=0.23", facecolor="#F0FDFA", edgecolor="#0F766E", lw=0.9),
+                arrowprops=dict(arrowstyle="->", color="#0F766E", lw=1.0),
+            )
+        else:
+            ax.annotate(
+                f"4C 紧接尾包 p99 最优\n{res_tail[4]:.2f} vs Base {res_tail[0]:.2f} µs\n"
+                f"(p50: {res_tail_p50[4]:.2f} vs {res_tail_p50[0]:.2f}, +{dp50:.2f})",
+                xy=(4 - w, res_tail[4] + 0.36),
+                xytext=(4.46, 3.60),
+                ha="right",
+                fontsize=7.3,
+                color="#0F766E",
+                fontweight="bold",
+                bbox=dict(boxstyle="round,pad=0.23", facecolor="#F0FDFA", edgecolor="#0F766E", lw=0.9),
                 arrowprops=dict(arrowstyle="->", color="#0F766E", lw=1.0),
             )
 
