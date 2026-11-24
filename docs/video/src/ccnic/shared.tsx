@@ -1,7 +1,7 @@
 /**
- * Shared visual vocabulary for CcnicPaperStory (C01..C12).
+ * Shared visual vocabulary for CcnicPaperStory (C01..C08 — Advisor-Ready Cut).
  * All SVG helpers are scale-safe (clamped >= 0) and stay strictly inside y 120..890.
- * HTML helpers (HeroStat, VerdictRow, InfPill) MUST be placed outside <Stage>.
+ * HTML helpers (HeroStat, VerdictRow, QuestionBanner, BoundaryBar) MUST be placed outside <Stage>.
  */
 import React from "react";
 import { C, FONT, MONO, Pt, clamp01, lerp } from "../lib";
@@ -147,20 +147,20 @@ export type TopoProps = {
 };
 
 const DEFAULT_TOPO_LABELS: Record<TopoNodeId, [string, string?]> = {
-  saturn:  ["HOST · saturn", "Xeon SPR · cpu40 3.9 GHz"],
-  cpu:     ["Host Core", "MOVDIR64B · L1D"],
+  saturn:  ["HOST · saturn", "Xeon · 1 pinned core"],
+  cpu:     ["Host Core", "64 B direct push · L1"],
   hLlc:    ["60 MiB LLC", "8 MiB Intel DDIO"],
-  iommu:   ["HW IOMMU (always on)", "intel_iommu=on,sm_on · 2 MiB hugepages"],
-  hDram:   ["Host DDR5", "128 MiB TX pool / RX ring"],
+  iommu:   ["HW IOMMU (always on)", "Full translation · 2 MiB hugepages"],
+  hDram:   ["Host DDR5", "TX retention / RX ring"],
   pcie:    ["PCIe Gen5 ×4", "15.75 GB/s / dir"],
-  cn106:   ["DPU · Marvell CN106xx", "24 ARM Neoverse-N2 @ 2 GHz"],
-  pem:     ["PEM0 / BAR4", "Inbound + WC"],
-  arm:     ["ARM Cores", "1–4C poll / proto"],
-  cL3:     ["48 MiB L3", "64 B coh. gran."],
-  dpi:     ["DPI DMA", "Native NIC DMA"],
-  cDram:   ["Card 6-ch DDR5", "48 GB · active RX buffer"],
-  nix:     ["NIX0", "eth0 100G"],
-  wire:    ["100GbE DAC", "3 m · No FEC"],
+  cn106:   ["DPU · Marvell CN106", "ARM Neoverse-N2 cores"],
+  pem:     ["PCIe / BAR4", "Direct push + WC"],
+  arm:     ["NIC Cores", "Packet & burst logic"],
+  cL3:     ["48 MiB L3", "Card cache"],
+  dpi:     ["Native DMA", "Built-in NIC engine"],
+  cDram:   ["Card DDR5", "Dedicated NIC RAM"],
+  nix:     ["100G MAC", "eth0 port"],
+  wire:    ["100GbE DAC", "3 m physical cable"],
   mercury: ["PEER · mercury", "100GbE"],
 };
 
@@ -734,6 +734,127 @@ export function VerdictRow({
         <div style={{ fontSize: 24, fontWeight: 700, color: C.text, lineHeight: 1.25 }}>{title}</div>
         <div style={{ fontSize: 20, color: C.muted, marginTop: 4, lineHeight: 1.3 }}>{detail}</div>
       </div>
+    </div>
+  );
+}
+
+/** HTML Advisor Question Banner — big, spacious opening hook for a chapter (place OUTSIDE <Stage>). */
+export function QuestionBanner({
+  num,
+  question,
+  sub,
+  color = C.cyan,
+  y = 136,
+  opacity = 1,
+  dy = 0,
+}: {
+  num: string;
+  question: string;
+  sub?: string;
+  color?: string;
+  y?: number;
+  opacity?: number;
+  dy?: number;
+}) {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: 90,
+        top: y,
+        width: 1740,
+        opacity,
+        transform: `translateY(${dy}px)`,
+        background: "linear-gradient(135deg, rgba(20,27,46,0.96), rgba(11,16,32,0.94))",
+        border: `2px solid ${color}aa`,
+        borderLeft: `10px solid ${color}`,
+        borderRadius: 20,
+        padding: "26px 34px",
+        boxSizing: "border-box",
+        boxShadow: "0 18px 44px rgba(0,0,0,0.48)",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+        <span
+          style={{
+            fontSize: 21,
+            fontWeight: 800,
+            color: C.bg,
+            background: color,
+            borderRadius: 10,
+            padding: "6px 16px",
+            fontFamily: MONO,
+            letterSpacing: 0.6,
+            whiteSpace: "nowrap",
+          }}
+        >
+          {num}
+        </span>
+        <span style={{ fontSize: 34, fontWeight: 800, color: C.text, lineHeight: 1.25 }}>{question}</span>
+      </div>
+      {sub && (
+        <div style={{ fontSize: 23, color: C.muted, marginTop: 12, marginLeft: 4, lineHeight: 1.35 }}>{sub}</div>
+      )}
+    </div>
+  );
+}
+
+/** HTML concise one-line Honest Boundary strip (place OUTSIDE <Stage>). */
+export function BoundaryBar({
+  x = 80,
+  y = 776,
+  w = 1760,
+  badge = "HONEST BOUNDARY",
+  text,
+  color = C.yellow,
+  opacity = 1,
+  dy = 0,
+}: {
+  x?: number;
+  y?: number;
+  w?: number;
+  badge?: string;
+  text: string;
+  color?: string;
+  opacity?: number;
+  dy?: number;
+}) {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: x,
+        top: y,
+        width: w,
+        opacity,
+        transform: `translateY(${dy}px)`,
+        background: "rgba(20,27,46,0.95)",
+        border: `1.5px solid ${color}88`,
+        borderLeft: `7px solid ${color}`,
+        borderRadius: 14,
+        padding: "14px 22px",
+        boxSizing: "border-box",
+        display: "flex",
+        alignItems: "center",
+        gap: 18,
+      }}
+    >
+      <span
+        style={{
+          fontSize: 17,
+          fontWeight: 800,
+          color,
+          fontFamily: MONO,
+          background: `${color}1c`,
+          border: `1.5px solid ${color}80`,
+          borderRadius: 8,
+          padding: "5px 12px",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {badge}
+      </span>
+      <span style={{ fontSize: 22, fontWeight: 600, color: C.text, lineHeight: 1.3 }}>{text}</span>
     </div>
   );
 }

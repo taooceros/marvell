@@ -4,12 +4,13 @@ import { CCNIC_DEFS } from "./index";
 import ccnicVoice from "./voice.json";
 
 export const CCNIC_STAGES: { label: string; color: string }[] = [
-  { label: "Premise", color: C.cyan },
+  { label: "PCIe Speed", color: C.cyan },
   { label: "TX Buffers", color: C.purple },
-  { label: "Flow Ctrl", color: C.orange },
+  { label: "Pacing", color: C.orange },
   { label: "DirectPush", color: C.pink },
   { label: "100GbE", color: C.green },
   { label: "Active NIC", color: C.yellow },
+  { label: "Takeaways", color: "#5eead4" },
 ];
 
 export const CCNIC_BRACKET = "CC-NIC Does Not Need Cache Coherence · saturn ⇄ CN106 ⇄ 100GbE ⇄ mercury";
