@@ -4,6 +4,7 @@ cross-UPI delta across 4 paths, and zero-root core-frequency sensitivity.
 All plotted numbers are read directly from logs/mrv182-2026-11-24/runs.jsonl (n=3 interleaved,
 0 mismatches, 0 page faults, 100.00% non-multiplexed host PMUs).
 """
+from decimal import Decimal, ROUND_HALF_UP
 import json
 import statistics
 from collections import defaultdict
@@ -12,6 +13,11 @@ from pathlib import Path
 import numpy as np
 
 from mrvplot import plt, save
+
+
+def fmt1(val: float) -> str:
+    return str(Decimal(f"{val:.6f}").quantize(Decimal("0.1"), rounding=ROUND_HALF_UP))
+
 
 ROOT = Path(__file__).resolve().parents[2]
 RUNS_PATH = ROOT / "logs/mrv182-2026-11-24/runs.jsonl"
@@ -37,7 +43,7 @@ def main():
     s1_cpus = list(range(32, 64))
     s0_cpus = [0, 4, 8, 12, 16, 20, 24, 28]
 
-    s1_p50, s1_lo, s1_hi, s1_tor = [], [], [], []
+    s1_p50, s1_lo, s1_hi, s1_tor, s1_out = [], [], [], [], []
     for c in s1_cpus:
         rs = by_sl[("core_scan_line0", f"cpu{c}")]
         p50s = [x["net_ns"]["p50"] for x in rs]
@@ -45,7 +51,18 @@ def main():
         s1_lo.append(min(p50s))
         s1_hi.append(max(p50s))
         s1_tor.append(med([x["cha_s1"]["tor_ns"] for x in rs]))
-
+        s1_out.append(med([x["net_ns"]["mean"] - x["cha_s1"]["tor_ns"] for x in rs]))
+    out_c53 = s1_out[53 - 32]
+    out_c58 = s1_out[58 - 32]
+    out_c40 = s1_out[40 - 32]
+    # Conservation pair: cpu55/56 vs adjacent normal core cpu53
+    dt_55 = s1_tor[55 - 32] - s1_tor[53 - 32]
+    dt_56 = s1_tor[56 - 32] - s1_tor[53 - 32]
+    do_55 = s1_out[55 - 32] - s1_out[53 - 32]
+    do_56 = s1_out[56 - 32] - s1_out[53 - 32]
+    vf0_c48_rs = by_sl[("core_scan_vf0", "cpu48")]
+    vf0_c48_p50 = med([x["net_ns"]["p50"] for x in vf0_c48_rs])
+    vf0_c48_tor = med([x["cha_s1"]["tor_ns"] for x in vf0_c48_rs])
     s0_p50, s0_lo, s0_hi, s0_tor = [], [], [], []
     for c in s0_cpus:
         rs = by_sl[("core_scan_line0", f"cpu{c}")]
@@ -54,8 +71,8 @@ def main():
         s0_lo.append(min(p50s))
         s0_hi.append(max(p50s))
         s0_tor.append(med([x["cha_s0"]["tor_ns"] for x in rs]))
-
-    # ---- Panel (b): Cross-UPI delta across 4 paths ----
+    scan_ghzs = [x["cpu_ghz"] for c in (s1_cpus + s0_cpus) for x in by_sl[("core_scan_line0", f"cpu{c}")]]
+    scan_ghz_min, scan_ghz_max = min(scan_ghzs), max(scan_ghzs)
     # 1. BAR4 line0 (CHA 23)
     upi_line0_p50 = med(s0_p50) - med(s1_p50)
     upi_line0_tor = med(s0_tor) - med(s1_tor)
@@ -136,30 +153,36 @@ def main():
         label="Socket 0 CHA 23 TOR 驻留 (S0_TOR, upi_ncs=1.00)"
     )
 
-    # Annotate Socket 1 Mesh span (min vs max) and 6-core TOR release boundary
+    # Annotate Socket 1 Mesh span (min vs max), near-CHA TOR residual, VF0 cpu48, and 6-core TOR release conservation
     s1_min, s1_max = min(s1_p50), max(s1_p50)
     ax_scan.annotate(
-        f"Socket 1 2D Mesh 跨度 = {s1_max - s1_min:.1f} ns\n近 CHA 23 (cpu 53–59): {s1_min:.1f} ns\n远端 (cpu 32–47): {s1_max:.1f} ns",
-        xy=(24, s1_p50[24]),
-        xytext=(12.0, 646.0),
-        fontsize=8.0,
+        f"Socket 1 2D Mesh 跨度 = {fmt1(s1_max - s1_min)} ns（近 CHA 23: {fmt1(s1_min)} vs 远核: {fmt1(s1_max)} ns）\n"
+        f"常规核 TOR 外余量：近核 cpu53/58 {fmt1(out_c53)}–{fmt1(out_c58)} ns → 远核 cpu40 {fmt1(out_c40)} ns\n"
+        f"VF0 BAR0 (CHA 20) 近核 cpu48 下探 {fmt1(vf0_c48_p50)} ns / TOR {fmt1(vf0_c48_tor)} ns",
+        xy=(21, s1_p50[21]),
+        xytext=(0.4, 650.0),
+        fontsize=7.5,
+        linespacing=1.25,
         bbox=dict(boxstyle="round,pad=0.35", facecolor="white", edgecolor="#0284c7", lw=0.9),
         arrowprops=dict(arrowstyle="->", color="#0284c7", lw=1.0),
     )
 
     ax_scan.annotate(
-        "6 核 TOR 低 ~8 ns 阶跃\n(cpu 37–39, 54–56)\n端到端 p50 不变，属片内环/释放边界",
+        f"6 核早释放 TOR 边界 (cpu 37–39, 54–56)\n"
+        f"ΔTOR {fmt1(dt_55)}..{fmt1(dt_56)} ns (−19 拍) ⇄ Δ余量 +{fmt1(do_55)}..+{fmt1(do_56)} ns\n"
+        f"相邻核端到端 net_mean 守恒 < 0.2 ns",
         xy=(6, s1_tor[6]),
-        xytext=(1.0, 581.5),
-        fontsize=7.6,
+        xytext=(0.4, 575.5),
+        fontsize=7.3,
+        linespacing=1.22,
         color="#334155",
-        bbox=dict(boxstyle="round,pad=0.3", facecolor="#f8fafc", edgecolor="#94a3b8", lw=0.8),
+        bbox=dict(boxstyle="round,pad=0.30", facecolor="#f8fafc", edgecolor="#94a3b8", lw=0.8),
         arrowprops=dict(arrowstyle="->", color="#475569", lw=0.9),
     )
 
     ax_scan.text(
         x_s0[3], 680.5,
-        f"跨 Socket UPI\nS0 中位 {med(s0_p50):.1f} ns\n(vs S1 +{upi_line0_p50:.1f} ns)",
+        f"跨 Socket UPI\nS0 中位 {fmt1(med(s0_p50))} ns\n(vs S1 +{fmt1(upi_line0_p50)} ns)",
         ha="center", va="bottom", fontsize=8.0, fontweight="bold", color="#9a3412",
         bbox=dict(boxstyle="round,pad=0.3", facecolor="white", edgecolor="#ea580c", lw=0.9),
     )
@@ -170,8 +193,8 @@ def main():
     ax_scan.set_xticks(xt_pos)
     ax_scan.set_xticklabels(xt_lbl, fontsize=7.5, rotation=45)
     ax_scan.set_xlim(-1.0, x_s0[-1] + 1.0)
-    ax_scan.set_ylim(575, 695)
-    ax_scan.set_xlabel("绑定物理核编号（左：Socket 1 全 32 核 cpu 32–63；右：Socket 0 跨 UPI 8 核；全核实测 3.90 GHz）", fontsize=8.8)
+    ax_scan.set_ylim(571, 696)
+    ax_scan.set_xlabel(f"绑定物理核编号（左：Socket 1 全 32 核 cpu 32–63；右：Socket 0 跨 UPI 8 核；全核实测 {scan_ghz_min:.2f}–{scan_ghz_max:.2f} GHz）", fontsize=8.6)
     ax_scan.set_ylabel("净延迟 / CHA TOR 驻留 (ns)", fontsize=9.2)
     ax_scan.set_title("(a) 全物理核 Mesh 跳数与跨 Socket UPI 扫描（BAR4 首行 8 B，固定 CHA 23）", fontsize=10.3, fontweight="bold", pad=8)
     ax_scan.legend(loc="lower right", fontsize=7.5, frameon=True, facecolor="white", framealpha=0.94)
@@ -187,8 +210,8 @@ def main():
     ax_upi.bar(xu - w / 2, upi_p50_vals, width=w, color="#ea580c", alpha=0.9, label="端到端 Δnet_p50 (ns)")
     ax_upi.bar(xu + w / 2, upi_tor_vals, width=w, color="#475569", alpha=0.85, label="CHA TOR ΔT_TOR (ns)")
     for i, (vp, vt) in enumerate(zip(upi_p50_vals, upi_tor_vals)):
-        ax_upi.text(i - w / 2, vp + 1.5, f"+{vp:.1f}", ha="center", va="bottom", fontsize=7.9, fontweight="bold", color="#9a3412")
-        ax_upi.text(i + w / 2, vt + 1.5, f"+{vt:.1f}", ha="center", va="bottom", fontsize=7.7, color="#334155")
+        ax_upi.text(i - w / 2, vp + 1.5, f"+{fmt1(vp)}", ha="center", va="bottom", fontsize=7.9, fontweight="bold", color="#9a3412")
+        ax_upi.text(i + w / 2, vt + 1.5, f"+{fmt1(vt)}", ha="center", va="bottom", fontsize=7.7, color="#334155")
 
     ax_upi.set_xticks(xu)
     ax_upi.set_xticklabels(upi_labels, fontsize=8.0)
@@ -211,8 +234,8 @@ def main():
     ax_clk.axhline(0, color="#334155", lw=0.9)
 
     for i, (dn, dt, e39) in enumerate(zip(d_net, d_tor, est_39)):
-        ax_clk.text(i - wc / 2, dn + 0.4, f"+{dn:.1f} ns\n(3.9G 占~{e39:.1f} ns)", ha="center", va="bottom", fontsize=7.7, fontweight="bold", color="#0369a1")
-        ax_clk.text(i + wc / 2, dt - 0.5 if dt < 0 else dt + 0.4, f"{dt:+.1f} ns", ha="center", va="top" if dt < 0 else "bottom", fontsize=7.7, color="#334155")
+        ax_clk.text(i - wc / 2, dn + 0.4, f"+{fmt1(dn)} ns\n(3.9G 占~{fmt1(e39)} ns)", ha="center", va="bottom", fontsize=7.7, fontweight="bold", color="#0369a1")
+        ax_clk.text(i + wc / 2, dt - 0.5 if dt < 0 else dt + 0.4, f"{'+' if dt >= 0 else ''}{fmt1(dt)} ns", ha="center", va="top" if dt < 0 else "bottom", fontsize=7.7, color="#334155")
 
     ax_clk.set_xticks(xc)
     ax_clk.set_xticklabels([r["label"] for r in cf_rows], fontsize=8.3)
