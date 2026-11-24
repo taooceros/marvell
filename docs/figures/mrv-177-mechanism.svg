@@ -1,0 +1,185 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 630" width="1160" height="630">
+  <defs>
+    <style>
+      .f { font-family: "DejaVu Sans", "Droid Sans Fallback", sans-serif; }
+      .hdr { font-size: 15px; font-weight: 700; fill: #475569; }
+      .arm-title { font-size: 17px; font-weight: 700; fill: #0F172A; }
+      .arm-sub { font-size: 13px; fill: #475569; }
+      .arm-title-win { font-size: 17px; font-weight: 700; fill: #0F766E; }
+      .arm-sub-win { font-size: 13px; font-weight: 600; fill: #0F766E; }
+      .lbl { font-size: 13px; font-weight: 600; fill: #1E293B; }
+      .lbl-mut { font-size: 12px; fill: #475569; }
+      .lbl-win { font-size: 13px; font-weight: 700; fill: #0F766E; }
+      .cell-txt { font-size: 12px; font-weight: 600; fill: #1E293B; }
+      .cell-empty { font-size: 12px; fill: #64748B; }
+      .cell-win { font-size: 12px; font-weight: 700; fill: #0F766E; }
+      .verdict-bad { font-size: 20px; font-weight: 700; fill: #0F172A; }
+      .verdict-win { font-size: 20px; font-weight: 700; fill: #0F766E; }
+      .sub-note { font-size: 13px; fill: #475569; }
+      .sub-note-win { font-size: 13px; font-weight: 600; fill: #0F766E; }
+    </style>
+    <marker id="arr-dark" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#334155"/>
+    </marker>
+    <marker id="arr-win" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#0F766E"/>
+    </marker>
+  </defs>
+
+  <!-- White background -->
+  <rect x="0" y="0" width="1160" height="630" fill="#FFFFFF"/>
+
+  <!-- Column headers -->
+  <text x="112" y="34" text-anchor="middle" class="f hdr">方案</text>
+  <text x="342" y="34" text-anchor="middle" class="f hdr">主机 BAR4 写入</text>
+  <text x="694" y="34" text-anchor="middle" class="f hdr">卡侧 BAR4 缓存行与读端路径</text>
+  <text x="1032" y="34" text-anchor="middle" class="f hdr">机理结果</text>
+  <line x1="24" y1="48" x2="1136" y2="48" stroke="#CBD5E1" stroke-width="1.5"/>
+
+  <!-- ================= ROW 1: BASELINE ================= -->
+  <g transform="translate(0, 62)">
+    <rect x="24" y="0" width="1112" height="122" rx="10" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5"/>
+    <text x="44" y="50" class="f arm-title">Baseline</text>
+    <text x="44" y="76" class="f arm-sub">紧盯 next</text>
+    <line x1="204" y1="14" x2="204" y2="108" stroke="#E2E8F0" stroke-width="1.5"/>
+
+    <rect x="232" y="32" width="144" height="58" rx="7" fill="#FFFFFF" stroke="#64748B" stroke-width="1.5"/>
+    <text x="304" y="56" text-anchor="middle" class="f lbl">MOVDIR64B</text>
+    <text x="304" y="76" text-anchor="middle" class="f lbl-mut">逐格写 cell[k]</text>
+    <line x1="376" y1="61" x2="458" y2="61" stroke="#334155" stroke-width="2" marker-end="url(#arr-dark)"/>
+    <line x1="472" y1="14" x2="472" y2="108" stroke="#E2E8F0" stroke-width="1.5"/>
+
+    <g transform="translate(502, 42)">
+      <rect x="0" y="0" width="54" height="36" rx="4" fill="#E2E8F0" stroke="#94A3B8" stroke-width="1.2"/>
+      <text x="27" y="23" text-anchor="middle" class="f cell-txt">k-2</text>
+      <rect x="60" y="0" width="54" height="36" rx="4" fill="#E2E8F0" stroke="#94A3B8" stroke-width="1.2"/>
+      <text x="87" y="23" text-anchor="middle" class="f cell-txt">k-1</text>
+      <rect x="120" y="0" width="54" height="36" rx="4" fill="#CBD5E1" stroke="#0F172A" stroke-width="2.2"/>
+      <text x="147" y="23" text-anchor="middle" class="f cell-txt">k</text>
+      <rect x="180" y="0" width="54" height="36" rx="4" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" stroke-dasharray="4 3"/>
+      <text x="207" y="23" text-anchor="middle" class="f cell-empty">k+1</text>
+      <rect x="240" y="0" width="54" height="36" rx="4" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" stroke-dasharray="4 3"/>
+      <text x="267" y="23" text-anchor="middle" class="f cell-empty">k+2</text>
+    </g>
+    <line x1="649" y1="14" x2="649" y2="39" stroke="#334155" stroke-width="2" marker-end="url(#arr-dark)"/>
+    <text x="660" y="25" class="f lbl-mut">写前沿</text>
+    <line x1="649" y1="108" x2="649" y2="81" stroke="#334155" stroke-width="2" marker-end="url(#arr-dark)"/>
+    <text x="660" y="106" class="f lbl-mut">卡核轮询 next</text>
+    <rect x="812" y="42" width="102" height="36" rx="18" fill="#E2E8F0" stroke="#475569" stroke-width="1.2"/>
+    <text x="863" y="65" text-anchor="middle" class="f lbl">✕ 同线冲撞</text>
+    <line x1="928" y1="14" x2="928" y2="108" stroke="#E2E8F0" stroke-width="1.5"/>
+
+    <text x="1032" y="48" text-anchor="middle" class="f verdict-bad">踩写前沿</text>
+    <text x="1032" y="74" text-anchor="middle" class="f sub-note">读写争抢同缓存行</text>
+    <text x="1032" y="96" text-anchor="middle" class="f sub-note">高并发触发掉档</text>
+  </g>
+
+  <!-- ================= ROW 2: ARM A (B-Queue) ================= -->
+  <g transform="translate(0, 200)">
+    <rect x="24" y="0" width="1112" height="122" rx="10" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5"/>
+    <text x="44" y="50" class="f arm-title">Arm A</text>
+    <text x="44" y="76" class="f arm-sub">B-Queue next+D</text>
+    <line x1="204" y1="14" x2="204" y2="108" stroke="#E2E8F0" stroke-width="1.5"/>
+
+    <rect x="232" y="32" width="144" height="58" rx="7" fill="#FFFFFF" stroke="#64748B" stroke-width="1.5"/>
+    <text x="304" y="56" text-anchor="middle" class="f lbl">MOVDIR64B</text>
+    <text x="304" y="76" text-anchor="middle" class="f lbl-mut">逐格写 cell[k]</text>
+    <line x1="376" y1="61" x2="458" y2="61" stroke="#334155" stroke-width="2" marker-end="url(#arr-dark)"/>
+    <line x1="472" y1="14" x2="472" y2="108" stroke="#E2E8F0" stroke-width="1.5"/>
+
+    <g transform="translate(502, 42)">
+      <rect x="0" y="0" width="54" height="36" rx="4" fill="#E2E8F0" stroke="#94A3B8" stroke-width="1.2"/>
+      <text x="27" y="23" text-anchor="middle" class="f cell-txt">k</text>
+      <rect x="60" y="0" width="54" height="36" rx="4" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2" stroke-dasharray="4 3"/>
+      <text x="87" y="23" text-anchor="middle" class="f cell-empty">k+1</text>
+      <rect x="120" y="0" width="54" height="36" rx="4" fill="#CBD5E1" stroke="#0F172A" stroke-width="2"/>
+      <text x="147" y="23" text-anchor="middle" class="f cell-txt">k+D/2</text>
+      <rect x="180" y="0" width="54" height="36" rx="4" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2" stroke-dasharray="4 3"/>
+      <text x="207" y="23" text-anchor="middle" class="f cell-empty">…</text>
+      <rect x="240" y="0" width="54" height="36" rx="4" fill="#CBD5E1" stroke="#0F172A" stroke-width="2"/>
+      <text x="267" y="23" text-anchor="middle" class="f cell-txt">k+D-1</text>
+    </g>
+    <line x1="529" y1="14" x2="529" y2="39" stroke="#334155" stroke-width="2" marker-end="url(#arr-dark)"/>
+    <text x="540" y="25" class="f lbl-mut">写前沿</text>
+    <line x1="649" y1="106" x2="649" y2="81" stroke="#334155" stroke-width="2" marker-end="url(#arr-dark)"/>
+    <line x1="769" y1="106" x2="769" y2="81" stroke="#334155" stroke-width="2" marker-end="url(#arr-dark)"/>
+    <line x1="649" y1="106" x2="769" y2="106" stroke="#334155" stroke-width="2"/>
+    <text x="709" y="102" text-anchor="middle" class="f lbl-mut">预探 + 二分回溯</text>
+    <rect x="812" y="42" width="102" height="36" rx="18" fill="#E2E8F0" stroke="#475569" stroke-width="1.2"/>
+    <text x="863" y="65" text-anchor="middle" class="f lbl">✕ 预探埋雷</text>
+    <line x1="928" y1="14" x2="928" y2="108" stroke="#E2E8F0" stroke-width="1.5"/>
+
+    <text x="1032" y="48" text-anchor="middle" class="f verdict-bad">嗅探地雷</text>
+    <text x="1032" y="74" text-anchor="middle" class="f sub-note">未写空行提前入缓存</text>
+    <text x="1032" y="96" text-anchor="middle" class="f sub-note">后续写入触发 TAD 嗅探</text>
+  </g>
+
+  <!-- ================= ROW 3: ARM B1 (Per-pkt Doorbell) ================= -->
+  <g transform="translate(0, 338)">
+    <rect x="24" y="0" width="1112" height="122" rx="10" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5"/>
+    <text x="44" y="50" class="f arm-title">Arm B1</text>
+    <text x="44" y="76" class="f arm-sub">逐包 prod_idx</text>
+    <line x1="204" y1="14" x2="204" y2="108" stroke="#E2E8F0" stroke-width="1.5"/>
+
+    <rect x="224" y="26" width="164" height="70" rx="7" fill="#FFFFFF" stroke="#64748B" stroke-width="1.5"/>
+    <text x="306" y="48" text-anchor="middle" class="f lbl">单格 → SFENCE</text>
+    <text x="306" y="68" text-anchor="middle" class="f lbl">→ 写 prod_idx</text>
+    <text x="306" y="86" text-anchor="middle" class="f lbl-mut">每包敲门铃</text>
+    <line x1="388" y1="61" x2="458" y2="61" stroke="#334155" stroke-width="2" marker-end="url(#arr-dark)"/>
+    <line x1="472" y1="14" x2="472" y2="108" stroke="#E2E8F0" stroke-width="1.5"/>
+
+    <g transform="translate(502, 42)">
+      <rect x="0" y="0" width="144" height="36" rx="5" fill="#E2E8F0" stroke="#94A3B8" stroke-width="1.2"/>
+      <text x="72" y="23" text-anchor="middle" class="f cell-txt">数据格 [1..k]</text>
+      <line x1="164" y1="-10" x2="164" y2="46" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <rect x="184" y="0" width="110" height="36" rx="5" fill="#CBD5E1" stroke="#0F172A" stroke-width="2.2"/>
+      <text x="239" y="23" text-anchor="middle" class="f cell-txt">prod_idx</text>
+    </g>
+    <line x1="741" y1="14" x2="741" y2="39" stroke="#334155" stroke-width="2" marker-end="url(#arr-dark)"/>
+    <text x="752" y="25" class="f lbl-mut">高频写</text>
+    <line x1="741" y1="108" x2="741" y2="81" stroke="#334155" stroke-width="2" marker-end="url(#arr-dark)"/>
+    <text x="752" y="106" class="f lbl-mut">多核同盯</text>
+    <rect x="812" y="42" width="102" height="36" rx="18" fill="#E2E8F0" stroke="#475569" stroke-width="1.2"/>
+    <text x="863" y="65" text-anchor="middle" class="f lbl">✕ 门铃冲撞</text>
+    <line x1="928" y1="14" x2="928" y2="108" stroke="#E2E8F0" stroke-width="1.5"/>
+
+    <text x="1032" y="48" text-anchor="middle" class="f verdict-bad">单行热点</text>
+    <text x="1032" y="74" text-anchor="middle" class="f sub-note">门铃行 1W4R 冲撞</text>
+    <text x="1032" y="96" text-anchor="middle" class="f sub-note">触发 TAD 退避重试</text>
+  </g>
+
+  <!-- ================= ROW 4: ARM B2 (Adaptive Batched Doorbell - ACCENT) ================= -->
+  <g transform="translate(0, 476)">
+    <rect x="24" y="0" width="1112" height="130" rx="10" fill="#F0FDFA" stroke="#0F766E" stroke-width="2.2"/>
+    <text x="44" y="50" class="f arm-title-win">Arm B2</text>
+    <text x="44" y="75" class="f arm-sub-win">自适应批合并</text>
+    <text x="44" y="97" class="f arm-sub-win">SFENCE + prod_idx</text>
+    <line x1="204" y1="14" x2="204" y2="116" stroke="#99F6E4" stroke-width="1.5"/>
+
+    <rect x="224" y="24" width="164" height="82" rx="7" fill="#FFFFFF" stroke="#0F766E" stroke-width="1.8"/>
+    <text x="306" y="48" text-anchor="middle" class="f lbl-win">批写 [1..B] 格</text>
+    <text x="306" y="70" text-anchor="middle" class="f lbl-win">SFENCE → 单门铃</text>
+    <text x="306" y="92" text-anchor="middle" class="f lbl-mut">轻载直敲 · 忙态批合</text>
+    <line x1="388" y1="65" x2="458" y2="65" stroke="#0F766E" stroke-width="2.2" marker-end="url(#arr-win)"/>
+    <line x1="472" y1="14" x2="472" y2="116" stroke="#99F6E4" stroke-width="1.5"/>
+
+    <g transform="translate(502, 42)">
+      <rect x="0" y="0" width="144" height="38" rx="5" fill="#CCFBF1" stroke="#0F766E" stroke-width="1.8"/>
+      <text x="72" y="24" text-anchor="middle" class="f cell-win">已落盘 [1..B]</text>
+      <line x1="164" y1="-12" x2="164" y2="50" stroke="#14B8A6" stroke-width="1.8" stroke-dasharray="4 3"/>
+      <rect x="184" y="0" width="110" height="38" rx="5" fill="#FFFFFF" stroke="#0F766E" stroke-width="1.8"/>
+      <text x="239" y="24" text-anchor="middle" class="f cell-win">prod_idx</text>
+    </g>
+    <line x1="741" y1="14" x2="741" y2="39" stroke="#0F766E" stroke-width="2" marker-end="url(#arr-win)"/>
+    <text x="752" y="24" class="f lbl-win">低频更新</text>
+    <path d="M 741 82 L 741 104 L 574 104 L 574 83" fill="none" stroke="#0F766E" stroke-width="2" marker-end="url(#arr-win)"/>
+    <text x="658" y="119" text-anchor="middle" class="f lbl-win">见门铃再批读</text>
+    <rect x="812" y="42" width="102" height="38" rx="19" fill="#0F766E"/>
+    <text x="863" y="66" text-anchor="middle" class="f" style="font-size:13px;font-weight:700;fill:#FFFFFF;">✓ 读写隔离</text>
+    <line x1="928" y1="14" x2="928" y2="116" stroke="#99F6E4" stroke-width="1.5"/>
+
+    <text x="1032" y="48" text-anchor="middle" class="f verdict-win">读写隔离</text>
+    <text x="1032" y="75" text-anchor="middle" class="f sub-note-win">数据格零预探不踩写</text>
+    <text x="1032" y="98" text-anchor="middle" class="f sub-note-win">SFENCE 保有序零早读</text>
+  </g>
+</svg>
