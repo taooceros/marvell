@@ -128,8 +128,9 @@ export function makeWarp(id: string, cues: Cue[], dur: number, voiceMap: Record<
   };
 }
 
-type Ctx = { def: SceneDef; warp: Warp };
-const SceneCtx = createContext<Ctx | null>(null);
+export type SceneCtxValue = { def: SceneDef; warp: Warp };
+/** Scene context (definition + narration time warp); exported so alternative scene shells can provide it to useT(). */
+export const SceneCtx = createContext<SceneCtxValue | null>(null);
 
 /** Script-time seconds of the current frame (animation timeline before narration stretching). */
 export function useT(): number {

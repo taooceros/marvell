@@ -1,20 +1,45 @@
-"""Single source of truth for the Advisor-Ready CcnicPaperStory English explainer video.
+"""Single source of truth for the CcnicPaperStory narration (English, edge-tts en-US-AndrewNeural).
+
+Story spine (one argument, each chapter answers the question the previous one leaves open):
+  C01 thesis · C02–C03 the debate (the PCIe interface tax; CC-NIC's bet and the real question) ·
+  C04–C05 coherence is NOT NEEDED (the slow-MMIO premise is a fence artifact; host-NIC traffic is a
+  hand-off, so push each message into the reader's cache) · C06 coherence is NOT FREE (retention tax,
+  isolation) · C07–C09 what REAL HARDWARE adds (credits against bridge collapse; NIC DMA for bulk;
+  NIC-held bursts) · C10 END TO END over real 100GbE · C11 takeaway and limits.
 
 Every scene is a dict:
-  id:     composition id (C01..C08, kept disjoint from PcieDatapath S01..S15)
+  id:     composition id (C01..C11; PcieDatapath keeps S01..S15)
   file:   src/ccnic/<file>.tsx
-  title:  top-left title (<= 34 ASCII chars so it stays well left of the rail at x=760)
-  stage:  index into CCNIC_STAGES (0..6), or None to hide the rail
-  source: provenance line under title (<= 64 ASCII chars)
-  cues:   list of (caption, spoken_or_None, fact_src)
+  title:  top-left title (<= 30 chars)
+  stage:  index into the CcnicPaperStory rail (0..5), or None to hide the rail
+  source: plain-English provenance line under the title (<= 64 chars; no issue ids on screen)
+  cues:   list of (caption, spoken_or_None, fact_src); fact_src points into data/FACTS_CCNIC.md
 
-Caption formatting supports ONLY **accent** and `code` (never single *italic*).
-Captions stay <= 138 plain chars (2 crisp lines). Spoken overrides spell acronyms
-with spaces and write numbers as words for clean edge-tts pronunciation.
+Captions support ONLY **accent** and `code`. Keep them <= ~115 chars (two lines at 32 px).
+Spoken text spells acronyms with spaces ("P C I express", "C C nick", "D M A") and numbers as words.
+"""
+
+STORY = """\
+One argument, told as a chain of questions (each chapter answers the question the previous one leaves open):
+
+1. **The debate** (C02-C03). Today's descriptor-ring NICs make every message cross PCIe several times (2.1-3.8 us
+   round trips). CC-NIC's fix is to put the NIC in the CPU's coherence domain. But its own control shows the old
+   interface on a coherent link moves fewer packets than plain PCIe, and the real CXL NIC is fastest with mostly
+   non-coherent pushes: was the win coherence, or the hand-over?
+2. **Coherence is not needed** (C04-C05). The "MMIO is slow" premise is a fence-per-write artifact (8.1 -> 175.2 M/s on
+   one core). Host-NIC traffic is a hand-off, so push each message into the reader's cache in both directions and poll
+   locally: 897 ns round trip, 5.2x faster than the same card's descriptor interface, IOMMU on.
+3. **Coherence is not free** (C06). Coherent NICs pay invalidations when the host reuses retained buffers (CC-NIC:
+   -20%); push keeps nothing to invalidate (pool 64 KiB -> 128 MiB: -0.9%) and keeps the IOMMU.
+4. **What real hardware adds** (C07-C09). A real NIC's inbound bridge can collapse under hard polling (~13 M/s) ->
+   host credits (p99 44.5 -> 7.0 us); bulk payloads go by the NIC's own DMA with separate credit windows; the NIC,
+   being the writer, keeps receive bursts off the host (-98.9% host DRAM traffic).
+5. **End to end** (C10). Over a real 100GbE link the gain survives (10.21 -> 5.96 us) and one host core fills the link.
+6. **Takeaway** (C11). The speedup is in the hand-over; what coherence is still for; related work; next step.
 """
 
 SCENES = [
-    # ------------------------------------------------------------------ C01
+    # ------------------------------------------------------------------ C01 thesis
     dict(
         id="C01",
         file="C01Thesis",
@@ -23,324 +48,454 @@ SCENES = [
         source="",
         cues=[
             (
-                "**Why revisit CC-NIC's premise?** ASPLOS '24 argued PCIe MMIO is too slow, so future NICs must move to **cache-coherent CXL**.",
-                "Why revisit C C NIC's premise? At A S P L O S twenty twenty four, C C NIC made a bold claim: ordinary P C I express M M I O is too slow, so future network cards must move to cache-coherent C X L.",
-                "CC-NIC ASPLOS'24 / MRV-113",
+                "**CC-NIC does not need cache coherence**: how should a host CPU and its network card talk?",
+                "This is the story behind our paper, C C nick does not need cache coherence. It is about one question: how should a host C P U and its network card talk to each other?",
+                "F-THESIS",
             ),
             (
-                "Our thesis is the opposite: **fast NICs need zero hardware cache coherence**—and **zero** special CPU accelerators like Intel DSA.",
-                "Our paper argues the opposite. Fast network cards need zero hardware cache coherence, and zero special C P U accelerators like Intel D S A—plain commercial P C I express is already enough when designed properly.",
-                "MRV-113 / MRV-120",
+                "A recent line of work says fast NICs must join the CPU's **cache-coherence domain**. We argue the opposite.",
+                "A recent line of work argues that fast network cards must join the C P U's cache coherence domain, over links like C X L. We argue the opposite.",
+                "F-CCNIC-ABS / F-CXLNIC",
             ),
             (
-                "Real off-the-shelf testbed: Xeon host **saturn**, **PCIe Gen5 ×4** Marvell **CN106** DPU with full **IOMMU**, and **100GbE** to **mercury**.",
-                "Instead of emulating a NIC on a second C P U socket, we measure real commercial silicon: Xeon host saturn, a P C I express gen five by four Marvell C N one oh six with hardware I O M M U on, and hundred gigabit Ethernet to mercury.",
-                "MRV-113 / MRV-152",
+                "The speedup comes from **how data is handed over**, not from coherence. Plain PCIe can already do that hand-over.",
+                "The speedup comes from how data is handed from one side to the other, not from coherence itself. And plain P C I express, the link inside every server today, can already do that hand-over.",
+                "F-THESIS",
             ),
             (
-                "**3,500+ zero-error runs** (**>2.5 B** frames): **0.9 µs** RTT, **1-core 100GbE**, **0%** TX coherence tax, **−98.9%** burst DRAM.",
-                "Across thirty-five hundred zero-error runs and two point five billion frames: sub-microsecond latency, one-core hundred gigabit line rate, zero transmit coherence tax, and ninety-eight point nine percent less burst D RAM.",
-                "MRV-120 / MRV-155 / MRV-158",
+                "Everything is measured on real hardware: a Xeon host and a **Marvell CN106** NIC on PCIe Gen5, IOMMU on.",
+                "Everything here is measured on real hardware: an Intel Xeon host and a Marvell C N one oh six network card on P C I express gen five, with the I O M M U turned on.",
+                "F-TESTBED",
             ),
             (
-                "Four principles drive the gain: **cache-aware PCIe push**, **native NIC DMA**, **credit pacing**, and an **active NIC** for bursts.",
-                "Four simple principles drive everything: cache-aware P C I express push, native NIC D M A for large payloads, lightweight credit pacing, and an active NIC that shields host caches during receive bursts.",
-                "MRV-120",
-            ),
-            (
-                "Next, we follow **six natural advisor questions**—each measurement directly motivating the next piece of the design.",
-                "Next, we walk through six natural questions a systems advisor would ask step by step, letting each hardware measurement directly motivate the next piece of the design.",
-                "MRV-113 / MRV-120",
+                "The plan: the debate → why coherence is **not needed** → why it is **not free** → what real hardware adds → end to end.",
+                "Here is the plan. First, the debate. Then why coherence is not needed, and why it is not free. Then what real hardware taught us, and finally the end-to-end result.",
+                "—",
             ),
         ],
     ),
-    # ------------------------------------------------------------------ C02
+    # ------------------------------------------------------------------ C02 the interface tax
     dict(
         id="C02",
-        file="C02PcieSpeed",
-        title="1 · Why Plain PCIe Is Fast",
+        file="C02InterfaceTax",
+        title="The interface tax",
         stage=0,
-        source="Xeon Host → PCIe Gen5 ×4 → Marvell CN106 DPU (HW IOMMU on)",
+        source="Latency numbers: CC-NIC (ASPLOS '24) §5.3, CX6 and E810 NICs",
         cues=[
             (
-                "**Question 1**: Wait—isn't ordinary **PCIe MMIO** famously slow and forced through **DRAM** without cache coherence?",
-                "Question one: wait—isn't ordinary P C I express M M I O famously slow, and without hardware cache coherence, doesn't every message have to crawl through slow D RAM?",
-                "MRV-148 / MRV-89",
+                "Every request a server handles crosses the boundary between the **host CPU** and the **network card**.",
+                "Every request a server handles crosses the boundary between the host C P U and the network card, once on the way in and once on the way out.",
+                "—",
             ),
             (
-                "Only if you fence every write. Fencing every 64 B write stalls at **8.10 M/s**—reproducing CC-NIC's slow baseline.",
-                "Only if you stall after every write. Issuing a memory fence after every sixty-four byte write stalls one core at eight point one zero million per second—reproducing C C NIC's slow baseline.",
-                "MRV-89 / CC-NIC Fig. 2",
+                "Today that boundary is **PCIe**, and NICs talk across it through descriptor rings that live in host memory.",
+                "Today that boundary is P C I express, and network cards talk across it through descriptor rings that live in host memory.",
+                "F-PCIE-IF",
             ),
             (
-                "Relax the fence interval and host write queues pipeline in parallel: **1 core** hits **175.2 M/s** (**21.6×**)—**97.9%** of Gen5 ×4 line rate!",
-                "Relax the fence interval and host queues pipeline writes in parallel. One host core jumps twenty-one point six times to one hundred seventy-five point two million per second—ninety-seven point nine percent of line rate.",
-                "MRV-89",
+                "To send, the CPU writes a descriptor and rings a **doorbell**. The NIC then **reads** the descriptor, then the payload.",
+                "To send a message, the C P U writes a descriptor and rings a doorbell on the card. The card then reads the descriptor, and then the payload, back across the link.",
+                "F-PCIE-IF",
             ),
             (
-                "What about latency? Cold-flushing each hop proves **all three cache shortcuts** already work on commercial PCIe—staying in caches.",
-                "That settles raw throughput—now what about round-trip latency? Cold-flushing each hop one at a time proves all three cache shortcuts already work by default on commercial P C I express, keeping the fast path in caches.",
-                "MRV-97",
+                "Each read is a **full round trip** over the link, so one message pays several crossings before it even leaves.",
+                "Each of those reads is a full round trip over P C I express. So a single message pays for several crossings before it even leaves the machine.",
+                "F-PCIE-IF",
             ),
             (
-                "Host **L1** saves **117 ns**; writes hit **card L3** (**99.94%**, **−75 ns**); replies hit **host LLC via DDIO** (**−87 ns**) → **897 ns** RTT.",
-                "Host L one saves one hundred seventeen nanoseconds. Writes hit card L three at ninety-nine point nine four percent, saving seventy-five nanoseconds. Replies hit host L L C via Intel D D I O, saving eighty-seven—giving an eight hundred ninety-seven nanosecond round trip.",
-                "MRV-97",
+                "Receiving mirrors it: the NIC writes the packet, then a **completion**, and the CPU keeps checking for it.",
+                "Receiving works the same way in reverse. The card writes the packet into host memory, then a completion record, and the C P U keeps checking for it.",
+                "F-PCIE-IF",
             ),
             (
-                "Even with **full IOMMU**, **897 ns** beats stock **SDP** (**2,400 ns**) and real **CXL-NIC** hardware (**1.3–2.1 µs**, no IOMMU).",
-                "Even with full hardware I O M M U turned on, eight hundred ninety-seven nanoseconds beats the card's default queue interface nearly three times over, and beats real C X L network cards at one point three to two point one microseconds without I O M M U.",
-                "MRV-148 / MRV-97",
+                "A 64-byte round trip through today's NICs takes **2.1–3.8 µs**. For microsecond services, the interface is the bottleneck.",
+                "The result: a sixty-four byte round trip through a modern network card takes two point one to three point eight microseconds. For microsecond-scale services, the interface itself is the bottleneck.",
+                "F-CCNIC-LAT",
             ),
         ],
     ),
-    # ------------------------------------------------------------------ C03
+    # ------------------------------------------------------------------ C03 CC-NIC's bet
     dict(
         id="C03",
-        file="C03TxBuffers",
-        title="2 · Zero Coherence Tax on TX",
-        stage=1,
-        source="Host TX Retention Pool: 64 KiB → 128 MiB vs 60 MiB Host LLC",
+        file="C03CoherentBet",
+        title="CC-NIC's bet",
+        stage=0,
+        source="CC-NIC (ASPLOS '24) §4, §5.2–5.3 · CXL-NIC (MICRO '25) §7",
         cues=[
             (
-                "**Question 2**: Push is fast—but what happens when **TCP** must retain sent buffers in host memory until remote ACKs arrive?",
-                "Question two: push is fast, but when T C P must retain sent buffers in host memory until remote acks arrive, doesn't a large transmit pool kill performance?",
-                "MRV-149",
+                "**CC-NIC** (ASPLOS '24) proposed a fix: move the NIC inside the CPU's **cache-coherence domain**.",
+                "In twenty twenty four, the C C nick paper proposed a fix: move the network card inside the C P U's cache coherence domain.",
+                "F-CCNIC-ABS",
             ),
             (
-                "Separate **two lifetimes**: the **host-to-NIC PCIe hop** is lossless, while **end-to-end TCP retention** lives purely on the host.",
-                "The key insight is separating two lifetimes that prior work mixed together. The host to card P C I express hop is lossless, while end-to-end retransmission buffering belongs strictly to the host.",
-                "MRV-149",
+                "Host and NIC then share cache lines, and coherence hardware moves each line to whoever touches it next.",
+                "Host and card would then share cache lines, and the coherence hardware moves each line to whichever side touches it next. Just loads and stores: no doorbells, and no D M A.",
+                "F-CCNIC-ABS",
             ),
             (
-                "Direct push copies **64 B by value** into NIC memory—the NIC **never reads host TX RAM**. Reusing **one 64 B buffer** hits **174.8 M/s**.",
-                "Direct push copies sixty-four bytes by value into the NIC, so the NIC never reads host transmit memory back. Overwriting one single sixty-four byte buffer hits one hundred seventy-four point eight million per second with zero pool.",
-                "MRV-149 / MRV-116",
+                "Modeled on a two-socket Xeon, one socket playing the NIC: **490–650 ns**, about **77% lower** than PCIe NICs.",
+                "They modeled it on a two-socket Xeon server, with one socket playing the network card, and measured four hundred ninety to six hundred fifty nanoseconds, about seventy-seven percent lower than P C I express network cards.",
+                "F-CCNIC-EMU / F-CCNIC-LAT",
             ),
             (
-                "On coherent **CC-NIC**, host TCP retention triggers **cross-link invalidations**: **−20%** on retention alone (up to **−73%** with host pools).",
-                "On coherent C C NIC, keeping T C P buffers in host memory forces cross-link cache invalidations—costing twenty percent on retention alone, and up to seventy-three percent with host pools.",
-                "MRV-149 / CC-NIC Fig. 15",
+                "Yet in their own control, the **old interface over the coherent link** moved fewer packets than plain PCIe.",
+                "But one of their own experiments is telling. When they ran the old network card interface over the coherent link, unchanged, it delivered a lower packet rate than the same card on plain P C I express.",
+                "F-CCNIC-UNOPT",
             ),
             (
-                "Without coherence, NIC caches **never mirror** host TX RAM: growing the pool **2,000×** (**64 KiB → 128 MiB**) holds **47.5 → 47.1 M/s** (**−0.9%**).",
-                "Without coherence, NIC caches never mirror host transmit memory. Growing a sequential pool two thousand times—from sixty-four kilobytes to one hundred twenty-eight megabytes, twice the host cache—keeps throughput flat within zero point nine percent.",
-                "MRV-149 / MRV-116",
+                "The win came with a **redesigned interface**: signals packed into the descriptors, rings placed with whoever writes them.",
+                "In other words, the gain arrived together with a redesigned interface: signals packed into the descriptors themselves, and rings placed in the memory of whoever writes them.",
+                "F-CCNIC-IF",
             ),
             (
-                "Across **816 M** replies, receive **DDIO** stays **99.99993%** (**0** misses at 128 MiB). Random slowdown is purely local DDR5—**0% coherence tax**.",
-                "Across eight hundred sixteen million replies, receive D D I O hits stay at ninety-nine point nine nine nine nine percent with zero misses. Any random-access slowdown comes purely from local host D D R five, with zero cross-link coherence tax.",
-                "MRV-149 / MRV-116 / MRV-125",
+                "A real coherent NIC (**CXL-NIC**, MICRO '25) was fastest using **mostly non-coherent pushes**: about **1.3 µs**.",
+                "And when a later paper built a real coherent network card on a C X L F P G A, its fastest design relied mostly on non-coherent requests, pushing packets straight into the host cache, at about one point three microseconds.",
+                "F-CXLNIC",
+            ),
+            (
+                "So the real question: does the speedup come from **coherence**, or from **how data is handed over**?",
+                "So the real question is this. Does the speedup come from coherence, or from redesigning how data is handed over? If it is the hand-over, we may not need coherence at all.",
+                "F-THESIS",
             ),
         ],
     ),
-    # ------------------------------------------------------------------ C04
+    # ------------------------------------------------------------------ C04 the fence artifact
     dict(
         id="C04",
-        file="C04CreditPacing",
-        title="3 · Taming Tail Latency",
-        stage=2,
-        source="High-Concurrency Open-Loop Traffic · Host In-Flight Credit Gate",
+        file="C04FenceArtifact",
+        title="Is PCIe really slow?",
+        stage=1,
+        source="Measured: 1 host core · 64 B writes · batch 1 · PCIe Gen5 ×4",
         cues=[
             (
-                "**Question 3**: Idle RTT is **0.9 µs**—but **what breaks at high concurrency** on a real DPU, and how do we tame tail latency?",
-                "Question three: idle latency is under a microsecond and raw push hits one hundred seventy-five million per second. So what breaks when we crank up high concurrency on a real D P U, and how do we tame tail latency?",
-                "MRV-150",
+                "Both coherent-NIC papers start from one premise: CPU writes into device memory (**MMIO**) are slow.",
+                "Both coherent N I C papers start from the same premise: when the C P U writes directly into device memory, called M M I O, it is slow, and it only works with large batches.",
+                "F-PREMISE",
             ),
             (
-                "Real DPU silicon exposed a **hardware contention cliff**: relentless empty NIC polling collides with concurrent inbound writes.",
-                "Real D P U silicon exposed a hardware cliff invisible to two-socket emulators. When card cores relentlessly poll empty slots during heavy inbound writes, the card's inbound bridge serializes writes down to roughly thirteen million per second.",
-                "MRV-148 / MRV-150",
+                "But that measurement put a **fence after every write**: the core must wait until each write drains.",
+                "But that measurement placed a fence after every single write. A fence makes the core stop and wait until each write has fully drained before it may issue the next one.",
+                "F-PREMISE",
             ),
             (
-                "**~13 M/s** is **not** the link ceiling (push hits **175 M/s**, 1-core RPC **50.4 M/s**)—it is congestion collapse when bursts pile up.",
-                "Crucially, thirteen million is not the channel cap—raw push hits one hundred seventy-five million and one-core R P C hits fifty million. It is congestion collapse when unpaced bursts queue up.",
-                "MRV-150 / MRV-115",
+                "We reproduce it: one core, 64-byte writes, a fence after each → **8.1 million writes/s**.",
+                "We can reproduce their number. One core writing sixty-four byte messages, with a fence after each one, reaches only eight point one million writes per second.",
+                "F-FENCE",
             ),
             (
-                "Without pacing at **16–30 M/s**, host queues back up (**48–248** entries), exploding open-loop **p99** tail latency to **44–51 µs**.",
-                "Without pacing at sixteen to thirty million per second, backpressure fills forty-eight to two hundred forty-eight host queue entries, exploding p ninety-nine tail latency to forty-four to fifty-one microseconds.",
-                "MRV-150 / MRV-115",
+                "Drop the per-write fence and writes overlap in flight: the same core reaches **175.2 M/s**, **97.9%** of the link.",
+                "Now remove the per-write fence, and the writes overlap in flight. The same single core reaches one hundred seventy-five million writes per second: ninety-seven point nine percent of what the link can carry.",
+                "F-FENCE",
             ),
             (
-                "A **host credit cap** (`32–48` in-flight) clears queues (**1–3** entries), cuts **p99 6–64×** (**44.5 → 7.0 µs** Poisson), and lifts 4C **+43%**.",
-                "A simple host credit gate capping thirty-two to forty-eight requests in flight drains queues to one to three entries, cuts tail latency six to sixty-four times—down to seven microseconds under Poisson load—and lifts four-core throughput forty-three percent.",
-                "MRV-150 / MRV-115 / MRV-123",
+                "The link was never the bottleneck: **the fence was**. Order is checked at the receiver instead.",
+                "So the link was never the bottleneck. The fence was. And ordering does not need a fence on every write: the receiver simply checks a sequence number at both ends of each message.",
+                "F-FENCE / F-ORDER",
             ),
             (
-                "**Honest boundary**: host-only credits hold **≤ 2 µs** up to **13.5 M/s** (1C) / **10 M/s** (4C); faster sub-2 µs needs **on-demand card backoff**.",
-                "Honest boundary: host-only credits hold under two microseconds up to thirteen point five million on one core or ten million on four. Going faster at sub-two microseconds requires on-demand card backoff after busy bursts.",
-                "MRV-150 / MRV-123",
+                "Across all our runs, **more than 2.5 billion** messages and frames, not one arrived torn.",
+                "Across all of our runs, more than two and a half billion messages and frames, not a single one arrived torn.",
+                "F-ORDER",
             ),
         ],
     ),
-    # ------------------------------------------------------------------ C05
+    # ------------------------------------------------------------------ C05 push, don't pull
     dict(
         id="C05",
-        file="C05DirectPush",
-        title="4 · DirectPush: Hybrid + Fair CPU",
-        stage=3,
-        source="Small Direct Push + Native NIC DMA · Fair Zero-Copy SDP Baseline",
+        file="C05PushHandoff",
+        title="Push, don't share",
+        stage=1,
+        source="Measured: 64 B round trip · 1 host core + 1 NIC core · IOMMU on",
         cues=[
             (
-                "**Question 4**: Direct push shines at **64 B**—but pushing **4 KiB** wastes host CPU. How do we handle **mixed packet sizes** cleanly?",
-                "Question four: direct push shines for sixty-four byte control messages, but pushing four kilobytes line by line wastes host C P U. How do we handle real mixed traffic?",
-                "MRV-151",
+                "What is host–NIC traffic, really? **One side writes, the other reads**, then the buffer changes hands.",
+                "Look at what host to card traffic actually is. One side writes a message, the other side reads it, and then the buffer changes hands. Nothing is shared back and forth. It is a hand-off.",
+                "F-THESIS",
             ),
             (
-                "**DirectPush** splits by size (**zero DSA**): **≤ 256 B** pushes inline (**0.89 µs**); **≥ 512 B** pushes one **64 B** command for **native NIC DMA**.",
-                "DirectPush splits cleanly by message size with zero Intel D S A. Messages up to two hundred fifty-six bytes go inline in zero point eight nine microseconds. Larger payloads push a single sixty-four byte command for zero-copy built-in D M A at ninety-seven percent of line rate.",
-                "MRV-151 / MRV-120 / MRV-22",
+                "A hand-off doesn't need coherence. It needs each write to **land in the reader's cache**.",
+                "A hand-off does not need a protocol that tracks every copy of every cache line. It only needs each write to land directly in the reader's cache.",
+                "F-THESIS",
             ),
             (
-                "Wider DMA packets amortize PCIe headers: **4 KiB** host CPU drops **2.86×** (**46.6% → 16.3%**), lifting `Mix-Geo` **2.41×** (**7.8 → 18.7 GB/s**).",
-                "Wider D M A packets amortize P C I express headers. On four kilobytes, host C P U drops two point eight six times—from forty-six point six to sixteen point three percent—lifting large-heavy Mix-Geo from seven point eight to eighteen point seven gigabytes per second.",
-                "MRV-151 / MRV-117",
+                "PCIe already does this: a 64-byte host write lands in the **NIC's cache** — 99.94% of reads hit.",
+                "And P C I express already does this. A sixty-four byte write from the host lands in the network card's own cache: ninety-nine point nine four percent of the card's reads hit there.",
+                "F-CACHES",
             ),
             (
-                "Dual **small/large credit windows** stop head-of-line blocking: under saturated **18.6 GB/s** 4 KiB load, 64 B **p99** drops **40.5 ms → 2.75 µs**.",
-                "Giving small and large traffic two separate credit windows eliminates head-of-line blocking. Under saturated eighteen point six gigabyte per second bulk traffic, sixty-four byte tail latency drops from forty point five milliseconds to two point seven five microseconds—over fourteen thousand times lower.",
-                "MRV-151 / MRV-127",
+                "Replies go the same way: the NIC's write lands in the **host's cache** (Intel DDIO). Each side polls only its own cache.",
+                "Replies travel the same way in reverse: the card's write lands in the host's last level cache, through Intel's D D I O. So each side only ever polls its own cache, and nothing is read across the link.",
+                "F-CACHES",
             ),
             (
-                "Against a **fair zero-copy SDP** baseline (non-blocking, **100% DDIO**), DirectPush still saves **1.5–2.1×** host CPU and **5.24×** 64 B RTT.",
-                "Now for the fairness check every systems advisor asks first: we aggressively tuned the card's stock S D P driver with zero-copy, non-blocking completions, and full D D I O. Even against that fair zero-copy S D P baseline, DirectPush still cuts host C P U by one point five to two point one times across sixty-four bytes to four kilobytes, while delivering five point two four times lower sixty-four byte latency.",
-                "MRV-166",
+                "We call it **DirectPush**: one write per message, no doorbell, no read across the link. Round trip: **897 ns**.",
+                "We call this DirectPush: one write per message in each direction, with no doorbell and no read across the link. A sixty-four byte round trip takes eight hundred ninety-seven nanoseconds.",
+                "F-RTT",
             ),
             (
-                "**Honest boundary**: **1–4 KiB** savings mostly avoid DPDK stack overhead; at **64 B**, eliminating TX DMA reads is a **true hardware win**.",
-                "One plain-English boundary keeps our claims completely honest. At one to four kilobytes, a modern static-ring network card has an isomorphic P C I express transfer, so our C P U win mainly reflects skipping D P D K software stack overhead. At sixty-four bytes, however, eliminating transmit D M A reads is a genuine hardware win.",
-                "MRV-166",
+                "Same card, same link, standard descriptor interface: **4.6 µs**. Changing only the interface: **5.2× faster**.",
+                "On the very same card and link, the standard descriptor interface takes four point six microseconds. Changing only the interface makes the round trip five point two times faster.",
+                "F-SAMECARD",
+            ),
+            (
+                "For scale: real CXL coherent NIC **~1.3–2.1 µs**, no IOMMU. CC-NIC's 490 ns was **emulated** on two CPUs.",
+                "For scale, the real C X L coherent network card measures about one point three to two point one microseconds, without I O M M U protection. C C nick's faster numbers were emulated with two C P U sockets, and we do not claim to beat them.",
+                "F-CXLNIC / F-CCNIC-EMU",
             ),
         ],
     ),
-    # ------------------------------------------------------------------ C06
+    # ------------------------------------------------------------------ C06 coherence is not free
     dict(
         id="C06",
-        file="C06Real100gbe",
-        title="5 · Real 100GbE & 1-Core Line Rate",
-        stage=4,
-        source="Two-Host 100GbE: saturn ⇄ CN106 ⇄ 3 m DAC ⇄ mercury (ConnectX-5)",
+        file="C06CoherenceTax",
+        title="Coherence is not free",
+        stage=2,
+        source="CC-NIC Fig. 15 · measured: closed loop, 64 B, pool 64 KiB → 128 MiB",
         cues=[
             (
-                "**Question 5**: Do these gains survive a **real 100GbE cable**—and can **one single host core** actually saturate **100 Gbps** end-to-end?",
-                "Question five: do these gains still matter over a real hundred gigabit Ethernet cable, and can strictly one host core saturate hundred gigabit line rate?",
-                "MRV-152 / MRV-133 / MRV-155",
+                "Coherence isn't only unnecessary here. It also carries a **cost** that push simply avoids.",
+                "Coherence is not only unnecessary here. It also carries a cost that push simply avoids.",
+                "—",
             ),
             (
-                "Over **saturn → CN106 → 3 m DAC → mercury (ConnectX-5)**: end-to-end **64 B** RTT drops **10.21 → 5.96 µs** (**−4.25 µs / −41.6%**).",
-                "Connecting saturn through C N one oh six and a three-meter hundred gigabit cable to mercury's ConnectX-five, real wire latency never hides the gain. Sixty-four byte round trip drops from ten point two one to five point nine six microseconds—saving forty-one point six percent.",
-                "MRV-152 / MRV-133",
+                "A coherent NIC caches host buffers it has read. When the host reuses one, each copy must be **invalidated over the link**.",
+                "A coherent card keeps copies of the host buffers it has read in its own cache. When the host writes to those buffers again, each stale copy must first be invalidated across the link.",
+                "F-RETAIN-CCNIC",
             ),
             (
-                "Every size wins on wire: **256 B** saves **3.76 µs** (**−36%**), **4 KiB** saves **2.33 µs**, and `Mix-Geo` 64 B **p99** drops **68%** (**96.5 → 30.7 µs**).",
-                "Every packet size wins over the wire: two hundred fifty-six bytes saves three point seven six microseconds, four kilobytes saves two point three three, and mixed sixty-four byte tail latency drops sixty-eight percent to thirty point seven microseconds.",
-                "MRV-152 / MRV-133",
+                "Real stacks keep sent buffers: TCP holds each one until it is acked. CC-NIC measured **−20%** throughput from that alone.",
+                "Real network stacks keep sent buffers around. T C P, for example, holds every sent packet until it is acknowledged. C C nick measured a twenty percent throughput drop from that alone.",
+                "F-RETAIN-CCNIC",
             ),
             (
-                "Polling cheap local host rings ahead of costly Ethernet status checks trims another **−370 ns** end-to-end (**6.03 → 5.66 µs**, **0.94 µs** on-card).",
-                "One clean card-side scheduling rule—polling cheap local host rings before expensive Ethernet port status checks—trims another three hundred seventy nanoseconds directly off end-to-end latency, restoring zero point nine four microseconds on-card.",
-                "MRV-154",
+                "With push, data arrives **by value**: the NIC never caches host memory, so there is nothing to invalidate.",
+                "With push, data arrives by value. The card never caches host memory, so there is never anything to invalidate.",
+                "F-RETAIN",
             ),
             (
-                "**1-core 100GbE** test: into the NIC, **1 host core** pushes **161.4 Mpps**—above 100GbE's 64 B cap (**148.8 Mpps**)—vs optimal SDP's **50.5 Mpps**.",
-                "Next, can one single host core drive hundred gigabit line rate? Across P C I express, one DirectPush core sustains one hundred sixty-one point four million packets per second—above hundred gigabit's sixty-four byte limit—while optimal S D P stalls at fifty point five million.",
-                "MRV-155",
+                "It frees the sender too: a pushed buffer can be **reused at once**. One core rewriting one 64 B buffer: **174.8 M/s**.",
+                "Push frees the sender, too. Since the card never reads a buffer back, the C P U can reuse it the moment it is pushed. One core rewriting a single sixty-four byte buffer still pushes one hundred seventy-four point eight million messages per second.",
+                "F-REUSE",
             ),
             (
-                "End-to-end into `mercury` PHY on **1 host core**: **64 B UDP** hits **99.76 Gbps**, **64 B RoCEv2** **99.68 Gbps** (**1.96×** SDP), **256 B** **99.86 Gbps**!",
-                "From end to end into mercury's physical port on one host core, sixty-four byte U D P hits ninety-nine point seven six gigabits, sixty-four byte Rocky v two hits ninety-nine point six eight—nearly twice optimal S D P—and two hundred fifty-six bytes hits ninety-nine point eight six gigabits.",
-                "MRV-155",
+                "We grew the retained pool **2,000×**, from 64 KiB to 128 MiB, past the 60 MiB host cache. Throughput: **−0.9%**.",
+                "We grew the retained buffer pool two thousand times, from sixty-four kilobytes to one hundred twenty-eight megabytes, larger than the entire host cache. Throughput moved by less than one percent.",
+                "F-RETAIN",
             ),
             (
-                "**Honest ceilings**: bare 64 B caps at **99.2 Mpps** (`66.7 Gbps`) on CN106's default single TX scheduler; **1–4 KiB** hits **94.0–96.5 Gbps**.",
-                "Two honest hardware ceilings: bare sixty-four byte frames cap at ninety-nine point two million packets per second on this card's default single scheduler—hitting full hundred gigabits from one hundred six byte frames up—while one to four kilobyte D M A reaches ninety-four to ninety-six point five gigabits at the P C I express ceiling.",
-                "MRV-155",
+                "Isolation stays too: every run kept the **IOMMU on**. CC-NIC leaves it to future work; CXL devices bypass it.",
+                "Isolation stays, too. Every run here kept the I O M M U on. C C nick leaves protection to future work, and the C X L nick paper notes that C X L devices are not protected by the I O M M U the way P C I express devices are.",
+                "F-IOMMU",
             ),
         ],
     ),
-    # ------------------------------------------------------------------ C07
+    # ------------------------------------------------------------------ C07 real hardware: credits
     dict(
         id="C07",
-        file="C07ActiveNic",
-        title="6 · Active-NIC Burst Buffering",
-        stage=5,
-        source="100 M/s RX Bursts (64 KiB → 128 MiB) · 256 KiB Hot Host Ring",
+        file="C07Credits",
+        title="Real hardware pushes back",
+        stage=3,
+        source="Measured: 64 B messages · open and closed loop · IOMMU on",
         cues=[
             (
-                "**Question 6**: What about the **receive side** during **100 M/s** traffic bursts—won't bursting into host rings thrash **host LLC** and **DRAM**?",
-                "Question six: what about the receive side when a hundred million packet per second burst hits? Won't pouring bursts into host rings thrash host caches and D RAM?",
-                "MRV-158",
+                "Emulating a NIC with a second CPU hides one thing: a real NIC sits behind **I/O bridges**, and bridges can jam.",
+                "Emulating a network card with a second C P U hides one thing. A real card sits behind I O bridges, and bridges have failure modes of their own.",
+                "F-BRIDGE",
             ),
             (
-                "**Passive NIC (Scheme A)** dumps bursts into a **128 MiB** host ring—blowing past the **8 MiB** DDIO window and **60 MiB** host LLC.",
-                "A passive NIC dumps incoming bursts straight into a one hundred twenty-eight megabyte host ring, overflowing the eight megabyte D D I O window and the entire sixty megabyte host cache.",
-                "MRV-158",
+                "With many messages in flight while the NIC polls hard, its inbound bridge drops into **single file**: ~13 M/s.",
+                "When many messages are in flight while the card's cores poll very hard, the card's inbound bridge drops into single file, letting through one write about every seventy-six nanoseconds. Throughput collapses to about thirteen million messages per second.",
+                "F-BRIDGE",
             ),
             (
-                "**Active NIC (Scheme B)** holds burst backlog on the **NIC**; the host keeps only a **256 KiB hot ring**, refilled in place as credits return.",
-                "Our active NIC flips that around. Backlog stays buffered on the NIC itself, while the host keeps only a tiny two hundred fifty-six kilobyte hot ring—permanently cache-resident—refilled in place as credits return.",
-                "MRV-158",
+                "Counters showed the caches nearly empty: the jam sat **inside the bridge**, set off by polling empty slots.",
+                "Hardware counters showed the queues on both sides were nearly empty. The jam sat inside the bridge itself, set off when card cores kept polling slot after empty slot while writes streamed in.",
+                "F-BRIDGE",
             ),
             (
-                "Zero-backlog overhead is practically zero: **+6 ns** on idle RTT (**0.887 → 0.893 µs**), zero concurrency loss, **176.9 M/s** streaming.",
-                "With no burst, credit checks cost just six nanoseconds on idle latency, zero loss under concurrency, and one hundred seventy-six point nine million per second streaming.",
-                "MRV-158",
+                "Not a link limit: push alone hits 175 M/s. It is a **congestion collapse**, and tails explode: p99 **44.5 µs**.",
+                "That is not the link's limit; push alone reaches one hundred seventy-five million. It is a congestion collapse. Requests pile up behind the bridge, and at twenty million requests per second, the ninety-ninth percentile latency explodes to forty-four point five microseconds.",
+                "F-CREDIT",
             ),
             (
-                "At **128 MiB** bursts: host LLC misses drop **91.4% → 0.0%**, DDIO climbs **16.3% → 100%**, and **host DRAM drops −98.9%** (**972 → 11 MiB**).",
-                "Under one hundred twenty-eight megabyte bursts, host L L C read misses plunge from ninety-one point four percent to zero, D D I O stays at one hundred percent, and host D RAM traffic drops ninety-eight point nine percent—from nine hundred seventy-two down to eleven megabytes.",
-                "MRV-158",
+                "The fix is classic: **credits**. The host caps how many messages may be in flight, like a TCP window.",
+                "The fix is a classic one: credits. The host simply caps how many messages may be in flight at once, much like a T C P window.",
+                "F-CREDIT",
             ),
             (
-                "**Conservation law**: bursts **≤ 32 MiB** sit inside CN106's **48 MiB L3** (~0 system DRAM); **> 48 MiB** cleanly offloads to **card DDR5**.",
-                "Dual-side counters reveal clean conservation: bursts up to thirty-two megabytes fit in the card's forty-eight megabyte L three cache, keeping system D RAM traffic near zero. Above forty-eight megabytes, the NIC's dedicated six-channel D D R five absorbs the spill, keeping host memory traffic minimal at about eleven megabytes.",
-                "MRV-158",
+                "Same 20 M/s load, now with credits: p99 falls from **44.5 µs to 7.0 µs**, and the host-side queue drains.",
+                "Under the same twenty million per second load, with credits the tail falls from forty-four point five to seven microseconds, and the queue that had built up inside the host drains away.",
+                "F-CREDIT",
             ),
             (
-                "Refill stays **0.91 µs** (`1.05–1.16 µs` cold) and 128 MiB drain wins **+8.4%**. **Trade-off**: 1 card core drains `1–32 MiB` bursts slightly slower.",
-                "Refill stays sub-microsecond—zero point nine one microseconds sequentially, up to one point one six cold—while one hundred twenty-eight megabyte drain wins eight point four percent. Honestly, one card core drains mid-size bursts slightly slower before winning past forty-eight megabytes.",
-                "MRV-158",
+                "Honest limit: host credits alone can't hold p99 under **2 µs** at 20 M/s. That needs the NIC to back off as well.",
+                "One honest limit: host credits alone cannot hold the tail under two microseconds at twenty million per second. That needs the card to back off on demand as well, which is our next step.",
+                "F-CREDIT-LIMIT",
             ),
         ],
     ),
-    # ------------------------------------------------------------------ C08
+    # ------------------------------------------------------------------ C08 big messages: NIC DMA
     dict(
         id="C08",
-        file="C08Takeaways",
-        title="7 · Paper Contributions & Recipe",
-        stage=6,
-        source="Synthesis: Cache-Aware PCIe + Native DMA + Credits + Active NIC",
+        file="C08BulkDma",
+        title="Big messages: let the NIC move them",
+        stage=3,
+        source="Measured: 1 host core + 1 NIC core · 64 B – 4 KiB messages",
         cues=[
             (
-                "**So what are the paper's contributions?** Every design step followed directly from testing **CC-NIC's assumption** on real silicon.",
-                "So what are the paper's core contributions? Stepping back, every design step followed directly from testing C C NIC's central assumption on real commercial hardware.",
-                "MRV-113 / MRV-120",
+                "Push is ideal for small messages. But a 4 KiB payload would cost the CPU **64 separate line writes**.",
+                "Pushing is ideal for small messages. But a four kilobyte payload would cost the C P U sixty-four separate line writes, burning cycles the application needs.",
+                "F-BULK",
             ),
             (
-                "**1 · Plain PCIe is fast**: unfenced push hits **175.2 M/s** (**97.9%** line rate), **897 ns** 3-hop cache RTT (with **IOMMU**), and **0%** TX coherence tax.",
-                "Contribution one: plain P C I express is already fast—one hundred seventy-five million writes per second on one core, eight hundred ninety-seven nanosecond cache latency with full I O M M U, and zero transmit coherence tax.",
-                "MRV-148 / MRV-149",
+                "So large payloads take another road: push **one 64-byte command**, and the NIC's own **DMA engine** moves the bytes.",
+                "So large payloads take a different road. The host pushes one sixty-four byte command, and the card's own D M A engine, which every network card already has, moves the bytes. No extra accelerator is needed.",
+                "F-BULK",
             ),
             (
-                "**2 · DirectPush interface**: small push + **native NIC DMA** (**0 DSA**) + **dual credits** → **14,700×** HoL isolation & **1.5–2.1×** lower CPU vs fair SDP.",
-                "Contribution two: DirectPush pairs small inline push with native NIC D M A, uses zero Intel D S A, and adds dual credit windows—delivering fourteen thousand seven hundred times head-of-line isolation and up to two point one times lower host C P U than fair tuned S D P.",
-                "MRV-150 / MRV-151 / MRV-166",
+                "Up to 256 B: pushed inline. From 512 B: by DMA. At 4 KiB, the host's CPU share drops **46.6% → 16.3%**.",
+                "Messages up to two hundred fifty-six bytes are pushed inline; from five hundred twelve bytes up, they go by D M A. At four kilobytes, the host's C P U share drops from forty-six point six to sixteen point three percent.",
+                "F-BULK",
             ),
             (
-                "**3 · Real 100GbE proof**: **−4.25 µs** (**−42%**) two-host RTT, and **1 single host core** saturating **99.8 Gbps** end-to-end into ConnectX-5.",
-                "Contribution three: real hundred gigabit validation—cutting two-host latency forty-two percent and driving ninety-nine point eight gigabits per second from strictly one host core.",
-                "MRV-152 / MRV-133 / MRV-155",
+                "Mixing needs care: with **one shared credit pool**, a bulk flood starves small messages. Their p99: **40.5 ms**.",
+                "Mixing the two needs care. If small and large messages share one credit pool, a flood of bulk transfers starves the small ones, and their tail latency reaches forty point five milliseconds.",
+                "F-HOL",
             ),
             (
-                "**4 · Active-NIC burst isolation**: holding bursts on the NIC behind a **256 KiB** hot host ring cuts host DRAM **−98.9%** at **100% DDIO**.",
-                "Contribution four: active-NIC burst isolation—keeping receive bursts on the NIC behind a two hundred fifty-six kilobyte hot host ring cuts host D RAM traffic ninety-eight point nine percent while keeping host caches clean.",
-                "MRV-158",
+                "Give each class **its own credit window**, and small messages stay at **2.75 µs** under the same flood.",
+                "Give each class its own credit window, and the small messages stay at two point seven five microseconds under exactly the same flood.",
+                "F-HOL",
             ),
             (
-                "**One-sentence takeaway**: fast NICs do **not** need cache coherence—they need **cache-aware PCIe**, **native DMA**, **credit pacing**, and an **active NIC**.",
-                "Here is our one-sentence paper takeaway: high-speed network cards do not need hardware cache coherence. Cache-friendly P C I express, built-in D M A, credit pacing, and an active NIC already get us there today.",
-                "MRV-113 / MRV-120",
+                "Against a fairly tuned standard interface, DirectPush needs **1.5–2.1× fewer** host CPU cycles per packet.",
+                "And against the card's standard interface, tuned as fairly as we could, DirectPush needs one point five to two point one times fewer host C P U cycles per packet. For large packets, much of that saving is software overhead; for small ones, it is the interface itself.",
+                "F-CPU",
+            ),
+        ],
+    ),
+    # ------------------------------------------------------------------ C09 bursts: active NIC
+    dict(
+        id="C09",
+        file="C09ActiveNic",
+        title="Bursts: keep the backlog on the NIC",
+        stage=3,
+        source="Measured: 64 B bursts at 100 M/s · 1 host core + 1 NIC core",
+        cues=[
+            (
+                "Push has a bonus: the **NIC is the writer**, so it decides where data lands, even during a receive burst.",
+                "Push has a bonus. Because the card is the one writing, it decides where data lands, and that matters most during a receive burst.",
+                "F-BURST",
+            ),
+            (
+                "A passive NIC pours the burst into a big host ring. At 128 MiB, it overflows the host cache and spills to DRAM.",
+                "A passive card pours the whole burst into a big ring in host memory. At one hundred twenty-eight megabytes, that overflows the host cache, and the data spills to D RAM.",
+                "F-BURST",
+            ),
+            (
+                "An **active NIC** keeps the backlog in its own memory and refills a small **256 KiB** host ring as credits return.",
+                "An active card instead keeps the backlog in its own memory, and refills a small, two hundred fifty-six kilobyte host ring as the host returns credits.",
+                "F-BURST",
+            ),
+            (
+                "Same 128 MiB burst: host cache misses **91.4% → 0%**, host DRAM traffic **−98.9%**.",
+                "With the same one hundred twenty-eight megabyte burst, the host's cache misses fall from ninety-one percent to zero, and host D RAM traffic falls by ninety-eight point nine percent.",
+                "F-BURST",
+            ),
+            (
+                "Bursts up to 32 MiB fit in the NIC's **48 MiB cache** and touch no DRAM at all; larger ones go to the **NIC's own DRAM**.",
+                "Bursts up to thirty-two megabytes fit entirely in the card's forty-eight megabyte cache, and touch no D RAM at all. Larger bursts land in the card's own D RAM, not the host's.",
+                "F-BURST",
+            ),
+            (
+                "With no burst at all, the extra bookkeeping costs just **6 ns** per round trip.",
+                "And when there is no burst, the extra credit bookkeeping costs only six nanoseconds per round trip.",
+                "F-BURST",
+            ),
+        ],
+    ),
+    # ------------------------------------------------------------------ C10 end to end over 100GbE
+    dict(
+        id="C10",
+        file="C10EndToEnd",
+        title="End to end over 100GbE",
+        stage=4,
+        source="Measured: mercury (ConnectX-5) ⇄ 3 m 100GbE ⇄ CN106 ⇄ saturn",
+        cues=[
+            (
+                "So far the NIC only echoed messages. Does the gain survive a real network? We wired it to a second server over **100GbE**.",
+                "So far, the card only echoed messages back. Does the gain survive a real network? We connected it to a second server over a hundred gigabit Ethernet cable.",
+                "F-E2E",
+            ),
+            (
+                "Now every request crosses the full path: client NIC, cable, our NIC's Ethernet engine, PCIe, the host, and back.",
+                "Now every request crosses the full path: the client's card, the cable, our card's Ethernet engine, P C I express, and the host, and then all the way back.",
+                "F-E2E",
+            ),
+            (
+                "64-byte round trip: **10.21 µs** with the standard interface, **5.96 µs** with DirectPush: **−4.25 µs** (−42%).",
+                "For sixty-four byte requests, the round trip drops from ten point two one microseconds with the standard interface to five point nine six with DirectPush. That saves four and a quarter microseconds, forty-two percent, with the wire included.",
+                "F-E2E",
+            ),
+            (
+                "About **4.3 µs** of that is cable and Ethernet hardware. The host–NIC part itself fell from **5.9 µs to 1.7 µs**.",
+                "About four point three microseconds of that is the fixed cost of the cable and the Ethernet hardware. The host to card part itself fell from five point nine to one point seven microseconds.",
+                "F-E2E",
+            ),
+            (
+                "Can **one host core** fill a 100GbE link with small packets? With 64-byte UDP payloads: **99.76 Gbps**, line rate.",
+                "And can a single host core keep a hundred gigabit link full of small packets? With sixty-four byte U D P payloads, one core drives ninety-nine point seven six gigabits per second: line rate.",
+                "F-1CORE",
+            ),
+            (
+                "The best-tuned standard interface gets about **half** of that. For bare 64 B frames, the NIC's own scheduler is the limit.",
+                "The best-tuned standard interface reaches only about half of that on one core. And for bare sixty-four byte frames, the limit becomes the card's own transmit scheduler, not the host.",
+                "F-1CORE",
+            ),
+        ],
+    ),
+    # ------------------------------------------------------------------ C11 takeaway
+    dict(
+        id="C11",
+        file="C11Takeaway",
+        title="Takeaway",
+        stage=5,
+        source="",
+        cues=[
+            (
+                "Back to the question: the speedup came from **putting data in the reader's cache without round trips**.",
+                "So, back to our question. The speedup came from putting each message into the reader's cache, with no round trips. Coherence was one way to get there, not the reason it works.",
+                "F-THESIS",
+            ),
+            (
+                "Plain PCIe gets there with **writes pushed both ways**, **credits** against congestion, and the **NIC's DMA** for bulk.",
+                "Plain P C I express gets there with three simple pieces: writes pushed in both directions, credits to avoid congestion, and the card's own D M A for bulk data.",
+                "F-THESIS",
+            ),
+            (
+                "The result: sub-µs round trips, line rate from one core, no coherence tax, and the IOMMU stays on.",
+                "What we get: sub-microsecond round trips, line rate from a single core, no coherence tax on retained buffers, and full I O M M U isolation, on hardware you can buy today.",
+                "F-RTT / F-1CORE / F-RETAIN / F-IOMMU",
+            ),
+            (
+                "Coherence still matters for **truly shared state**, such as atomics on a shared buffer allocator. We don't claim that.",
+                "Coherence still matters where host and card truly share mutable state, such as atomic operations on a shared buffer allocator. P C I express cannot do that, and we do not claim it can.",
+                "F-SCOPE",
+            ),
+            (
+                "Related work proposed new PCIe and CPU extensions for write-based datapaths. We show **unmodified hardware** suffices.",
+                "This builds on recent work that treats device writes as a data path, which proposed new P C I express and C P U extensions. We show that unmodified hardware is already enough, and what it takes to make it robust.",
+                "F-RELATED",
+            ),
+            (
+                "Open next step: let the NIC **back off on demand**, to keep sub-2 µs tails at higher load.",
+                "The main open step is on the card side: backing off on demand, so tails stay under two microseconds at higher load.",
+                "F-CREDIT-LIMIT",
+            ),
+            (
+                "**CC-NIC does not need cache coherence.** It needs a better hand-over, and PCIe already provides one.",
+                "Our one-sentence takeaway: C C nick does not need cache coherence. It needs a better hand-over, and plain P C I express already provides one.",
+                "F-THESIS",
             ),
         ],
     ),

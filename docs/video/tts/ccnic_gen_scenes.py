@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from ccnic_script_data import SCENES  # noqa: E402
+from ccnic_script_data import SCENES, STORY  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 SC_DIR = ROOT / "src" / "ccnic"
@@ -149,6 +149,8 @@ def main():
             "python3 tts/ccnic_gen_scenes.py --script",
             "./render_ccnic.sh",
             "```\n",
+            "## Story\n",
+            STORY,
             "## Scenes\n",
             "| ID | Title | Cues | Duration | Source |",
             "| --- | --- | ---: | ---: | --- |",
