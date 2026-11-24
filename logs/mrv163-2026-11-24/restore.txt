@@ -1,0 +1,17 @@
+# MRV-163 post-experiment card restoration verification (after 22 s idle wait, 2026-11-24)
+# Note: eth0 restored to rvu_nicpf, mercury ping 3/3 verified, refl tmux restarted,
+# pem_wc unloaded, BAR4/PEM0 defaults confirmed, then rechecked after 22 s for delayed EDAC/SEI-UER.
+
+saturn_edac_mc0_to_mc7_ue_count = 0 (all 8 memory controllers = 0)
+cn106_0002_02_00_0_driver       = rvu_nicpf
+cn106_eth0_speed                = 100000Mb/s
+cn106_eth0_link_detected        = yes
+cn106_eth0_ipv4                 = 10.10.100.2/24
+mercury_ping_10_10_100_2        = 3/3 received, 0% loss, rtt 0.172/0.262/0.419 ms
+cn106_pem_wc                    = unloaded
+cn106_tmux_refl                 = running (/root/bench/reflector-rs -l 2 -a 0002:01:00.2 --file-prefix=refl, "reflector running on port 0")
+cn106_bar4_index7               = 0x2fef1
+cn106_inline_reflector_restore  = nothing to restore (BAR4 slot 15 and outbound regions 248-255 hold their defaults)
+cn106_edac_ue                   = 0
+cn106_sei_uer                   = 0
+linear_nic_lock                 = removed (-nic-lock)

@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 430" width="920" height="430">
+  <rect width="920" height="430" fill="#ffffff"/>
+  <defs>
+    <marker id="arr-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#64748b"/>
+    </marker>
+    <marker id="arr-b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#2563eb"/>
+    </marker>
+    <style>
+      .t-sans { font-family: "DejaVu Sans", "Droid Sans Fallback", sans-serif; }
+    </style>
+  </defs>
+
+  <!-- Left panel: ROC_NIX_TM_DEFAULT -->
+  <rect x="24" y="22" width="424" height="386" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="236" y="52" text-anchor="middle" class="t-sans" font-size="16" font-weight="bold" fill="#334155">默认单 SMQ[0]</text>
+  <text x="236" y="72" text-anchor="middle" class="t-sans" font-size="12" fill="#64748b">ROC_NIX_TM_DEFAULT（C = 8）</text>
+
+  <!-- 8 SQ boxes (left) -->
+  <g fill="#ffffff" stroke="#94a3b8" stroke-width="1.2">
+    <rect x="44" y="96" width="42" height="28" rx="5"/>
+    <rect x="92" y="96" width="42" height="28" rx="5"/>
+    <rect x="140" y="96" width="42" height="28" rx="5"/>
+    <rect x="188" y="96" width="42" height="28" rx="5"/>
+    <rect x="236" y="96" width="42" height="28" rx="5"/>
+    <rect x="284" y="96" width="42" height="28" rx="5"/>
+    <rect x="332" y="96" width="42" height="28" rx="5"/>
+    <rect x="380" y="96" width="42" height="28" rx="5"/>
+  </g>
+  <g class="t-sans" font-size="11" fill="#334155" text-anchor="middle">
+    <text x="65" y="114">SQ0</text>
+    <text x="113" y="114">SQ1</text>
+    <text x="161" y="114">SQ2</text>
+    <text x="209" y="114">SQ3</text>
+    <text x="257" y="114">SQ4</text>
+    <text x="305" y="114">SQ5</text>
+    <text x="353" y="114">SQ6</text>
+    <text x="401" y="114">SQ7</text>
+  </g>
+
+  <!-- Funneling arrows into single SMQ[0] -->
+  <g stroke="#64748b" stroke-width="1.4" fill="none" marker-end="url(#arr-g)">
+    <line x1="65" y1="124" x2="188" y2="168"/>
+    <line x1="113" y1="124" x2="202" y2="168"/>
+    <line x1="161" y1="124" x2="216" y2="168"/>
+    <line x1="209" y1="124" x2="229" y2="168"/>
+    <line x1="257" y1="124" x2="243" y2="168"/>
+    <line x1="305" y1="124" x2="256" y2="168"/>
+    <line x1="353" y1="124" x2="270" y2="168"/>
+    <line x1="401" y1="124" x2="284" y2="168"/>
+  </g>
+
+  <!-- Single SMQ[0] bottleneck box -->
+  <rect x="148" y="172" width="176" height="44" rx="8" fill="#e2e8f0" stroke="#475569" stroke-width="2" stroke-dasharray="5,3"/>
+  <text x="236" y="192" text-anchor="middle" class="t-sans" font-size="14" font-weight="bold" fill="#1e293b">唯一 SMQ[0]</text>
+  <text x="236" y="209" text-anchor="middle" class="t-sans" font-size="11" fill="#475569">8 队列挤单桶争用</text>
+
+  <!-- Arrow to TL4..TL1 -->
+  <line x1="236" y1="216" x2="236" y2="248" stroke="#64748b" stroke-width="2" marker-end="url(#arr-g)"/>
+
+  <!-- TL4 -> TL1 port ceiling box -->
+  <rect x="96" y="252" width="280" height="44" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="236" y="272" text-anchor="middle" class="t-sans" font-size="13" font-weight="bold" fill="#334155">TL4[0] → TL1[0] → 100G eth0</text>
+  <text x="236" y="289" text-anchor="middle" class="t-sans" font-size="11" fill="#64748b">端口硬顶 100.0 Mpps（sclk 1000 MHz）</text>
+
+  <!-- Result callout (left) -->
+  <line x1="236" y1="296" x2="236" y2="326" stroke="#64748b" stroke-width="2" marker-end="url(#arr-g)"/>
+  <text x="236" y="362" text-anchor="middle" class="t-sans" font-size="32" font-weight="bold" fill="#475569">82.1 Mpps</text>
+  <text x="236" y="388" text-anchor="middle" class="t-sans" font-size="13" fill="#64748b">较 C=4 回落 −17.6%</text>
+
+  <!-- Right panel: ROC_NIX_TM_RLIMIT -->
+  <rect x="472" y="22" width="424" height="386" rx="12" fill="#f8fafc" stroke="#2563eb" stroke-width="2"/>
+  <text x="684" y="52" text-anchor="middle" class="t-sans" font-size="16" font-weight="bold" fill="#1d4ed8">每队列独立 SMQ</text>
+  <text x="684" y="72" text-anchor="middle" class="t-sans" font-size="12" fill="#2563eb">ROC_NIX_TM_RLIMIT（C = 8）</text>
+
+  <!-- 8 SQ boxes (right) -->
+  <g fill="#ffffff" stroke="#93c5fd" stroke-width="1.3">
+    <rect x="492" y="96" width="42" height="28" rx="5"/>
+    <rect x="540" y="96" width="42" height="28" rx="5"/>
+    <rect x="588" y="96" width="42" height="28" rx="5"/>
+    <rect x="636" y="96" width="42" height="28" rx="5"/>
+    <rect x="684" y="96" width="42" height="28" rx="5"/>
+    <rect x="732" y="96" width="42" height="28" rx="5"/>
+    <rect x="780" y="96" width="42" height="28" rx="5"/>
+    <rect x="828" y="96" width="42" height="28" rx="5"/>
+  </g>
+  <g class="t-sans" font-size="11" fill="#1e293b" text-anchor="middle">
+    <text x="513" y="114">SQ0</text>
+    <text x="561" y="114">SQ1</text>
+    <text x="609" y="114">SQ2</text>
+    <text x="657" y="114">SQ3</text>
+    <text x="705" y="114">SQ4</text>
+    <text x="753" y="114">SQ5</text>
+    <text x="801" y="114">SQ6</text>
+    <text x="849" y="114">SQ7</text>
+  </g>
+
+  <!-- 1-to-1 straight arrows SQ -> SMQ -->
+  <g stroke="#2563eb" stroke-width="1.6" fill="none" marker-end="url(#arr-b)">
+    <line x1="513" y1="124" x2="513" y2="168"/>
+    <line x1="561" y1="124" x2="561" y2="168"/>
+    <line x1="609" y1="124" x2="609" y2="168"/>
+    <line x1="657" y1="124" x2="657" y2="168"/>
+    <line x1="705" y1="124" x2="705" y2="168"/>
+    <line x1="753" y1="124" x2="753" y2="168"/>
+    <line x1="801" y1="124" x2="801" y2="168"/>
+    <line x1="849" y1="124" x2="849" y2="168"/>
+  </g>
+
+  <!-- 8 dedicated SMQ boxes -->
+  <g fill="#dbeafe" stroke="#2563eb" stroke-width="1.4">
+    <rect x="492" y="172" width="42" height="44" rx="6"/>
+    <rect x="540" y="172" width="42" height="44" rx="6"/>
+    <rect x="588" y="172" width="42" height="44" rx="6"/>
+    <rect x="636" y="172" width="42" height="44" rx="6"/>
+    <rect x="684" y="172" width="42" height="44" rx="6"/>
+    <rect x="732" y="172" width="42" height="44" rx="6"/>
+    <rect x="780" y="172" width="42" height="44" rx="6"/>
+    <rect x="828" y="172" width="42" height="44" rx="6"/>
+  </g>
+  <g class="t-sans" font-size="10.5" font-weight="bold" fill="#1d4ed8" text-anchor="middle">
+    <text x="513" y="191">SMQ</text><text x="513" y="206">0</text>
+    <text x="561" y="191">SMQ</text><text x="561" y="206">9</text>
+    <text x="609" y="191">SMQ</text><text x="609" y="206">10</text>
+    <text x="657" y="191">SMQ</text><text x="657" y="206">11</text>
+    <text x="705" y="191">SMQ</text><text x="705" y="206">12</text>
+    <text x="753" y="191">SMQ</text><text x="753" y="206">13</text>
+    <text x="801" y="191">SMQ</text><text x="801" y="206">14</text>
+    <text x="849" y="191">SMQ</text><text x="849" y="206">15</text>
+  </g>
+
+  <!-- Converging arrows SMQ -> TL4 -->
+  <g stroke="#2563eb" stroke-width="1.3" fill="none" marker-end="url(#arr-b)">
+    <line x1="513" y1="216" x2="610" y2="249"/>
+    <line x1="561" y1="216" x2="631" y2="249"/>
+    <line x1="609" y1="216" x2="652" y2="249"/>
+    <line x1="657" y1="216" x2="673" y2="249"/>
+    <line x1="705" y1="216" x2="695" y2="249"/>
+    <line x1="753" y1="216" x2="716" y2="249"/>
+    <line x1="801" y1="216" x2="737" y2="249"/>
+    <line x1="849" y1="216" x2="758" y2="249"/>
+  </g>
+
+  <!-- TL4 -> TL1 port ceiling box (highlighted wall) -->
+  <rect x="544" y="252" width="280" height="44" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="684" y="272" text-anchor="middle" class="t-sans" font-size="13" font-weight="bold" fill="#1e3a8a">TL4[0] → TL1[0] → 100G eth0</text>
+  <text x="684" y="289" text-anchor="middle" class="t-sans" font-size="11" font-weight="bold" fill="#2563eb">撞端口硬顶 100.0 Mpps（10.0 拍/包）</text>
+
+  <!-- Result callout (right) -->
+  <line x1="684" y1="296" x2="684" y2="326" stroke="#2563eb" stroke-width="2.2" marker-end="url(#arr-b)"/>
+  <text x="684" y="362" text-anchor="middle" class="t-sans" font-size="32" font-weight="bold" fill="#2563eb">99.6 Mpps</text>
+  <text x="684" y="388" text-anchor="middle" class="t-sans" font-size="13" font-weight="bold" fill="#1d4ed8">+21.4% 零回落 · 止于 100.0M 硬顶</text>
+</svg>
