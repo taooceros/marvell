@@ -1,0 +1,211 @@
+MRV170_SAFETY_JSON {"test":"b3_door_err_watchdog","healthy_recvd":20000,"healthy_watchdog_ldadda":4,"healthy_head_mismatch":0,"healthy_cq_err":0,"oracle_before":{"raw_reg":"0x00000000e2000e20","hw_head":3616,"hw_tail":3616,"sw_head":3616,"sw_avail":0,"hw_pending":0,"head_match":true,"cq_err":0,"op_err":0,"free_dirty_w0":0,"free_dirty_w9":0,"free_dirty_w10_15":0},"door_err_raw_reg":"0x00000000e2000e20","door_err_cq_err_bit46":0,"door_err_op_err_bit63":0,"watchdog_detected_cq_err":0,"watchdog_fatal_flag":0}
+
+---STDERR---
+EAL: Detected CPU lcores: 24
+EAL: Detected NUMA nodes: 1
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/m170/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+CNXK: RoC Model: cn10ka_b0 (HW_PLATFORM)
+CNXK: nix_lf_q_irq():262 Queue_intr=0x1 qintx=0 pf=1, vf=-1
+CNXK: nix_lf_q_irq():283 CQ=0 NIX_CQERRINT_DOOR_ERR
+CNXK: mbox_wait():464 MBOX[devid: 0] message wait timeout 3000000, num_msgs: 1, msgs_acked: 0 (tx/rx num_msgs: 0/1), msg_size: 0, rsp_size: 0
+CNXK: nix_lf_q_irq():320 SQ=0 NIX_SQINT_SQB_ALLOC_FAIL
+            NIX_LF_RX_SECRETX(0) = 0xfeed0badfeed0bad
+            NIX_LF_RX_SECRETX(1) = 0xfeed0badfeed0bad
+            NIX_LF_RX_SECRETX(2) = 0xfeed0badfeed0bad
+            NIX_LF_RX_SECRETX(3) = 0xfeed0badfeed0bad
+            NIX_LF_RX_SECRETX(4) = 0xfeed0badfeed0bad
+            NIX_LF_RX_SECRETX(5) = 0xfeed0badfeed0bad
+          NIX_LF_ERR_INT_ENA_W1C = 0x7210f7ef
+          NIX_LF_ERR_INT_ENA_W1S = 0x7210f7ef
+              NIX_LF_RAS_ENA_W1C = 0x7ef
+              NIX_LF_RAS_ENA_W1S = 0x7ef
+                 NIX_LF_TX_STATX_0 = 0x4e20
+                 NIX_LF_TX_STATX_4 = 0x271000
+                 NIX_LF_RX_STATX_0 = 0x271000
+                 NIX_LF_RX_STATX_1 = 0x4e20
+            NIX_LF_QINTX_ENA_W1S_0 = 0x1
+            NIX_LF_QINTX_ENA_W1C_0 = 0x1
+                NIX_LF_CINTX_INT_0 = 0x1
+            NIX_LF_CINTX_INT_W1S_0 = 0x1
+CNXK: mbox_wait():464 MBOX[devid: 0] message wait timeout 3000000, num_msgs: 1, msgs_acked: 0 (tx/rx num_msgs: 0/1), msg_size: 0, rsp_size: 0
+============== port=0 cq=0 ===============
+W0: base 			0x0
+
+W1: wrptr 			0
+W1: avg_con 			0
+W1: cint_idx 			0
+W1: cq_err 			0
+W1: qint_idx 			0
+W1: bpid  			0
+W1: bp_ena 			0
+
+W1: lbpid_high 			0x000
+W1: lbpid_med 			0x000
+W1: lbpid_low 			0x000
+(W1: lbpid) 			0x000
+
+W1: lbp_ena 				0
+
+W2: update_time 		0
+W2: avg_level 			0
+W2: head 			0
+W2: tail 			0
+
+W3: cq_err_int_ena 		0
+W3: cq_err_int 			0
+W3: qsize 			0
+W3: caching 			0
+W3: lbp_frac 			0
+
+W3: substream 			0x000
+W3: cpt_drop_err_en 			0
+
+W3: ena 			0
+
+W3: drop_ena 			0
+W3: drop 			0
+W3: bp 				0
+
+CNXK: mbox_wait():464 MBOX[devid: 0] message wait timeout 3000000, num_msgs: 1, msgs_acked: 0 (tx/rx num_msgs: 0/1), msg_size: 0, rsp_size: 0
+CNXK: cnxk_nix_rx_queue_stop():1643 Failed to disable rxq=0, rc=-5
+============== port=0 rq=0 ===============
+W0: wqe_aura 			0
+W0: len_ol3_dis 			0
+W0: len_ol4_dis 			0
+W0: len_il3_dis 			0
+W0: len_il4_dis 			0
+W0: csum_ol4_dis 			0
+W0: csum_ol3_dis 			0
+W0: lenerr_dis 			0
+W0: cq 				0
+W0: ena_wqwd 			0
+W0: ipsech_ena 			0
+W0: sso_ena 			0
+W0: ena 			0
+
+W1: chi_ena 		0
+W1: ipsecd_drop_en 		0
+W1: pb_stashing 			0
+W1: lpb_drop_ena 		0
+W1: spb_drop_ena 		0
+W1: xqe_drop_ena 		0
+W1: wqe_caching 		0
+W1: pb_caching 			0
+W1: sso_tt 			0
+W1: sso_grp 			0
+W1: lpb_aura 			0
+W1: spb_aura 			0
+
+W2: xqe_hdr_split 		0
+W2: xqe_imm_copy 		0
+W2: xqe_imm_size 		0
+W2: later_skip 			0
+W2: first_skip 			0
+W2: lpb_sizem1 			0
+W2: spb_ena 			0
+W2: wqe_skip 			0
+W2: spb_sizem1 			0
+W2: policer_ena 			0
+W2: band_prof_id 			0
+W3: spb_pool_pass 		0
+W3: spb_pool_drop 		0
+W3: spb_aura_pass 		0
+W3: spb_aura_drop 		0
+W3: wqe_pool_pass 		0
+W3: wqe_pool_drop 		0
+W3: xqe_pass 			0
+W3: xqe_drop 			0
+
+W4: qint_idx 			0
+W4: rq_int_ena 			0
+W4: rq_int 			0
+W4: lpb_pool_pass 		0
+W4: lpb_pool_drop 		0
+W4: lpb_aura_pass 		0
+W4: lpb_aura_drop 		0
+
+W5: vwqe_skip 			0
+W5: max_vsize_exp 			0
+W5: vtime_wait 			0
+W5: vwqe_ena 			0
+W5: ipsec_vwqe 			0
+W5: flow_tagw 			0
+W5: bad_utag 			0
+W5: good_utag 			0
+W5: ltag 			0
+
+W6: octs 			0x0
+W7: pkts 			0x0
+W8: drop_octs 			0x0
+W9: drop_pkts 			0x0
+W10: re_pkts 			0x0
+
+CNXK: mbox_wait():464 MBOX[devid: 0] message wait timeout 3000000, num_msgs: 1, msgs_acked: 0 (tx/rx num_msgs: 0/1), msg_size: 0, rsp_size: 0
+CNXK: cnxk_nix_tx_queue_stop():1598 Failed to disable sqb aura fc, txq=0, rc=-5
+============== port=0 sq=0 ===============
+W0: sqe_way_mask 		0
+W0: cq 				0
+W0: sdp_mcast 			0
+W0: substream 			0x000
+W0: qint_idx 			0
+W0: ena 			0
+
+W1: sqb_count 			0
+W1: default_chan 		0
+W1: smq_rr_weight 		0
+W1: sso_ena 			0
+W1: xoff 			0
+W1: cq_ena 			0
+W1: smq				0
+
+W2: sqe_stype 			0
+W2: sq_int_ena 			0
+W2: sq_int  			0
+W2: sqb_aura 			0
+W2: smq_rr_count[ub:lb] 		0:0
+
+W3: smq_next_sq_vld		0
+W3: smq_pend			0
+W3: smenq_next_sqb_vld  	0
+W3: head_offset			0
+W3: smenq_offset		0
+W3: tail_offset 		0
+W3: smq_lso_segnum 		0
+W3: smq_next_sq 		0
+W3: mnq_dis 			0
+W3: lmt_dis 			0
+W3: cq_limit			0
+W3: max_sqe_size		0
+
+W4: next_sqb 			0x0
+W5: tail_sqb 			0x0
+W6: smenq_sqb 			0x0
+W7: smenq_next_sqb 		0x0
+W8: head_sqb 			0x0
+W9: vfi_lso_vld 		0
+W9: vfi_lso_vlan1_ins_ena	0
+W9: vfi_lso_vlan0_ins_ena	0
+W9: vfi_lso_mps			0
+W9: vfi_lso_sb 			0
+W9: vfi_lso_sizem1		0
+W9: vfi_lso_total		0
+W10: scm_lso_rem 		0x0
+W11: octs 			0x0
+W12: pkts 			0x0
+W13: aged_drop_pkts 			0x0
+W13: aged_drop_octs 			0x0
+W14: dropped_octs 		0x0
+W15: dropped_pkts 		0x0
+
+SQB Aura W0: Pool addr		0x0
+SQB Aura W1: ena			0
+SQB Aura W2: count		0
+SQB Aura W3: limit		0
+SQB Aura W3: fc_ena		0
+SQB Aura W4: fc_addr		0x0
+
+CNXK: roc_npa_buf_type_update():19 Cannot set buf type on unused aura

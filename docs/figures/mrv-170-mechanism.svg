@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 560" width="1120" height="560" font-family="DejaVu Sans, Droid Sans Fallback, sans-serif">
+  <rect width="1120" height="560" fill="#ffffff"/>
+
+  <!-- Title -->
+  <text x="560" y="34" text-anchor="middle" font-size="18" font-weight="bold" fill="#0f172a">CN106 NIX0 零 LDADDA 直取（--cqe-direct）的 128 B CQE 布局与 4 大安全门控</text>
+
+  <!-- Top Strip: 128 B CQE (2 x 64 B Cache Lines) -->
+  <text x="48" y="72" font-size="13" font-weight="bold" fill="#334155">128 B CQE（cq_ctx->caching = 1）</text>
+
+  <!-- Line 0 -->
+  <rect x="48" y="82" width="490" height="62" rx="6" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+  <text x="293" y="100" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#334155">Cache Line 0（cq[0..7]，64 B）</text>
+  <rect x="58" y="108" width="108" height="28" rx="4" fill="#dbeafe" stroke="#1d6fa5" stroke-width="1.5"/>
+  <text x="112" y="126" text-anchor="middle" font-size="11" font-weight="bold" fill="#1d6fa5">w0: cqe_type</text>
+  <rect x="172" y="108" width="146" height="28" rx="4" fill="#e2e8f0" stroke="#64748b" stroke-width="1.2"/>
+  <text x="245" y="126" text-anchor="middle" font-size="11" fill="#1e293b">w1: errlev/code, dsz</text>
+  <rect x="324" y="108" width="104" height="28" rx="4" fill="#e2e8f0" stroke="#64748b" stroke-width="1.2"/>
+  <text x="376" y="126" text-anchor="middle" font-size="11" fill="#1e293b">w2: pkt_len</text>
+  <rect x="434" y="108" width="94" height="28" rx="4" fill="#f8fafc" stroke="#94a3b8" stroke-width="1"/>
+  <text x="481" y="126" text-anchor="middle" font-size="11" fill="#64748b">w3..w7</text>
+
+  <!-- Line 1 -->
+  <rect x="556" y="82" width="516" height="62" rx="6" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+  <text x="814" y="100" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#334155">Cache Line 1（cq[8..15]，64 B）</text>
+  <rect x="566" y="108" width="92" height="28" rx="4" fill="#e2e8f0" stroke="#64748b" stroke-width="1.2"/>
+  <text x="612" y="126" text-anchor="middle" font-size="11" fill="#1e293b">w8: sg1/segs</text>
+  <rect x="664" y="108" width="102" height="28" rx="4" fill="#dbeafe" stroke="#1d6fa5" stroke-width="1.5"/>
+  <text x="715" y="126" text-anchor="middle" font-size="11" font-weight="bold" fill="#1d6fa5">w9: seg1_addr</text>
+  <rect x="772" y="108" width="114" height="28" rx="4" fill="#e2e8f0" stroke="#64748b" stroke-width="1.2"/>
+  <text x="829" y="126" text-anchor="middle" font-size="11" fill="#1e293b">w10..11: seg2..3</text>
+  <rect x="892" y="108" width="170" height="28" rx="4" fill="#e2e8f0" stroke="#64748b" stroke-width="1.2"/>
+  <text x="977" y="126" text-anchor="middle" font-size="11" fill="#1e293b">w12..15: sg2 + seg4..6</text>
+
+  <!-- Main Fast Path Flow (Middle Row) -->
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#475569"/>
+    </marker>
+    <marker id="arr-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#1d6fa5"/>
+    </marker>
+  </defs>
+
+  <!-- Step 1: ldar w0 -->
+  <rect x="48" y="188" width="176" height="68" rx="8" fill="#ffffff" stroke="#1d6fa5" stroke-width="2"/>
+  <text x="136" y="214" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d6fa5">① ldar w0</text>
+  <text x="136" y="236" text-anchor="middle" font-size="11.5" fill="#475569">cqe_type == 0 → 空返</text>
+  <text x="136" y="250" text-anchor="middle" font-size="10.5" fill="#64748b">~5–8 ns（免 578 ns LDADDA）</text>
+
+  <line x1="224" y1="222" x2="262" y2="222" stroke="#1d6fa5" stroke-width="2" marker-end="url(#arr-blue)"/>
+
+  <!-- Step 2: ldar w9 + w1/w8 check -->
+  <rect x="268" y="188" width="212" height="68" rx="8" fill="#ffffff" stroke="#1d6fa5" stroke-width="2"/>
+  <text x="374" y="214" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d6fa5">② ldar w9 + 验 w1 / w8</text>
+  <text x="374" y="235" text-anchor="middle" font-size="11.5" fill="#334155">ctype==1 &amp; err==0 &amp; segs≥1</text>
+  <text x="374" y="250" text-anchor="middle" font-size="10.5" fill="#64748b">单段 / 多段（segs 1..6）</text>
+
+  <line x1="480" y1="222" x2="520" y2="222" stroke="#1d6fa5" stroke-width="2" marker-end="url(#arr-blue)"/>
+
+  <!-- Step 3: Zero full 128 B + dmb oshst -->
+  <rect x="526" y="188" width="246" height="68" rx="8" fill="#ffffff" stroke="#1d6fa5" stroke-width="2"/>
+  <text x="649" y="214" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d6fa5">③ 全清 128 B + dmb oshst</text>
+  <text x="649" y="235" text-anchor="middle" font-size="11.5" fill="#334155">8×stp xzr（cq[0..15] = 0）</text>
+  <text x="649" y="250" text-anchor="middle" font-size="10.5" fill="#1d6fa5" font-weight="bold">3.50 ns = 与清 2 字持平</text>
+
+  <line x1="772" y1="222" x2="812" y2="222" stroke="#1d6fa5" stroke-width="2" marker-end="url(#arr-blue)"/>
+
+  <!-- Step 4: cq_door -->
+  <rect x="818" y="188" width="254" height="68" rx="8" fill="#eff6ff" stroke="#1d6fa5" stroke-width="2"/>
+  <text x="945" y="214" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d6fa5">④ 写 cq_door 归还槽位</text>
+  <text x="945" y="235" text-anchor="middle" font-size="11.5" fill="#334155">健康包全程零 LDADDA</text>
+  <text x="945" y="250" text-anchor="middle" font-size="10.5" fill="#475569">或 1/4096 周期看门狗查 head</text>
+
+  <!-- Anomaly branch downward from Step 2 -->
+  <line x1="374" y1="256" x2="374" y2="300" stroke="#475569" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+  <text x="384" y="284" font-size="11" fill="#475569">异常分支（err≠0 / w9==0 / ctype≠1）</text>
+
+  <!-- Bottom 4 Boundary Cards -->
+  <!-- B1 -->
+  <rect x="48" y="310" width="242" height="212" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="169" y="336" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f172a">B1 · 多段与尾字可见序</text>
+  <line x1="66" y1="346" x2="272" y2="346" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="169" y="376" text-anchor="middle" font-size="22" font-weight="bold" fill="#1d6fa5">1.2M / 0 错</text>
+  <text x="169" y="400" text-anchor="middle" font-size="11.5" fill="#334155">segs = 2..6（至 9000 B）</text>
+  <text x="169" y="424" text-anchor="middle" font-size="11.5" fill="#334155">预脏尾字重排 = 0</text>
+  <text x="169" y="448" text-anchor="middle" font-size="11.5" fill="#334155">w10..15 缺席 = 0</text>
+  <text x="169" y="476" text-anchor="middle" font-size="11" fill="#64748b">旧版：每包漏 (segs−1) mbuf</text>
+  <text x="169" y="498" text-anchor="middle" font-size="11" font-weight="bold" fill="#1d6fa5">修复后：可安全消除</text>
+
+  <!-- B2 -->
+  <rect x="308" y="310" width="242" height="212" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="429" y="336" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f172a">B2 · 错包 / 0 段 / 非 RX</text>
+  <line x1="326" y1="346" x2="532" y2="346" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="429" y="376" text-anchor="middle" font-size="22" font-weight="bold" fill="#1d6fa5">30/30 检出</text>
+  <text x="429" y="400" text-anchor="middle" font-size="11.5" fill="#334155">OL3/OL4 错包 → LDADDA 回退</text>
+  <text x="429" y="424" text-anchor="middle" font-size="11.5" fill="#334155">MEMOUT / 超长由硬件前丢</text>
+  <text x="429" y="448" text-anchor="middle" font-size="11.5" fill="#334155">0 段：有界自旋+回退防死锁</text>
+  <text x="429" y="476" text-anchor="middle" font-size="11" fill="#64748b">非 RX CQE：fail-stop 禁盲清</text>
+  <text x="429" y="498" text-anchor="middle" font-size="11" font-weight="bold" fill="#1d6fa5">修复后：零死锁零泄漏</text>
+
+  <!-- B3 -->
+  <rect x="568" y="310" width="242" height="212" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.8"/>
+  <text x="689" y="336" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f172a">B3 · 满环溢出与 DOOR_ERR</text>
+  <line x1="586" y1="346" x2="792" y2="346" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="689" y="376" text-anchor="middle" font-size="22" font-weight="bold" fill="#334155">bit 46 = 0</text>
+  <text x="689" y="400" text-anchor="middle" font-size="11.5" fill="#334155">满环 4095/4096 恢复零漂移</text>
+  <text x="689" y="424" text-anchor="middle" font-size="11.5" fill="#334155">1.05M imissed 零错零泄漏</text>
+  <text x="689" y="448" text-anchor="middle" font-size="11.5" fill="#0f172a" font-weight="bold">DOOR_ERR 仅走 QINT 中断</text>
+  <text x="689" y="476" text-anchor="middle" font-size="11" fill="#64748b">CQ_OP_STATUS bit 46 不置位</text>
+  <text x="689" y="498" text-anchor="middle" font-size="11" font-weight="bold" fill="#334155">硬限制：须配 QINT + head 看门狗</text>
+
+  <!-- B4 -->
+  <rect x="828" y="310" width="244" height="212" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="950" y="336" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f172a">B4 · 脏槽停启与千万绕环</text>
+  <line x1="846" y1="346" x2="1054" y2="346" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="950" y="376" text-anchor="middle" font-size="22" font-weight="bold" fill="#1d6fa5">10M / 0 重放</text>
+  <text x="950" y="400" text-anchor="middle" font-size="11.5" fill="#334155">原装 flush 遗留 32/32 脏槽</text>
+  <text x="950" y="424" text-anchor="middle" font-size="11.5" fill="#334155">cqe_direct_sync 全清归零</text>
+  <text x="950" y="448" text-anchor="middle" font-size="11.5" fill="#334155">50 轮停启 + 2,441 圈绕环</text>
+  <text x="950" y="476" text-anchor="middle" font-size="11" fill="#64748b">强约束：停启必调 sync 严禁混用</text>
+  <text x="950" y="498" text-anchor="middle" font-size="11" font-weight="bold" fill="#1d6fa5">受控队列：零错零漂移</text>
+</svg>

@@ -1,0 +1,12 @@
+MRV170_SAFETY_JSON {"test":"b2_synth_anomalous","zero_seg":{"naive_polls":1000,"naive_w9_retries":1000,"naive_head_stuck":true,"safe_fallback_ldadda":1,"safe_w0_ahead_of_tail":1,"safe_w9_retries":0},"non_rx":{"naive_polls":1000,"naive_w9_retries":1000,"safe_fallback_ldadda":1,"safe_w0_ahead_of_tail":1,"safe_w9_retries":0}}
+
+---STDERR---
+EAL: Detected CPU lcores: 24
+EAL: Detected NUMA nodes: 1
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/m170/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+CNXK: RoC Model: cn10ka_b0 (HW_PLATFORM)
+CNXK: roc_npa_buf_type_update():19 Cannot set buf type on unused aura

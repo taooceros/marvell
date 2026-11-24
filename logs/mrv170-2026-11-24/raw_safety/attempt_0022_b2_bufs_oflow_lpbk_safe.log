@@ -1,0 +1,14 @@
+
+---STDERR---
+EAL: Detected CPU lcores: 24
+EAL: Detected NUMA nodes: 1
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/m170/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+CNXK: RoC Model: cn10ka_b0 (HW_PLATFORM)
+CNXK: cnxk_nix_mtu_set():606 Greater than maximum supported packet length
+CNXK: nix_recalc_mtu():377 Failed to set default MTU size, rc=-22
+CNXK: roc_npa_buf_type_update():19 Cannot set buf type on unused aura
+Error: Error { op: "rte_eth_rx_queue_setup", errno: 22 }

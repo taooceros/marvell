@@ -1,0 +1,12 @@
+MRV170_SAFETY_JSON {"test":"b4_stop_start","cycles":50,"pending_before_stop":32,"oracle_dirty_repro":{"raw_reg":"0x0000000002000020","hw_head":32,"hw_tail":32,"sw_head":32,"sw_avail":0,"hw_pending":0,"head_match":true,"cq_err":0,"op_err":0,"free_dirty_w0":32,"free_dirty_w9":32,"free_dirty_w10_15":0},"oracle_after_scrub":{"raw_reg":"0x0000000002000020","hw_head":32,"hw_tail":32,"sw_head":32,"sw_avail":0,"hw_pending":0,"head_match":true,"cq_err":0,"op_err":0,"free_dirty_w0":0,"free_dirty_w9":0,"free_dirty_w10_15":0},"total_pkts_verified":225000,"total_bad":0,"dirty_post_sync_any":0,"head_mismatch_any":0,"cq_err_any":0,"in_use_before":0,"in_use_after":0,"mbuf_leak":0,"cqe_stats":{"calls":7223,"peek_empty":107,"peek_hit":7116,"peek_hit_ldadda_zero":0,"ldadda_calls":0,"pkts_popped":225400,"w9_zero_on_w0_hit":0,"w9_wait_retries":0,"cqe_type_rx":225400,"cqe_type_other":0,"mseg_pkts":0,"mseg_total_segs":0,"w10_15_zero_on_w9_hit":0,"w10_15_wait_retries":0,"fallback_ldadda":0,"w0_ahead_of_tail":0,"non_rx_cqes":0,"err_rx_cqes":0,"zero_seg_err_cqes":0,"err_pkts_freed":0,"last_err_w0":"0x0000000000000000","last_err_w1":"0x0000000000000000","last_err_w8":"0x0000000000000000","last_err_w9":"0x0000000000000000","watchdog_ldadda":54,"watchdog_head_mismatch":0,"cq_err_seen":0,"op_err_seen":0,"fatal_cq_err":0},"oracle_final":{"raw_reg":"0x0000000022800228","hw_head":552,"hw_tail":552,"sw_head":552,"sw_avail":0,"hw_pending":0,"head_match":true,"cq_err":0,"op_err":0,"free_dirty_w0":0,"free_dirty_w9":0,"free_dirty_w10_15":0},"eth_stats":{"ipackets":225832,"opackets":225832,"ibytes":28906496,"obytes":28906496,"imissed":0,"ierrors":0,"oerrors":0,"rx_nombuf":0,"rx_drop":0,"rx_err":0,"rx_fcs":0,"rx_octs":28906496}}
+
+---STDERR---
+EAL: Detected CPU lcores: 24
+EAL: Detected NUMA nodes: 1
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/m170/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+CNXK: RoC Model: cn10ka_b0 (HW_PLATFORM)
+CNXK: roc_npa_buf_type_update():19 Cannot set buf type on unused aura

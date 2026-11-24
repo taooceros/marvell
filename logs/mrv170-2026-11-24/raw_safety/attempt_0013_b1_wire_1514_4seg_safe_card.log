@@ -1,0 +1,11 @@
+EAL: Detected CPU lcores: 24
+EAL: Detected NUMA nodes: 1
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/m170/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: VFIO support initialized
+EAL: Using IOMMU type 1 (Type 1)
+CNXK: RoC Model: cn10ka_b0 (HW_PLATFORM)
+MRV170_WIRE_READY mac=40:60:5a:02:ed:68
+MRV170_SAFETY_JSON {"test":"b1_mseg_wire","policy":"CqeDirectSafe","rx_burst_mode":"Scalar, Rx Offloads: Scattered,","buf_size":512,"poison":true,"recvd":200000,"verified_ok":200000,"non_test_pkts":0,"min_segs":4,"max_segs":4,"data_len_gt_buf_len":0,"err_stale_tail":0,"err_stale_mid":0,"err_other":0,"in_use_before":0,"in_use_after":0,"mbuf_leak":0,"first_cqe":["0x1000000000000000","0x0000220200002100","0x00000000010005e9","0x0000000000000000","0x000000001000002a","0x00000000220e0000","0x0000000000090000","0x0000000000000000","0x4003020002000180","0x000000013ff1bc80","0x000000013ff1b300","0x000000013ff1b600","0x400100000000006a","0x000000013ff1b900","0x0000000000000000","0x0000000000000000"],"cqe_stats":{"calls":6810674,"peek_empty":6614828,"peek_hit":195846,"peek_hit_ldadda_zero":0,"ldadda_calls":0,"pkts_popped":200000,"w9_zero_on_w0_hit":0,"w9_wait_retries":0,"cqe_type_rx":200000,"cqe_type_other":0,"mseg_pkts":200000,"mseg_total_segs":800000,"w10_15_zero_on_w9_hit":0,"w10_15_wait_retries":0,"fallback_ldadda":0,"w0_ahead_of_tail":0,"non_rx_cqes":0,"err_rx_cqes":0,"zero_seg_err_cqes":0,"err_pkts_freed":0,"last_err_w0":"0x0000000000000000","last_err_w1":"0x0000000000000000","last_err_w8":"0x0000000000000000","last_err_w9":"0x0000000000000000","watchdog_ldadda":48,"watchdog_head_mismatch":0,"cq_err_seen":0,"op_err_seen":0,"fatal_cq_err":0},"oracle":{"raw_reg":"0x00000000d4000d40","hw_head":3392,"hw_tail":3392,"sw_head":3392,"sw_avail":0,"hw_pending":0,"head_match":true,"cq_err":0,"op_err":0,"free_dirty_w0":0,"free_dirty_w9":0,"free_dirty_w10_15":0},"eth_stats":{"ipackets":200000,"opackets":0,"ibytes":302800000,"obytes":0,"imissed":0,"ierrors":0,"oerrors":0,"rx_nombuf":0,"rx_drop":0,"rx_err":0,"rx_fcs":0,"rx_octs":302800000}}
+CNXK: roc_npa_buf_type_update():19 Cannot set buf type on unused aura
