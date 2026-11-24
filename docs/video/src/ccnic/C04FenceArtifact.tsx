@@ -340,7 +340,7 @@ function Body() {
         <div style={{ fontSize: 21, color: P.sub, marginTop: 22 }}>MMIO writes to the NIC, one core</div>
       </Glass>
       <Glass x={1010} y={300} w={760} h={300} kicker="CXL-NIC · MICRO '25 · §1" color={P.coh} style={rise(quotes * prog(t, T[0] + 3.0, 0.6))}>
-        <div style={{ fontSize: 34, lineHeight: 1.35, color: P.ink, marginTop: 18 }}>“MMIO … constrained bandwidth (&lt;0.3 GB/s).”</div>
+        <div style={{ fontSize: 34, lineHeight: 1.35, color: P.ink, marginTop: 18 }}>“MMIO … constrained bandwidth (&lt;0.3&nbsp;GB/s).”</div>
         <div style={{ fontSize: 21, color: P.sub, marginTop: 22 }}>CPU-to-device writes over PCIe</div>
       </Glass>
 
@@ -388,10 +388,10 @@ function Body() {
       <Tag x={150} y={572} color={P.bad} opacity={pipe * waitOn} size={16}>
         fence · wait for drain
       </Tag>
-      <Tag x={846} y={548} color={P.bad} opacity={pipe * (1 - freeK) * prog(t, T[1] + 0.8, 0.5)} size={16}>
+      <Tag x={846} y={548} color={P.bad} opacity={pipe * (1 - prog(t, T[3] + 0.4, 0.3)) * prog(t, T[1] + 0.8, 0.5)} size={16}>
         fence after every write
       </Tag>
-      <Tag x={858} y={548} color={P.push} opacity={pipe * freeK} size={16}>
+      <Tag x={858} y={548} color={P.push} opacity={pipe * prog(t, T[3] + 0.75, 0.3)} size={16}>
         no per-write fence
       </Tag>
       <BigStat x={PIPE_X0} y={724} w={560} value="8.1" unit="M writes/s" size={60} color={P.bad} label="one core, fence after every write" opacity={gauge * slowNum} />
@@ -658,7 +658,7 @@ function Body() {
         </g>
       </Stage>
       <Text x={990} y={586} w={780} size={22} color={P.sub} style={rise(s10 * quote, 10)}>
-        “…a ready flag, which the host sets after other descriptor fields are written.” <span style={{ color: P.coh, whiteSpace: "nowrap" }}>— CC-NIC §3.2</span>
+        “…a ready flag, which the host sets after other descriptor fields are&nbsp;written.” <span style={{ color: P.coh, whiteSpace: "nowrap" }}>— CC-NIC §3.2</span>
       </Text>
       <Text x={360} y={716} w={1200} align="center" size={40} weight={600} color={P.gold} style={rise(s10 * final, 12)}>
         Ordering is the reader’s job either way.

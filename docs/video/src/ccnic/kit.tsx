@@ -155,6 +155,14 @@ function CcCaptions() {
   const s = ctx.warp.toReal(cues[idx][0]);
   const e = idx + 1 < cues.length ? ctx.warp.toReal(cues[idx + 1][0]) : ctx.warp.realDur;
   const op = Math.min(clamp01((r - s) / 0.18), clamp01((e - r) / 0.18));
+  // Spaces a caption line must not break at: a number and its unit; an article (or "no"/"one") and the next word;
+  // a preposition and the number after it; an arrow and the numbers around it ("46.6% → 16.3%").
+  const text = cues[idx][2]
+    .replace(/(\d) (?=(ns|µs|ms|M\/s|Gbps|GB\/s|MiB|KiB|B\b|%|×))/g, "$1\u00a0")
+    .replace(/\b(a|an|the|no|one) /gi, "$1\u00a0")
+    .replace(/\b(at|to|from|under|than|of|by|about) (?=(\*\*)?[~−+<>≈]?\d)/gi, "$1\u00a0")
+    .replace(/(\S) →(?= (\*\*)?[~−+]?\d)/g, "$1\u00a0→")
+    .replace(/→ (?=(\*\*)?[~−+]?\d)/g, "→\u00a0");
   return (
     <div
       style={{
@@ -183,7 +191,7 @@ function CcCaptions() {
           textWrap: "balance",
         }}
       >
-        <RichText text={cues[idx][2].replace(/(\d) (?=(ns|µs|ms|M\/s|Gbps|GB\/s|MiB|KiB|B\b|%|×))/g, "$1\u00a0")} />
+        <RichText text={text} />
       </div>
     </div>
   );
