@@ -1,0 +1,266 @@
+ENV BEFORE: {"saturn": {"cpu40_gov": "performance", "cpu40_khz": 3900000, "uncore_khz": {"package_00_die_00": 2200000, "package_01_die_01": 2200000}, "edac_ue_sum": 0}, "cn106": {"freq": "2000000", "edac_ue": "0", "sei_uer": "0", "bar4_idx7": "0x2fef1"}, "mercury": {"tx_packets_phy": 32742817458, "rx_crc_errors_phy": 162, "tx_bytes_phy": 6711146539208, "rx_global_pause": 4437556, "tx_global_pause": 2909681}}
+MERC READY: MRV172_TX READY port=7547 dev=mlx5_2 ifname=ens6f1np1 dst=10.10.100.2 tsc_hz=2199987417
+  RSS probe nc=2: all 2 queues covered (min 64 flows/q)
+  RSS probe nc=4: all 4 queues covered (min 31 flows/q)
+  RSS probe nc=6: all 6 queues covered (min 20 flows/q)
+  RSS probe nc=8: all 8 queues covered (min 15 flows/q)
+  RSS probe nc=12: all 12 queues covered (min 9 flows/q)
+  RSS probe nc=16: all 16 queues covered (min 7 flows/q)
+[TP rep=0] tp_rx_64B_ism0_2048    host_rx= 58.18M card_tx= 58.18M miss=0 ok=True
+[TP rep=0] tp_rx_64B_ism1_2048    host_rx= 58.18M card_tx= 58.18M miss=0 ok=True
+[TP rep=0] tp_rx_64B_rpm1_512     host_rx= 58.18M card_tx= 58.19M miss=0 ok=True
+[TP rep=1] tp_rx_64B_ism0_2048    host_rx= 58.11M card_tx= 58.11M miss=0 ok=True
+[TP rep=1] tp_rx_64B_ism1_2048    host_rx= 58.14M card_tx= 58.14M miss=0 ok=True
+[TP rep=1] tp_rx_64B_rpm1_512     host_rx= 58.14M card_tx= 58.15M miss=0 ok=True
+[TP rep=2] tp_rx_64B_ism0_2048    host_rx= 58.12M card_tx= 58.12M miss=0 ok=True
+[TP rep=2] tp_rx_64B_ism1_2048    host_rx= 58.15M card_tx= 58.16M miss=0 ok=True
+[TP rep=2] tp_rx_64B_rpm1_512     host_rx= 58.14M card_tx= 58.15M miss=0 ok=True
+[rep=1/3  1/55] [S0] s0_uc64_c1           | merc=148.81M(100.0G L2= 64.0B) | rpm=148.81M nix=111.11M sw= 23.87M | q=[36.4..36.4M] wl=190745934 qwl=[190745934] Δ(m-rpm)=0 Δ(nix-sw)=133187893 | ok=True []
+[rep=1/3  2/55] [S0] s0_uc64_c2           | merc=148.81M(100.0G L2= 64.0B) | rpm=148.81M nix=111.11M sw= 47.61M | q=[36.3..36.4M] wl=154534030 qwl=[83667838, 70866192] Δ(m-rpm)=0 Δ(nix-sw)=96967584 | ok=True []
+[rep=1/3  3/55] [S0] s0_uc64_c4           | merc=148.82M(100.0G L2= 64.0B) | rpm=148.82M nix=111.12M sw= 94.24M | q=[35.3..37.5M] wl=83337770 qwl=[17715766, 15239583, 19924723, 30457698] Δ(m-rpm)=0 Δ(nix-sw)=25769075 | ok=True []
+[rep=1/3  4/55] [S0] s0_uc64_c6           | merc=148.81M(100.0G L2= 64.0B) | rpm=148.81M nix=111.11M sw=111.07M | q=[19.1..36.4M] wl=57640232 qwl=[11408953, 6509349, 12392797, 8293541, 11001628, 8033964] Δ(m-rpm)=0 Δ(nix-sw)=55085 | ok=True []
+[rep=1/3  5/55] [S0] s0_uc64_c8           | merc=148.82M(100.0G L2= 64.0B) | rpm=148.82M nix=111.11M sw=111.11M | q=[11.0..31.6M] wl=57569628 qwl=[3725486, 6080509, 6244106, 8002538, 10717455, 8441123, 8001732, 6356679] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=1/3  6/55] [S0] s0_uc64_c12          | merc=148.82M(100.0G L2= 64.0B) | rpm=148.82M nix=111.12M sw=111.12M | q=[8.3..16.5M] wl=57584759 qwl=[5599088, 3256272, 5372079, 5599376, 3712119, 5599712, 5599467, 3225618, 5599678, 5598979, 2823443, 5598928] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=1/3  7/55] [S0] s0_uc64_c16          | merc=148.82M(100.0G L2= 64.0B) | rpm=148.82M nix=111.12M sw=111.12M | q=[1.6..14.7M] wl=57571899 qwl=[4199340, 4906744, 3272075, 3249593, 4972599, 4955579, 3174646, 4974356, 4302422, 733450, 4137657, 543512, 4954830, 1829033, 2394304, 4971759] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=1/3  8/55] [S0] s0_uc64_c16_notouch  | merc=148.81M(100.0G L2= 64.0B) | rpm=148.81M nix=111.11M sw=111.11M | q=[6.7..12.4M] wl=0 qwl=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=1/3  9/55] [S0] s0_uc94_c12          | merc=109.66M(100.0G L2= 94.0B) | rpm=109.66M nix=109.66M sw=109.66M | q=[6.7..15.9M] wl=0 qwl=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=1/3 10/55] [S0] s0_ud102_c12         | merc=102.47M(100.0G L2=102.0B) | rpm=102.47M nix=102.47M sw=102.47M | q=[6.6..13.6M] wl=0 qwl=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=1/3 11/55] [S0] s0_ud110_c12         | merc= 96.17M(100.0G L2=110.0B) | rpm= 96.17M nix= 96.17M sw= 96.17M | q=[10.9..12.5M] wl=0 qwl=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=1/3 12/55] [S0] s0_uc134_c12         | merc= 81.10M( 99.9G L2=134.0B) | rpm= 81.10M nix= 81.10M sw= 81.10M | q=[10.3..10.3M] wl=0 qwl=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=1/3 13/55] [S0] s0_ud134_c12         | merc= 76.26M( 93.9G L2=134.0B) | rpm= 76.26M nix= 76.26M sw= 76.26M | q=[9.7..9.7M] wl=0 qwl=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=1/3 14/55] [S0] s0_ud254_c8          | merc= 45.63M(100.0G L2=254.0B) | rpm= 45.63M nix= 45.63M sw= 45.63M | q=[8.6..8.7M] wl=0 qwl=[0, 0, 0, 0, 0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=1/3 15/55] [S0] s0_ud326_c8          | merc= 36.10M( 99.9G L2=326.0B) | rpm= 36.10M nix= 36.10M sw= 36.10M | q=[5.9..7.0M] wl=0 qwl=[0, 0, 0, 0, 0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=1/3 16/55] [S0] s0_ud1094_c4         | merc= 11.23M(100.1G L2=1094.0B) | rpm= 11.23M nix= 11.23M sw= 11.23M | q=[4.0..4.4M] wl=0 qwl=[0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=1/3 17/55] [S0] s0_ud4096_c4         | merc= 11.23M(100.1G L2=1094.0B) | rpm= 11.23M nix= 11.23M sw= 11.23M | q=[4.0..4.4M] wl=0 qwl=[0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=1/3 18/55] [S1] s1_dp_wc64_c1              | host=142.55M (142.55Mmsg  73.0G pay) card=142.55M | iioWr=142.6M(64.0B) ddio=100.0% imc=0.4/0.3G | b/t/l=0/0/59 sl=0 ok=True []
+[rep=1/3 19/55] [S1] s1_dp_wc64_c2              | host=177.49M (177.49Mmsg  90.9G pay) card=177.49M | iioWr=177.5M(64.0B) ddio=100.0% imc=0.3/0.3G | b/t/l=0/0/325 sl=0 ok=True []
+[rep=1/3 20/55] [S1] s1_dp_wc64_c4              | host=177.47M (177.47Mmsg  90.9G pay) card=177.47M | iioWr=177.5M(64.0B) ddio=100.0% imc=0.3/0.3G | b/t/l=0/0/1220 sl=0 ok=True []
+[rep=1/3 21/55] [S1] s1_dp_wc64_c8              | host=177.52M (177.52Mmsg  90.9G pay) card=177.52M | iioWr=177.5M(64.0B) ddio=100.0% imc=3.4/2.3G | b/t/l=0/0/275 sl=0 ok=True []
+  [CLOCK_RETRY #1 logged in attempts.jsonl, sleep 5s] s1_dp_wc256_c4 rep=0 errs=['cpu40_ghz=3.575']
+[rep=1/3 22/55] [S1] s1_dp_wc256_c4             | host= 35.45M (35.45Mmsg  72.6G pay) card= 35.45M | iioWr=177.6M(63.9B) ddio=100.0% imc=0.4/0.3G | b/t/l=0/0/26836 sl=0 ok=True []
+[rep=1/3 23/55] [S1] s1_dp_dma256_c4            | host= 51.47M (51.47Mmsg 105.4G pay) card= 51.47M | iioWr=205.9M(64.0B) ddio=100.0% imc=0.6/0.3G | b/t/l=0/0/4 sl=0 ok=True []
+[rep=1/3 24/55] [S1] s1_dp_dma1024_c4           | host= 12.85M (12.85Mmsg 105.3G pay) card= 12.85M | iioWr=205.6M(64.0B) ddio=100.0% imc=0.7/0.3G | b/t/l=0/0/400 sl=0 ok=True []
+[rep=1/3 25/55] [S1] s1_dp_dma4096_c4           | host= 12.87M ( 3.22Mmsg 105.5G pay) card= 12.91M | iioWr=206.0M(64.0B) ddio=100.0% imc=1.7/0.9G | b/t/l=0/0/4928522 sl=0 ok=True []
+[rep=1/3 26/55] [S1] s1_dp_dma4ks_c4            | host= 12.87M ( 3.22Mmsg 105.5G pay) card= 12.87M | iioWr=206.0M(64.0B) ddio=100.0% imc=0.3/0.2G | b/t/l=0/0/1847136 sl=0 ok=True []
+[rep=1/3 27/55] [S1] s1_sdp_64_rpm1_512_c4      | host= 35.82M (35.82Mmsg  18.3G pay) card=100.00M | iioWr= 71.6M(34.0B) ddio=100.0% imc=0.3/0.3G | b/t/l=0/0/0 sl=98343898 ok=True []
+[rep=1/3 28/55] [S1] s1_sdp_64_ism1_512_c4      | host= 71.64M (71.64Mmsg  36.7G pay) card=100.00M | iioWr=145.8M(33.5B) ddio=100.0% imc=0.3/0.2G | b/t/l=0/0/0 sl=43450767 ok=True []
+[rep=1/3 29/55] [S1] s1_sdp_64_ism1_2048_c4     | host= 91.23M (91.23Mmsg  46.7G pay) card=100.00M | iioWr=183.2M(33.9B) ddio=100.0% imc=0.6/0.3G | b/t/l=0/0/0 sl=13440151 ok=True []
+[rep=1/3 30/55] [S1] s1_sdp_64_ism1_2048_c8     | host= 84.76M (84.76Mmsg  43.4G pay) card= 99.29M | iioWr=169.6M(34.0B) ddio=100.0% imc=0.4/0.3G | b/t/l=0/0/0 sl=22257280 ok=True []
+[rep=1/3 31/55] [S1] s1_sdp_256_rpm1_512_c4     | host= 38.22M (38.22Mmsg  78.3G pay) card= 38.23M | iioWr=229.3M(55.3B) ddio=100.0% imc=0.4/0.3G | b/t/l=0/0/0 sl=20632 ok=True []
+[rep=1/3 32/55] [S1] s1_sdp_256_ism1_2048_c4    | host= 38.02M (38.02Mmsg  77.9G pay) card= 38.02M | iioWr=230.0M(54.9B) ddio=100.0% imc=0.3/0.3G | b/t/l=0/0/0 sl=0 ok=True []
+[rep=1/3 33/55] [S1] s1_sdp_1024_rpm1_512_c4    | host= 11.83M (11.83Mmsg  96.9G pay) card= 11.83M | iioWr=212.9M(61.1B) ddio= 99.8% imc=0.4/0.5G | b/t/l=0/0/0 sl=179 ok=True []
+[rep=1/3 34/55] [S1] s1_sdp_1024_ism1_2048_c4   | host= 11.62M (11.62Mmsg  95.2G pay) card= 11.62M | iioWr=215.4M(59.4B) ddio= 94.8% imc=0.4/5.6G | b/t/l=0/0/0 sl=0 ok=True []
+[rep=1/3 35/55] [S2] s2_dp_64B            | merc=148.81M(100.0G) card=111.11M(bp=2306) | host=111.11M(111.11Mmsg  56.9G pay /  74.7G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/13 ok=True []
+[rep=1/3 36/55] [S2] s2_sdp_ism1_64B      | merc=148.81M(100.0G) card=108.48M(bp=13592853) | host= 81.37M(81.37Mmsg  41.7G pay /  54.7G wire) ddio=100.0% | Δ(c2h-h)=27790741 b/t/l=0/0/0 ok=True []
+[rep=1/3 37/55] [S2] s2_sdp_rpm1_64B      | merc=148.81M(100.0G) card=106.34M(bp=10189521) | host= 39.57M(39.57Mmsg  20.3G pay /  26.6G wire) ddio=100.0% | Δ(c2h-h)=91795041 b/t/l=0/0/0 ok=True []
+[rep=1/3 38/55] [S2] s2_dp_110B           | merc= 96.16M(100.0G) card= 96.16M(bp=0) | host= 96.16M(96.16Mmsg  30.8G pay / 100.0G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/5 ok=True []
+[rep=1/3 39/55] [S2] s2_sdp_ism1_110B     | merc= 96.16M(100.0G) card= 96.16M(bp=0) | host= 51.69M(51.69Mmsg  16.5G pay /  53.8G wire) ddio=100.0% | Δ(c2h-h)=67902774 b/t/l=0/0/0 ok=True []
+[rep=1/3 40/55] [S2] s2_sdp_rpm1_110B     | merc= 96.16M(100.0G) card= 96.16M(bp=0) | host= 53.81M(53.81Mmsg  17.2G pay /  56.0G wire) ddio=100.0% | Δ(c2h-h)=64655636 b/t/l=0/0/0 ok=True []
+[rep=1/3 41/55] [S2] s2_dp_134B           | merc= 80.93M( 99.7G) card= 80.93M(bp=0) | host= 80.93M(80.93Mmsg  46.6G pay /  99.7G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/9 ok=True []
+[rep=1/3 42/55] [S2] s2_sdp_ism1_134B     | merc= 80.93M( 99.7G) card= 80.93M(bp=0) | host= 45.45M(45.45Mmsg  26.2G pay /  56.0G wire) ddio=100.0% | Δ(c2h-h)=54173335 b/t/l=0/0/0 ok=True []
+[rep=1/3 43/55] [S2] s2_sdp_rpm1_134B     | merc= 80.93M( 99.7G) card= 80.93M(bp=0) | host= 52.05M(52.05Mmsg  30.0G pay /  64.1G wire) ddio=100.0% | Δ(c2h-h)=44080424 b/t/l=0/0/0 ok=True []
+[rep=1/3 44/55] [S2] s2_dp_326B           | merc= 36.11M( 99.9G) card= 35.17M(bp=0) | host= 35.17M(35.17Mmsg  72.0G pay /  97.4G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/565 ok=True []
+[rep=1/3 45/55] [S2] s2_sdp_ism1_326B     | merc= 36.13M(100.0G) card= 36.13M(bp=0) | host= 36.13M(36.13Mmsg  74.0G pay / 100.0G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/0 ok=True []
+[rep=1/3 46/55] [S2] s2_sdp_rpm1_326B     | merc= 36.12M(100.0G) card= 36.12M(bp=0) | host= 36.12M(36.12Mmsg  74.0G pay / 100.0G wire) ddio=100.0% | Δ(c2h-h)=2847 b/t/l=0/0/0 ok=True []
+[rep=1/3 47/55] [S2] s2_dp_1094B          | merc= 11.23M(100.1G) card= 11.23M(bp=0) | host= 11.23M(11.23Mmsg  92.0G pay / 100.1G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/99990 ok=True []
+[rep=1/3 48/55] [S2] s2_sdp_ism1_1094B    | merc= 11.23M(100.1G) card= 11.23M(bp=0) | host= 11.23M(11.23Mmsg  92.0G pay / 100.1G wire) ddio= 88.5% | Δ(c2h-h)=0 b/t/l=0/0/0 ok=True []
+[rep=1/3 49/55] [S2] s2_sdp_rpm1_1094B    | merc= 11.23M(100.1G) card= 11.23M(bp=0) | host= 11.23M(11.23Mmsg  92.0G pay / 100.1G wire) ddio= 99.9% | Δ(c2h-h)=0 b/t/l=0/0/2 ok=True []
+[rep=1/3 50/55] [S2] s2_dp_4096B          | merc= 11.23M(100.1G) card= 11.23M(bp=0) | host= 11.23M( 2.81Mmsg  92.0G pay / 100.1G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/4030425 ok=True []
+[rep=1/3 51/55] [S2] s2_sdp_ism1_4096B    | merc= 11.23M(100.1G) card= 11.23M(bp=0) | host= 11.23M( 2.81Mmsg  92.0G pay / 100.1G wire) ddio= 88.2% | Δ(c2h-h)=0 b/t/l=0/0/0 ok=True []
+[rep=1/3 52/55] [S2] s2_sdp_rpm1_4096B    | merc= 11.23M(100.1G) card= 11.23M(bp=0) | host= 11.23M( 2.81Mmsg  92.0G pay / 100.1G wire) ddio= 99.7% | Δ(c2h-h)=71 b/t/l=0/0/2 ok=True []
+[rep=1/3 53/55] [S2] s2_dp_64B_paced95M_zl | merc= 95.00M( 63.8G) card= 95.00M(bp=0) | host= 95.00M(95.00Mmsg  48.6G pay /  63.8G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/8 ok=True []
+[rep=1/3 54/55] [S2] s2_dp_ud134_ref      | merc= 76.03M( 93.7G) card= 76.03M(bp=0) | host= 76.03M(76.03Mmsg  38.9G pay /  93.7G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/8 ok=True []
+[rep=1/3 55/55] [S2] s2_sdp_ism1_512_64B  | merc=148.82M(100.0G) card=108.56M(bp=13410391) | host= 85.08M(85.08Mmsg  43.6G pay /  57.2G wire) ddio=100.0% | Δ(c2h-h)=22437252 b/t/l=0/0/0 ok=True []
+[rep=2/3  1/55] [S2] s2_sdp_ism1_512_64B  | merc=148.82M(100.0G) card=108.96M(bp=14086775) | host= 88.86M(88.86Mmsg  45.5G pay /  59.7G wire) ddio=100.0% | Δ(c2h-h)=16597637 b/t/l=0/0/0 ok=True []
+[rep=2/3  2/55] [S2] s2_dp_ud134_ref      | merc= 76.03M( 93.7G) card= 76.03M(bp=0) | host= 76.03M(76.03Mmsg  38.9G pay /  93.7G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/2 ok=True []
+[rep=2/3  3/55] [S2] s2_dp_64B_paced95M_zl | merc= 95.00M( 63.8G) card= 95.00M(bp=0) | host= 95.00M(95.00Mmsg  48.6G pay /  63.8G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/5 ok=True []
+[rep=2/3  4/55] [S2] s2_sdp_rpm1_4096B    | merc= 11.23M(100.1G) card= 11.23M(bp=0) | host= 11.23M( 2.81Mmsg  92.0G pay / 100.1G wire) ddio= 99.9% | Δ(c2h-h)=0 b/t/l=0/0/0 ok=True []
+[rep=2/3  5/55] [S2] s2_sdp_ism1_4096B    | merc= 11.23M(100.1G) card= 11.23M(bp=0) | host= 11.23M( 2.81Mmsg  92.0G pay / 100.1G wire) ddio= 86.2% | Δ(c2h-h)=0 b/t/l=0/0/0 ok=True []
+[rep=2/3  6/55] [S2] s2_dp_4096B          | merc= 11.23M(100.1G) card= 11.23M(bp=0) | host= 11.23M( 2.81Mmsg  92.0G pay / 100.1G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/4094072 ok=True []
+[rep=2/3  7/55] [S2] s2_sdp_rpm1_1094B    | merc= 11.23M(100.1G) card= 11.23M(bp=0) | host= 11.23M(11.23Mmsg  92.0G pay / 100.1G wire) ddio= 99.6% | Δ(c2h-h)=0 b/t/l=0/0/0 ok=True []
+[rep=2/3  8/55] [S2] s2_sdp_ism1_1094B    | merc= 11.23M(100.1G) card= 11.23M(bp=0) | host= 11.23M(11.23Mmsg  92.0G pay / 100.1G wire) ddio= 91.9% | Δ(c2h-h)=0 b/t/l=0/0/0 ok=True []
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.185GHz imc=1.0Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.185GHz imc=0.4Gbps
+[rep=2/3  9/55] [S2] s2_dp_1094B          | merc= 11.23M(100.1G) card= 11.23M(bp=0) | host= 11.23M(11.23Mmsg  92.0G pay / 100.1G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/75975 ok=True []
+[rep=2/3 10/55] [S2] s2_sdp_rpm1_326B     | merc= 36.09M( 99.9G) card= 36.09M(bp=0) | host= 36.08M(36.08Mmsg  73.9G pay /  99.9G wire) ddio=100.0% | Δ(c2h-h)=4333 b/t/l=0/0/0 ok=True []
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.176GHz imc=0.4Gbps
+[rep=2/3 11/55] [S2] s2_sdp_ism1_326B     | merc= 36.07M( 99.8G) card= 36.07M(bp=0) | host= 36.07M(36.07Mmsg  73.9G pay /  99.8G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/0 ok=True []
+[rep=2/3 12/55] [S2] s2_dp_326B           | merc= 36.09M( 99.9G) card= 34.62M(bp=1917) | host= 34.62M(34.62Mmsg  70.9G pay /  95.8G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/401 ok=True []
+[rep=2/3 13/55] [S2] s2_sdp_rpm1_134B     | merc= 81.03M( 99.8G) card= 81.03M(bp=0) | host= 51.34M(51.34Mmsg  29.6G pay /  63.3G wire) ddio=100.0% | Δ(c2h-h)=45347210 b/t/l=0/0/0 ok=True []
+[rep=2/3 14/55] [S2] s2_sdp_ism1_134B     | merc= 81.03M( 99.8G) card= 81.03M(bp=0) | host= 45.89M(45.89Mmsg  26.4G pay /  56.5G wire) ddio=100.0% | Δ(c2h-h)=53692752 b/t/l=0/0/0 ok=True []
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.175GHz imc=0.4Gbps
+[rep=2/3 15/55] [S2] s2_dp_134B           | merc= 80.93M( 99.7G) card= 80.93M(bp=0) | host= 80.93M(80.93Mmsg  46.6G pay /  99.7G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/18 ok=True []
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.179GHz imc=0.5Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.182GHz imc=0.4Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.185GHz imc=0.4Gbps
+[rep=2/3 16/55] [S2] s2_sdp_rpm1_110B     | merc= 96.16M(100.0G) card= 96.16M(bp=0) | host= 54.86M(54.86Mmsg  17.6G pay /  57.1G wire) ddio=100.0% | Δ(c2h-h)=63084419 b/t/l=0/0/0 ok=True []
+[rep=2/3 17/55] [S2] s2_sdp_ism1_110B     | merc= 96.16M(100.0G) card= 96.16M(bp=0) | host= 51.79M(51.79Mmsg  16.6G pay /  53.9G wire) ddio=100.0% | Δ(c2h-h)=67727506 b/t/l=0/0/0 ok=True []
+[rep=2/3 18/55] [S2] s2_dp_110B           | merc= 96.16M(100.0G) card= 96.16M(bp=0) | host= 96.16M(96.16Mmsg  30.8G pay / 100.0G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/6 ok=True []
+[rep=2/3 19/55] [S2] s2_sdp_rpm1_64B      | merc=148.81M(100.0G) card=108.97M(bp=14300110) | host= 41.58M(41.58Mmsg  21.3G pay /  27.9G wire) ddio=100.0% | Δ(c2h-h)=88614605 b/t/l=0/0/0 ok=True []
+[rep=2/3 20/55] [S2] s2_sdp_ism1_64B      | merc=148.82M(100.0G) card=109.57M(bp=15027978) | host= 81.01M(81.01Mmsg  41.5G pay /  54.4G wire) ddio=100.0% | Δ(c2h-h)=28585304 b/t/l=0/0/0 ok=True []
+[rep=2/3 21/55] [S2] s2_dp_64B            | merc=148.82M(100.0G) card=111.12M(bp=6344) | host=111.11M(111.11Mmsg  56.9G pay /  74.7G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/5 ok=True []
+[rep=2/3 22/55] [S1] s1_sdp_1024_ism1_2048_c4   | host= 11.62M (11.62Mmsg  95.2G pay) card= 11.62M | iioWr=215.4M(59.4B) ddio= 92.5% imc=3.9/8.4G | b/t/l=0/0/0 sl=0 ok=True []
+  [WAIT_QUIET] cpu40=2.42GHz mesh=2.200GHz imc=45.9Gbps
+[rep=2/3 23/55] [S1] s1_sdp_1024_rpm1_512_c4    | host= 11.83M (11.83Mmsg  96.9G pay) card= 11.83M | iioWr=212.9M(61.1B) ddio=100.0% imc=0.4/0.3G | b/t/l=0/0/0 sl=170 ok=True []
+[rep=2/3 24/55] [S1] s1_sdp_256_ism1_2048_c4    | host= 38.02M (38.02Mmsg  77.9G pay) card= 38.02M | iioWr=230.0M(54.9B) ddio=100.0% imc=1.1/0.9G | b/t/l=0/0/0 sl=0 ok=True []
+[rep=2/3 25/55] [S1] s1_sdp_256_rpm1_512_c4     | host= 38.22M (38.22Mmsg  78.3G pay) card= 38.24M | iioWr=229.3M(55.3B) ddio=100.0% imc=0.5/0.3G | b/t/l=0/0/0 sl=27225 ok=True []
+[rep=2/3 26/55] [S1] s1_sdp_64_ism1_2048_c8     | host= 84.42M (84.42Mmsg  43.2G pay) card= 99.31M | iioWr=168.9M(34.0B) ddio=100.0% imc=1.3/1.1G | b/t/l=0/0/0 sl=22803574 ok=True []
+[rep=2/3 27/55] [S1] s1_sdp_64_ism1_2048_c4     | host= 91.20M (91.20Mmsg  46.7G pay) card= 99.98M | iioWr=183.2M(33.9B) ddio=100.0% imc=9.8/4.9G | b/t/l=0/0/0 sl=13457976 ok=True []
+[rep=2/3 28/55] [S1] s1_sdp_64_ism1_512_c4      | host= 71.74M (71.74Mmsg  36.7G pay) card=100.00M | iioWr=146.0M(33.5B) ddio=100.0% imc=0.5/0.3G | b/t/l=0/0/0 sl=43283862 ok=True []
+[rep=2/3 29/55] [S1] s1_sdp_64_rpm1_512_c4      | host= 35.82M (35.82Mmsg  18.3G pay) card=100.00M | iioWr= 71.6M(34.0B) ddio=100.0% imc=0.4/0.3G | b/t/l=0/0/0 sl=98327129 ok=True []
+[rep=2/3 30/55] [S1] s1_dp_dma4ks_c4            | host= 12.87M ( 3.22Mmsg 105.5G pay) card= 12.87M | iioWr=206.0M(64.0B) ddio=100.0% imc=0.3/0.2G | b/t/l=0/0/2267771 sl=0 ok=True []
+[rep=2/3 31/55] [S1] s1_dp_dma4096_c4           | host= 12.87M ( 3.22Mmsg 105.5G pay) card= 12.87M | iioWr=206.0M(64.0B) ddio=100.0% imc=1.2/0.5G | b/t/l=0/0/4923945 sl=0 ok=True []
+[rep=2/3 32/55] [S1] s1_dp_dma1024_c4           | host= 12.87M (12.87Mmsg 105.4G pay) card= 12.87M | iioWr=205.9M(64.0B) ddio=100.0% imc=0.3/0.2G | b/t/l=0/0/691 sl=0 ok=True []
+[rep=2/3 33/55] [S1] s1_dp_dma256_c4            | host= 51.47M (51.47Mmsg 105.4G pay) card= 51.47M | iioWr=205.9M(64.0B) ddio=100.0% imc=0.4/0.3G | b/t/l=0/0/3 sl=0 ok=True []
+[rep=2/3 34/55] [S1] s1_dp_wc256_c4             | host= 35.52M (35.52Mmsg  72.7G pay) card= 35.51M | iioWr=177.9M(63.9B) ddio=100.0% imc=0.5/0.3G | b/t/l=0/0/25516 sl=0 ok=True []
+[rep=2/3 35/55] [S1] s1_dp_wc64_c8              | host=177.48M (177.48Mmsg  90.9G pay) card=177.48M | iioWr=177.5M(64.0B) ddio=100.0% imc=0.5/0.3G | b/t/l=0/0/336 sl=0 ok=True []
+[rep=2/3 36/55] [S1] s1_dp_wc64_c4              | host=177.48M (177.48Mmsg  90.9G pay) card=177.48M | iioWr=177.5M(64.0B) ddio=100.0% imc=0.4/0.3G | b/t/l=0/0/1113 sl=0 ok=True []
+[rep=2/3 37/55] [S1] s1_dp_wc64_c2              | host=177.48M (177.48Mmsg  90.9G pay) card=177.48M | iioWr=177.5M(64.0B) ddio=100.0% imc=0.4/0.3G | b/t/l=0/0/213 sl=0 ok=True []
+[rep=2/3 38/55] [S1] s1_dp_wc64_c1              | host=142.51M (142.51Mmsg  73.0G pay) card=142.50M | iioWr=142.5M(64.0B) ddio=100.0% imc=0.3/0.2G | b/t/l=0/0/50 sl=0 ok=True []
+[rep=2/3 39/55] [S0] s0_ud4096_c4         | merc= 11.23M(100.1G L2=1094.0B) | rpm= 11.23M nix= 11.23M sw= 11.23M | q=[4.0..4.4M] wl=0 qwl=[0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=2/3 40/55] [S0] s0_ud1094_c4         | merc= 11.23M(100.1G L2=1094.0B) | rpm= 11.23M nix= 11.23M sw= 11.23M | q=[4.0..4.4M] wl=0 qwl=[0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=2/3 41/55] [S0] s0_ud326_c8          | merc= 36.07M( 99.8G L2=326.0B) | rpm= 36.07M nix= 36.07M sw= 36.07M | q=[5.9..7.0M] wl=0 qwl=[0, 0, 0, 0, 0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=2/3 42/55] [S0] s0_ud254_c8          | merc= 45.64M(100.0G L2=254.0B) | rpm= 45.64M nix= 45.64M sw= 45.64M | q=[8.4..8.8M] wl=0 qwl=[0, 0, 0, 0, 0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=2/3 43/55] [S0] s0_ud134_c12         | merc= 76.25M( 93.9G L2=134.0B) | rpm= 76.25M nix= 76.25M sw= 76.25M | q=[9.7..9.7M] wl=0 qwl=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=2/3 44/55] [S0] s0_uc134_c12         | merc= 81.11M( 99.9G L2=134.0B) | rpm= 81.11M nix= 81.11M sw= 81.11M | q=[10.3..10.3M] wl=0 qwl=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=2/3 45/55] [S0] s0_ud110_c12         | merc= 96.17M(100.0G L2=110.0B) | rpm= 96.17M nix= 96.17M sw= 96.17M | q=[7.7..12.7M] wl=0 qwl=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=2/3 46/55] [S0] s0_ud102_c12         | merc=102.47M(100.0G L2=102.0B) | rpm=102.47M nix=102.47M sw=102.47M | q=[3.7..14.5M] wl=0 qwl=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=2/3 47/55] [S0] s0_uc94_c12          | merc=109.66M(100.0G L2= 94.0B) | rpm=109.66M nix=109.66M sw=109.66M | q=[10.4..14.6M] wl=0 qwl=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.181GHz imc=0.5Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.182GHz imc=0.7Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.180GHz imc=1.7Gbps
+[rep=2/3 48/55] [S0] s0_uc64_c16_notouch  | merc=148.81M(100.0G L2= 64.0B) | rpm=148.81M nix=111.12M sw=111.12M | q=[4.1..12.5M] wl=0 qwl=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=2/3 49/55] [S0] s0_uc64_c16          | merc=148.82M(100.0G L2= 64.0B) | rpm=148.82M nix=111.12M sw=111.12M | q=[6.9..12.1M] wl=57549103 qwl=[3713706, 4100495, 4095846, 3313115, 2351563, 4095926, 3427441, 4095762, 4096283, 3230576, 2742345, 2593903, 4096651, 3631209, 4097048, 3867234] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=2/3 50/55] [S0] s0_uc64_c12          | merc=148.82M(100.0G L2= 64.0B) | rpm=148.82M nix=111.12M sw=111.12M | q=[8.1..18.4M] wl=57560465 qwl=[3146520, 5138292, 2733596, 5377554, 6238190, 5515101, 6015922, 6214637, 3650458, 3836625, 6237810, 3455760] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=2/3 51/55] [S0] s0_uc64_c8           | merc=148.82M(100.0G L2= 64.0B) | rpm=148.82M nix=111.12M sw=111.12M | q=[15.6..24.8M] wl=57569146 qwl=[6943746, 7193637, 6548861, 5288149, 6403869, 8403715, 8388262, 8398907] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=2/3 52/55] [S0] s0_uc64_c6           | merc=148.81M(100.0G L2= 64.0B) | rpm=148.81M nix=111.11M sw=111.11M | q=[25.6..30.1M] wl=57560883 qwl=[10215376, 9372924, 9179580, 9897234, 8678148, 10217621] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.179GHz imc=0.4Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.182GHz imc=0.7Gbps
+[rep=2/3 53/55] [S0] s0_uc64_c4           | merc=148.82M(100.0G L2= 64.0B) | rpm=148.82M nix=111.11M sw= 90.68M | q=[31.9..35.9M] wl=88775145 qwl=[12432152, 34346118, 29125917, 12870958] Δ(m-rpm)=0 Δ(nix-sw)=31208878 | ok=True []
+[rep=2/3 54/55] [S0] s0_uc64_c2           | merc=148.81M(100.0G L2= 64.0B) | rpm=148.81M nix=111.11M sw= 47.65M | q=[36.4..36.4M] wl=154484671 qwl=[59231809, 95252862] Δ(m-rpm)=0 Δ(nix-sw)=96910719 | ok=True []
+[rep=2/3 55/55] [S0] s0_uc64_c1           | merc=148.82M(100.0G L2= 64.0B) | rpm=148.82M nix=111.12M sw= 23.89M | q=[36.5..36.5M] wl=190778696 qwl=[190778696] Δ(m-rpm)=0 Δ(nix-sw)=133204579 | ok=True []
+[rep=3/3  1/55] [S0] s0_uc64_c1           | merc=148.82M(100.0G L2= 64.0B) | rpm=148.82M nix=111.11M sw= 23.86M | q=[36.4..36.4M] wl=190835990 qwl=[190835990] Δ(m-rpm)=0 Δ(nix-sw)=133257424 | ok=True []
+[rep=3/3  2/55] [S0] s0_uc64_c2           | merc=148.81M(100.0G L2= 64.0B) | rpm=148.81M nix=111.11M sw= 48.72M | q=[36.3..38.1M] wl=152816837 qwl=[84601786, 68215051] Δ(m-rpm)=0 Δ(nix-sw)=95259062 | ok=True []
+[rep=3/3  3/55] [S0] s0_uc64_c4           | merc=148.82M(100.0G L2= 64.0B) | rpm=148.82M nix=111.12M sw= 95.74M | q=[33.1..38.1M] wl=81057516 qwl=[20332638, 24498083, 18868571, 17358224] Δ(m-rpm)=0 Δ(nix-sw)=23475439 | ok=True []
+[rep=3/3  4/55] [S0] s0_uc64_c6           | merc=148.81M(100.0G L2= 64.0B) | rpm=148.81M nix=111.11M sw=111.11M | q=[23.5..29.5M] wl=57568953 qwl=[10000991, 9924041, 9634404, 7982917, 10020850, 10005750] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=3/3  5/55] [S0] s0_uc64_c8           | merc=148.82M(100.0G L2= 64.0B) | rpm=148.82M nix=111.12M sw=111.12M | q=[13.7..26.2M] wl=57547282 qwl=[8896157, 8359932, 8212636, 6496269, 4656299, 7594442, 6680517, 6651030] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=3/3  6/55] [S0] s0_uc64_c12          | merc=148.82M(100.0G L2= 64.0B) | rpm=148.82M nix=111.12M sw=111.12M | q=[7.8..18.6M] wl=57563338 qwl=[5521017, 6310137, 6307754, 6310706, 6308350, 2775967, 6308370, 3468825, 3000769, 4376566, 2634078, 4240799] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=3/3  7/55] [S0] s0_uc64_c16          | merc=148.82M(100.0G L2= 64.0B) | rpm=148.82M nix=111.11M sw=111.11M | q=[4.8..12.7M] wl=57590086 qwl=[4283416, 1636463, 3225985, 3932381, 2820028, 4282614, 2142216, 4283172, 4282819, 4283202, 4282698, 4283189, 2820082, 4063206, 2669089, 4299526] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=3/3  8/55] [S0] s0_uc64_c16_notouch  | merc=148.81M(100.0G L2= 64.0B) | rpm=148.81M nix=111.11M sw=111.11M | q=[4.3..13.2M] wl=0 qwl=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=3/3  9/55] [S0] s0_uc94_c12          | merc=109.66M(100.0G L2= 94.0B) | rpm=109.66M nix=109.66M sw=109.66M | q=[11.4..15.2M] wl=0 qwl=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=3/3 10/55] [S0] s0_ud102_c12         | merc=102.47M(100.0G L2=102.0B) | rpm=102.47M nix=102.47M sw=102.47M | q=[10.0..13.3M] wl=0 qwl=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=3/3 11/55] [S0] s0_ud110_c12         | merc= 96.17M(100.0G L2=110.0B) | rpm= 96.17M nix= 96.17M sw= 96.17M | q=[9.4..12.5M] wl=0 qwl=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=3/3 12/55] [S0] s0_uc134_c12         | merc= 81.10M( 99.9G L2=134.0B) | rpm= 81.10M nix= 81.10M sw= 81.10M | q=[10.3..10.3M] wl=0 qwl=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=3/3 13/55] [S0] s0_ud134_c12         | merc= 76.26M( 93.9G L2=134.0B) | rpm= 76.26M nix= 76.26M sw= 76.26M | q=[9.7..9.7M] wl=0 qwl=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+  [CLOCK_RETRY #1 logged in attempts.jsonl, sleep 5s] s0_ud254_c8 rep=2 errs=['mesh_ghz=2.179']
+[rep=3/3 14/55] [S0] s0_ud254_c8          | merc= 45.63M(100.0G L2=254.0B) | rpm= 45.63M nix= 45.63M sw= 45.63M | q=[7.4..8.9M] wl=0 qwl=[0, 0, 0, 0, 0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=3/3 15/55] [S0] s0_ud326_c8          | merc= 36.03M( 99.7G L2=326.0B) | rpm= 36.03M nix= 36.03M sw= 36.03M | q=[5.9..7.0M] wl=0 qwl=[0, 0, 0, 0, 0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=3/3 16/55] [S0] s0_ud1094_c4         | merc= 11.22M(100.0G L2=1094.0B) | rpm= 11.22M nix= 11.22M sw= 11.22M | q=[4.0..4.4M] wl=0 qwl=[0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=3/3 17/55] [S0] s0_ud4096_c4         | merc= 11.23M(100.1G L2=1094.0B) | rpm= 11.23M nix= 11.23M sw= 11.23M | q=[4.3..4.3M] wl=0 qwl=[0, 0, 0, 0] Δ(m-rpm)=0 Δ(nix-sw)=0 | ok=True []
+[rep=3/3 18/55] [S1] s1_dp_wc64_c1              | host=142.53M (142.53Mmsg  73.0G pay) card=142.53M | iioWr=142.5M(64.0B) ddio=100.0% imc=0.4/0.3G | b/t/l=0/0/56 sl=1024 ok=False ['s1_slost=1024']
+[rep=3/3 19/55] [S1] s1_dp_wc64_c2              | host=177.48M (177.48Mmsg  90.9G pay) card=177.48M | iioWr=177.5M(64.0B) ddio=100.0% imc=0.3/0.2G | b/t/l=0/0/247 sl=0 ok=True []
+[rep=3/3 20/55] [S1] s1_dp_wc64_c4              | host=177.48M (177.48Mmsg  90.9G pay) card=177.48M | iioWr=177.5M(64.0B) ddio=100.0% imc=0.3/0.3G | b/t/l=0/0/4 sl=0 ok=True []
+[rep=3/3 21/55] [S1] s1_dp_wc64_c8              | host=177.51M (177.51Mmsg  90.9G pay) card=177.50M | iioWr=177.5M(64.0B) ddio=100.0% imc=0.6/0.3G | b/t/l=0/0/323 sl=0 ok=True []
+[rep=3/3 22/55] [S1] s1_dp_wc256_c4             | host= 35.51M (35.51Mmsg  72.7G pay) card= 35.51M | iioWr=177.9M(63.9B) ddio=100.0% imc=0.4/0.3G | b/t/l=0/0/27544 sl=0 ok=True []
+[rep=3/3 23/55] [S1] s1_dp_dma256_c4            | host= 51.48M (51.48Mmsg 105.4G pay) card= 51.48M | iioWr=205.9M(64.0B) ddio=100.0% imc=0.6/0.3G | b/t/l=0/0/4 sl=0 ok=True []
+[rep=3/3 24/55] [S1] s1_dp_dma1024_c4           | host= 12.87M (12.87Mmsg 105.4G pay) card= 12.87M | iioWr=205.9M(64.0B) ddio=100.0% imc=1.8/1.2G | b/t/l=0/0/496 sl=0 ok=True []
+[rep=3/3 25/55] [S1] s1_dp_dma4096_c4           | host= 12.87M ( 3.22Mmsg 105.5G pay) card= 12.87M | iioWr=206.0M(64.0B) ddio=100.0% imc=0.8/0.3G | b/t/l=0/0/4924345 sl=0 ok=True []
+[rep=3/3 26/55] [S1] s1_dp_dma4ks_c4            | host= 12.87M ( 3.22Mmsg 105.5G pay) card= 12.87M | iioWr=206.0M(64.0B) ddio=100.0% imc=1.1/0.5G | b/t/l=0/0/1847753 sl=0 ok=True []
+[rep=3/3 27/55] [S1] s1_sdp_64_rpm1_512_c4      | host= 35.80M (35.80Mmsg  18.3G pay) card=100.00M | iioWr= 71.6M(34.0B) ddio=100.0% imc=0.7/0.4G | b/t/l=0/0/0 sl=98337450 ok=True []
+[rep=3/3 28/55] [S1] s1_sdp_64_ism1_512_c4      | host= 71.43M (71.43Mmsg  36.6G pay) card= 99.99M | iioWr=145.4M(33.5B) ddio=100.0% imc=1.4/0.5G | b/t/l=0/0/0 sl=43771586 ok=True []
+[rep=3/3 29/55] [S1] s1_sdp_64_ism1_2048_c4     | host= 91.26M (91.26Mmsg  46.7G pay) card=100.00M | iioWr=183.3M(33.9B) ddio=100.0% imc=2.1/1.2G | b/t/l=0/0/0 sl=13395700 ok=True []
+[rep=3/3 30/55] [S1] s1_sdp_64_ism1_2048_c8     | host= 84.26M (84.26Mmsg  43.1G pay) card= 99.38M | iioWr=168.6M(34.0B) ddio=100.0% imc=1.4/0.6G | b/t/l=0/0/0 sl=23160648 ok=True []
+  [CLOCK_RETRY #1 logged in attempts.jsonl, sleep 5s] s1_sdp_256_rpm1_512_c4 rep=2 errs=['cpu40_ghz=3.832']
+[rep=3/3 31/55] [S1] s1_sdp_256_rpm1_512_c4     | host= 38.22M (38.22Mmsg  78.3G pay) card= 38.23M | iioWr=229.3M(55.3B) ddio=100.0% imc=1.4/0.5G | b/t/l=0/0/0 sl=12673 ok=True []
+[rep=3/3 32/55] [S1] s1_sdp_256_ism1_2048_c4    | host= 38.03M (38.03Mmsg  77.9G pay) card= 38.03M | iioWr=230.0M(54.9B) ddio=100.0% imc=1.2/0.4G | b/t/l=0/0/0 sl=855 ok=True []
+  [CLOCK_RETRY #1 logged in attempts.jsonl, sleep 5s] s1_sdp_1024_rpm1_512_c4 rep=2 errs=['cpu40_ghz=3.776']
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.201GHz imc=137.9Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=154.6Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.201GHz imc=156.8Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.201GHz imc=148.9Gbps
+  [WAIT_QUIET] cpu40=2.80GHz mesh=2.201GHz imc=148.9Gbps
+  [WAIT_QUIET] cpu40=3.30GHz mesh=2.201GHz imc=148.9Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.201GHz imc=157.6Gbps
+  [WAIT_QUIET] cpu40=2.30GHz mesh=2.201GHz imc=157.6Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=178.1Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=178.1Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=131.8Gbps
+  [WAIT_QUIET] cpu40=2.47GHz mesh=2.200GHz imc=131.8Gbps
+  [WAIT_QUIET] cpu40=2.31GHz mesh=2.200GHz imc=131.8Gbps
+  [WAIT_QUIET] cpu40=2.59GHz mesh=2.200GHz imc=131.8Gbps
+  [WAIT_QUIET] cpu40=2.80GHz mesh=2.200GHz imc=131.8Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=165.8Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=182.1Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=189.9Gbps
+  [WAIT_QUIET] cpu40=2.53GHz mesh=2.200GHz imc=189.9Gbps
+[rep=3/3 33/55] [S1] s1_sdp_1024_rpm1_512_c4    | host= 11.83M (11.83Mmsg  96.9G pay) card= 11.83M | iioWr=212.9M(61.1B) ddio= 99.8% imc=0.6/0.5G | b/t/l=0/0/0 sl=124 ok=True []
+[rep=3/3 34/55] [S1] s1_sdp_1024_ism1_2048_c4   | host= 11.62M (11.62Mmsg  95.2G pay) card= 11.62M | iioWr=215.4M(59.4B) ddio= 94.3% imc=1.1/6.6G | b/t/l=0/0/0 sl=0 ok=True []
+  [CLOCK_RETRY #1 logged in attempts.jsonl, sleep 5s] s2_dp_64B rep=2 errs=['cpu40_ghz=3.816']
+[rep=3/3 35/55] [S2] s2_dp_64B            | merc=148.82M(100.0G) card=111.11M(bp=0) | host=111.11M(111.11Mmsg  56.9G pay /  74.7G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/7 ok=True []
+[rep=3/3 36/55] [S2] s2_sdp_ism1_64B      | merc=148.82M(100.0G) card=109.55M(bp=14954322) | host= 81.06M(81.06Mmsg  41.5G pay /  54.5G wire) ddio=100.0% | Δ(c2h-h)=28558192 b/t/l=0/0/0 ok=True []
+[rep=3/3 37/55] [S2] s2_sdp_rpm1_64B      | merc=148.82M(100.0G) card=109.58M(bp=14989049) | host= 42.04M(42.04Mmsg  21.5G pay /  28.3G wire) ddio=100.0% | Δ(c2h-h)=88151571 b/t/l=0/0/0 ok=True []
+[rep=3/3 38/55] [S2] s2_dp_110B           | merc= 96.16M(100.0G) card= 96.16M(bp=1071) | host= 96.16M(96.16Mmsg  30.8G pay / 100.0G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/3 ok=True []
+[rep=3/3 39/55] [S2] s2_sdp_ism1_110B     | merc= 96.16M(100.0G) card= 96.16M(bp=0) | host= 52.07M(52.07Mmsg  16.7G pay /  54.2G wire) ddio=100.0% | Δ(c2h-h)=67355424 b/t/l=0/0/0 ok=True []
+[rep=3/3 40/55] [S2] s2_sdp_rpm1_110B     | merc= 96.16M(100.0G) card= 96.16M(bp=0) | host= 59.13M(59.13Mmsg  18.9G pay /  61.5G wire) ddio=100.0% | Δ(c2h-h)=56537340 b/t/l=0/0/0 ok=True []
+[rep=3/3 41/55] [S2] s2_dp_134B           | merc= 81.03M( 99.8G) card= 81.03M(bp=0) | host= 81.03M(81.03Mmsg  46.7G pay /  99.8G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/8 ok=True []
+[rep=3/3 42/55] [S2] s2_sdp_ism1_134B     | merc= 81.03M( 99.8G) card= 81.03M(bp=0) | host= 46.03M(46.03Mmsg  26.5G pay /  56.7G wire) ddio=100.0% | Δ(c2h-h)=53425593 b/t/l=0/0/0 ok=True []
+[rep=3/3 43/55] [S2] s2_sdp_rpm1_134B     | merc= 80.93M( 99.7G) card= 80.93M(bp=0) | host= 51.75M(51.75Mmsg  29.8G pay /  63.8G wire) ddio=100.0% | Δ(c2h-h)=44560637 b/t/l=0/0/0 ok=True []
+  [CLOCK_RETRY #1 logged in attempts.jsonl, sleep 5s] s2_dp_326B rep=2 errs=['cpu40_ghz=3.842']
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.201GHz imc=115.7Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.199GHz imc=128.8Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.201GHz imc=137.3Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.201GHz imc=208.9Gbps
+  [WAIT_QUIET] cpu40=3.07GHz mesh=2.201GHz imc=208.9Gbps
+  [WAIT_QUIET] cpu40=2.69GHz mesh=2.201GHz imc=208.9Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=120.2Gbps
+  [WAIT_QUIET] cpu40=2.45GHz mesh=2.200GHz imc=120.2Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=214.5Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.201GHz imc=234.5Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=214.2Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.201GHz imc=238.5Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=220.3Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.199GHz imc=167.0Gbps
+  [WAIT_QUIET] cpu40=3.50GHz mesh=2.199GHz imc=167.0Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=226.2Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.201GHz imc=265.1Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.201GHz imc=206.6Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.201GHz imc=226.7Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=153.3Gbps
+  [WAIT_QUIET] cpu40=2.80GHz mesh=2.200GHz imc=153.3Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=228.0Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=213.6Gbps
+  [WAIT_QUIET] cpu40=3.22GHz mesh=2.200GHz imc=213.6Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=219.8Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=285.0Gbps
+  [WAIT_QUIET] cpu40=2.93GHz mesh=2.200GHz imc=285.0Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=240.2Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=157.1Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.203GHz imc=268.2Gbps
+  [WAIT_QUIET] cpu40=2.80GHz mesh=2.203GHz imc=268.2Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=279.0Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=227.5Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.199GHz imc=173.0Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=195.9Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=196.3Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=206.8Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=146.3Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=263.2Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=167.9Gbps
+  [WAIT_QUIET] cpu40=3.90GHz mesh=2.200GHz imc=205.0Gbps
+[rep=3/3 44/55] [S2] s2_dp_326B           | merc= 36.05M( 99.8G) card= 36.05M(bp=0) | host= 36.05M(36.05Mmsg  73.8G pay /  99.8G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/413 ok=True []
+[rep=3/3 45/55] [S2] s2_sdp_ism1_326B     | merc= 34.43M( 95.3G) card= 34.43M(bp=0) | host= 34.43M(34.43Mmsg  70.5G pay /  95.3G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/0 ok=True []
+[rep=3/3 46/55] [S2] s2_sdp_rpm1_326B     | merc= 34.12M( 94.5G) card= 34.12M(bp=0) | host= 34.12M(34.12Mmsg  69.9G pay /  94.4G wire) ddio=100.0% | Δ(c2h-h)=3581 b/t/l=0/0/0 ok=True []
+[rep=3/3 47/55] [S2] s2_dp_1094B          | merc= 11.23M(100.1G) card= 11.23M(bp=25760) | host= 11.21M(11.21Mmsg  91.9G pay /  99.9G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/84470 ok=True []
+[rep=3/3 48/55] [S2] s2_sdp_ism1_1094B    | merc= 11.23M(100.1G) card= 11.23M(bp=0) | host= 11.22M(11.22Mmsg  91.9G pay / 100.0G wire) ddio= 88.6% | Δ(c2h-h)=14230 b/t/l=0/0/0 ok=True []
+[rep=3/3 49/55] [S2] s2_sdp_rpm1_1094B    | merc= 11.22M(100.0G) card= 11.22M(bp=0) | host= 11.22M(11.22Mmsg  91.9G pay / 100.0G wire) ddio= 99.9% | Δ(c2h-h)=0 b/t/l=0/0/1 ok=True []
+[rep=3/3 50/55] [S2] s2_dp_4096B          | merc= 11.22M(100.0G) card= 11.22M(bp=25848) | host= 11.20M( 2.80Mmsg  91.8G pay /  99.8G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/4049083 ok=True []
+[rep=3/3 51/55] [S2] s2_sdp_ism1_4096B    | merc= 11.22M(100.0G) card= 11.22M(bp=0) | host= 11.22M( 2.81Mmsg  91.9G pay / 100.0G wire) ddio= 90.7% | Δ(c2h-h)=0 b/t/l=0/0/0 ok=True []
+[rep=3/3 52/55] [S2] s2_sdp_rpm1_4096B    | merc= 11.22M(100.0G) card= 11.22M(bp=0) | host= 11.20M( 2.80Mmsg  91.8G pay /  99.8G wire) ddio= 99.6% | Δ(c2h-h)=25966 b/t/l=0/0/4 ok=True []
+[rep=3/3 53/55] [S2] s2_dp_64B_paced95M_zl | merc= 95.00M( 63.8G) card= 95.00M(bp=0) | host= 95.00M(95.00Mmsg  48.6G pay /  63.8G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/7 ok=True []
+[rep=3/3 54/55] [S2] s2_dp_ud134_ref      | merc= 75.93M( 93.6G) card= 75.93M(bp=0) | host= 75.93M(75.93Mmsg  38.9G pay /  93.6G wire) ddio=100.0% | Δ(c2h-h)=0 b/t/l=0/0/5 ok=True []
+[rep=3/3 55/55] [S2] s2_sdp_ism1_512_64B  | merc=148.81M(100.0G) card=108.95M(bp=14336357) | host= 91.50M(91.50Mmsg  46.8G pay /  61.5G wire) ddio=100.0% | Δ(c2h-h)=12320645 b/t/l=0/0/0 ok=True []
+MAIN DONE total=174 failed=1 clock_retries=6
+
+# Explicit post-run rerun of isolated failed tuple (original failed attempt retained in attempts.jsonl):
+[EXPLICIT_RERUN rep=3/3] [S1] s1_dp_wc64_c1              | host=142.54M (142.54Mmsg  73.0G pay) card=142.54M | iioWr=142.6M(64.0B) ddio=100.0% imc=0.7/0.3G | b/t/l=0/0/79 sl=0 ok=True [] (prior_verify_errors=['s1_slost=1024']; root cause undetermined)
+FINAL AUDIT runs.jsonl: verified=174/174 failed=0 clock_retries=6 explicit_failed_reruns=1 attempts_archived=412 host_pmu=100.0000% card_pmu=100.0000% cpu40_min=3.8675GHz mesh_min=2.1804GHz max_dt_skew=0.001ms max_merc_rpm_diff=0

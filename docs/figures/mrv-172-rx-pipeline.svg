@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 420" width="1120" height="420">
+  <defs>
+    <marker id="arr-gray" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+    </marker>
+    <marker id="arr-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#1f5aa6"/>
+    </marker>
+    <style>
+      .t-sans { font-family: "DejaVu Sans", "Droid Sans Fallback", sans-serif; }
+      .box-title { font-size: 16px; font-weight: 700; fill: #0f172a; }
+      .box-sub { font-size: 12px; fill: #475569; }
+      .stage-tag { font-size: 12px; font-weight: 700; fill: #64748b; letter-spacing: 0.5px; }
+      .num-big { font-size: 24px; font-weight: 700; fill: #1f5aa6; }
+      .num-gray { font-size: 20px; font-weight: 700; fill: #334155; }
+      .lbl-sm { font-size: 12px; fill: #475569; }
+      .lbl-accent { font-size: 13px; font-weight: 700; fill: #1f5aa6; }
+    </style>
+  </defs>
+
+  <rect width="1120" height="420" fill="#ffffff"/>
+
+  <!-- Stage headers -->
+  <text x="155" y="34" text-anchor="middle" class="t-sans stage-tag">STAGE 0 · 纯网线 RX</text>
+  <text x="530" y="34" text-anchor="middle" class="t-sans stage-tag">CN106 多核 SmartNIC</text>
+  <text x="895" y="34" text-anchor="middle" class="t-sans stage-tag">STAGE 1 · PCIe C2H → 1 核</text>
+
+  <!-- Mercury TX box -->
+  <rect x="28" y="130" width="175" height="150" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.8"/>
+  <text x="115" y="164" text-anchor="middle" class="t-sans box-title">mercury</text>
+  <text x="115" y="186" text-anchor="middle" class="t-sans box-sub">CX5 · 16–28 核</text>
+  <text x="115" y="228" text-anchor="middle" class="t-sans num-gray">148.8 M/s</text>
+  <text x="115" y="250" text-anchor="middle" class="t-sans lbl-sm">100.0 Gbps</text>
+
+  <!-- Arrow: 100GbE DAC -->
+  <line x1="203" y1="205" x2="296" y2="205" stroke="#64748b" stroke-width="2.5" marker-end="url(#arr-gray)"/>
+  <text x="250" y="190" text-anchor="middle" class="t-sans lbl-sm">100GbE</text>
+  <text x="250" y="226" text-anchor="middle" class="t-sans lbl-sm">3m DAC</text>
+
+  <!-- CN106 outer box -->
+  <rect x="304" y="64" width="320" height="296" rx="12" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.8"/>
+  <text x="464" y="92" text-anchor="middle" class="t-sans box-title">CN106（eth0 · 4–16 核）</text>
+
+  <!-- RPM0 MAC -> NIX0 inner split -->
+  <rect x="326" y="114" width="122" height="106" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="387" y="140" text-anchor="middle" class="t-sans box-sub" font-weight="700">RPM0 MAC</text>
+  <text x="387" y="176" text-anchor="middle" class="t-sans num-gray">148.8 M</text>
+  <text x="387" y="198" text-anchor="middle" class="t-sans lbl-sm">0 丢包</text>
+
+  <line x1="448" y1="167" x2="478" y2="167" stroke="#64748b" stroke-width="2.2" marker-end="url(#arr-gray)"/>
+
+  <rect x="486" y="114" width="118" height="106" rx="8" fill="#ffffff" stroke="#1f5aa6" stroke-width="2.0"/>
+  <text x="545" y="140" text-anchor="middle" class="t-sans lbl-accent">NIX0 RX</text>
+  <text x="545" y="176" text-anchor="middle" class="t-sans num-big">111.1 M</text>
+  <text x="545" y="198" text-anchor="middle" class="t-sans lbl-sm">9 sclk/包</text>
+
+  <!-- Split to DirectPush & SDP inside CN106 -->
+  <rect x="326" y="244" width="278" height="44" rx="7" fill="#eff6ff" stroke="#1f5aa6" stroke-width="1.6"/>
+  <text x="465" y="271" text-anchor="middle" class="t-sans lbl-accent">DirectPush · PEM0 WC / DPI ToHost</text>
+
+  <rect x="326" y="302" width="278" height="42" rx="7" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="465" y="328" text-anchor="middle" class="t-sans box-sub" font-weight="700">SDP · sdp1-1 零拷贝</text>
+
+  <!-- Upper PCIe Path: DirectPush (Accent Blue) -->
+  <line x1="624" y1="158" x2="870" y2="158" stroke="#1f5aa6" stroke-width="3.2" marker-end="url(#arr-blue)"/>
+  <rect x="652" y="84" width="194" height="62" rx="8" fill="#eff6ff" stroke="#1f5aa6" stroke-width="1.6"/>
+  <text x="749" y="112" text-anchor="middle" class="t-sans num-big" id="dp-s1-64">177.5 M/s</text>
+  <text x="749" y="134" text-anchor="middle" class="t-sans lbl-accent" id="dp-s1-dma">DPI ToHost 105.5 Gbps</text>
+  <text x="749" y="178" text-anchor="middle" class="t-sans lbl-accent">64 B 整行写 · DDIO 100%</text>
+
+  <!-- Lower PCIe Path: SDP (Grey) -->
+  <line x1="624" y1="312" x2="870" y2="312" stroke="#64748b" stroke-width="2.4" stroke-dasharray="6,4" marker-end="url(#arr-gray)"/>
+  <rect x="652" y="240" width="194" height="60" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="749" y="267" text-anchor="middle" class="t-sans num-gray" id="sdp-s1-ism">91.2 M / 35.8 M</text>
+  <text x="749" y="288" text-anchor="middle" class="t-sans lbl-sm">ISM=1 / RPM=1 (64 B)</text>
+  <text x="749" y="332" text-anchor="middle" class="t-sans lbl-sm">34 B 拆行写 · 描述符环</text>
+
+  <!-- Saturn 1-core Host box -->
+  <rect x="878" y="86" width="214" height="270" rx="12" fill="#f8fafc" stroke="#1f5aa6" stroke-width="2.2"/>
+  <text x="985" y="118" text-anchor="middle" class="t-sans box-title">saturn · 1 核</text>
+  <text x="985" y="139" text-anchor="middle" class="t-sans box-sub">cpu40 @ 3.90 GHz</text>
+
+  <!-- DirectPush E2E callout -->
+  <rect x="896" y="156" width="178" height="86" rx="8" fill="#eff6ff" stroke="#1f5aa6" stroke-width="1.6"/>
+  <text x="985" y="178" text-anchor="middle" class="t-sans lbl-accent">DirectPush 端到端</text>
+  <text x="985" y="208" text-anchor="middle" class="t-sans num-big" id="dp-e2e-main">100.0 Gbps</text>
+  <text x="985" y="230" text-anchor="middle" class="t-sans lbl-sm" font-size="11" id="dp-e2e-sub">110/134B · 1–4KiB 满线速</text>
+
+  <!-- SDP E2E callout -->
+  <rect x="896" y="256" width="178" height="84" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="985" y="278" text-anchor="middle" class="t-sans box-sub" font-weight="700">SDP 端到端</text>
+  <text x="985" y="306" text-anchor="middle" class="t-sans num-gray" id="sdp-e2e-main">81.1 M / 41.6 M</text>
+  <text x="985" y="328" text-anchor="middle" class="t-sans lbl-sm" id="sdp-e2e-sub">64B ISM / RPM · 110B 52M</text>
+</svg>
