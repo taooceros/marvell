@@ -54,28 +54,28 @@ def main():
 
     # Panel A: Single-TLP latency ladder (BAR0 CSR -> BAR4 L3 widths -> BAR4 DDR5 cold)
     panel_a_specs = [
-        ("vf0_bar0_out_cnts_4b", "VF0 BAR0 CSR\nOUT_CNTS 4 B", "#2563EB"),
-        ("vf0_bar0_out_cnts_8b", "VF0 BAR0 CSR\nOUT_CNTS 8 B", "#3B82F6"),
-        ("bar4_uc_l3_4b", "BAR4 卡 L3\n4 B (mov)", "#0D9488"),
-        ("bar4_uc_l3_8b", "BAR4 卡 L3\n8 B (mov)", "#0D9488"),
-        ("bar4_uc_l3_16b", "BAR4 卡 L3\n16 B (movdqu)", "#0D9488"),
-        ("bar4_uc_l3_32b", "BAR4 卡 L3\n32 B (vmovdqu)", "#0D9488"),
-        ("bar4_uc_l3_64b_zmm", "BAR4 卡 L3\n64 B (vmovdqu64)", "#0F766E"),
-        ("bar4_uc_l3_walk_8b", "BAR4 L3 4K行对照\n8 B (不逐出)", "#14B8A6"),
-        ("bar4_uc_ddr5_walk_8b", "BAR4 卡 DDR5\n8 B (dc civac)", "#DC2626"),
-        ("bar4_uc_ddr5_walk_64b_zmm", "BAR4 卡 DDR5\n64 B (dc civac)", "#B91C1C"),
+        ("vf0_bar0_out_cnts_4b", "VF0 BAR0→SDP\nOUT_CNTS 4 B", "#2563EB"),
+        ("vf0_bar0_out_cnts_8b", "VF0 BAR0→SDP\nOUT_CNTS 8 B", "#3B82F6"),
+        ("bar4_uc_l3_4b", "BAR4 卡 L3 (首行)\n4 B (mov)", "#0D9488"),
+        ("bar4_uc_l3_8b", "BAR4 卡 L3 (首行)\n8 B (mov)", "#0D9488"),
+        ("bar4_uc_l3_16b", "BAR4 卡 L3 (首行)\n16 B (movdqu)", "#0D9488"),
+        ("bar4_uc_l3_32b", "BAR4 卡 L3 (首行)\n32 B (vmovdqu)", "#0D9488"),
+        ("bar4_uc_l3_64b_zmm", "BAR4 卡 L3 (首行)\n64 B (vmovdqu64)", "#0F766E"),
+        ("bar4_uc_l3_walk_8b", "BAR4 卡 L3 (4K全片)\n8 B (不逐出对照)", "#14B8A6"),
+        ("bar4_uc_ddr5_walk_8b", "BAR4 卡 DDR5 (4K)\n8 B (dc civac)", "#DC2626"),
+        ("bar4_uc_ddr5_walk_64b_zmm", "BAR4 卡 DDR5 (4K)\n64 B (dc civac)", "#B91C1C"),
     ]
 
     # Panel B: 64 B card L3 read strategies
     panel_b_specs = [
         ("bar4_uc_l3_64b_zmm", "1×64 B\nvmovdqu64\n(zmm)", "#0F766E"),
         ("bar4_uc_l3_64b_nt", "1×64 B\nvmovntdqa\n(UC 映射)", "#0891B2"),
-        ("bar4_uc_l3_64b_4x16b", "4×16 B\nmovdqu\n(xmm)", "#D97706"),
+        ("bar4_uc_l3_64b_4x16b", "4×16 B\n非VEX movdqu\n(脏ZMM*)", "#D97706"),
         ("bar4_uc_l3_64b_8x8b", "8×8 B\nmov\n(标量)", "#DC2626"),
     ]
 
     fig, (ax1, ax2) = plt.subplots(
-        1, 2, figsize=(13.6, 5.6), gridspec_kw={"width_ratios": [2.25, 1.0]}
+        1, 2, figsize=(14.4, 5.8), gridspec_kw={"width_ratios": [2.25, 1.05]}
     )
 
     # ---- Panel A ----
@@ -97,25 +97,24 @@ def main():
                     s=16, lw=0.8, zorder=6, label="p50（n=3 各轮实测）" if i == 0 else None)
         extra = ""
         if panel_a_specs[i][0].startswith("bar4_uc_ddr5"):
-            extra = f" [DDR5未命中 {s['dss_med']:.2f}]"
+            extra = f" [L3未命中 {s['dss_med']:.2f}, DDR5读 {s['ddr_med']:.2f}]"
         ax1.text(
-            s["p99_med"] + 12,
+            s["p99_med"] + 14,
             i,
             f"p50 {s['p50_med']:.1f} / p99 {s['p99_med']:.1f} ns ({s['tlp_med']:.2f} TLP){extra}",
             va="center",
             ha="left",
-            fontsize=8.0,
+            fontsize=7.9,
             color="#111827",
         )
 
     # CXL.mem ~200 ns external reference line (clearly marked as non-measured reference)
     ax1.axvline(200, color="#7C3AED", ls="--", lw=1.3, alpha=0.85, zorder=2)
     ax1.text(
-        212,
-        -0.88,
-        "CXL.mem 空载参照 (~170–250 ns, 非本机实测)",
+        214, -0.88,
+        "CXL.mem (WB HDM) 空载参照 (~170–250 ns, 非本机实测；非 CXL.io)",
         color="#6D28D9",
-        fontsize=8.0,
+        fontsize=7.9,
         va="center",
         ha="left",
         bbox=dict(boxstyle="round,pad=0.22", fc="#F5F3FF", ec="#C4B5FD", lw=0.8),
@@ -126,35 +125,44 @@ def main():
     l3_p50 = stats_a[3]["p50_med"]
     l3_walk_p50 = stats_a[7]["p50_med"]
     ddr5_p50 = stats_a[8]["p50_med"]
+    ddr_per_dss = statistics.median(
+        r["card_pmu"]["ddr_reads"] / r["card_pmu"]["tad_dss_rd"]
+        for r in by_arm["bar4_uc_ddr5_walk_8b"]
+    )
     ax1.text(
-        1170,
-        3.2,
-        f"关键差值对照：\n"
-        f"• BAR4 L3 vs BAR0 CSR：+{l3_p50 - bar0_p50:.1f} ns\n"
-        f"  （端到端路径差，未分段归因）\n"
+        1290, 3.5,
+        f"关键差值与硬件核验：\n"
+        f"• VF0 BAR0：含 PEM0→SDP CSR 总线，\n"
+        f"  为纯主机+链路往返紧上界 ({bar0_p50:.1f} ns)\n"
+        f"• BAR4 L3 vs VF0 BAR0：+{l3_p50 - bar0_p50:.1f} ns\n"
+        f"  (首行；4K 全片 +{l3_walk_p50 - bar0_p50:.1f} ns，未分段)\n"
         f"• 卡 DDR5 vs 卡 L3：+{ddr5_p50 - l3_walk_p50:.1f} ns\n"
-        f"  （单变量 dc civac，1.00 未命中）",
-        fontsize=7.9,
+        f"  (dc civac，128 B 行 = 2×64 B 突发，\n"
+        f"   ddr/dss = {ddr_per_dss:.3f})",
+        fontsize=7.7,
         color="#1F2937",
         va="center",
         ha="left",
-        bbox=dict(boxstyle="round,pad=0.38", fc="#F9FAFB", ec="#D1D5DB", lw=0.9),
+        linespacing=1.32,
+        bbox=dict(boxstyle="round,pad=0.40", fc="#F9FAFB", ec="#D1D5DB", lw=0.9),
     )
 
     ax1.set_yticks(ya)
-    ax1.set_yticklabels(labels_a, fontsize=8.4)
+    ax1.set_yticklabels(labels_a, fontsize=8.2)
     ax1.set_ylim(len(panel_a_specs) - 0.35, -1.35)
-    ax1.set_xlim(0, 1790)
+    ax1.set_xlim(0, 1930)
     ax1.set_xlabel("单次 MMIO Read 净延迟 (ns，已扣 LFENCE;RDTSC 空括号底噪)", fontsize=9.2)
     ax1.set_title("(A) 单笔 PCIe MRd TLP 延迟拆解：BAR0 寄存器 vs BAR4 卡 L3 vs 卡 DDR5", fontsize=10.0, fontweight="bold")
     ax1.legend(loc="upper right", fontsize=8.0, frameon=True, framealpha=0.95)
+
+    # ---- Panel B ----
     xb = np.arange(len(panel_b_specs))
     stats_b = [arm_stats(by_arm[k]) for k, _, _ in panel_b_specs]
     labels_b = [lbl for _, lbl, _ in panel_b_specs]
     colors_b = [c for _, _, c in panel_b_specs]
     p50_b = [s["p50_med"] for s in stats_b]
 
-    ax2.bar(xb, p50_b, width=0.56, color=colors_b, alpha=0.88, zorder=3)
+    ax2.bar(xb, p50_b, width=0.54, color=colors_b, alpha=0.88, zorder=3)
     base_64 = stats_b[0]["p50_med"]
     for i, s in enumerate(stats_b):
         ax2.plot([i, i], [s["p50_med"], s["p99_med"]], color="#1F2937", lw=1.6, zorder=4)
@@ -173,9 +181,24 @@ def main():
             color="#111827",
         )
 
+    ax2.text(
+        x=-0.35, y=5880,
+        s="* 4×16 B 档为非 VEX SSE\n"
+          "  movdqu + 脏 ZMM（循环内\n"
+          "  无 vzeroupper），双端 PMU\n"
+          "  确认实发 5.00 TLP；\n"
+          "  未与纯 VEX 4×vmovdqu 解耦",
+        fontsize=7.6,
+        color="#78350F",
+        va="top",
+        ha="left",
+        linespacing=1.30,
+        bbox=dict(boxstyle="round,pad=0.36", fc="#FFFBEB", ec="#FCD34D", lw=0.9),
+    )
+
     ax2.set_xticks(xb)
-    ax2.set_xticklabels(labels_b, fontsize=8.5)
-    ax2.set_ylim(0, 6100)
+    ax2.set_xticklabels(labels_b, fontsize=8.0)
+    ax2.set_ylim(0, 6150)
     ax2.set_ylabel("读取 64 B 净延迟 (ns)", fontsize=9.2)
     ax2.set_title("(B) BAR4 UC 读整行 64 B：指令与 TLP 笔数对比", fontsize=10.0, fontweight="bold")
 
