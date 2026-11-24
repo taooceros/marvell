@@ -68,10 +68,11 @@ def main():
 
     ax1.axhline(100.0, color="#475569", linestyle="--", linewidth=1.2, zorder=1)
     ax1.annotate(
-        f"单口 100.0 Mpps 硬顶\n实读 sclk = {sclk_mhz} MHz → 10.0 拍/包",
+        f"共用 TL4[0]→TL1[0] 单口实测上限 100.0 Mpps\n"
+        f"实读 sclk = {sclk_mhz} MHz → 10.0 拍/包（所在级 [推算]）",
         xy=(2.85, 100.4),
-        xytext=(1.08, 118.0),
-        fontsize=8.8,
+        xytext=(0.95, 121.0),
+        fontsize=8.3,
         color="#334155",
         bbox=dict(boxstyle="round,pad=0.32", facecolor="#f8fafc", edgecolor="#cbd5e1", lw=0.9),
         arrowprops=dict(arrowstyle="->", color="#64748b", lw=1.1, connectionstyle="arc3,rad=0.12"),

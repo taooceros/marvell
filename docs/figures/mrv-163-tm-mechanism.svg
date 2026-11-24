@@ -59,13 +59,13 @@
   <!-- Arrow to TL4..TL1 -->
   <line x1="236" y1="216" x2="236" y2="248" stroke="#64748b" stroke-width="2" marker-end="url(#arr-g)"/>
 
-  <!-- TL4 -> TL1 port ceiling box -->
-  <rect x="96" y="252" width="280" height="44" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
-  <text x="236" y="272" text-anchor="middle" class="t-sans" font-size="13" font-weight="bold" fill="#334155">TL4[0] → TL1[0] → 100G eth0</text>
-  <text x="236" y="289" text-anchor="middle" class="t-sans" font-size="11" fill="#64748b">端口硬顶 100.0 Mpps（sclk 1000 MHz）</text>
+  <!-- TL4 -> TL1 shared upstream path box -->
+  <rect x="60" y="252" width="352" height="46" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="236" y="272" text-anchor="middle" class="t-sans" font-size="13" font-weight="bold" fill="#334155">共用 TL4[0] → TL1[0] → 100G eth0</text>
+  <text x="236" y="290" text-anchor="middle" class="t-sans" font-size="10.8" fill="#64748b">单口实测上限 100.0 Mpps（sclk 1000 MHz）</text>
 
   <!-- Result callout (left) -->
-  <line x1="236" y1="296" x2="236" y2="326" stroke="#64748b" stroke-width="2" marker-end="url(#arr-g)"/>
+  <line x1="236" y1="298" x2="236" y2="326" stroke="#64748b" stroke-width="2" marker-end="url(#arr-g)"/>
   <text x="236" y="362" text-anchor="middle" class="t-sans" font-size="32" font-weight="bold" fill="#475569">82.1 Mpps</text>
   <text x="236" y="388" text-anchor="middle" class="t-sans" font-size="13" fill="#64748b">较 C=4 回落 −17.6%</text>
 
@@ -142,13 +142,13 @@
     <line x1="849" y1="216" x2="758" y2="249"/>
   </g>
 
-  <!-- TL4 -> TL1 port ceiling box (highlighted wall) -->
-  <rect x="544" y="252" width="280" height="44" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
-  <text x="684" y="272" text-anchor="middle" class="t-sans" font-size="13" font-weight="bold" fill="#1e3a8a">TL4[0] → TL1[0] → 100G eth0</text>
-  <text x="684" y="289" text-anchor="middle" class="t-sans" font-size="11" font-weight="bold" fill="#2563eb">撞端口硬顶 100.0 Mpps（10.0 拍/包）</text>
+  <!-- TL4 -> TL1 shared upstream path box (highlighted ceiling) -->
+  <rect x="508" y="252" width="352" height="46" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="684" y="272" text-anchor="middle" class="t-sans" font-size="13" font-weight="bold" fill="#1e3a8a">共用 TL4[0] → TL1[0] → 100G eth0</text>
+  <text x="684" y="290" text-anchor="middle" class="t-sans" font-size="10.8" font-weight="bold" fill="#2563eb">实测上限 100.0 Mpps（10.0 拍/包 · 所在级 [推算]）</text>
 
   <!-- Result callout (right) -->
-  <line x1="684" y1="296" x2="684" y2="326" stroke="#2563eb" stroke-width="2.2" marker-end="url(#arr-b)"/>
+  <line x1="684" y1="298" x2="684" y2="326" stroke="#2563eb" stroke-width="2.2" marker-end="url(#arr-b)"/>
   <text x="684" y="362" text-anchor="middle" class="t-sans" font-size="32" font-weight="bold" fill="#2563eb">99.6 Mpps</text>
-  <text x="684" y="388" text-anchor="middle" class="t-sans" font-size="13" font-weight="bold" fill="#1d4ed8">+21.4% 零回落 · 止于 100.0M 硬顶</text>
+  <text x="684" y="388" text-anchor="middle" class="t-sans" font-size="12.5" font-weight="bold" fill="#1d4ed8">+21.4% 消除回落（较 C=4 差 0.35%）</text>
 </svg>
