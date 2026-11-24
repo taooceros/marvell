@@ -194,7 +194,7 @@ def main():
     ax_upi.set_xticklabels(upi_labels, fontsize=8.0)
     ax_upi.set_ylim(0, 82)
     ax_upi.set_ylabel("跨 Socket UPI 往返增量 (ns)", fontsize=8.8)
-    ax_upi.set_title("(b) 跨 UPI 往返增量四路径交叉验真（全片均摊 ~58–65 ns）", fontsize=9.8, fontweight="bold", pad=8)
+    ax_upi.set_title("(b) 跨 UPI 往返增量四路径对照（单 CHA +42 ns；多路径 +59–65 ns）", fontsize=9.4, fontweight="bold", pad=8)
     ax_upi.legend(loc="upper left", fontsize=7.6, frameon=True, facecolor="white", framealpha=0.92)
     ax_upi.grid(axis="y", alpha=0.32)
     ax_upi.grid(axis="x", visible=False)

@@ -1,17 +1,18 @@
-"""MRV-182 Figure 1: Rigorous nanosecond-level stage decomposition of a single host-to-CN106
-MMIO read on saturn, closed-loop CHA TOR verification, and multi-core concurrency scaling.
+"""MRV-182 Figure 1: Homogeneous-statistic (median-of-run mean) nanosecond-level stage
+decomposition of a single host-to-CN106 MMIO read on saturn, closed-loop CHA TOR
+verification, and multi-core concurrency scaling.
 
 All plotted numbers are read directly from logs/mrv182-2026-11-24/runs.jsonl (n=3 interleaved,
 0 mismatches, 0 page faults, 100.00% non-multiplexed host & card PMUs).
 
-Boundary discipline:
-- CfgRd0 differential (pread 99:00.0 - 98:01.0 = +209.1 ns) is plotted as a separate,
-  non-additive proxy anchor (config-space and MMIO-space paths differ; direct 98:01.0/resource0
-  MMIO mmap requires root and is not subtracted from VF0 BAR0).
-- Inside the MMIO waterfall, every segment boundary is measured on the MMIO path itself:
-  outside-TOR residual (net_mean - T_CHA_TOR), unsplit Host IIO/RP + Gen5x4 + PEM0->SDP block
-  (T_CHA_TOR of VF0 BAR0 = 495.6 ns), BAR4 L3 increment (+105.5 ns p50 / +104.0 ns TOR), and
-  CN106 DDR5 miss increment (+92.7 ns p50 / +101.2 ns TOR).
+Statistical & boundary discipline:
+- Because T_CHA_TOR = sum(TOR_OCC) / sum(TOR_INS) / f_mesh is an arithmetic mean over all
+  transactions, the stacked operational decomposition in panel (a) uses median-of-run net_mean
+  consistently across every MMIO segment (so every segment is strictly additive in mean), with
+  separate diamond markers showing each endpoint's verified net_p50.
+- CfgRd0 differential (pread 99:00.0 - 98:01.0) is plotted as a separate non-additive proxy
+  anchor (config-space and MMIO-space paths differ; direct 98:01.0/resource0 MMIO mmap
+  requires root and is not subtracted from VF0 BAR0).
 """
 import json
 import statistics
@@ -69,27 +70,33 @@ def main():
         ifb_cyc_8b.append(net_ifb / net_dss)
     ifb_med = med(ifb_cyc_8b)
 
-    # Host WB ladder
-    hm = {
+    # Host WB ladder (p50 & mean)
+    hm_p50 = {
         arm: med([x["net_ns"]["p50"] for x in by_sl[("host_mem", arm)]])
         for arm in ("host-wb-l3", "host-wb-ddr5-local", "host-wb-ddr5-remote")
     }
+    hm_mean = {
+        arm: med([x["net_ns"]["mean"] for x in by_sl[("host_mem", arm)]])
+        for arm in ("host-wb-l3", "host-wb-ddr5-local", "host-wb-ddr5-remote")
+    }
 
-    # Config pread differential (separate non-additive proxy anchor)
-    cfg_rp = med([x["net_ns"]["p50"] for x in by_sl[("cfg_pread", "0000:98:01.0")]])
-    cfg_ep = med([x["net_ns"]["p50"] for x in by_sl[("cfg_pread", "0000:99:00.0")]])
-    cfg_vf = med([x["net_ns"]["p50"] for x in by_sl[("cfg_pread", "0000:99:02.0")]])
-    d_cfg_pf = cfg_ep - cfg_rp
-    d_cfg_vf = cfg_vf - cfg_rp
+    # Config pread differential (separate non-additive proxy anchor, mean & p50)
+    cfg_rp_mean = med([x["net_ns"]["mean"] for x in by_sl[("cfg_pread", "0000:98:01.0")]])
+    cfg_ep_mean = med([x["net_ns"]["mean"] for x in by_sl[("cfg_pread", "0000:99:00.0")]])
+    cfg_rp_p50 = med([x["net_ns"]["p50"] for x in by_sl[("cfg_pread", "0000:98:01.0")]])
+    cfg_ep_p50 = med([x["net_ns"]["p50"] for x in by_sl[("cfg_pread", "0000:99:00.0")]])
+    cfg_vf_p50 = med([x["net_ns"]["p50"] for x in by_sl[("cfg_pread", "0000:99:02.0")]])
+    d_cfg_pf_mean = cfg_ep_mean - cfg_rp_mean
+    d_cfg_pf_p50 = cfg_ep_p50 - cfg_rp_p50
+    d_cfg_vf_p50 = cfg_vf_p50 - cfg_rp_p50
 
-    # Strictly identifiable MMIO waterfall segments anchored exactly to endpoint net_p50:
-    # VF0 net_p50 = 516.36 ns = (516.36 - 495.56 = 20.80 ns) + T_CHA_TOR (495.56 ns);
-    # note net_mean - T_CHA_TOR = 21.76 ns (VF0) / 23.35 ns (BAR4 4K walk 8B).
-    s_out_tor_bar = vf0["p50"] - vf0["tor"]  # 20.80 ns so stacked bar ends at exact vf0 p50
-    s_unsplit_tor = vf0["tor"]               # 495.56 ns unsplit Host IIO/RP + Gen5x4 + PEM0->SDP CSR
-    vf0_end = vf0["p50"]                     # 516.36 ns exact
-    s_bar4_l3_p50 = l3_8b["p50"] - vf0["p50"]   # +105.45 ns (T_CHA_TOR diff +103.95 ns)
-    s_ddr5_p50 = ddr_8b["p50"] - l3_8b["p50"]   # +92.73 ns (net_mean diff +101.57, T_CHA_TOR diff +101.18 ns)
+    # Homogeneous net_mean additive MMIO waterfall (matches T_CHA_TOR mean quantities directly!):
+    s_out_tor = vf0["mean"] - vf0["tor"]          # 22.13 ns (per-rep med 21.76; BAR4 4K = 23.35)
+    s_unsplit_tor = vf0["tor"]                    # 495.56 ns unsplit Host IIO/RP + Gen5x4 + PEM0->SDP CSR
+    vf0_end = vf0["mean"]                         # 517.69 ns exact
+    s_bar4_l3_mean = l3_8b["mean"] - vf0["mean"]  # +105.17 ns (T_CHA_TOR diff +103.95 ns)
+    s_ddr5_mean = ddr_8b["mean"] - l3_8b["mean"]  # +101.57 ns (T_CHA_TOR diff +101.18 ns — 0.4 ns closure!)
+
     # Multi-core scaling (Suite C3)
     ks = [1, 2, 4, 8]
     agg_mops = [med([x["agg_mops"] for x in by_sl[("mlp", f"multicore-k{k}")]]) for k in ks]
@@ -97,13 +104,13 @@ def main():
     unf8_per = med([x["per_read_net_p50_ns"] for x in by_sl[("mlp", "uc-unfenced-8x")]])
 
     # ---- Figure Layout ----
-    fig = plt.figure(figsize=(15.4, 7.8))
-    gs = fig.add_gridspec(2, 2, width_ratios=[1.38, 1.0], height_ratios=[1.05, 1.0], wspace=0.25, hspace=0.42)
+    fig = plt.figure(figsize=(15.6, 7.8))
+    gs = fig.add_gridspec(2, 2, width_ratios=[1.42, 1.0], height_ratios=[1.05, 1.0], wspace=0.25, hspace=0.42)
     ax_wf = fig.add_subplot(gs[:, 0])
     ax_pmu = fig.add_subplot(gs[0, 1])
     ax_mlp = fig.add_subplot(gs[1, 1])
 
-    # ==================== Panel (a): Rigorous Stage Anchors & Identifiable MMIO Waterfall ====================
+    # ==================== Panel (a): Homogeneous net_mean Waterfall + p50 Markers ====================
     c_wb = "#94a3b8"
     c_cfg = "#d97706"
     c_out = "#0284c7"
@@ -111,71 +118,81 @@ def main():
     c_l3 = "#7c3aed"
     c_ddr = "#dc2626"
 
+    # Tuple: (label, [(left, width, color, hatched)], end_x, p50_marker_or_None, note)
     rows = [
-        ("Host WB 参照\n本地 L3 (8 MiB)", [(0, hm["host-wb-l3"], c_wb, False)], hm["host-wb-l3"], f"{hm['host-wb-l3']:.1f} ns（纯主机 Core⇄CHA L3）"),
-        ("Host WB 参照\n本地 DDR5", [(0, hm["host-wb-ddr5-local"], c_wb, False)], hm["host-wb-ddr5-local"], f"{hm['host-wb-ddr5-local']:.1f} ns（主机本地 IMC）"),
-        ("Host WB 参照\n跨 UPI 远端 DDR5", [(0, hm["host-wb-ddr5-remote"], c_wb, False)], hm["host-wb-ddr5-remote"], f"{hm['host-wb-ddr5-remote']:.1f} ns（+{hm['host-wb-ddr5-remote']-hm['host-wb-ddr5-local']:.1f} ns 跨 UPI）"),
+        ("Host WB 参照\n本地 L3 (8 MiB)", [(0, hm_mean["host-wb-l3"], c_wb, False)], hm_mean["host-wb-l3"], hm_p50["host-wb-l3"], f"mean {hm_mean['host-wb-l3']:.1f} / p50 {hm_p50['host-wb-l3']:.1f} ns"),
+        ("Host WB 参照\n本地 DDR5", [(0, hm_mean["host-wb-ddr5-local"], c_wb, False)], hm_mean["host-wb-ddr5-local"], hm_p50["host-wb-ddr5-local"], f"mean {hm_mean['host-wb-ddr5-local']:.1f} / p50 {hm_p50['host-wb-ddr5-local']:.1f} ns"),
+        ("Host WB 参照\n跨 UPI 远端 DDR5", [(0, hm_mean["host-wb-ddr5-remote"], c_wb, False)], hm_mean["host-wb-ddr5-remote"], hm_p50["host-wb-ddr5-remote"], f"mean {hm_mean['host-wb-ddr5-remote']:.1f} / p50 {hm_p50['host-wb-ddr5-remote']:.1f} ns (+{hm_p50['host-wb-ddr5-remote']-hm_p50['host-wb-ddr5-local']:.1f})"),
         (
             "独立代理参照 (非可减)\nCfgRd0 链路+PEM0\n(pread 99:00−98:01)",
-            [(0, d_cfg_pf, c_cfg, True)],
-            d_cfg_pf,
-            f"+{d_cfg_pf:.1f} ns（VF0 +{d_cfg_vf:.1f}；配置空间独立代理）",
+            [(0, d_cfg_pf_mean, c_cfg, True)],
+            d_cfg_pf_mean,
+            d_cfg_pf_p50,
+            f"mean +{d_cfg_pf_mean:.1f} / p50 +{d_cfg_pf_p50:.1f} ns（VF0 +{d_cfg_vf_p50:.1f}）",
         ),
         (
             "MMIO 段 1（TOR 外余量）\nCore UC + Core⇄CHA\n(net_mean − T_CHA_TOR)",
-            [(0, l3_8b["out_tor"], c_out, False)],
-            l3_8b["out_tor"],
+            [(0, s_out_tor, c_out, False)],
+            s_out_tor,
+            None,
             f"VF0 {vf0['out_tor']:.1f} / BAR4 {l3_8b['out_tor']:.1f} ns（核频占 ~5–11 ns）",
         ),
         (
             "MMIO 段 2（未细分上界块）\nCHA→IIO₁→RP→Gen5×4\n→PEM0→SDP (VF0 TOR)",
-            [(s_out_tor_bar, s_unsplit_tor, c_unsplit, True)],
+            [(s_out_tor, s_unsplit_tor, c_unsplit, True)],
             vf0_end,
+            None,
             f"TOR 直测 {s_unsplit_tor:.1f} ns（无 root 未剥离 RP BAR0）",
         ),
         (
             "实测端点：VF0 BAR0\nOUT_CNTS (8 B PRd)",
-            [(0, s_out_tor_bar, c_out, False), (s_out_tor_bar, s_unsplit_tor, c_unsplit, True)],
+            [(0, s_out_tor, c_out, False), (s_out_tor, s_unsplit_tor, c_unsplit, True)],
             vf0_end,
-            f"p50 = {vf0['p50']:.1f} / mean = {vf0['mean']:.1f} ns",
+            vf0["p50"],
+            f"mean = {vf0['mean']:.1f} / p50 = {vf0['p50']:.1f} ns",
         ),
         (
             "MMIO 段 3（BAR4 相对差）\nBAR4_INDEX + IOBN\n+ TAD L3 (减 VF0)",
-            [(vf0_end, s_bar4_l3_p50, c_l3, False)],
-            l3_8b["p50"],
-            f"+{s_bar4_l3_p50:.1f} ns p50（TOR 差 +{l3_8b['tor']-vf0['tor']:.1f} ns）",
+            [(vf0_end, s_bar4_l3_mean, c_l3, False)],
+            l3_8b["mean"],
+            None,
+            f"mean +{s_bar4_l3_mean:.1f} / TOR +{l3_8b['tor']-vf0['tor']:.1f} ns（p50 +{l3_8b['p50']-vf0['p50']:.1f}）",
         ),
         (
             "实测端点：BAR4 卡 L3\n4K 走步 (8 B / 64 B)",
             [
-                (0, s_out_tor_bar, c_out, False),
-                (s_out_tor_bar, s_unsplit_tor, c_unsplit, True),
-                (vf0_end, s_bar4_l3_p50, c_l3, False),
+                (0, s_out_tor, c_out, False),
+                (s_out_tor, s_unsplit_tor, c_unsplit, True),
+                (vf0_end, s_bar4_l3_mean, c_l3, False),
             ],
+            l3_8b["mean"],
             l3_8b["p50"],
-            f"8 B = {l3_8b['p50']:.1f} / 64 B = {l3_64b['p50']:.1f} ns（p50）",
+            f"8 B mean={l3_8b['mean']:.1f} (p50 {l3_8b['p50']:.1f}) / 64 B {l3_64b['mean']:.1f}",
         ),
         (
             "MMIO 段 4（dc civac 差）\nTAD L3 Miss →\nCN106 6 通道 DDR5",
-            [(l3_8b["p50"], s_ddr5_p50, c_ddr, False)],
-            ddr_8b["p50"],
-            f"+{s_ddr5_p50:.1f} ns p50 / +{ddr_8b['tor']-l3_8b['tor']:.1f} TOR（IFB {ifb_med:.0f} cyc）",
+            [(l3_8b["mean"], s_ddr5_mean, c_ddr, False)],
+            ddr_8b["mean"],
+            None,
+            f"mean +{s_ddr5_mean:.1f} / TOR +{ddr_8b['tor']-l3_8b['tor']:.1f} ns（p50 +{ddr_8b['p50']-l3_8b['p50']:.1f}, IFB {ifb_med:.0f}c）",
         ),
         (
             "全链路总计：BAR4 冷读\n卡 DDR5 (8 B / 64 B)",
             [
-                (0, s_out_tor_bar, c_out, False),
-                (s_out_tor_bar, s_unsplit_tor, c_unsplit, True),
-                (vf0_end, s_bar4_l3_p50, c_l3, False),
-                (l3_8b["p50"], s_ddr5_p50, c_ddr, False),
+                (0, s_out_tor, c_out, False),
+                (s_out_tor, s_unsplit_tor, c_unsplit, True),
+                (vf0_end, s_bar4_l3_mean, c_l3, False),
+                (l3_8b["mean"], s_ddr5_mean, c_ddr, False),
             ],
+            ddr_8b["mean"],
             ddr_8b["p50"],
-            f"8 B = {ddr_8b['p50']:.1f} / 64 B = {ddr_64b['p50']:.1f} ns（p50）",
+            f"8 B mean={ddr_8b['mean']:.1f} (p50 {ddr_8b['p50']:.1f}) / 64 B {ddr_64b['mean']:.1f}",
         ),
     ]
 
     y_pos = np.arange(len(rows))[::-1]
-    for idx, (label, segs, end_x, note) in enumerate(rows):
+    p50_plotted = False
+    for idx, (label, segs, end_x, p50_x, note) in enumerate(rows):
         y = y_pos[idx]
         is_total = label.startswith("实测端点") or label.startswith("全链路总计")
         h = 0.62 if is_total else 0.54
@@ -191,15 +208,30 @@ def main():
                 alpha=0.90 if is_total else 0.86,
                 hatch="///" if hatched else None,
             )
+        if p50_x is not None:
+            ax_wf.plot(
+                p50_x,
+                y,
+                marker="D",
+                ms=5.2,
+                color="#fef08a",
+                mec="#0f172a",
+                mew=0.9,
+                ls="none",
+                zorder=5,
+                label="实测中位数 net_p50" if not p50_plotted else None,
+            )
+            p50_plotted = True
         if idx in (4, 5, 7, 9):
             ax_wf.plot([end_x, end_x], [y - 0.34, y - 0.66], color="#64748b", ls=":", lw=1.0)
+        text_x = max(end_x, p50_x if p50_x is not None else 0) + 12
         ax_wf.text(
-            end_x + 12,
+            text_x,
             y,
             note,
             va="center",
             ha="left",
-            fontsize=8.1,
+            fontsize=7.9,
             fontweight="bold" if is_total else "normal",
             color="#0f172a" if is_total else "#334155",
         )
@@ -207,10 +239,11 @@ def main():
     ax_wf.axhline(y_pos[2] - 0.5, color="#cbd5e1", ls="--", lw=1.1)
     ax_wf.axhline(y_pos[3] - 0.5, color="#f59e0b", ls=":", lw=1.1, alpha=0.8)
     ax_wf.set_yticks(y_pos)
-    ax_wf.set_yticklabels([r[0] for r in rows], fontsize=8.1)
-    ax_wf.set_xlim(0, 1210)
-    ax_wf.set_xlabel("单次 8 B 串行读净延迟 / 可辨识段宽（ns，已扣空计时括号 12.7 ns，n = 3 交错中位数）", fontsize=9.0)
-    ax_wf.set_title("(a) saturn + CN106 单次 MMIO Read 可辨识分段与独立代理锚点（斜线 = 未细分块 / 非可减代理）", fontsize=9.8, fontweight="bold", pad=8)
+    ax_wf.set_yticklabels([r[0] for r in rows], fontsize=8.0)
+    ax_wf.set_xlim(0, 1280)
+    ax_wf.set_xlabel("单次 8 B 串行读净均值（ns，统一采用 net_mean 满足可加性；菱形 = net_p50，已扣 12.7 ns）", fontsize=8.7)
+    ax_wf.set_title("(a) saturn + CN106 单次 MMIO Read 统一均值口径分段与独立代理（斜线 = 未细分/非可减）", fontsize=9.6, fontweight="bold", pad=8)
+    ax_wf.legend(loc="upper right", fontsize=7.8, frameon=True, facecolor="white", framealpha=0.94)
     ax_wf.grid(axis="x", alpha=0.35)
     ax_wf.grid(axis="y", visible=False)
 
