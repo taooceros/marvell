@@ -39,8 +39,10 @@ One argument, told as a chain of questions (each chapter answers the question th
    host credits (p99 44.5 -> 7.0 us); bulk payloads go by the NIC's own DMA (one fence per message; payload, then
    completion, kept in order by PCIe) with separate credit windows; the NIC,
    being the writer, keeps receive bursts off the host (-98.9% host DRAM traffic).
-5. **End to end** (C10). Over a real 100GbE link the gain survives at every size and under load (64 B: 10.21 -> 5.96 us;
-   p99 at 2 M/s: 26.3 -> 12.6 us), and one host core fills the link.
+5. **End to end** (C10). Over a real 100GbE link the gain survives (64 B: 10.21 -> 5.96 us). The card echoing alone takes
+   3.8-4.3 us, the floor of cable and Ethernet engines; with a cached CQE peek instead of empty polls (a later run), the
+   host-NIC part is back under 1 us (0.935 us) and the round trip is 5.29 us (4.76 us in a controlled exploration). The
+   gain holds at every size and under load (p99 at 2 M/s: 26.3 -> 12.6 us), and one host core fills the link.
 6. **Takeaway** (C11). The speedup is in the hand-over; what coherence is still for; related work; next step.
 """
 
@@ -482,6 +484,16 @@ SCENES = [
                 "About **4.3 µs** of that is cable and Ethernet hardware. The host–NIC part itself fell from **5.9 µs to 1.7 µs**.",
                 "About four point three microseconds of that is the fixed cost of the cable and the Ethernet hardware. The host to nick part itself fell from five point nine to one point seven microseconds.",
                 "F-E2E",
+            ),
+            (
+                "Echoed by the card alone, with no host, a round trip still takes **3.8–4.3 µs**: the floor of cable and Ethernet engines.",
+                "Echoing on the card alone, with no host, a round trip still takes three point eight to four point three microseconds: the floor of the cable and the Ethernet engines.",
+                "F-E2E-FLOOR",
+            ),
+            (
+                "With a cached CQE peek instead of empty polls, the host–NIC part is back under 1 µs: **0.935 µs**. Round trip: **5.29 µs**.",
+                "With a later fix, the card peeks at a cached completion entry instead of slow empty polling. The host to nick part is back under a microsecond, zero point nine three five, and the round trip is down to five point two nine, or four point seven six in a controlled exploration.",
+                "F-E2E-PEEK",
             ),
             (
                 "The gain holds at every size: **10.4 → 6.6 µs** at 256 B, **15.1 → 11.9 µs** at 4 KiB.",

@@ -2,7 +2,9 @@
 
 Every number said or shown in the video, keyed by the `fact_src` ids used in `tts/ccnic_script_data.py`.
 Our measurements were recomputed from the raw logs (`logs/<issue>-<date>/runs*.jsonl`) on 2026-11-24 by an
-independent check (all 14 items OK; integrity fields lost = bad = torn = 0 in every run used). Paper numbers were
+independent check (all 14 items OK; integrity fields lost = bad = torn = 0 in every run used); F-E2E-FLOOR and
+F-E2E-PEEK were added the same day from `logs/mrv154-2026-11-23/runs.jsonl` and `logs/mrv161-2026-11-24/runs.jsonl`
+(median of 3 reps; every run used is verified with lost = bad = torn = 0). Paper numbers were
 checked against the PDFs: CC-NIC (Schuh et al., ASPLOS '24, `homes.cs.washington.edu/~arvind/papers/CC-NIC.pdf`) and
 CXL-NIC (Ji et al., MICRO '25, "Re-architecting End-host Networking with CXL", `saksham.web.illinois.edu/assets/pdf/cxl-nic.pdf`).
 
@@ -121,6 +123,30 @@ any claim that we beat CC-NIC's emulated numbers.
 - **F-E2E** (MRV-133, `part1_decomp`, same session): two hosts over real 100GbE, 64 B W=1 p50: SDP 10.205 µs,
   DirectPush 5.955 µs (−4.25 µs, −41.6 %, said "forty-two percent"); card-only echo (no host) 4.275 µs → host–NIC part
   5.93 µs vs 1.68 µs.
+- **F-E2E-FLOOR** (MRV-161, `logs/mrv161-2026-11-24/runs.jsonl`, group `card_echo`, 64 B W=1, 3 reps each, verified,
+  lost = bad = torn = 0): the card answers mercury's requests itself, the host never takes part. Median of the per-rep
+  p50 at mercury: stock receive polling 4.255 µs, `--cqe-peek` 4.315 µs, exploratory `--cqe-direct` 3.795 µs → said
+  "three point eight to four point three microseconds", shown "3.8–4.3 µs", "the floor of the cable and the Ethernet
+  engines" (mercury's ConnectX-5 and its stack, the 3 m cable, the CN106's Ethernet engine with its receive poll).
+  Matches MRV-133's 4.275 µs (F-E2E). Not used: MRV-154's 4.625 µs (`card_echo_64_w1`), measured with the client
+  that was not fixed yet, whose 60 ms sleep left the clocks cold (+350 ns against MRV-133, per MRV-154).
+- **F-E2E-PEEK** (MRV-161 `dual_closed_64`, 64 B W=1, 3 reps each, verified, lost = bad = torn = 0; a later session
+  than MRV-133, so the row is tagged "LATER RUN"): the stock `rte_eth_rx_burst()` issues the atomic
+  `LDADDA NIX_LF_CQ_OP_STATUS` on every poll, 578.51 ns even when the queue is empty (`cqe_probe_bare`, median of 3);
+  MRV-154 found 2.01 such empty polls per request while the host's reply is pending (`--bar4-first`: card-timed
+  1.305 → 0.935 µs). With `--cqe-peek` the card first loads the next receive completion entry (CQE) from its own cache
+  (NIX0 `cq_ctx->caching = 1`), 4.89 ns when empty, and issues the `LDADDA` only on a hit. Card-timed host–NIC round
+  trip (`card.host_rtt_p50_us`, CNTVCT in 10 ns bins): 0.935 µs in all 3 reps (mean 0.942–0.947 µs) vs 1.255 µs with
+  stock polling in the same session → "back under a microsecond", shown "0.935 µs" (single host: 0.897 µs, F-RTT).
+  End to end at mercury: 5.285 µs (5.285 / 5.285 / 5.295) → "5.29 µs", down from MRV-133's 5.955 µs; the same
+  session's stock polling gave 5.545 µs, so 0.26 µs of that drop is the peek itself and the rest differs between
+  sessions [inference]. Row 3 is drawn as 4.35 µs (= 5.285 − 0.935) + 0.935 µs; by subtraction with the same
+  session's echo (4.315 µs) the host–NIC part is 0.97 µs, also under 1 µs.
+  Exploratory arm `--cqe-direct` (`exploratory: true` in the log; skips the `LDADDA` on a hit too): 4.755 µs end to
+  end (4.755 / 4.755 / 4.765), host–NIC 0.935 µs → "four point seven six in a controlled exploration", shown in a
+  dashed "EXPLORATORY · NO LDADDA" tag. MRV-161 lists four open risks (visibility order of multi-segment packets, a
+  deadlock on zero-segment error packets, blindness to `CQ_ERR`, replay of dirty slots), tracked in MRV-170, so it is
+  not claimed as a result.
 - **F-1CORE** (MRV-155 phase 2, `runs_phase2.jsonl`, measured at mercury's PHY, strictly 1 host core): 64 B UDP payloads
   (110 B L2) 99.764 Gbps / 95.93 Mpps vs best SDP (`ism_enable=1`) 52.62 Gbps / 50.60 Mpps; bare 64 B frames
   99.23 Mpps vs SDP 50.27 Mpps (1.97×), at the card's default TX ceiling 99.77 Mpps (`s0_raw64`). MRV-163 (3 reps, lost =
@@ -129,7 +155,8 @@ any claim that we beat CC-NIC's emulated numbers.
 - **F-E2E-SIZES** (MRV-133 `part1_decomp`, same session as F-E2E, W=1, 3 reps each, all verified, lost = torn = 0;
   median of the per-rep p50): SDP vs DirectPush 64 B 10.205 vs 5.955 µs, 256 B 10.375 vs 6.615, 1 KiB 10.945 vs 9.835,
   4 KiB 15.105 vs 11.935 µs (card-only echo 4.275 / 5.015 / 5.445 / 7.575 µs). Newer sessions (MRV-152/154/161) ran
-  DirectPush only (5.2–6.0 µs p50 at 64 B, session-dependent), so MRV-133 stays the latest same-session pair.
+  DirectPush only (5.2–6.0 µs p50 at 64 B, session-dependent), so MRV-133 stays the latest same-session pair; C10 uses
+  MRV-161 only for the echo floor and the host–NIC part (F-E2E-FLOOR, F-E2E-PEEK), shown as a later run.
 - **F-E2E-LOAD** (MRV-133 `part3_openloop`, 64 B Poisson, 3 reps each, verified): p99 vs offered load, SDP / DirectPush:
   0.5 M/s 14.315 / 7.825 µs, 1.0 M/s 16.415 / 9.205, 1.5 M/s 20.05 / 11.105, 2.0 M/s 26.25 / 12.615, 2.5 M/s 29.05 /
   16.395; SDP 2.75 M/s 36.05; DirectPush 3.0 M/s 19.095, 3.5 M/s 22.55 µs. Said: at 2 M/s, 12.6 vs 26.3 µs.

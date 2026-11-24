@@ -1,6 +1,6 @@
 # CC-NIC Does Not Need Cache Coherence — Narration Script (`CcnicPaperStory`)
 
-Total: **11 scenes**, **79 cues**, **14.17 min** (850.0 s).
+Total: **11 scenes**, **81 cues**, **14.60 min** (876.1 s).
 
 ## Build
 
@@ -31,8 +31,10 @@ One argument, told as a chain of questions (each chapter answers the question th
    host credits (p99 44.5 -> 7.0 us); bulk payloads go by the NIC's own DMA (one fence per message; payload, then
    completion, kept in order by PCIe) with separate credit windows; the NIC,
    being the writer, keeps receive bursts off the host (-98.9% host DRAM traffic).
-5. **End to end** (C10). Over a real 100GbE link the gain survives at every size and under load (64 B: 10.21 -> 5.96 us;
-   p99 at 2 M/s: 26.3 -> 12.6 us), and one host core fills the link.
+5. **End to end** (C10). Over a real 100GbE link the gain survives (64 B: 10.21 -> 5.96 us). The card echoing alone takes
+   3.8-4.3 us, the floor of cable and Ethernet engines; with a cached CQE peek instead of empty polls (a later run), the
+   host-NIC part is back under 1 us (0.935 us) and the round trip is 5.29 us (4.76 us in a controlled exploration). The
+   gain holds at every size and under load (p99 at 2 M/s: 26.3 -> 12.6 us), and one host core fills the link.
 6. **Takeaway** (C11). The speedup is in the hand-over; what coherence is still for; related work; next step.
 
 ## Scenes
@@ -48,7 +50,7 @@ One argument, told as a chain of questions (each chapter answers the question th
 | `C07` | Real hardware pushes back | 7 | 78.8 s | Measured: 64 B messages · open and closed loop · IOMMU on |
 | `C08` | Big messages: let the NIC move them | 8 | 97.7 s | Measured: 1 host core + 1 NIC core · 64 B – 4 KiB messages |
 | `C09` | Bursts: keep the backlog on the NIC | 6 | 56.9 s | Measured: 64 B bursts at 100 M/s · 1 host core + 1 NIC core |
-| `C10` | End to end over 100GbE | 8 | 94.5 s | Measured: mercury (ConnectX-5) ⇄ 3 m 100GbE ⇄ CN106 ⇄ saturn |
+| `C10` | End to end over 100GbE | 10 | 120.7 s | Measured: mercury (ConnectX-5) ⇄ 3 m 100GbE ⇄ CN106 ⇄ saturn |
 | `C11` | Takeaway | 7 | 73.7 s | — |
 
 ---
@@ -215,7 +217,7 @@ One argument, told as a chain of questions (each chapter answers the question th
   - *Spoken*: Bursts up to thirty-two megabytes fit entirely in the card's forty-eight megabyte cache, and touch no D RAM at all. Larger bursts land in the card's own D RAM, not the host's.
 - **[49.71–55.51s]** (`F-BURST`) With no burst at all, the extra bookkeeping costs just **6 ns** per round trip.
   - *Spoken*: And when there is no burst, the extra credit bookkeeping costs only six nanoseconds per round trip.
-## C10: End to end over 100GbE (94.5 s)
+## C10: End to end over 100GbE (120.7 s)
 
 *Source: `Measured: mercury (ConnectX-5) ⇄ 3 m 100GbE ⇄ CN106 ⇄ saturn`*
 
@@ -227,13 +229,17 @@ One argument, told as a chain of questions (each chapter answers the question th
   - *Spoken*: For sixty-four byte requests, the round trip drops from ten point two one microseconds with the standard interface to five point nine six with DirectPush. That saves four and a quarter microseconds, forty-two percent, with the wire included.
 - **[34.13–44.51s]** (`F-E2E`) About **4.3 µs** of that is cable and Ethernet hardware. The host–NIC part itself fell from **5.9 µs to 1.7 µs**.
   - *Spoken*: About four point three microseconds of that is the fixed cost of the cable and the Ethernet hardware. The host to nick part itself fell from five point nine to one point seven microseconds.
-- **[44.86–56.00s]** (`F-E2E-SIZES`) The gain holds at every size: **10.4 → 6.6 µs** at 256 B, **15.1 → 11.9 µs** at 4 KiB.
+- **[44.86–54.40s]** (`F-E2E-FLOOR`) Echoed by the card alone, with no host, a round trip still takes **3.8–4.3 µs**: the floor of cable and Ethernet engines.
+  - *Spoken*: Echoing on the card alone, with no host, a round trip still takes three point eight to four point three microseconds: the floor of the cable and the Ethernet engines.
+- **[54.75–70.67s]** (`F-E2E-PEEK`) With a cached CQE peek instead of empty polls, the host–NIC part is back under 1 µs: **0.935 µs**. Round trip: **5.29 µs**.
+  - *Spoken*: With a later fix, the card peeks at a cached completion entry instead of slow empty polling. The host to nick part is back under a microsecond, zero point nine three five, and the round trip is down to five point two nine, or four point seven six in a controlled exploration.
+- **[71.02–82.16s]** (`F-E2E-SIZES`) The gain holds at every size: **10.4 → 6.6 µs** at 256 B, **15.1 → 11.9 µs** at 4 KiB.
   - *Spoken*: The gain holds at every message size: from ten point four to six point six microseconds at two hundred fifty-six bytes, and from fifteen point one to eleven point nine at four kilobytes.
-- **[56.35–68.37s]** (`F-E2E-LOAD`) Under load, the tail stays low: at **2 M requests/s**, the 64 B p99 is **12.6 µs** instead of **26.3 µs**.
+- **[82.51–94.53s]** (`F-E2E-LOAD`) Under load, the tail stays low: at **2 M requests/s**, the 64 B p99 is **12.6 µs** instead of **26.3 µs**.
   - *Spoken*: It holds under load, too. At two million requests per second, the ninety-ninth percentile latency for sixty-four byte requests is twelve point six microseconds, instead of twenty-six point three.
-- **[68.72–80.06s]** (`F-1CORE`) Can **one host core** fill a 100GbE link with small packets? With 64-byte UDP payloads: **99.76 Gbps**, line rate.
+- **[94.88–106.22s]** (`F-1CORE`) Can **one host core** fill a 100GbE link with small packets? With 64-byte UDP payloads: **99.76 Gbps**, line rate.
   - *Spoken*: And can a single host core keep a hundred gigabit link full of small packets? With sixty-four byte U D P payloads, one core drives ninety-nine point seven six gigabits per second: line rate.
-- **[80.41–93.11s]** (`F-1CORE`) The best-tuned standard interface gets about **half** of that. Bare 64 B frames hit the NIC's own ~100 Mpps send limit.
+- **[106.57–119.27s]** (`F-1CORE`) The best-tuned standard interface gets about **half** of that. Bare 64 B frames hit the NIC's own ~100 Mpps send limit.
   - *Spoken*: The best-tuned standard interface reaches only about half of that on one core. And for bare sixty-four byte frames, the limit becomes the card's own transmit path, at about a hundred million packets per second, not the host.
 ## C11: Takeaway (73.7 s)
 
