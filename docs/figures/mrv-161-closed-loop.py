@@ -121,25 +121,40 @@ def main():
                 color=color if pol != "default" else "#334155",
             )
 
+    w2_b4_99_vals = stats(rows, "direct_bar4_first_64_w2", lambda r: r["client"]["tot_p99_us"])[3]
+    w2_pk_99_vals = stats(rows, "direct_cqe_peek_64_w2", lambda r: r["client"]["tot_p99_us"])[3]
+    w2_d99 = [p - b for p, b in zip(w2_pk_99_vals, w2_b4_99_vals)]
+    w2_b4_99 = stats(rows, "direct_bar4_first_64_w2", lambda r: r["client"]["tot_p99_us"])[0]
     w4_def_99 = stats(rows, "direct_default_64_w4", lambda r: r["client"]["tot_p99_us"])[0]
     w4_b4_99 = stats(rows, "direct_bar4_first_64_w4", lambda r: r["client"]["tot_p99_us"])[0]
     w4_pk_99 = stats(rows, "direct_cqe_peek_64_w4", lambda r: r["client"]["tot_p99_us"])[0]
     ax.annotate(
-        f"--bar4-first 盲窗退化\nW=4 p99 +{w4_b4_99 - w4_def_99:.2f} µs vs default\n--cqe-peek 省 {w4_b4_99 - w4_pk_99:.2f} µs",
+        f"W=2 双包反相未撞窗\n--bar4-first p99 占优 {min(w2_d99):.2f}–{max(w2_d99):.2f} µs",
+        xy=(1.0, w2_b4_99 + 0.56),
+        xytext=(-0.38, 8.90),
+        fontsize=8.1,
+        fontweight="bold",
+        color="#475569",
+        bbox=dict(boxstyle="round,pad=0.32", facecolor="#f8fafc", edgecolor="#94a3b8", lw=1.0),
+        arrowprops=dict(arrowstyle="->", color="#64748b", lw=1.2),
+        zorder=6,
+    )
+    ax.annotate(
+        f"盲窗退化自 W=4 爆发\nW=4 p99 +{w4_b4_99 - w4_def_99:.2f} µs vs default\n--cqe-peek 省 {w4_b4_99 - w4_pk_99:.2f} µs",
         xy=(2.0, w4_b4_99 + 0.52),
-        xytext=(0.35, 9.15),
-        fontsize=8.6,
+        xytext=(1.68, 9.75),
+        fontsize=8.3,
         fontweight="bold",
         color="#92400e",
-        bbox=dict(boxstyle="round,pad=0.35", facecolor="#fffbeb", edgecolor="#d97706", lw=1.0),
+        bbox=dict(boxstyle="round,pad=0.33", facecolor="#fffbeb", edgecolor="#d97706", lw=1.0),
         arrowprops=dict(arrowstyle="->", color="#d97706", lw=1.3),
         zorder=6,
     )
     ax.set_xticks(x_b)
     ax.set_xticklabels([f"W={w}" for w in ws_b], fontsize=10)
     ax.set_ylabel("端到端 mercury 延迟 (µs)（柱顶=p99，白横线=p50）", fontsize=9.8)
-    ax.set_ylim(0, 11.1)
-    ax.set_title("B. 64 B 端到端 p99 与 p50（消除 W=4/8 盲窗尾延迟飙升）", fontsize=11, fontweight="bold", pad=8)
+    ax.set_ylim(0, 12.1)
+    ax.set_title("B. 64 B 端到端 p99 与 p50（W=2 反相未撞窗，W=4/8 根除盲窗飙升）", fontsize=10.6, fontweight="bold", pad=8)
 
     # ------------------------------------------------------------------
     # Panel C: 256 B control (W = 1, 4) end-to-end p50 and p99

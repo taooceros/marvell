@@ -60,8 +60,8 @@ def main():
 
     panels = [
         (axes[0], "tot_p50_us", "A. 端到端中位延迟 p50", "mercury 端到端 p50 (µs)", 8.5),
-        (axes[1], "tot_p95_us", "B. 端到端尾延迟 p95", "mercury 端到端 p95 (µs)", 11.6),
-        (axes[2], "tot_p99_us", "C. 端到端高尾延迟 p99", "mercury 端到端 p99 (µs)", 15.6),
+        (axes[1], "tot_p95_us", "B. 端到端尾延迟 p95", "mercury 端到端 p95 (µs)", 11.8),
+        (axes[2], "tot_p99_us", "C. 端到端高尾延迟 p99", "mercury 端到端 p99 (µs)", 17.2),
     ]
 
     x = np.arange(len(RATES))
@@ -105,19 +105,19 @@ def main():
 
     # Dynamic callouts computed directly from runs.jsonl
     p500_b4_act = stats(rows, "direct_bar4_first_64_p500k", lambda r: r["card"]["bar4_first_activations"])[0]
-    p500_tot_rpcs = stats(rows, "direct_bar4_first_64_p500k", lambda r: r["warmup"] + r["rounds"])[0]
-    p500_b4_pct = p500_b4_act / p500_tot_rpcs * 100.0
+    p500_meas_rpcs = stats(rows, "direct_bar4_first_64_p500k", lambda r: r["rounds"])[0]
+    p500_b4_pct = p500_b4_act / p500_meas_rpcs * 100.0
     p500_def_95 = stats(rows, "direct_default_64_p500k", lambda r: r["client"]["tot_p95_us"])[0]
     p500_b4_95 = stats(rows, "direct_bar4_first_64_p500k", lambda r: r["client"]["tot_p95_us"])[0]
     p500_pk_95 = stats(rows, "direct_cqe_peek_64_p500k", lambda r: r["client"]["tot_p95_us"])[0]
 
     axes[1].annotate(
-        f"0.5 M/s 盲窗触发 {p500_b4_pct:.1f}%\n"
+        f"0.5 M/s 测量期盲窗触发 {p500_b4_pct:.1f}%\n"
         f"--bar4-first p95 +{p500_b4_95 - p500_def_95:.2f} µs\n"
         f"--cqe-peek 最低 {p500_pk_95:.3f} µs",
         xy=(0.0, p500_b4_95 + 0.65),
-        xytext=(0.05, 9.60),
-        fontsize=8.4,
+        xytext=(0.02, 9.65),
+        fontsize=8.3,
         fontweight="bold",
         color="#92400e",
         bbox=dict(boxstyle="round,pad=0.32", facecolor="#fffbeb", edgecolor="#d97706", lw=1.0),
@@ -125,18 +125,32 @@ def main():
         zorder=6,
     )
 
+    p1000_b4_99, _, p1000_b4_hi, _ = stats(rows, "direct_bar4_first_64_p1000k", lambda r: r["client"]["tot_p99_us"])
+    axes[2].annotate(
+        "1.0 M/s p99 跨零重叠\n（非显著；仅 p50/p95 占优）",
+        xy=(1.02, p1000_b4_99 + p1000_b4_hi + 0.85),
+        xytext=(-0.38, 11.85),
+        fontsize=7.9,
+        fontweight="bold",
+        color="#475569",
+        bbox=dict(boxstyle="round,pad=0.30", facecolor="#f8fafc", edgecolor="#94a3b8", lw=1.0),
+        arrowprops=dict(arrowstyle="->", color="#64748b", lw=1.1, relpos=(0.95, 0.15)),
+        zorder=6,
+    )
+
     p1500_def_99, _, p1500_def_hi, _ = stats(rows, "direct_default_64_p1500k", lambda r: r["client"]["tot_p99_us"])
+    p1500_b4_99 = stats(rows, "direct_bar4_first_64_p1500k", lambda r: r["client"]["tot_p99_us"])[0]
     p1500_pk_99 = stats(rows, "direct_cqe_peek_64_p1500k", lambda r: r["client"]["tot_p99_us"])[0]
     axes[2].annotate(
-        f"1.5 M/s default 空轮询拖尾\n"
-        f"{p1500_def_99:.3f} → {p1500_pk_99:.3f} µs (\u2212{p1500_def_99 - p1500_pk_99:.2f} µs)",
-        xy=(1.74, p1500_def_99 + p1500_def_hi + 1.05),
-        xytext=(-0.22, 13.75),
-        fontsize=8.4,
+        f"1.5 M/s 较 default 降 {p1500_def_99 - p1500_pk_99:.2f} µs\n"
+        f"（与 --bar4-first 持平：{p1500_pk_99:.3f} vs {p1500_b4_99:.3f} µs）",
+        xy=(1.74, p1500_def_99 + p1500_def_hi + 0.85),
+        xytext=(-0.38, 15.05),
+        fontsize=8.0,
         fontweight="bold",
         color="#1d6fa5",
         bbox=dict(boxstyle="round,pad=0.32", facecolor="#f0f7fc", edgecolor="#1d6fa5", lw=1.0),
-        arrowprops=dict(arrowstyle="->", color="#1d6fa5", lw=1.2),
+        arrowprops=dict(arrowstyle="->", color="#1d6fa5", lw=1.2, relpos=(0.92, 0.0)),
         zorder=6,
     )
 

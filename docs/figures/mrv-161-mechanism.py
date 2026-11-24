@@ -172,15 +172,14 @@ def main():
     <text x="796" y="32" text-anchor="middle" class="f box-ta">清零 + cq_door</text>
 
     <text x="892" y="32" class="f big-acc">{peek_empty_ns:.2f} ns</text>
-    <text x="892" y="54" class="f chip-acc">W=1 {w1_card_peek:.3f} µs · W=4 {fmt_signed(peek_vs_b4_w4_p99, "{:.2f}")} µs</text>
+    <text x="892" y="54" class="f chip-acc">卡内 {w1_card_peek:.3f} µs · W=4 {fmt_signed(peek_vs_b4_w4_p99, "{:.2f}")} µs</text>
   </g>
 
   <!-- ROW 4: cqe-direct (EXPLORATORY) -->
   <rect x="16" y="340" width="1118" height="84" rx="8" fill="#ffffff" stroke="#1d6fa5" stroke-width="1.4" stroke-dasharray="6,4"/>
   <g transform="translate(0, 346)">
     <text x="28" y="30" class="f arm-acc">--cqe-direct</text>
-    <text x="28" y="50" class="f tag">探索臂</text>
-
+    <text x="28" y="50" class="f tag">探索臂（待验边界）</text>
     <rect x="192" y="8" width="116" height="38" rx="5" fill="#e8f1f8" stroke="#1d6fa5" stroke-width="1.4"/>
     <text x="250" y="32" text-anchor="middle" class="f box-ta">ldar {direct_empty_ns:.2f} ns</text>
     <line x1="308" y1="27" x2="334" y2="27" stroke="#1d6fa5" stroke-width="1.8" marker-end="url(#arr-a)"/>
@@ -197,7 +196,7 @@ def main():
     <text x="796" y="32" text-anchor="middle" class="f box-ta">清零 + cq_door</text>
 
     <text x="892" y="32" class="f big-acc">0 LDADDA</text>
-    <text x="892" y="54" class="f chip-acc">W=1 {w1_merc_dir:.3f} µs · W=8 {fmt_signed(dir_w8_pct, "{:.1f}")}%</text>
+    <text x="892" y="54" class="f chip-acc">端到端 {w1_merc_dir:.3f} µs · W=8 {fmt_signed(dir_w8_pct, "{:.1f}")}%</text>
   </g>
 </svg>
 '''

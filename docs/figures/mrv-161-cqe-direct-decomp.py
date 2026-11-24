@@ -41,8 +41,8 @@ def main():
     fig, axes = plt.subplots(2, 2, figsize=(14.6, 9.4))
     fig.suptitle(
         "MRV-161 硬件探针与探索臂 --cqe-direct（零 LDADDA）两段拆解\n"
-        "双机 100GbE · CN106 1C 2.0 GHz (scalar_enable=1) · 全零错（n=3 中位数，竖线为 min–max；--cqe-direct 为独立探索对照臂）",
-        fontsize=12.4,
+        "双机 100GbE · CN106 1C 2.0 GHz (scalar_enable=1) · 全零错（n=3 中位数，竖线为 min–max；--cqe-direct 仅单段小包探索，边界待 MRV-170 验）",
+        fontsize=12.0,
         fontweight="bold",
         y=0.985,
     )
@@ -146,9 +146,9 @@ def main():
         zorder=6,
     )
     ax.annotate(
-        f"两段累加 {d_dp_tot:+.0f} ns\n① 免空轮询 {d_dp_p1:+.0f} ns\n② 免命中 LDADDA {d_dp_p2:+.0f} ns",
+        f"两段累加 {d_dp_tot:+.0f} ns\n① 免空轮询净省 {d_dp_p1:+.0f} ns\n② 免命中 LDADDA {d_dp_p2:+.0f} ns",
         xy=(1.24, vals_b[(1, "cqe_direct")] + 0.48),
-        xytext=(0.74, 6.50),
+        xytext=(0.70, 6.50),
         fontsize=8.3,
         fontweight="bold",
         color="#0f766e",
@@ -236,18 +236,22 @@ def main():
     m_def_15 = stats(rows, "direct_default_64_p1500k", lambda r: r["client"]["tot_p50_us"])[0]
     m_dir_05 = stats(rows, "direct_cqe_direct_64_p500k", lambda r: r["client"]["tot_p50_us"])[0]
     m_dir_15 = stats(rows, "direct_cqe_direct_64_p1500k", lambda r: r["client"]["tot_p50_us"])[0]
-    dir_15_p99_max = max(stats(rows, "direct_cqe_direct_64_p1500k", lambda r: r["client"]["tot_p99_us"])[3])
+    dir_15_rep1 = [r for r in rows if r["cfg"] == "direct_cqe_direct_64_p1500k" and r["rep"] == 1][0]
+    dir_15_p99_rep1 = dir_15_rep1["client"]["tot_p99_us"]
+    dir_15_p999_rep1 = dir_15_rep1["client"]["tot_p999_us"]
+    dir_15_card_mean_rep1 = dir_15_rep1["card"]["host_rtt_mean_us"]
     ax.annotate(
         f"1.5 M/s 比 default 低 {m_def_15 - m_dir_15:.2f} µs\n"
-        f"（注：rep 1 单次端到端离群点 p99={dir_15_p99_max:.1f} µs，\n  原因未定，卡内 p99 正常）",
-        xy=(2.24, m_dir_15 + 0.68),
-        xytext=(2.46, 7.85),
+        f"（注：rep 1 离群 p99={dir_15_p99_rep1:.1f} µs 溯源为\n"
+        f"  mercury cpu0 ~{dir_15_p999_rep1:.0f} µs 抢占；卡内 mean={dir_15_card_mean_rep1:.2f} µs 正常）",
+        xy=(2.24, m_dir_15 + 0.56),
+        xytext=(2.46, 7.80),
         ha="right",
-        fontsize=8.1,
+        fontsize=7.9,
         color="#0f766e",
         fontweight="bold",
         bbox=dict(boxstyle="round,pad=0.32", facecolor="#f0fdfa", edgecolor="#0f766e", lw=1.0),
-        arrowprops=dict(arrowstyle="->", color="#0f766e", lw=1.2, connectionstyle="arc3,rad=-0.12"),
+        arrowprops=dict(arrowstyle="->", color="#0f766e", lw=1.2, relpos=(0.90, 0.0)),
         zorder=6,
     )
     ax.set_xticks(x_d)
