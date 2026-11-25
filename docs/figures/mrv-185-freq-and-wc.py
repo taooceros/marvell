@@ -1,6 +1,7 @@
-"""MRV-185 Figure 2 (Final): Socket 1 Uncore 1/f_uncore linear regression (Part 2),
-cpu40 Core 1/f_core linear regression (Part 3), and BAR4 WC (`resource4_wc`) vs UC read
-matrix (Part 4), with opus-5-5 clock-domain & CHA-slope precision wording.
+"""MRV-185 Figure 2 (Step 3 Final): Socket 1 Uncore 1/f_uncore linear regression (Part 2),
+cpu40 Core 1/f_core linear regression (Part 3, homogeneous net_mean_sub_floor_mean_ns
+eliminating 2-tick floor_p50 quantization tilt), and BAR4 WC (`resource4_wc`) vs UC read
+matrix (Part 4), with in-loop IRP1/IIO1 clock (clk/wall_s = 1.000-1.002 GHz) precision.
 
 All numbers are read directly from logs/mrv185-2026-11-24/runs.jsonl
 (n=3 interleaved, 0 mismatches, 0 page faults, 100.00% non-multiplexed Host + Card PMUs).
@@ -77,39 +78,54 @@ def main():
     u_freqs = [800000, 1100000, 1400000, 1800000, 2200000]
     x_grid = np.linspace(0.0, 1.32, 100)
 
-    iio_clks = []
+    iio_diluted = []
+    iio_p2_group_meds = []
     slopes = []
+    p2_out_fits = {}
     for arm, name, col, mk in u_specs:
-        xs, ys = [], []
+        xs, ys, y_out = [], [], []
         for fk in u_freqs:
-            for r in by_sl[("part2_uncore", f"u{fk}/{arm}")]:
+            rs = by_sl[("part2_uncore", f"u{fk}/{arm}")]
+            iio_p2_group_meds.append(med([(r["iio1"]["clk"] / r["wall_s"]) / 1e9 for r in rs]))
+            for r in rs:
                 xs.append(1.0 / r["mesh_ghz"])
-                ys.append(r["net_ns"]["mean"])
-                iio_clks.append(r["iio1"]["active_ghz"])
+                ys.append(r["net_mean_sub_floor_mean_ns"])
+                y_out.append(r["net_mean_sub_floor_mean_ns"] - r["cha"]["tor_residency_ns"])
+                iio_diluted.append(r["iio1"]["active_ghz"])
         sl, it, r2, rmse = ols(xs, ys)
+        p2_out_fits[arm] = ols(xs, y_out)
         slopes.append(sl)
         ax_u.scatter(xs, ys, color=col, marker=mk, s=28, alpha=0.85, zorder=5)
         ax_u.plot(x_grid, it + sl * x_grid, color=col, linewidth=1.8, linestyle="-",
                   label=f"{name}：{fmt1(it)} + {fmt1(sl)} / f  (R²={r2:.4f})")
         ax_u.plot(0.0, it, marker=mk, markersize=6, color=col, markeredgecolor="white", zorder=6)
-        ax_u.text(0.025, it + 10, f"{fmt1(it)} ns", fontsize=8.0, color=col, fontweight="bold", va="bottom")
+        ax_u.text(0.018, it + 16, f"{fmt1(it)} ns", fontsize=8.0, color=col, fontweight="bold", va="bottom")
+
+    iio_true_lo, iio_true_hi = min(iio_p2_group_meds), max(iio_p2_group_meds)
+    iio_true_med = med(iio_p2_group_meds)
+    iio_ge1_lo = min(v for v in iio_p2_group_meds if v >= 1.0)
+    n_ge1 = sum(1 for v in iio_p2_group_meds if v >= 1.0)
+    iio_dil_lo, iio_dil_hi = min(iio_diluted), max(iio_diluted)
 
     ax_u.set_xlim(-0.04, 1.35)
     ax_u.set_ylim(80, 910)
     ax_u.axvline(0.0, color="#64748b", linestyle="--", linewidth=0.9, alpha=0.7)
     ax_u.axvline(1.0 / 2.2, color="#94a3b8", linestyle=":", linewidth=0.9)
-    ax_u.text(1.0 / 2.2 + 0.015, 95, "2.2 GHz\n(基准)", fontsize=7.8, color="#475569")
+    ax_u.text(1.0 / 2.2 - 0.02, 95, "2.2 GHz\n(基准)", fontsize=7.8, color="#475569", ha="right", va="bottom")
 
-    iio_lo, iio_hi = min(iio_clks), max(iio_clks)
     ax_u.text(
-        0.44, 0.04,
-        f"实测时钟域验证（印证独立 IO 时钟域）：\n• CHA & M2PCIe₁ 随动：0.800 → 2.200 GHz\n• IRP₁ & IIO₁ 锁定独立域：{iio_lo:.2f}–{iio_hi:.2f} GHz\n→ 斜率 {fmt1(min(slopes))}–{fmt1(max(slopes))} cyc = Mesh 域（小差异属 CHA 距离）\n→ 截距含核 + 1.0 GHz IIO/RP + PCIe/卡侧固定 ns",
-        transform=ax_u.transAxes, fontsize=7.8, va="bottom", ha="left",
-        bbox=dict(boxstyle="round,pad=0.45", facecolor="#f8fafc", edgecolor="#cbd5e1", linewidth=0.9),
+        0.41, 0.04,
+        f"实测时钟域验证（Part 2 20 档环内 clk / wall_s）：\n"
+        f"• CHA & M2PCIe₁ 随动：0.800 → 2.200 GHz\n"
+        f"• IRP₁ & IIO₁ 恒定：{iio_ge1_lo:.4f}–{iio_true_hi:.4f} GHz（{n_ge1}/{len(iio_p2_group_meds)} 档，\n"
+        f"  仅 1 档 {iio_true_lo:.4f}G；active_ghz {iio_dil_lo:.2f}–{iio_dil_hi:.2f}G 系尾端门控稀释）\n"
+        f"→ 斜率 {fmt1(min(slopes))}–{fmt1(max(slopes))} cyc = Mesh 域（小差异属 CHA 距离）\n"
+        f"→ 截距含核 + 1.001G IIO/RP + PCIe/卡侧固定 ns",
+        transform=ax_u.transAxes, fontsize=7.1, va="bottom", ha="left", multialignment="left",
+        bbox=dict(boxstyle="round,pad=0.42", facecolor="#f8fafc", edgecolor="#cbd5e1", linewidth=0.9),
     )
-
     ax_u.set_xlabel("Socket 1 Uncore 周期 1 / f_uncore（ns/cyc，实测 uncore_cha_0 时钟：0.8 / 1.1 / 1.4 / 1.8 / 2.2 GHz）", fontsize=8.8)
-    ax_u.set_ylabel("单次串行 MMIO Read 净均值延迟（ns，cpu40 = 3.90 GHz）", fontsize=9.0)
+    ax_u.set_ylabel("单次串行 MMIO Read 同口径净均值（ns，raw_mean − floor_mean，cpu40 = 3.90 GHz）", fontsize=8.6)
     ax_u.set_title("(a) Part 2：1 / f_uncore 线性回归（斜率 = Host Mesh 拍数，截距分离非 Mesh 固定段）", fontsize=10.0, fontweight="bold", pad=10)
     ax_u.legend(loc="upper left", fontsize=7.6, frameon=True, facecolor="white", framealpha=0.95)
 
@@ -123,6 +139,8 @@ def main():
     c_freqs = [1500000, 2200000, 3000000, 3900000]
     xc_grid = np.linspace(0.0, 0.72, 100)
 
+    core_slopes = []
+    p23_diffs = []
     for arm, name, col, mk in c_specs:
         xs, ys = [], []
         for fk in c_freqs:
@@ -131,8 +149,13 @@ def main():
                 if arm == "timer-floor":
                     ys.append(r["raw_ns"]["mean"])
                 else:
-                    ys.append(r["net_ns"]["mean"] - r["cha"]["tor_residency_ns"])
+                    ys.append(r["net_mean_sub_floor_mean_ns"] - r["cha"]["tor_residency_ns"])
         sl, it, r2, rmse = ols(xs, ys)
+        if arm != "timer-floor":
+            core_slopes.append(sl)
+            p2_sl, p2_it, _, _ = p2_out_fits[arm]
+            p23_diffs.append(abs(sl / 3.9 - p2_it))
+            p23_diffs.append(abs(p2_sl / 2.2 - it))
         ls = "--" if arm == "timer-floor" else "-"
         ax_c.scatter(xs, ys, color=col, marker=mk, s=26, alpha=0.88, zorder=5)
         ax_c.plot(xc_grid, it + sl * xc_grid, color=col, linewidth=1.7, linestyle=ls,
@@ -144,10 +167,13 @@ def main():
     ax_c.set_xlim(-0.02, 0.73)
     ax_c.set_ylim(-1, 47)
     ax_c.set_xlabel("cpu40 核周期 1 / f_core（ns/cyc，实测 MSR APERF/MPERF：1.5 / 2.2 / 3.0 / 3.9 GHz）", fontsize=8.5)
-    ax_c.set_ylabel("TOR 外余量 / 空括号底噪（ns）", fontsize=8.8)
-    ax_c.set_title("(b) Part 3：1 / f_core 劈开 TOR 外余量（43–44 核周期 ≈ 11 ns + 10–12 ns Mesh）", fontsize=9.8, fontweight="bold", pad=8)
-    ax_c.legend(loc="upper left", fontsize=7.4, frameon=True, facecolor="white", framealpha=0.95)
-
+    ax_c.set_ylabel("TOR 外余量 (同口径 floor_mean) / 底噪（ns）", fontsize=8.3)
+    ax_c.set_title(
+        f"(b) Part 3：1/f_core 同口径扣 floor_mean（{fmt1(min(core_slopes))}–{fmt1(max(core_slopes))} 核周期 = "
+        f"{fmt1(min(core_slopes)/3.9)}–{fmt1(max(core_slopes)/3.9)} ns，与 Part 2 闭合 ≤ {max(p23_diffs):.2f} ns）",
+        fontsize=8.6, fontweight="bold", pad=8,
+    )
+    ax_c.legend(loc="upper left", fontsize=7.3, frameon=True, facecolor="white", framealpha=0.95)
     # ==================== Panel (c): Part 4 BAR4 WC (`resource4_wc`) vs UC Read Matrix ====================
     wc_order = [
         ("wc-8b", "WC 8 B (mov qword)", "#0284c7"),
@@ -174,8 +200,7 @@ def main():
     ax_wc.set_yticklabels([x[1] for x in wc_order], fontsize=8.0)
     ax_wc.set_xlim(0, 3680)
     ax_wc.set_xlabel("单次操作净 p50 延迟（ns，BAR4 L3 4K 走步，cpu40 @ 3.90 GHz / Mesh 2.20 GHz）", fontsize=8.5)
-    ax_wc.set_title("(c) Part 4：resource4_wc 被驱动 ioremap(UC-) 降级 → 4×16B 仍 4 TLP；1×64B zmm 单 TLP 快 4.0×", fontsize=9.1, fontweight="bold", pad=8)
-
+    ax_wc.set_title("(c) Part 4：resource4_wc 被驱动 ioremap(UC-) 静默降级 → 4×16B 仍 4 TLP；1×64B zmm 单 TLP 快 4.0×", fontsize=8.8, fontweight="bold", pad=8)
     fig.suptitle(
         "MRV-185 频率回归交叉验算（1 / f_uncore & 1 / f_core）与 BAR4 resource4_wc 流式读实测（n=3 交错，零错，100% 非复用）",
         fontsize=12.0, fontweight="bold", y=0.985,

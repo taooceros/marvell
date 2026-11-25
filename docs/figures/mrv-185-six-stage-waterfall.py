@@ -1,6 +1,8 @@
-"""MRV-185 Figure 1 (Final): Complete 6-stage nanosecond MMIO Read waterfall (cracking the
-495 ns black box with opus-5-5 VF0-RP bound wording), triple cross-verification closure,
-and 100.00% non-multiplexed M2PCIe_1 / IRP_1 pass-through residency calibration (Part 1 + Trick 2).
+"""MRV-185 Figure 1 (Step 3 Final): Complete 6-stage nanosecond MMIO Read waterfall
+(homogeneous raw_mean - floor_mean, warm-IIO1 vs isolated VF0-RP bound, de-confounded
+CfgRd0 differential), triple cross-verification closure, and 100.00% non-multiplexed
+M2PCIe_1 (2x counter scale -> 1.00 cyc = 0.45 ns) / IRP_1 (1.00 cyc = 1.00 ns @ 1.001 GHz)
+pass-through residency calibration (Part 1 + Trick 2).
 
 All numbers are computed directly from logs/mrv185-2026-11-24/runs.jsonl and runs_tricks.jsonl
 (n=3 interleaved, 0 mismatches, 0 page faults, 100.00% non-multiplexed Host + Card PMUs).
@@ -67,9 +69,10 @@ def main():
         rs = by_sl[("part1_stage", f"cpu40/{arm}")]
         return {
             "p50": med([x["net_ns"]["p50"] for x in rs]),
-            "mean": med([x["net_ns"]["mean"] for x in rs]),
+            "mean": med([x["net_mean_sub_floor_mean_ns"] for x in rs]),
+            "raw_mean": med([x["raw_ns"]["mean"] for x in rs]),
             "tor": med([x["cha"]["tor_residency_ns"] for x in rs]),
-            "out": med([x["net_ns"]["mean"] - x["cha"]["tor_residency_ns"] for x in rs]),
+            "out": med([x["net_mean_sub_floor_mean_ns"] - x["cha"]["tor_residency_ns"] for x in rs]),
         }
 
     rp4 = st("rp-bar0-4b")
@@ -80,43 +83,65 @@ def main():
     ddr_8b = st("bar4-ddr5-walk-8b")
     ddr_64b = st("bar4-ddr5-walk-64b")
 
+    floor_mean_39 = med([x["floor_ns"]["mean"] for x in by_sl[("part1_stage", "cpu40/rp-bar0-8b")]])
+    floor_p50_39 = med([x["floor_ns"]["p50"] for x in by_sl[("part1_stage", "cpu40/rp-bar0-8b")]])
+
     # Trick 1A same-CHA BAR4 control (CHA 20 = VF0)
     t1a_vf0_mean = med([x["net_ns"]["mean"] for x in by_tr[("trick1a_same_cha", "vf0-bar0-8b")]])
     t1a_cha20_mean = med([x["net_ns"]["mean"] for x in by_tr[("trick1a_same_cha", "bar4-l3-cha20-8b")]])
     same_cha20_delta = t1a_cha20_mean - t1a_vf0_mean
 
-    # Trick 3 de-confounded CfgRd0 link + PEM0 bound
-    t3_rp0 = med([x["net_ns"]["mean"] for x in by_tr[("trick3_cfg", "0000:98:01.0/off0")]])
-    t3_rp64 = med([x["net_ns"]["mean"] for x in by_tr[("trick3_cfg", "0000:98:01.0/off64")]])
-    t3_pf0 = med([x["net_ns"]["mean"] for x in by_tr[("trick3_cfg", "0000:99:00.0/off0")]])
-    t3_pf64 = med([x["net_ns"]["mean"] for x in by_tr[("trick3_cfg", "0000:99:00.0/off64")]])
-    cfg_clean_delta = (t3_pf0 - t3_pf64) - (t3_rp0 - t3_rp64)
+    # Trick 1C warm-IIO1 VF0 - RP structural bound (same-condition raw_mean diff & p50 diff)
+    t1c_vf0_k1 = by_tr[("trick1c_interfere", "vf0-aggr-rp-k1")]
+    vf0_warm_p50_delta = med([x["net_ns"]["p50"] for x in t1c_vf0_k1]) - rp8["p50"]
+    vf0_warm_mean_delta = med([x["raw_ns"]["mean"] for x in t1c_vf0_k1]) - rp8["raw_mean"]
 
-    # Part 2 OLS regressions (1/f_uncore) across 5 freqs x 3 reps = 15 points per endpoint
+    # Trick 3 de-confounded CfgRd0 pure-hardware differential (common pci_conf1_read lock cancels in ΔH)
+    t3_rp0_m = med([x["net_ns"]["mean"] for x in by_tr[("trick3_cfg", "0000:98:01.0/off0")]])
+    t3_rp64_m = med([x["net_ns"]["mean"] for x in by_tr[("trick3_cfg", "0000:98:01.0/off64")]])
+    t3_pf0_m = med([x["net_ns"]["mean"] for x in by_tr[("trick3_cfg", "0000:99:00.0/off0")]])
+    t3_pf64_m = med([x["net_ns"]["mean"] for x in by_tr[("trick3_cfg", "0000:99:00.0/off64")]])
+    cfg_clean_delta_mean = (t3_pf0_m - t3_pf64_m) - (t3_rp0_m - t3_rp64_m)
+    t3_rp0_p = med([x["net_ns"]["p50"] for x in by_tr[("trick3_cfg", "0000:98:01.0/off0")]])
+    t3_rp64_p = med([x["net_ns"]["p50"] for x in by_tr[("trick3_cfg", "0000:98:01.0/off64")]])
+    t3_pf0_p = med([x["net_ns"]["p50"] for x in by_tr[("trick3_cfg", "0000:99:00.0/off0")]])
+    t3_pf64_p = med([x["net_ns"]["p50"] for x in by_tr[("trick3_cfg", "0000:99:00.0/off64")]])
+    cfg_clean_delta_p50 = (t3_pf0_p - t3_pf64_p) - (t3_rp0_p - t3_rp64_p)
+
+    # Part 2 OLS regressions (1/f_uncore, homogeneous net_mean_sub_floor_mean_ns) across 5 freqs x 3 reps
     p2_fits = {}
     for arm in ("rp-bar0-8b", "vf0-bar0-8b", "bar4-l3-walk-8b", "bar4-ddr5-walk-8b"):
         xs, y_mean, y_tor, y_out = [], [], [], []
         for fk in (800000, 1100000, 1400000, 1800000, 2200000):
             for r in by_sl[("part2_uncore", f"u{fk}/{arm}")]:
                 xs.append(1.0 / r["mesh_ghz"])
-                y_mean.append(r["net_ns"]["mean"])
+                y_mean.append(r["net_mean_sub_floor_mean_ns"])
                 y_tor.append(r["cha"]["tor_residency_ns"])
-                y_out.append(r["net_ns"]["mean"] - r["cha"]["tor_residency_ns"])
+                y_out.append(r["net_mean_sub_floor_mean_ns"] - r["cha"]["tor_residency_ns"])
         p2_fits[arm] = {
             "mean": ols(xs, y_mean),
             "tor": ols(xs, y_tor),
             "out": ols(xs, y_out),
         }
 
-    # Part 3 OLS regressions (1/f_core) across 4 freqs x 3 reps = 12 points per endpoint
+    # Part 3 OLS regressions (1/f_core, homogeneous net_mean_sub_floor_mean_ns) across 4 freqs x 3 reps
     p3_fits = {}
     for arm in ("rp-bar0-8b", "vf0-bar0-8b", "bar4-l3-walk-8b"):
         xs, y_out = [], []
         for fk in (1500000, 2200000, 3000000, 3900000):
             for r in by_sl[("part3_core", f"c{fk}/{arm}")]:
                 xs.append(1.0 / r["aperf_mperf_ghz"])
-                y_out.append(r["net_ns"]["mean"] - r["cha"]["tor_residency_ns"])
+                y_out.append(r["net_mean_sub_floor_mean_ns"] - r["cha"]["tor_residency_ns"])
         p3_fits[arm] = ols(xs, y_out)
+
+    # Max two-way Part 2 <-> Part 3 closure across all 3 endpoints
+    max_p23_closure = max(
+        max(
+            abs(p3_fits[arm][0] / 3.9 - p2_fits[arm]["out"][1]),
+            abs(p2_fits[arm]["out"][0] / 2.2 - p3_fits[arm][1]),
+        )
+        for arm in ("rp-bar0-8b", "vf0-bar0-8b", "bar4-l3-walk-8b")
+    )
 
     # Homogeneous additive 6-stage breakdown (8 B, cpu40 @ 3.9/2.2 GHz)
     s1_core_rp = p3_fits["rp-bar0-8b"][0] / 3.9
@@ -126,7 +151,6 @@ def main():
     s5_link_sdp_bound = vf0["mean"] - rp8["mean"]
     s6a_iobn_l3 = l3_8b["mean"] - vf0["mean"]
     s6b_ddr5 = ddr_8b["mean"] - l3_8b["mean"]
-
     # ---- Figure Layout ----
     fig = plt.figure(figsize=(18.0, 9.4))
     gs = fig.add_gridspec(
@@ -181,7 +205,7 @@ def main():
             vf0_end,
             vf0["p50"],
             f"mean {fmt1(vf0_end)} / p50 {fmt1(vf0['p50'])} ns",
-            [(vf0["out"] + vf0["tor"] / 2, f"旧未拆分块 {fmt1(vf0['tor'])} ns", "white", 9.0)],
+            [(vf0["out"] + vf0["tor"] / 2, f"旧未拆分块 {fmt1(vf0['tor'])} ns", "white", 8.8)],
         ),
         (
             "端点 A：片上 RP BAR0\n98:01.0 resource0 4 B\n（片上 RP 内部掉头）",
@@ -258,25 +282,33 @@ def main():
         ax_wf.plot(p50_x, y, marker="D", markersize=5.5, color="#0f172a", markeredgecolor="white", markeredgewidth=0.8, zorder=6)
         ax_wf.text(end_x + 10, y, note, va="center", ha="left", fontsize=8.3, color="#0f172a", fontweight="medium")
         for lx, ltxt, lcol, lfs in inner_labels:
-            ax_wf.text(lx, y, ltxt, va="center", ha="center", fontsize=lfs, color=lcol, fontweight="bold")
+            bbox_kw = dict(boxstyle="round,pad=0.22", facecolor="#334155", edgecolor="none", alpha=0.88) if "旧未拆分块" in ltxt else None
+            ax_wf.text(lx, y, ltxt, va="center", ha="center", fontsize=lfs, color=lcol, fontweight="bold", bbox=bbox_kw)
 
-    # Vertical dashed guide at RP 98:01.0 Host+RP anchor (205.5 ns)
+    # Vertical dashed guide at RP 98:01.0 Host+RP anchor (205.9 ns)
     ax_wf.axvline(rp_end, color="#0f766e", linestyle="--", linewidth=1.1, alpha=0.78)
     ax_wf.text(rp_end + 8, len(rows) - 0.36, f"RP 98:01.0 锚点 {fmt1(rp_end)} ns", fontsize=8.4, color="#0f766e", fontweight="bold", va="bottom")
 
-    # Subtle callout for Trick 3 de-confounded CfgRd0 bound (no bar overlap!)
+    # Callout for warm-IIO1 bound & Trick 3 de-confounded pure-hardware CfgRd0 differential
+    # Placed in the wide-open right whitespace beside the shorter RP rows (zero overlap!)
     ax_wf.text(
-        0.985, 0.96,
-        f"巧招 3 去混杂 CfgRd0 辅助界：\nH(99:00.0) − H(98:01.0) = +{fmt1(cfg_clean_delta)} ns\n（较 VF0−RP 少 ~{fmt1(s5_link_sdp_bound - cfg_clean_delta)} ns，\n反映 PEM0→SDP CSR 与 RP 路径差）",
-        transform=ax_wf.transAxes, va="top", ha="right", fontsize=7.6, color="#334155",
-        bbox=dict(boxstyle="round,pad=0.38", facecolor="#fffbeb", edgecolor="#f59e0b", linewidth=0.9),
+        0.985, 0.79,
+        f"段 5 物理边界与巧招 3 独立交叉界：\n"
+        f"• 孤立态 VF0−RP (+{fmt1(s5_link_sdp_bound)} ns) 含 ~18–23 ns 稀疏唤醒差\n"
+        f"• 同等热 IIO₁ 下纯结构差：+{fmt1(vf0_warm_p50_delta)} p50 / +{fmt1(vf0_warm_mean_delta)} mean ns\n"
+        f"• 巧招 3 纯硬件 CfgRd0 差分 ΔH(99:00.0−98:01.0) =\n"
+        f"  +{fmt1(cfg_clean_delta_mean)} mean / +{fmt1(cfg_clean_delta_p50)} p50 ns",
+        transform=ax_wf.transAxes, va="top", ha="right", multialignment="left", fontsize=7.4, color="#334155",
+        bbox=dict(boxstyle="round,pad=0.40", facecolor="#fffbeb", edgecolor="#f59e0b", linewidth=0.9),
     )
-
     ax_wf.set_yticks(ys)
     ax_wf.set_yticklabels([r[0] for r in rows], fontsize=8.6)
     ax_wf.set_xlim(0, 1085)
     ax_wf.set_ylim(-0.55, len(rows) - 0.15)
-    ax_wf.set_xlabel("单次串行 MMIO Read 净延迟（ns，已扣空括号底噪 12.7 ns；柱 = 均值可加口径，◆ = 净 p50）", fontsize=9.0)
+    ax_wf.set_xlabel(
+        f"单次串行 MMIO Read 净延迟（ns，均值扣 floor_mean {fmt1(floor_mean_39)} ns / p50 扣 floor_p50 {fmt1(floor_p50_39)} ns；柱 = 均值，◆ = 净 p50）",
+        fontsize=8.6,
+    )
     ax_wf.set_title("(a) 劈开 495 ns 黑盒：完整 6 段 MMIO Read 瀑布分解（cpu40 @ 3.90 GHz / Mesh 2.20 GHz）", fontsize=10.4, fontweight="bold", pad=10)
 
     # Legend cleanly placed BELOW Panel (a) x-axis (ZERO overlap with bottom bar!)
@@ -284,8 +316,8 @@ def main():
         Patch(facecolor=c_s1, label=f"段 1：Host Core UC (3.9G, {fmt1(s1_core_rp)} ns)"),
         Patch(facecolor=c_s2, label=f"段 2：Core⇄CHA Mesh (2.2G, {fmt1(s2_mesh_out_rp)} ns)"),
         Patch(facecolor=c_s3, label=f"段 3：CHA TOR⇄M2P Mesh (2.2G, {fmt1(s3_mesh_tor_rp)} ns)"),
-        Patch(facecolor=c_s4, label=f"段 4：IRP₁+IIO₁(1.0G)+RP 寄存器 ({fmt1(s4_iio_rp)} ns)"),
-        Patch(facecolor=c_s5, label=f"段 5：Host TL/DLL/PHY+链路+PEM0→SDP−RP (+{fmt1(s5_link_sdp_bound)} ns)"),
+        Patch(facecolor=c_s4, label=f"段 4：IRP₁+IIO₁(1.001G)+RP 寄存器 ({fmt1(s4_iio_rp)} ns)"),
+        Patch(facecolor=c_s5, label=f"段 5：VF0−RP 孤立 (+{fmt1(s5_link_sdp_bound)} ns；热 IIO₁ +{fmt1(vf0_warm_p50_delta)} p50)"),
         Patch(facecolor=c_s6a, label=f"段 6a：BAR4_INDEX+IOBN+TAD L3 (+{fmt1(s6a_iobn_l3)} ns; 同CHA20 +{fmt1(same_cha20_delta)})"),
         Patch(facecolor=c_s6b, label=f"段 6b：TAD Miss→卡 DDR5 (+{fmt1(s6b_ddr5)} ns)"),
         Line2D([0], [0], marker="D", color="none", markerfacecolor="#0f172a", markeredgecolor="white", markersize=6, label="净 p50 锚点"),
@@ -304,8 +336,8 @@ def main():
 
     # ==================== Panel (b): Triple Cross-Verification Closure ====================
     stages_cc = [
-        ("段1\nCore UC", p3_fits["bar4-l3-walk-8b"][0] / 3.9, p2_fits["bar4-l3-walk-8b"]["out"][1]),
-        ("段2\nCore⇄CHA", p2_fits["bar4-l3-walk-8b"]["out"][0] / 2.2, p3_fits["bar4-l3-walk-8b"][1]),
+        ("段1\nCore UC", p3_fits["rp-bar0-8b"][0] / 3.9, p2_fits["rp-bar0-8b"]["out"][1]),
+        ("段2\nCore⇄CHA", p2_fits["rp-bar0-8b"]["out"][0] / 2.2, p3_fits["rp-bar0-8b"][1]),
         ("段3\nCHA⇄M2P", p2_fits["rp-bar0-8b"]["tor"][0] / 2.2, p2_fits["bar4-l3-walk-8b"]["tor"][0] / 2.2),
         ("段4\nIIO+RP", rp8["tor"] - p2_fits["rp-bar0-8b"]["tor"][0] / 2.2, p2_fits["rp-bar0-8b"]["tor"][1]),
         ("段5\nVF0−RP界", vf0["mean"] - rp8["mean"], p2_fits["vf0-bar0-8b"]["tor"][1] - p2_fits["rp-bar0-8b"]["tor"][1]),
@@ -327,7 +359,10 @@ def main():
     ax_cc.set_xticklabels([s[0] for s in stages_cc], fontsize=8.0)
     ax_cc.set_ylim(0, 368)
     ax_cc.set_ylabel("分段耗时（ns）", fontsize=8.8)
-    ax_cc.set_title(f"(b) 三路交叉闭环核验（全部 6 段最大偏差 ≤ {fmt1(max_delta)} ns）", fontsize=10.0, fontweight="bold", pad=8)
+    ax_cc.set_title(
+        f"(b) 三路交叉闭环（同口径 floor_mean：段 1/2 全三端 ≤ {max_p23_closure:.2f} ns，全 6 段 ≤ {fmt1(max_delta)} ns）",
+        fontsize=9.2, fontweight="bold", pad=8,
+    )
     ax_cc.legend(loc="upper left", fontsize=7.8, frameon=True, facecolor="white")
 
     # ==================== Panel (c): Trick 2 + Part 1 Host IO-Stack Hop Residency ====================
@@ -344,6 +379,8 @@ def main():
     vals_irp_txc_ncs = []
     vals_irp_txs_occ = []
     vals_irp_drs_m2p23 = []
+    m2p_scale_ratios = []
+    irp_true_ghzs = []
     for _, arm in irp_arms:
         r_st = by_sl[("part1_stage", f"cpu40/{arm}")]
         r_h3 = by_tr[("trick2_hops", f"hop3/{arm}")]
@@ -354,30 +391,52 @@ def main():
         vals_irp_txc_ncs.append(med([r["io_bank"]["irp_per_op"]["txc_bl_ncs_occ"] for r in r_h3]))
         vals_irp_txs_occ.append(med([r["irp1"]["c0"] / r["rounds"] for r in r_st]))
         vals_irp_drs_m2p23.append(
-            med([r["io_bank"]["irp_per_op"]["txc_bl_drs_occ"] + r["io_bank"]["m2p_per_op"]["txc_ne_pmm_distress_0"] for r in r_h1 for _ in [0]])
-            if False else med([r["io_bank"]["irp_per_op"]["txc_bl_drs_occ"] for r in r_h1])
+            med([r["io_bank"]["irp_per_op"]["txc_bl_drs_occ"] for r in r_h1])
+            + med([
+                r["io_bank"]["m2p_per_op"]["txc_ne_pmm_distress_0"]
+                + r["io_bank"]["m2p_per_op"]["txc_ne_pmm_distress_1"]
+                for r in r_h5
+            ])
         )
+        m2p_scale_ratios.extend([r["io_bank"]["m2p"]["rxc_ne_all"] / r["m2pcie1"]["clk"] for r in r_h3])
+        irp_true_ghzs.extend([(r["irp1"]["clk"] / r["wall_s"]) / 1e9 for r in r_st])
 
-    ax_irp.bar(x_irp - 2.0 * w_i, vals_m2p_ne, width=w_i, color="#0f766e", label="M2P₁ 去程 cha_ncs_ne (2.00 cyc = 0.91 ns)")
+    m2p_scale = med(m2p_scale_ratios)
+    m2p_cnt_med = med(vals_m2p_ne)
+    m2p_true_cyc = m2p_cnt_med / m2p_scale
+    m2p_true_ns = m2p_true_cyc / 2.2
+    irp_occ_med = med(vals_irp_txc_ncs)
+    irp_ghz_med = med(irp_true_ghzs)
+    irp_true_ns = irp_occ_med / irp_ghz_med
+
+    ax_irp.bar(
+        x_irp - 2.0 * w_i, vals_m2p_ne, width=w_i, color="#0f766e",
+        label=f"M2P₁ 0x10 去程 ({m2p_cnt_med:.2f} 计 ÷ {m2p_scale:.0f}× = {m2p_true_cyc:.2f} 拍 = {m2p_true_ns:.2f} ns)",
+    )
     ax_irp.bar(x_irp - 1.0 * w_i, vals_irp_txs_ins, width=w_i, color="#0284c7", label="IRP₁ 去程 txs_ins_ncs (0x0e, 1.00×)")
-    ax_irp.bar(x_irp + 0.0 * w_i, vals_irp_txc_ncs, width=w_i, color="#7c3aed", label="IRP₁ BL NCS txc_occ (0x0a, 1.00 cyc = 1.01 ns)")
+    ax_irp.bar(
+        x_irp + 0.0 * w_i, vals_irp_txc_ncs, width=w_i, color="#7c3aed",
+        label=f"IRP₁ BL NCS txc_occ (0x0a, {irp_occ_med:.2f} 拍 = {irp_true_ns:.2f} ns @ {irp_ghz_med:.3f}G)",
+    )
     ax_irp.bar(x_irp + 1.0 * w_i, vals_irp_txs_occ, width=w_i, color="#dc2626", label="IRP₁ txs_req_occ (0x0c ≈ 0)")
-    ax_irp.bar(x_irp + 2.0 * w_i, vals_irp_drs_m2p23, width=w_i, color="#94a3b8", label="IRP₁ txc_drs & M2P 0x23 (= 0)")
+    ax_irp.bar(x_irp + 2.0 * w_i, vals_irp_drs_m2p23, width=w_i, color="#94a3b8", label="IRP₁ txc_drs & M2P 0x23 (u=0x08/0x80 = 0)")
 
     for xi, vne in zip(x_irp, vals_m2p_ne):
-        ax_irp.text(xi - 2.0 * w_i, vne + 0.05, f"{vne:.2f}", ha="center", va="bottom", fontsize=7.2, color="#0f766e", fontweight="bold")
+        ax_irp.text(xi - 2.0 * w_i, vne + 0.06, f"{vne:.2f}", ha="center", va="bottom", fontsize=7.2, color="#0f766e", fontweight="bold")
     for xi, v0c in zip(x_irp, vals_irp_txs_occ):
-        ax_irp.text(xi + 1.0 * w_i, v0c + 0.05, f"{v0c:.3f}", ha="center", va="bottom", fontsize=6.9, color="#dc2626", fontweight="bold")
+        ax_irp.text(xi + 1.25 * w_i, v0c + 0.06, f"{v0c:.3f}", ha="center", va="bottom", fontsize=6.7, color="#dc2626", fontweight="bold")
 
     ax_irp.axhline(1.0, color="#64748b", linestyle=":", linewidth=0.9)
     ax_irp.axhline(2.0, color="#0f766e", linestyle=":", linewidth=0.9, alpha=0.6)
     ax_irp.set_xticks(x_irp)
     ax_irp.set_xticklabels([a[0] for a in irp_arms], fontsize=8.2)
-    ax_irp.set_ylim(0, 3.25)
-    ax_irp.set_ylabel("每笔 MMIO 读的队列驻留周期 / 计数", fontsize=8.6)
-    ax_irp.set_title("(c) 巧招 2 + IRP₁：M2P₁ (0.91 ns) 与 IRP₁ BL (1.01 ns) 为纯过站，0x0c/drs/0x23=0", fontsize=8.9, fontweight="bold", pad=8)
-    ax_irp.legend(loc="upper center", fontsize=6.7, frameon=True, facecolor="white", ncol=2, columnspacing=0.8)
-
+    ax_irp.set_ylim(0, 3.45)
+    ax_irp.set_ylabel("每笔 MMIO 读的队列计数 / 驻留拍", fontsize=8.6)
+    ax_irp.set_title(
+        f"(c) 巧招 2 + IRP₁：M2P₁ 0x10 ({m2p_scale:.0f}×倍率→{m2p_true_ns:.2f} ns) 与 IRP₁ BL ({irp_true_ns:.2f} ns) 为纯过站",
+        fontsize=8.6, fontweight="bold", pad=8,
+    )
+    ax_irp.legend(loc="upper center", fontsize=6.4, frameon=True, facecolor="white", ncol=2, columnspacing=0.6)
     fig.suptitle(
         "MRV-185 劈开 495 ns 黑盒：6 段完整 MMIO Read 纳秒分解、三路交叉闭环与片内过站标定（n=3 交错，零错，100% 非复用）",
         fontsize=12.0, fontweight="bold", y=0.965,
