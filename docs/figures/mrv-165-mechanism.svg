@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 380" width="920" height="380">
+  <defs>
+    <marker id="arr-gray" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748B"/>
+    </marker>
+    <marker id="arr-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#0F766E"/>
+    </marker>
+  </defs>
+
+  <style>
+    text { font-family: "DejaVu Sans", "Droid Sans Fallback", sans-serif; }
+    .row-tag { font-size: 16px; font-weight: 700; }
+    .box-title { font-size: 14px; font-weight: 700; }
+    .box-sub { font-size: 12px; }
+    .big-num { font-size: 25px; font-weight: 700; }
+    .metric-sub { font-size: 13px; font-weight: 600; }
+  </style>
+
+  <!-- White background -->
+  <rect width="920" height="380" fill="#FFFFFF"/>
+
+  <!-- ================= ROW 1: Host 128 MiB Buffer at 128 MiB Burst (Grey) ================= -->
+  <text x="28" y="38" class="row-tag" fill="#475569">传统主机大缓冲（128 MiB 大突发：单调 / LIFO）</text>
+
+  <!-- Card box -->
+  <rect x="28" y="54" width="136" height="96" rx="10" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.8"/>
+  <text x="96" y="96" text-anchor="middle" class="box-title" fill="#334155">网卡</text>
+  <text x="96" y="118" text-anchor="middle" class="box-sub" fill="#64748B">直接灌入主机</text>
+
+  <!-- Fat arrow -->
+  <line x1="168" y1="102" x2="258" y2="102" stroke="#64748B" stroke-width="4.5" marker-end="url(#arr-gray)"/>
+  <text x="215" y="88" text-anchor="middle" class="box-sub" fill="#475569" font-weight="700">128 MiB</text>
+  <text x="215" y="124" text-anchor="middle" class="box-sub" fill="#64748B">大突发</text>
+
+  <!-- Host Shared L3 container -->
+  <rect x="274" y="50" width="388" height="106" rx="12" fill="#F8FAFC" stroke="#94A3B8" stroke-width="2" stroke-dasharray="6,4"/>
+  <text x="290" y="72" class="box-sub" fill="#475569" font-weight="700">主机共享 L3 缓存（60 MiB）</text>
+
+  <!-- Network burst filling L3 -->
+  <rect x="290" y="82" width="234" height="60" rx="8" fill="#CBD5E1" stroke="#64748B" stroke-width="1.5"/>
+  <text x="407" y="108" text-anchor="middle" class="box-title" fill="#1E293B">网络缓冲占满 L3</text>
+  <text x="407" y="128" text-anchor="middle" class="box-sub" fill="#475569">并溢出写主存</text>
+
+  <!-- KV evicted -->
+  <rect x="536" y="82" width="112" height="60" rx="8" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="592" y="108" text-anchor="middle" class="box-title" fill="#475569">KV 业务</text>
+  <text x="592" y="128" text-anchor="middle" class="box-sub" fill="#64748B">被挤至主存</text>
+
+  <!-- Outcome Row 1 (exact 128 MiB burst numbers for monotonic 153 ns / 1015 MiB and LIFO 165 ns / 1034 MiB) -->
+  <rect x="688" y="54" width="204" height="96" rx="10" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+  <text x="790" y="96" text-anchor="middle" class="big-num" fill="#334155">153–165 ns</text>
+  <text x="790" y="120" text-anchor="middle" class="metric-sub" fill="#64748B">KV p99 恶化 3.7–4.0×</text>
+  <text x="790" y="139" text-anchor="middle" class="box-sub" fill="#64748B">主存 1015–1034 MiB</text>
+
+  <!-- Subtle divider -->
+  <line x1="28" y1="186" x2="892" y2="186" stroke="#E2E8F0" stroke-width="1.5"/>
+
+  <!-- ================= ROW 2: Active NIC + 256 KiB Hot Ring at 128 MiB Burst (Teal Accent) ================= -->
+  <text x="28" y="222" class="row-tag" fill="#0F766E">主动网卡留存 + 主机 256 KiB 热环（128 MiB 大突发）</text>
+
+  <!-- Active NIC box -->
+  <rect x="28" y="238" width="136" height="96" rx="10" fill="#F0FDFA" stroke="#0F766E" stroke-width="2.2"/>
+  <text x="96" y="278" text-anchor="middle" class="box-title" fill="#0F766E">主动网卡内存</text>
+  <text x="96" y="300" text-anchor="middle" class="box-sub" fill="#115E59">暂存 128 MiB 突发</text>
+
+  <!-- Thin credit-paced arrow -->
+  <line x1="168" y1="286" x2="258" y2="286" stroke="#0F766E" stroke-width="2.4" marker-end="url(#arr-teal)"/>
+  <text x="215" y="274" text-anchor="middle" class="box-sub" fill="#0F766E" font-weight="700">按额度补推</text>
+  <text x="215" y="306" text-anchor="middle" class="box-sub" fill="#0F766E">177.7 M/s</text>
+
+  <!-- Host Shared L3 container -->
+  <rect x="274" y="234" width="388" height="106" rx="12" fill="#F8FAFC" stroke="#0F766E" stroke-width="2"/>
+  <text x="290" y="256" class="box-sub" fill="#0F766E" font-weight="700">主机共享 L3 缓存（60 MiB）</text>
+
+  <!-- Tiny 256 KiB hot ring -->
+  <rect x="290" y="266" width="84" height="60" rx="8" fill="#CCFBF1" stroke="#0F766E" stroke-width="1.8"/>
+  <text x="332" y="292" text-anchor="middle" class="box-title" fill="#0F766E">256 KiB</text>
+  <text x="332" y="312" text-anchor="middle" class="box-sub" fill="#115E59">热环 0.4%</text>
+
+  <!-- Intact KV working set -->
+  <rect x="386" y="266" width="262" height="60" rx="8" fill="#FFFFFF" stroke="#0F766E" stroke-width="2"/>
+  <text x="517" y="292" text-anchor="middle" class="box-title" fill="#0F766E">KV 业务（32 MiB）完好留在 L3</text>
+  <text x="517" y="312" text-anchor="middle" class="box-sub" fill="#115E59">L3 缺失仅 0.02%</text>
+
+  <!-- Outcome Row 2 (exact 128 MiB burst numbers: 41 ns, 0% drop, 11.3 MiB = -98.9% vs 1015/1034 MiB) -->
+  <rect x="688" y="238" width="204" height="96" rx="10" fill="#F0FDFA" stroke="#0F766E" stroke-width="2.2"/>
+  <text x="790" y="280" text-anchor="middle" class="big-num" fill="#0F766E">41 ns</text>
+  <text x="790" y="304" text-anchor="middle" class="metric-sub" fill="#0F766E">0% 丢包 · 零退化</text>
+  <text x="790" y="323" text-anchor="middle" class="box-sub" fill="#115E59">主存 11.3 MiB (-98.9%)</text>
+</svg>

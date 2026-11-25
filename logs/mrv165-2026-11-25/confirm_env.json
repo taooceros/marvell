@@ -1,0 +1,168 @@
+{
+  "issue": "MRV-165",
+  "purpose": "paired_clean_host_confirmation_for_6_transient_noise_runs",
+  "date_utc": "2026-11-25T23:18:02Z",
+  "passed_runs": 24,
+  "total_attempts": 26,
+  "elapsed_s": 47.31,
+  "host_bin": "/tmp/mrv165-target/release/mrv165_host",
+  "card_cmd": "/root/bench/mrv165_card -l 3 --no-pci --file-prefix=mrv165 --",
+  "host_before": {
+    "cpu40_governor": "performance",
+    "cpu40_khz": 3900000,
+    "cpu41_governor": "schedutil",
+    "uncore_khz": {
+      "package_00_die_00": {
+        "min": 2200000,
+        "max": 2200000,
+        "cur": 2200000
+      },
+      "package_01_die_01": {
+        "min": 2200000,
+        "max": 2200000,
+        "cur": 2200000
+      }
+    },
+    "perf_event_paranoid": 0,
+    "node1_hugepages_2m_total": 2048,
+    "node1_hugepages_2m_free": 2047,
+    "host_edac_ue": {
+      "mc0": 0,
+      "mc1": 0,
+      "mc2": 0,
+      "mc3": 0,
+      "mc4": 0,
+      "mc5": 0,
+      "mc6": 0,
+      "mc7": 0
+    },
+    "host_edac_ce": {
+      "mc0": 0,
+      "mc1": 0,
+      "mc2": 0,
+      "mc3": 0,
+      "mc4": 0,
+      "mc5": 0,
+      "mc6": 0,
+      "mc7": 0
+    },
+    "rp_98_01_aer": {
+      "fatal": 0,
+      "nonfatal": 0,
+      "correctable": 0
+    }
+  },
+  "host_after": {
+    "cpu40_governor": "performance",
+    "cpu40_khz": 3897333,
+    "cpu41_governor": "schedutil",
+    "uncore_khz": {
+      "package_00_die_00": {
+        "min": 2200000,
+        "max": 2200000,
+        "cur": 2200000
+      },
+      "package_01_die_01": {
+        "min": 2200000,
+        "max": 2200000,
+        "cur": 2200000
+      }
+    },
+    "perf_event_paranoid": 0,
+    "node1_hugepages_2m_total": 2048,
+    "node1_hugepages_2m_free": 2047,
+    "host_edac_ue": {
+      "mc0": 0,
+      "mc1": 0,
+      "mc2": 0,
+      "mc3": 0,
+      "mc4": 0,
+      "mc5": 0,
+      "mc6": 0,
+      "mc7": 0
+    },
+    "host_edac_ce": {
+      "mc0": 0,
+      "mc1": 0,
+      "mc2": 0,
+      "mc3": 0,
+      "mc4": 0,
+      "mc5": 0,
+      "mc6": 0,
+      "mc7": 0
+    },
+    "rp_98_01_aer": {
+      "fatal": 0,
+      "nonfatal": 0,
+      "correctable": 0
+    }
+  },
+  "card_before": {
+    "card_cpu3_khz": 2000000,
+    "pem_wc_loaded": 1,
+    "eth0_operstate": "up",
+    "eth0_speed_mbps": 100000,
+    "card_edac_mc0_ue": 0,
+    "card_edac_mc0_ce": 0,
+    "card_hugepages_512m_total": 4,
+    "card_hugepages_512m_free": 3
+  },
+  "card_after": {
+    "card_cpu3_khz": 2000000,
+    "pem_wc_loaded": 1,
+    "eth0_operstate": "up",
+    "eth0_speed_mbps": 100000,
+    "card_edac_mc0_ue": 0,
+    "card_edac_mc0_ce": 0,
+    "card_hugepages_512m_total": 4,
+    "card_hugepages_512m_free": 3
+  },
+  "post_restore": {
+    "settle_s": 21,
+    "bar4_slot15_default": "0x2ff71",
+    "pem0_regions_248_255": "0x0",
+    "pem_wc_loaded": 0,
+    "refl_tmux_running": true,
+    "mrv165_card_procs": 0,
+    "eth0_operstate": "up",
+    "eth0_speed_mbps": 100000,
+    "card_edac_mc0_ue": 0,
+    "card_edac_mc0_ce": 0,
+    "card_hugepages_512m_free": 3,
+    "host_cpu40_gov": "performance",
+    "host_cpu40_cur_khz": 3900000,
+    "host_uncore_pkg00_cur_khz": 2200000,
+    "host_uncore_pkg01_cur_khz": 2200000,
+    "host_node1_hugepages_2m_free": 2047,
+    "host_edac_ue": {
+      "mc0": 0,
+      "mc1": 0,
+      "mc2": 0,
+      "mc3": 0,
+      "mc4": 0,
+      "mc5": 0,
+      "mc6": 0,
+      "mc7": 0
+    },
+    "host_edac_ce": {
+      "mc0": 0,
+      "mc1": 0,
+      "mc2": 0,
+      "mc3": 0,
+      "mc4": 0,
+      "mc5": 0,
+      "mc6": 0,
+      "mc7": 0
+    },
+    "rp_98_01_aer": {
+      "fatal": 0,
+      "nonfatal": 0,
+      "correctable": 0
+    },
+    "ep_99_00_aer": {
+      "fatal": 0,
+      "nonfatal": 0,
+      "correctable": 0
+    }
+  }
+}
