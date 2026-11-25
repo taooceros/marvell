@@ -59,7 +59,7 @@ SCENES = [
                 "A3",
             ),
             (
-                "CXL memory reads are quoted at **~170–250 ns** (industry figure, not measured here). Why is this read so slow?",
+                "CXL memory reads are quoted at **~170–250 ns** (industry\u00a0figure, not measured here). Why is this read so slow?",
                 "C X L memory reads are quoted at around two hundred nanoseconds. So why is this P C I E read so slow?",
                 "A7",
             ),
@@ -69,7 +69,7 @@ SCENES = [
                 "B1",
             ),
             (
-                "Our rules: no hardware changes, no kernel patches, no root shell. Just a stopwatch, the chips' counters, and six `chown`s.",
+                "Our rules: no hardware changes, no kernel patches, no root\u00a0shell. Just a stopwatch, the chips' counters, and six `chown`s.",
                 "Our rules: no hardware changes, no kernel patches, no root shell. Just a stopwatch, the chips' own counters, and six file permissions.",
                 "C1",
             ),
@@ -93,7 +93,7 @@ SCENES = [
                 "A1",
             ),
             (
-                "The empty bracket costs **12.7 ns**, subtracted from every read: 100,000 reads per run, every reply checked.",
+                "The empty bracket costs **12.7 ns**, subtracted\u00a0from\u00a0every\u00a0read: 100,000 reads per run, every reply checked.",
                 "The empty bracket costs twelve point seven nanoseconds, and we subtract it from every read, a hundred thousand reads per run.",
                 "A1",
             ),
@@ -103,7 +103,7 @@ SCENES = [
                 "A1",
             ),
             (
-                "Clue one: width costs nothing. 4 to 32 bytes all take **627 ns** and exactly **one** PCIe read packet, one TLP.",
+                "Clue one: width costs nothing. 4\u00a0to\u00a032\u00a0bytes\u00a0all\u00a0take\u00a0**627 ns** and exactly **one** PCIe read packet, one TLP.",
                 "Clue one: the width costs nothing. Four to thirty-two bytes all take six hundred twenty-seven nanoseconds, and exactly one P C I E read packet, one T L P.",
                 "A3",
             ),
@@ -127,17 +127,17 @@ SCENES = [
         source="249 runs · host CHA, M2PCIe, IRP, IIO counters, unmultiplexed",
         cues=[
             (
-                "Inside the host chip, each uncached read is handled by one **CHA** and tracked in its table of requests, the **TOR**.",
+                "Inside the host chip, each uncached read is handled by\u00a0one **CHA** and tracked in its table of requests, the **TOR**.",
                 "Inside the host chip, each uncached read is handled by one caching agent, the C H A, and tracked in its table of requests, the T O R.",
                 "B1",
             ),
             (
-                "No public event counts these small reads. An unnamed encoding does, and it matches every counter below it **1 : 1**.",
+                "No public event counts these small reads. An unnamed\u00a0encoding\u00a0does, and it matches every counter below it **1 : 1**.",
                 "No public event counts small reads like these. An unnamed encoding does, and it matches every counter below it, one for one.",
                 "B1",
             ),
             (
-                "The TOR keeps the entry until the reply returns. Little's law: occupancy ÷ reads = time spent below the CHA.",
+                "The TOR keeps the entry until the reply returns. Little's\u00a0law: occupancy ÷ reads = time spent below the CHA.",
                 "That table keeps the entry until the reply returns. So Little's law turns two counters into a time: occupancy divided by reads.",
                 "B2",
             ),
@@ -176,12 +176,12 @@ SCENES = [
                 "A2, A6",
             ),
             (
-                "So the BAR4 window, IOBN bridge and L3 add **+103.1–105.5 ns**; an L3 miss to DDR5 adds **+92.7–101.6 ns**.",
+                "So\u00a0the\u00a0BAR4\u00a0window,\u00a0IOBN\u00a0bridge\u00a0and\u00a0L3\u00a0add\u00a0**+103.1–105.5 ns**; an L3 miss to DDR5 adds **+92.7–101.6 ns**.",
                 "So reaching the L three adds about a hundred and four nanoseconds, and an L three miss adds ninety-three to a hundred and two.",
                 "B6, C7",
             ),
             (
-                "The card's counters agree: **1.00** L3 miss and **2.01** DDR5 bursts per read: one 128-byte line, two 64-byte bursts.",
+                "The card's counters agree: **1.00** L3 miss and\u00a0**2.01**\u00a0DDR5\u00a0bursts\u00a0per\u00a0read: one 128-byte line, two 64-byte bursts.",
                 "The card's counters agree: one L three miss per read, refilled by a pair of sixty-four byte DDR five bursts.",
                 "A6",
             ),
@@ -205,7 +205,7 @@ SCENES = [
         source="Root port 98:01.0 BAR0, read-only mmap · 408 runs, 0 errors",
         cues=[
             (
-                "Round two: six `chown`s, still no root shell. Now we may map the root port's own registers, read-only, one address.",
+                "Round two: six `chown`s, still no root shell. Now\u00a0we\u00a0may\u00a0map\u00a0the\u00a0root\u00a0port's\u00a0own\u00a0registers, read-only, one address.",
                 "Round two: six file permissions, still no root shell. Now we may map the root port's own registers, read only, one address.",
                 "C1",
             ),
@@ -215,7 +215,7 @@ SCENES = [
                 "C2",
             ),
             (
-                "A reviewer's warning: matching counters don't prove a shared path. A config read that never leaves the port counts the same.",
+                "A reviewer's warning: matching counters don't prove a shared\u00a0path. A config read that never leaves the port counts the same.",
                 "But a reviewer warned us: matching counters do not prove a shared path. A config read that never leaves the root port counts the same.",
                 "C3",
             ),
@@ -225,12 +225,12 @@ SCENES = [
                 "C4",
             ),
             (
-                "Then a control group: many cores on one address stall at 1 / TOR on **both** paths. The limit is the CHA's, not the port's.",
+                "Then a control group: many cores on one address stall at 1\u00a0/\u00a0TOR on **both** paths. The limit is the CHA's, not the port's.",
                 "And a control group: many cores on one address stall on the card register just like on the root port. That limit comes from the C H A.",
                 "C5",
             ),
             (
-                "Card register minus root port: **+312.1 ns**. That is the host's PCIe layers, the link, PEM0, and the path to the register.",
+                "Card register minus root port: **+312.1 ns**. That\u00a0is\u00a0the\u00a0host's\u00a0PCIe\u00a0layers, the link, PEM0, and the path to the register.",
                 "Card register minus root port: three hundred twelve nanoseconds. The host's P C I E layers, the link, P E M zero, and the path to the register.",
                 "C6",
             ),
@@ -249,12 +249,12 @@ SCENES = [
                 "C7",
             ),
             (
-                "Sweep the mesh, 0.8 to 2.2 GHz. The CHA and M2PCIe₁ follow. IRP₁ and IIO₁ don't: they run on their own **1 GHz** clock.",
+                "Sweep the mesh, 0.8 to 2.2 GHz. The CHA and M2PCIe₁\u00a0follow. IRP₁ and IIO₁ don't: they run on their own **1 GHz** clock.",
                 "Sweep the mesh, and the C H A and M two P C I E follow it. I R P and I I O do not: they run on their own one gigahertz clock.",
                 "C7, D1",
             ),
             (
-                "TOR time is a straight line in 1/f. Slope: **56.2–58.6 ns** of mesh. Intercept: **125.2 ns** for IRP₁, IIO₁ and the root port.",
+                "TOR time is a straight line in 1/f. Slope: **56.2–58.6 ns**\u00a0of\u00a0mesh. Intercept: **125.2 ns** for IRP₁, IIO₁ and the root port.",
                 "Plot it against one over f, and it is a straight line: fifty-six to fifty-nine nanoseconds of mesh, plus a fixed hundred twenty-five for I R P, I I O and the root port.",
                 "C7",
             ),
@@ -264,7 +264,7 @@ SCENES = [
                 "C8",
             ),
             (
-                "Cross-check: what one sweep calls fixed, the other sees as slope. Core-to-CHA mesh: **11.2–12.8 ns**. Mismatch: **≤ 0.73 ns**.",
+                "Cross-check: what one sweep calls fixed, the other\u00a0sees\u00a0as\u00a0slope. Core-to-CHA mesh: **11.2–12.8 ns**. Mismatch: **≤ 0.73 ns**.",
                 "Cross-check: what one sweep calls fixed, the other must see as slope. The core to C H A mesh is eleven to thirteen nanoseconds, and they agree within zero point seven three.",
                 "C8, D2",
             ),
@@ -283,7 +283,7 @@ SCENES = [
         source="IO clock from in-loop cycles ÷ wall time · floor_mean basis",
         cues=[
             (
-                "Trap one: the IIO clock first read **0.96–0.99 GHz**, lower in short runs than in long ones. Real clocks don't do that.",
+                "Trap one: the IIO clock first read **0.96–0.99 GHz**, lower\u00a0in\u00a0short\u00a0runs\u00a0than\u00a0in\u00a0long\u00a0ones. Real clocks don't do that.",
                 "Trap one. The clock shared by I R P and I I O first read zero point nine six to zero point nine nine gigahertz, lower in short runs than in long ones. Real clocks don't do that.",
                 "D1",
             ),
@@ -293,7 +293,7 @@ SCENES = [
                 "D1",
             ),
             (
-                "Count cycles inside the timed loop only, and the clock is flat: **1.00 GHz** at every endpoint and every sweep point.",
+                "Count cycles inside the timed loop only, and the clock\u00a0is\u00a0flat: **1.00 GHz** at every endpoint and every sweep point.",
                 "Count only the cycles inside the timed loop, and the clock is flat: one point zero zero gigahertz, everywhere.",
                 "D1",
             ),
@@ -303,7 +303,7 @@ SCENES = [
                 "D2",
             ),
             (
-                "Subtract a mean from a mean, and the two sweeps agree even better: worst mismatch **1.16 → 0.73 ns**.",
+                "Subtract a mean from a mean, and\u00a0the two\u00a0sweeps\u00a0agree\u00a0even\u00a0better: worst mismatch **1.16 → 0.73 ns**.",
                 "Subtract a mean from a mean instead, and the worst mismatch between the sweeps drops from one point one six to zero point seven three nanoseconds.",
                 "D2",
             ),
@@ -317,17 +317,17 @@ SCENES = [
         source="Interference runs: one core reads the root port, cpu40 times",
         cues=[
             (
-                "Trap three came from an interference test: one core keeps reading the root port, while another times the card register.",
+                "Trap three came from an interference test: one core\u00a0keeps\u00a0reading\u00a0the root\u00a0port, while another times the card register.",
                 "Trap three came from an interference test: one core keeps reading the root port, while another times the card register.",
                 "C10",
             ),
             (
-                "Root-port reads never leave the host chip, yet the card read got **22.7 ns faster**. Someone else's traffic made us faster?",
+                "Root-port reads never leave the host chip, yet\u00a0the\u00a0card\u00a0read\u00a0got\u00a0**22.7 ns\u00a0faster**. Someone else's traffic made us faster?",
                 "Root-port reads never leave the host chip, yet the card read got twenty-two point seven nanoseconds faster. Someone else's traffic made us faster?",
                 "C10",
             ),
             (
-                "Alone, a card read starts only every ~541 ns, and the IIO idles long enough to doze. Root-port reads every ~233 ns keep it awake.",
+                "Alone, a card read starts only every ~541 ns, and\u00a0the IIO\u00a0idles\u00a0long\u00a0enough\u00a0to\u00a0doze. Root-port reads every ~233 ns keep it awake.",
                 "Alone, a card read starts only every five hundred forty nanoseconds, and the I I O sits idle long enough to doze. Root-port reads keep it awake.",
                 "C10",
             ),
@@ -361,17 +361,17 @@ SCENES = [
                 "C12",
             ),
             (
-                "IO counters prove it never reaches hardware: **0**. Yet root port and VF pay **+17.3** and **+20.9 ns** in power management.",
+                "IO counters prove it never reaches hardware: **0**. Yet\u00a0root\u00a0port\u00a0and\u00a0VF\u00a0pay **+17.3** and **+20.9 ns** in power management.",
                 "The I O counters show it never reaches hardware. Yet the root port and the virtual function pay about twenty nanoseconds more, in power management.",
                 "C12",
             ),
             (
-                "Subtract the empty read from the real one, and a fake **19.1 ns** gap between the card's two functions vanishes.",
+                "Subtract the empty read from the real one, and\u00a0a fake\u00a0**19.1 ns**\u00a0gap between the card's two functions vanishes.",
                 "Subtract the empty read from the real one, and a fake nineteen nanosecond gap between the card's two functions disappears.",
                 "C12",
             ),
             (
-                "Device minus device cancels the shared locks too: across the link, **ΔH = +221.8 ns**, about 90 ns below the register path.",
+                "Device minus device cancels the shared locks too: across\u00a0the link, **ΔH = +221.8 ns**, about 90 ns below the register path.",
                 "Device minus device cancels the shared locks too: two hundred twenty-two nanoseconds across the link, ninety less than the deeper register path. It fits.",
                 "C12",
             ),
@@ -395,7 +395,7 @@ SCENES = [
                 "C13",
             ),
             (
-                "Root cause: the driver `ioremap()`s all 64 MiB of BAR4 as uncached at load time, and Linux PAT silently matches it.",
+                "Root cause: the driver `ioremap()`s all 64 MiB of BAR4 as\u00a0uncached at load time, and Linux PAT silently matches it.",
                 "The octeon E P driver maps all of bar four as uncached at load time, so Linux PAT quietly downgrades our write-combining mapping. Not even a log line.",
                 "C13",
             ),
@@ -419,7 +419,7 @@ SCENES = [
                 "E",
             ),
             (
-                "Host chip, core to root port: **~205 ns**. More than half is the 1 GHz IRP₁ + IIO₁ and the root port: **125.2 ns**.",
+                "Host chip, core to root port: **~205 ns**. More\u00a0than\u00a0half\u00a0is\u00a0the\u00a01\u00a0GHz\u00a0IRP₁ + IIO₁ and the root port: **125.2 ns**.",
                 "Inside the host chip, core to root port: about two hundred five nanoseconds, and more than half of it is the one gigahertz I R P, I I O and root port.",
                 "C2, C7",
             ),
@@ -429,12 +429,12 @@ SCENES = [
                 "C6, C11",
             ),
             (
-                "Inside the card: **+103–105 ns** through the BAR4 window to L3, and **+93–102 ns** more on a miss to DDR5.",
+                "Inside the card: **+103–105 ns** through the BAR4\u00a0window\u00a0to\u00a0L3, and **+93–102 ns** more on a miss to DDR5.",
                 "Inside the card: about a hundred and four more to reach the L three, and ninety-three to a hundred and two more for DDR five.",
                 "B6, C7",
             ),
             (
-                "Six stages, host core to card memory, each measured two independent ways, with nothing but software and the chips' own counters.",
+                "Six stages, host core to card memory, each measured two\u00a0independent\u00a0ways, with nothing but software and the chips' own counters.",
                 "Six stages, from the host core to the card's memory, each measured two independent ways, with nothing but software and the chips' own counters.",
                 "E",
             ),
@@ -448,7 +448,7 @@ SCENES = [
         source="Method summary · DirectPush measured on the same testbed",
         cues=[
             (
-                "The method travels: endpoints as rulers, Little's law on counters, clock sweeps, and reads that do nothing.",
+                "The method travels: endpoints as rulers, Little's\u00a0law\u00a0on\u00a0counters, clock sweeps, and reads that do nothing.",
                 "The method travels to any server: use endpoints as rulers, apply Little's law to counters, sweep the clocks, and cancel software with reads that do nothing.",
                 "B2, C7, C12",
             ),
@@ -458,17 +458,17 @@ SCENES = [
                 "C5, D2",
             ),
             (
-                "For our design the lesson is blunt: a read across PCIe costs **~620 ns** while the core waits. Our fast path never reads across.",
+                "For our design the lesson is blunt: a read across PCIe costs\u00a0**~620 ns** while the core waits. Our fast path never reads across.",
                 "For our design the lesson is blunt: a read across P C I E costs over six hundred nanoseconds while the core waits. So our fast path never reads across.",
                 "B5, F1",
             ),
             (
-                "DirectPush uses posted writes both ways: the host pushes with `MOVDIR64B`, the card pushes back, each side reads only its own cache.",
+                "DirectPush uses posted writes both ways: the host pushes with\u00a0`MOVDIR64B`, the card pushes back, each side reads only its own cache.",
                 "Direct Push sends posted writes both ways: the host pushes with move dir sixty-four B, the card pushes back, and each side only reads its own cache.",
                 "F1",
             ),
             (
-                "A full request and reply then takes **~0.9 µs**, and most of it is the same physical round trip we just took apart.",
+                "A full request and reply then takes **~0.9 µs**, and\u00a0most\u00a0of\u00a0it\u00a0is\u00a0the\u00a0same\u00a0physical\u00a0round\u00a0trip we just took apart.",
                 "A full request and reply then takes about nine tenths of a microsecond, most of it the same physical round trip we just took apart.",
                 "F1",
             ),

@@ -6,9 +6,9 @@ import { Badge, D, Dim, MmDefs, T as Tx } from "./mk";
 // <cues>
 const cues: Cue[] = [
   [0.60, 8.94, "First, a stopwatch for one load: `lfence; rdtsc` on both sides, so nothing starts early or finishes late.", "First, a stopwatch for one load: L fence and R D T S C on both sides, so nothing starts early or finishes late."], // 0
-  [9.29, 16.71, "The empty bracket costs **12.7 ns**, subtracted from every read: 100,000 reads per run, every reply checked.", "The empty bracket costs twelve point seven nanoseconds, and we subtract it from every read, a hundred thousand reads per run."], // 1
+  [9.29, 16.71, "The empty bracket costs **12.7 ns**, subtracted\u00a0from\u00a0every\u00a0read: 100,000 reads per run, every reply checked.", "The empty bracket costs twelve point seven nanoseconds, and we subtract it from every read, a hundred thousand reads per run."], // 1
   [17.06, 24.28, "The counter runs at 2.2 GHz and moves two ticks at a time: every reading lands on a **0.91 ns** grid.", "The counter moves two ticks at a time, so every reading lands on a zero point nine one nanosecond grid. Remember that grid."], // 2
-  [24.63, 34.79, "Clue one: width costs nothing. 4 to 32 bytes all take **627 ns** and exactly **one** PCIe read packet, one TLP.", "Clue one: the width costs nothing. Four to thirty-two bytes all take six hundred twenty-seven nanoseconds, and exactly one P C I E read packet, one T L P."], // 3
+  [24.63, 34.79, "Clue one: width costs nothing. 4\u00a0to\u00a032\u00a0bytes\u00a0all\u00a0take\u00a0**627 ns** and exactly **one** PCIe read packet, one TLP.", "Clue one: the width costs nothing. Four to thirty-two bytes all take six hundred twenty-seven nanoseconds, and exactly one P C I E read packet, one T L P."], // 3
   [35.14, 44.02, "A 64-byte `zmm` load is still one TLP. Eight 8-byte loads are eight round trips in a row: **5,038 ns**.", "A sixty-four byte Z M M load is still one T L P. Eight small loads cost eight round trips in a row: over five thousand nanoseconds."], // 4
   [44.37, 54.01, "Four 16-byte loads sent **five** TLPs, and the card saw all five. Uncached loads never merge, and a replayed load is real.", "Four legacy sixteen-byte loads sent five T L Ps, and the card saw all five. Uncached loads never merge, and a replayed load is a real read too."], // 5
 ];

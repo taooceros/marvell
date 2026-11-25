@@ -35,6 +35,8 @@ bracket. `W = 1`, batch 1 (one read in flight) unless a cue says otherwise.
   `cpu48` (CHA 20): TOR 493.79 ns → the black box below the CHA is 493.8–495.6 ns.
 - B4 All 32 socket-1 cores, line 0 (CHA 23): 617.3–627.3 ns, a 10.0 ns spread (22 mesh cycles). Six cores release the
   TOR ~19 cycles early: ΔTOR −8.6…−9.3 ns, outside the TOR +8.7…+9.6 ns, totals conserved within 0.04–0.17 ns.
+  Per-core net p50 (median of 3 runs, plotted in M03, not printed): 5 × 617.27, 3 × 618.18, 2 × 620.00, 2 × 620.91,
+  1 × 623.64, 4 × 625.45, 6 × 626.36, 9 × 627.27 ns (`core_scan_line0`, socket-1 cpus).
 - B5 K = 1 / 2 / 4 / 8 cores reading distinct lines: 1.54 → 3.08 → 6.18 → 12.23 Mops/s (8.0×), per-core p50
   617.3–621.5 ns: no queueing. One core, 8 unfenced UC reads: 621.7 ns per read, `W_eff = 1.00`.
 - B6 Endpoint differences: BAR4 L3 walk − register +105.5 ns p50 (+105.2 mean, +104.0 TOR); DDR5 − L3 +92.7 ns p50 /
@@ -63,12 +65,15 @@ bracket. `W = 1`, batch 1 (one read in flight) unless a cue says otherwise.
 - C7 Mesh sweep 0.8 / 1.1 / 1.4 / 1.8 / 2.2 GHz (socket 1): CHA and M2PCIe₁ follow it; IRP₁ and IIO₁ do not. TOR fits
   (recomputed): root port 125.19 + 128.98 / f, register 438.65 + 123.67 / f, L3 541.74 + 126.51 / f, DDR5 642.20 +
   127.93 / f; RMSE 0.36–0.65 ns (R² 0.9997–0.9999, carbon-4). Slopes 123.7–129.0 mesh cycles = 56.2–58.6 ns at 2.2 GHz
-  (CHA ⇄ M2PCIe₁ inside the TOR). Root-port intercept 125.2 ns = IRP₁ + IIO₁ + root port.
+  (CHA ⇄ M2PCIe₁ inside the TOR). Root-port intercept 125.2 ns = IRP₁ + IIO₁ + root port. Plotted points (TOR mean, ns,
+  3 runs each, mesh 0.8 / 1.1 / 1.4 / 1.8 / 2.2 GHz): root port 286.69 / 242.03 / 217.39 / 196.25 / 184.46; card register
+  593.63 / 550.16 / 527.38 / 507.35 / 494.99.
 - C8 Core sweep 1.5 / 2.2 / 3.0 / 3.9 GHz (APERF/MPERF checked). Outside-TOR fits on the `floor_mean` basis: root port
   11.14 + 41.10 / f, register 12.17 + 41.16 / f, L3 12.90 + 42.64 / f → core share 41.1–42.6 cycles = 10.5–10.9 ns at
   3.9 GHz. Mesh-sweep outside-TOR slopes 24.6–28.1 mesh cycles = 11.2–12.8 ns (core ⇄ CHA mesh). The two sweeps agree
   within 0.73 ns. (The `floor_p50` basis gives a 1/f_core intercept of 10.3–12.1 ns with the 0.86 ns tilt of D2; the
-  video shows the floor-independent 11.2–12.8 ns.)
+  video shows the floor-independent 11.2–12.8 ns.) Plotted points (root port, net − TOR, ns, core 1.5 / 2.2 / 3.0 /
+  3.9 GHz): 38.52 / 29.65 / 25.39 / 21.32.
 - C9 Trick 2, per-hop residency at `W = 1`: `M2PCIe₁ rxc_ne.cha_ncs ÷ ins` = 2.00 counts = 1 mesh cycle (the event
   counts twice per cycle) = 0.45 ns; `IRP₁ txc_bl_ncs` = 1.00 cycle = 1.00 ns; `IRP₁ 0x0c` = 0. The hops are
   pass-through: nothing waits in them.
@@ -80,7 +85,9 @@ bracket. `W = 1`, batch 1 (one read in flight) unless a cue says otherwise.
   205.45). The isolated +312.1 ns includes 18–23 ns of wake-up that only the register path pays.
 - C12 Trick 3, `pread(fd, buf, 4, 64)`: a normal user may read only 64 bytes of config space, so it returns 0 bytes
   after the full syscall, kernfs and `pci_config_pm_runtime_get/put` path; M2PCIe₁ / IRP₁ / IIO₁ = 0 on all 7 devices.
-  T(64) 227.3–229.1 ns, root port +17.3 ns (244.5), VF0 +20.9 ns (248.2): runtime-PM path. H = T(0) − T(64):
+  T(64) 227.3–229.1 ns, root port +17.3 ns (244.5), VF0 +20.9 ns (248.2): runtime-PM path (median of 3 run p50s; the
+  five plotted in M09: 227.27 / 227.27 / 227.27 / 228.18 / 229.09 for 98:00.0, 98:00.4, 99:00.0, e0:01.0, f2:01.0).
+  H = T(0) − T(64):
   H(99:00.0) 679.1 vs H(99:02.0) 677.3 ns, so the 19.1 ns PF/VF gap was kernel. ΔH = H(99:00.0) − H(98:01.0) = +221.8 ns
   mean / +223.6 ns p50 (cross-link config read, pure hardware only as a device difference: H itself still holds the
   shared `pci_lock` + `CF8` constant). ~90 ns below register − root port: PEM0 → SDP CSR + root-port path depth +
@@ -98,7 +105,8 @@ bracket. `W = 1`, batch 1 (one read in flight) unless a cue says otherwise.
   (carbon-4; per-group medians recomputed here 0.9994–1.0020 GHz). Shown on screen as 1.00 GHz.
 - D2 `floor_p50` (on the 2-tick grid) − `floor_mean` flips with the core clock (−0.25 → +0.42 ns): a −0.66 ns tilt
   across the core sweep, slope +1.7 cycles, intercept −0.86 ns. On the `floor_mean` basis the worst two-sweep mismatch
-  drops from 1.16 to 0.73 ns.
+  drops from 1.16 to 0.73 ns. Per core clock (`part3_core`, 12 runs each), median `floor_p50 − floor_mean`: −0.18 / 0.00 /
+  +0.36 / +0.42 ns at 1.5 / 2.2 / 3.0 / 3.9 GHz (single runs at 1.5 GHz range −0.36…−0.18; recomputed 2026-11-25).
 - D3 Wake-up asymmetry 18–23 ns and warm register − root port, see C10–C11.
 
 ## E. Six-stage verdict (8 B read into card L3, means unless noted)

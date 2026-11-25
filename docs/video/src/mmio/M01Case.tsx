@@ -6,9 +6,9 @@ import { Badge, Check, Cross, D, MmDefs, NODES, NodeId, ReadPath, T as Tx, TimeB
 // <cues>
 const cues: Cue[] = [
   [0.60, 7.36, "One load instruction. Eight bytes of a network card's memory. **627 ns** until the core has them.", "One load instruction. Eight bytes of a network card's memory. Six hundred twenty-seven nanoseconds until the core has them."], // 0
-  [7.71, 14.57, "CXL memory reads are quoted at **~170–250 ns** (industry figure, not measured here). Why is this read so slow?", "C X L memory reads are quoted at around two hundred nanoseconds. So why is this P C I E read so slow?"], // 1
+  [7.71, 14.57, "CXL memory reads are quoted at **~170–250 ns** (industry\u00a0figure, not measured here). Why is this read so slow?", "C X L memory reads are quoted at around two hundred nanoseconds. So why is this P C I E read so slow?"], // 1
   [14.92, 20.72, "On the way it crosses about a dozen blocks on two chips. To software, it is one black box.", "On the way, it crosses about a dozen blocks on two chips. To software, it is one black box."], // 2
-  [21.07, 29.75, "Our rules: no hardware changes, no kernel patches, no root shell. Just a stopwatch, the chips' counters, and six `chown`s.", "Our rules: no hardware changes, no kernel patches, no root shell. Just a stopwatch, the chips' own counters, and six file permissions."], // 3
+  [21.07, 29.75, "Our rules: no hardware changes, no kernel patches, no root\u00a0shell. Just a stopwatch, the chips' counters, and six `chown`s.", "Our rules: no hardware changes, no kernel patches, no root shell. Just a stopwatch, the chips' own counters, and six file permissions."], // 3
   [30.10, 37.04, "Three rounds of measurement cut it into **six stages**, each checked two independent ways. Here is how.", "Three rounds of measurement cut it into six stages, each checked two independent ways. Here is how, and the traps along the way."], // 4
 ];
 const DUR = 38.44; // <dur>

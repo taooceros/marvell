@@ -38,16 +38,19 @@ def timing(sc):
     return rows, round(t + TAIL - GAP, 2)
 
 
+def js(v):
+    """JSON string literal for a cue block; no-break spaces stay visible as \\u00a0 escapes."""
+    return json.dumps(v, ensure_ascii=False).replace("\u00a0", "\\u00a0")
+
+
 def cue_block(sc):
     rows, dur = timing(sc)
     lines = ["const cues: Cue[] = ["]
     for i, (s, e, cap, spk, _) in enumerate(rows):
         if spk is None:
-            lines.append(f"  [{s:.2f}, {e:.2f}, {json.dumps(cap, ensure_ascii=False)}], // {i}")
+            lines.append(f"  [{s:.2f}, {e:.2f}, {js(cap)}], // {i}")
         else:
-            lines.append(
-                f"  [{s:.2f}, {e:.2f}, {json.dumps(cap, ensure_ascii=False)}, {json.dumps(spk, ensure_ascii=False)}], // {i}"
-            )
+            lines.append(f"  [{s:.2f}, {e:.2f}, {js(cap)}, {js(spk)}], // {i}")
     lines.append("];")
     lines.append(f"const DUR = {dur:.2f}; // <dur>")
     return "\n".join(lines), dur
