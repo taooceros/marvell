@@ -1,0 +1,177 @@
+{
+  "started_utc": "2026-11-25T01:22:22Z",
+  "rounds_per_rep": 30000,
+  "reps": 3,
+  "pre": {
+    "host": {
+      "cpu40_gov": "performance",
+      "cpu40_cur_khz": 3900000,
+      "uncore_khz": {
+        "package_00_die_00": {
+          "min": 2200000,
+          "max": 2200000,
+          "current": 2200000
+        },
+        "package_01_die_01": {
+          "min": 2200000,
+          "max": 2200000,
+          "current": 2200000
+        }
+      },
+      "perf_event_paranoid": 0,
+      "dsa2_state": "enabled",
+      "dsa2_pasid_enabled": 1,
+      "dsa2_swerror": "00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000",
+      "dsa2_active_engines_group0": 1,
+      "wq2_0_mode": "dedicated",
+      "wq2_0_type": "user",
+      "wq2_0_size": 128,
+      "cn106_aer": {
+        "cor": 0,
+        "nonfatal": 0,
+        "fatal": 0
+      },
+      "dsa2_aer": {
+        "cor": 0,
+        "nonfatal": 0,
+        "fatal": 0
+      },
+      "rp_98_01_aer": {
+        "cor": 0,
+        "nonfatal": 0,
+        "fatal": 0
+      },
+      "host_edac_ce": {
+        "mc0": 0,
+        "mc1": 0,
+        "mc2": 0,
+        "mc3": 0,
+        "mc4": 0,
+        "mc5": 0,
+        "mc6": 0,
+        "mc7": 0
+      },
+      "host_edac_ue": {
+        "mc0": 0,
+        "mc1": 0,
+        "mc2": 0,
+        "mc3": 0,
+        "mc4": 0,
+        "mc5": 0,
+        "mc6": 0,
+        "mc7": 0
+      },
+      "host_bin_sha256": "ca274da23bf3deeeaf3454e06c311d10ba75ca5eb049d37d4437beea3ae1b5ab"
+    },
+    "card": {
+      "card_cpu3_khz": 2000000,
+      "pem_wc_loaded": 0,
+      "mc0_ce": 0,
+      "mc0_ue": 0,
+      "sei_uer": 0,
+      "eth0_driver": "rvu_nicpf",
+      "eth0_link": "100000Mb/s_yes",
+      "refl_tmux": "running",
+      "card_bin_sha256": "dd0a613f9d6570e7569fb8feac42fccc6086aebcf5252e426a4b2d5d7ed104f0"
+    }
+  },
+  "card_start_log": "mrv190_card: BAR4 slot 15 ready pa=0x1ff800000 cpu=3 cntfrq=1000000000 ddr_ch=6 control=10.10.0.2:7526 sync=10.10.0.2:7527",
+  "spec_probes": [
+    {
+      "name": "standalone_b2b_idxd_op_flag_fence_1",
+      "rc": 0,
+      "err_ops": 1,
+      "first_err_st": "0x11",
+      "swerror_zero": true,
+      "expected_status": "0x11 (DSA_COMP_INVALID_FLAGS)"
+    }
+  ],
+  "status": "completed",
+  "accepted_runs": 168,
+  "refl_pane_tail": [
+    "EAL: Selected IOVA mode 'VA'",
+    "EAL: VFIO support initialized",
+    "EAL: Using IOMMU type 1 (Type 1)",
+    "CNXK: RoC Model: cn10ka_b0 (HW_PLATFORM)",
+    "reflector running on port 0"
+  ],
+  "restore_notes": [
+    "dsa2_engines=1",
+    "card_restore=",
+    "refl=running"
+  ],
+  "finished_utc": "2026-11-25T01:23:20Z",
+  "post": {
+    "host": {
+      "cpu40_gov": "performance",
+      "cpu40_cur_khz": 3900000,
+      "uncore_khz": {
+        "package_00_die_00": {
+          "min": 2200000,
+          "max": 2200000,
+          "current": 2200000
+        },
+        "package_01_die_01": {
+          "min": 2200000,
+          "max": 2200000,
+          "current": 2200000
+        }
+      },
+      "perf_event_paranoid": 0,
+      "dsa2_state": "enabled",
+      "dsa2_pasid_enabled": 1,
+      "dsa2_swerror": "00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000",
+      "dsa2_active_engines_group0": 1,
+      "wq2_0_mode": "dedicated",
+      "wq2_0_type": "user",
+      "wq2_0_size": 128,
+      "cn106_aer": {
+        "cor": 0,
+        "nonfatal": 0,
+        "fatal": 0
+      },
+      "dsa2_aer": {
+        "cor": 0,
+        "nonfatal": 0,
+        "fatal": 0
+      },
+      "rp_98_01_aer": {
+        "cor": 0,
+        "nonfatal": 0,
+        "fatal": 0
+      },
+      "host_edac_ce": {
+        "mc0": 0,
+        "mc1": 0,
+        "mc2": 0,
+        "mc3": 0,
+        "mc4": 0,
+        "mc5": 0,
+        "mc6": 0,
+        "mc7": 0
+      },
+      "host_edac_ue": {
+        "mc0": 0,
+        "mc1": 0,
+        "mc2": 0,
+        "mc3": 0,
+        "mc4": 0,
+        "mc5": 0,
+        "mc6": 0,
+        "mc7": 0
+      },
+      "host_bin_sha256": "ca274da23bf3deeeaf3454e06c311d10ba75ca5eb049d37d4437beea3ae1b5ab"
+    },
+    "card": {
+      "card_cpu3_khz": 2000000,
+      "pem_wc_loaded": 0,
+      "mc0_ce": 0,
+      "mc0_ue": 0,
+      "sei_uer": 0,
+      "eth0_driver": "rvu_nicpf",
+      "eth0_link": "100000Mb/s_yes",
+      "refl_tmux": "running",
+      "card_bin_sha256": "dd0a613f9d6570e7569fb8feac42fccc6086aebcf5252e426a4b2d5d7ed104f0"
+    }
+  }
+}
