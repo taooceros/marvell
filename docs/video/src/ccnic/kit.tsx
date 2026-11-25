@@ -66,17 +66,17 @@ export const CC_STAGES: { label: string; color: string }[] = [
 ];
 
 /** Minimal progress rail: dots on a hairline, label under each; active dot ringed in its colour. */
-export function StoryRail({ active }: { active: number }) {
+export function StoryRail({ active, stages = CC_STAGES }: { active: number; stages?: { label: string; color: string }[] }) {
   const x0 = 1150;
   const x1 = 1800;
-  const n = CC_STAGES.length;
+  const n = stages.length;
   const step = (x1 - x0) / (n - 1);
   const y = 52;
   return (
     <svg width={W} height={120} style={{ position: "absolute", left: 0, top: 0 }}>
       <line x1={x0} y1={y} x2={x1} y2={y} stroke={P.hair2} strokeWidth={1.5} />
-      <line x1={x0} y1={y} x2={x0 + step * active} y2={y} stroke={alpha(CC_STAGES[active].color, 0.7)} strokeWidth={2} />
-      {CC_STAGES.map((s, i) => {
+      <line x1={x0} y1={y} x2={x0 + step * active} y2={y} stroke={alpha(stages[active].color, 0.7)} strokeWidth={2} />
+      {stages.map((s, i) => {
         const x = x0 + i * step;
         const on = i === active;
         const done = i < active;
@@ -87,8 +87,8 @@ export function StoryRail({ active }: { active: number }) {
               cx={x}
               cy={y}
               r={on ? 7 : 5}
-              fill={on ? s.color : done ? alpha(CC_STAGES[active].color, 0.75) : P.bg0}
-              stroke={on ? s.color : done ? alpha(CC_STAGES[active].color, 0.75) : P.faint}
+              fill={on ? s.color : done ? alpha(stages[active].color, 0.75) : P.bg0}
+              stroke={on ? s.color : done ? alpha(stages[active].color, 0.75) : P.faint}
               strokeWidth={1.5}
             />
             <text
@@ -219,14 +219,25 @@ function Backdrop() {
   );
 }
 
-export function CcnicScene({ def, warp, voiceMap }: { def: SceneDef; warp: Warp; voiceMap: Record<string, number> }) {
+/** Scene shell (backdrop, title block, rail, captions, narration). `stages` defaults to the CcnicPaperStory rail. */
+export function CcnicScene({
+  def,
+  warp,
+  voiceMap,
+  stages = CC_STAGES,
+}: {
+  def: SceneDef;
+  warp: Warp;
+  voiceMap: Record<string, number>;
+  stages?: { label: string; color: string }[];
+}) {
   const f = useCurrentFrame();
   const total = Math.ceil(warp.realDur * FPS);
   const fadeK = Math.min(clamp01(f / 12), clamp01((total - 1 - f) / 10));
   const Body = def.C;
-  const accent = def.stage === undefined ? P.sub : CC_STAGES[def.stage].color;
-  const chapter = def.id.replace(/^C/, "");
-  const kickerText = def.stage === undefined ? chapter : `${chapter}  ·  ${CC_STAGES[def.stage].label.toUpperCase()}`;
+  const accent = def.stage === undefined ? P.sub : stages[def.stage].color;
+  const chapter = def.id.replace(/^[A-Z]+/, "");
+  const kickerText = def.stage === undefined ? chapter : `${chapter}  ·  ${stages[def.stage].label.toUpperCase()}`;
   return (
     <SceneCtx.Provider value={{ def, warp }}>
       <AbsoluteFill style={{ fontFamily: FONT, color: P.ink, background: P.bg0 }}>
@@ -247,7 +258,7 @@ export function CcnicScene({ def, warp, voiceMap }: { def: SceneDef; warp: Warp;
         )}
         {def.stage !== undefined && (
           <div style={{ opacity: fadeK }}>
-            <StoryRail active={def.stage} />
+            <StoryRail active={def.stage} stages={stages} />
           </div>
         )}
         <CcCaptions />
