@@ -75,9 +75,9 @@ def main():
         arrowprops=dict(arrowstyle="->", color="#cf222e", lw=1.0),
     )
     ax1.annotate(
-        f"1 KiB 滞后主峰行 8–10、14\n(最高 {p1024_rev[9]:.2f}%，跨度达行 0)",
-        xy=(9, p1024_rev[9]), xytext=(7.2, 6.2),
-        fontsize=8.4, color="#0969da", fontweight="bold",
+        f"1 KiB 滞后主峰行 8–10、14\n(行 9 达 {p1024_rev[9]:.2f}%，行 14 达 {p1024_rev[14]:.2f}%，跨度达行 0)",
+        xy=(9, p1024_rev[9]), xytext=(5.5, 6.22),
+        fontsize=8.2, color="#0969da", fontweight="bold",
         arrowprops=dict(arrowstyle="->", color="#0969da", lw=1.0),
     )
 
@@ -87,7 +87,7 @@ def main():
     ax1.set_ylim(0, 7.3)
     ax1.set_xlabel("前序 64 B 缓存行索引（尾行分别为 512 B 的行 7 与 1 KiB 的行 15）", fontsize=9.6)
     ax1.set_ylabel("该行未落地观测比例 (%)", fontsize=10)
-    ax1.set_title("A. 组 4：CPU 无 SFENCE MOVDIR64B 逐行未落地实测分布（90,000 笔汇总）", fontsize=10.4, fontweight="bold", pad=10)
+    ax1.set_title("A. 组 4：CPU 无 SFENCE MOVDIR64B 逐行未落地（BAR4+0，90,000 笔）", fontsize=10.2, fontweight="bold", pad=10)
     ax1.legend(loc="upper left", fontsize=8.2, frameon=True, facecolor="white", framealpha=0.92)
 
     # ---- Panel B: 4-engine DSA back-to-back 4 KiB + independent doorbell ----
@@ -127,12 +127,12 @@ def main():
     lb_60_59 = (c_fcth[59] - c_fcth[60]) * 100.0 / n_fcth
     ax2.text(
         0.03, 0.72,
-        "4 引擎双描述符交叠期间实测边际下界（反扫 63→0，机制待查）：\n"
+        "独立门铃外部触发快照边际下界（反扫 63→0，单引擎搬运 4 KiB）：\n"
         f"• 行 62 已可见，更晚读出的行 61 仍缺：≥ {lb_62_61:.1f}%\n"
         f"• 行 60 已可见，更晚读出的行 59 仍缺：≥ {lb_60_59:.1f}%\n"
-        f"• 全部缺失行均零错收敛（收敛耗时 p50 = {conv_p50:.0f} ns；持久错误 0）",
+        f"• 全部缺失行零错收敛（快照后重读 p50 = {conv_p50:.0f} ns，含计测底噪；持久错 0）",
         transform=ax2.transAxes,
-        fontsize=8.2,
+        fontsize=8.0,
         va="top",
         bbox=dict(boxstyle="round,pad=0.45", facecolor="#fff8c5", edgecolor="#d4a72c", alpha=0.92),
     )

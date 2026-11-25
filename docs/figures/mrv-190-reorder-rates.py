@@ -6,8 +6,8 @@ Reads raw verified runs directly from `logs/mrv190-2026-11-25/runs.jsonl`.
 import json
 import statistics
 from collections import defaultdict
+from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
-
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -40,6 +40,9 @@ def med_comp(items):
     return statistics.median(x["dsa_comp_ns"]["p50"] for x in items)
 
 
+def round_half_up(v: float) -> int:
+    return int(Decimal(f"{v:.6f}").quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+
 def main():
     rows, by_lbl = load_by_label()
 
@@ -65,7 +68,7 @@ def main():
 
     bars = [
         ("正向参照：故意先写尾行 (4 KiB)", med_pct(by_lbl["pos_ctrl_rev_4096B"]), "#6e7781",
-         f"{med_pct(by_lbl['pos_ctrl_rev_4096B']):.2f}%  (探针灵敏度基准)"),
+         f"{med_pct(by_lbl['pos_ctrl_rev_4096B']):.2f}%  (含 sfence，>130 ns 基准)"),
         ("组 2：DSA 背靠背 FENCE=0 (4 引擎, 前冷尾热)", med_pct(by_lbl["dsa_b2b_4096B_fcth_e4_f0"]), "#cf222e",
          f"{med_pct(by_lbl['dsa_b2b_4096B_fcth_e4_f0']):.2f}%  (span≤64行)"),
         ("组 2：DSA 背靠背 + DRAIN (4 引擎, 前冷尾热)", med_pct(by_lbl["dsa_b2b_4096B_fcth_e4_drain"]), "#cf222e",
@@ -77,15 +80,15 @@ def main():
         ("组 4：CPU 无 SFENCE MOVDIR64B (512 B, 正扫)", med_pct(by_lbl["movdir_nf_512B_hot_uc_fwd"]), "#0969da",
          f"{med_pct(by_lbl['movdir_nf_512B_hot_uc_fwd']):.2f}%  (反扫 {med_pct(by_lbl['movdir_nf_512B_hot_uc_rev']):.2f}%)"),
         ("组 4：CPU 无 SFENCE MOVDIR64B (128/256 B/4 KiB)", 0.0, "#8c959f",
-         "0.000%  (0 / 270k, 固定首址)"),
+         "0.000%  (0 / 270k, 固定首址 BAR4+0)"),
         ("组 1：单笔 DSA MEMMOVE (全尺寸×全热冷×1/4引擎)", 0.0, "#1a7f37",
-         f"0.000%  (0 / {g1_tot//1000:,}k)"),
+         f"0.000%  (0 / {g1_tot//1000:,}k, W=1)"),
         ("组 2：DSA Batch(2) FENCE=0 / FENCE=1 (1&4 引擎)", 0.0, "#1a7f37",
-         f"0.000%  (0 / {g2_batch_tot//1000:,}k)"),
+         f"0.000%  (0 / {g2_batch_tot//1000:,}k, W=1)"),
         ("组 2：DSA 背靠背 (仅 1 引擎, FENCE=0 / DRAIN)", 0.0, "#1a7f37",
-         f"0.000%  (0 / {g2_b2b_1e_tot//1000:,}k)"),
+         f"0.000%  (0 / {g2_b2b_1e_tot//1000:,}k, W=1)"),
         ("组 3：主机等 DSA 完成 + SFENCE + MOVDIR64B 门铃", 0.0, "#1a7f37",
-         f"0.000%  (0 / {g3_tot//1000:,}k)"),
+         f"0.000%  (0 / {g3_tot//1000:,}k, W=1)"),
         ("组 4 对照：CPU 尾行前加 SFENCE MOVDIR64B", 0.0, "#1a7f37",
          f"0.000%  (0 / {g4_fenced_tot//1000:,}k)"),
     ]
@@ -102,7 +105,7 @@ def main():
     ax1.set_yticks(y_pos)
     ax1.set_yticklabels(labels, fontsize=9.2)
     ax1.invert_yaxis()
-    ax1.set_xlim(0, 150)
+    ax1.set_xlim(0, 162)
     ax1.set_xlabel("CN106 卡核 ldar 实时检出的乱序落地比例 (%)", fontsize=10)
     ax1.set_title("A. 四组对照乱序观测比例总览（n = 3 中位数，持久错写全为 0）", fontsize=11, fontweight="bold", pad=10)
     ax1.grid(axis="x", alpha=0.3)
@@ -118,28 +121,33 @@ def main():
 
     # Panel B: 4 KiB independent doorbell (front-cold-tail-hot): Reorder % vs Host DSA Completion p50 Latency
     pts = [
-        ("背靠背 FENCE=0 (4引擎)", by_lbl["dsa_b2b_4096B_fcth_e4_f0"], "#cf222e", "X", (-12, -36), "left"),
-        ("背靠背 + DRAIN (4引擎)", by_lbl["dsa_b2b_4096B_fcth_e4_drain"], "#e16f24", "D", (22, -6), "left"),
-        ("主机等完成 + SFENCE\n+ MOVDIR64B (4引擎)", by_lbl["dsa_comp_db_4096B_fcth_e4"], "#1a7f37", "s", (-22, 18), "left"),
-        ("背靠背 FENCE=0\n(仅 1 引擎)", by_lbl["dsa_b2b_4096B_fcth_e1_f0"], "#0969da", "o", (-8, 66), "center"),
-        ("Batch(2) FENCE=0\n(4引擎)", by_lbl["dsa_batch_4096B_fcth_e4_f0"], "#8250df", "^", (0, 62), "center"),
-        ("Batch(2) FENCE=1\n(4引擎)", by_lbl["dsa_batch_4096B_fcth_e4_f1"], "#116329", "P", (24, 18), "right"),
+        ("背靠背 FENCE=0 (4引擎)", by_lbl["dsa_b2b_4096B_fcth_e4_f0"], "#cf222e", "X", (-12, -36), "left", False),
+        ("背靠背 + DRAIN (4引擎)", by_lbl["dsa_b2b_4096B_fcth_e4_drain"], "#e16f24", "D", (22, -6), "left", False),
+        ("主机等完成 + SFENCE\n+ MOVDIR64B (4引擎)", by_lbl["dsa_comp_db_4096B_fcth_e4"], "#1a7f37", "s", (-32, 16), "left", True),
+        ("背靠背 FENCE=0\n(仅 1 引擎)", by_lbl["dsa_b2b_4096B_fcth_e1_f0"], "#0969da", "o", (18, 66), "center", False),
+        ("Batch(2) FENCE=0\n(4引擎)", by_lbl["dsa_batch_4096B_fcth_e4_f0"], "#8250df", "^", (0, 62), "center", False),
+        ("Batch(2) FENCE=1\n(4引擎)", by_lbl["dsa_batch_4096B_fcth_e4_f1"], "#116329", "P", (24, 18), "right", False),
     ]
 
     ax2.axhspan(-3.5, 3.5, color="#dafbe1", alpha=0.55, zorder=0)
-    ax2.text(900, -6.5, "浅绿带 = 0.000% 实测零乱序", ha="left", va="top", fontsize=8.1, color="#116329")
+    ax2.text(890, -6.5, "浅绿带 = 0.000% 实测零乱序 (W = 1)", ha="left", va="top", fontsize=8.0, color="#116329")
 
-    for name, items, col, mk, (dx, dy), ha in pts:
+    for name, items, col, mk, (dx, dy), ha, comp_only in pts:
         x = med_comp(items)
         y = med_pct(items)
+        xr = round_half_up(x)
         ax2.scatter([x], [y], s=115, color=col, marker=mk, zorder=4, edgecolors="white", linewidth=0.9)
+        if comp_only:
+            lbl_txt = f"{name}\n({xr} ns*, {y:.2f}%)\n*仅载荷 dsa_comp"
+        else:
+            lbl_txt = f"{name}\n({xr} ns, {y:.2f}%)"
         ax2.annotate(
-            f"{name}\n({x:.0f} ns, {y:.2f}%)",
+            lbl_txt,
             xy=(x, y),
             xytext=(dx, dy),
             textcoords="offset points",
             ha=ha,
-            fontsize=8.1,
+            fontsize=8.0,
             color="#1f2328",
             arrowprops=dict(arrowstyle="-", color="#8c959f", lw=0.9),
         )
@@ -150,19 +158,23 @@ def main():
         "", xy=(x1, -2.5), xytext=(x0, -2.5),
         arrowprops=dict(arrowstyle="<->", color="#116329", lw=1.3),
     )
-    ax2.text((x0 + x1) / 2, -6.5, f"FENCE=1 开销 +{x1 - x0:.0f} ns", ha="center", va="top",
-             fontsize=8.3, color="#116329", fontweight="bold")
+    ax2.text((x0 + x1) / 2, -6.5, f"FENCE=1 开销 +{round_half_up(x1 - x0)} ns", ha="center", va="top",
+             fontsize=8.2, color="#116329", fontweight="bold")
 
     ax2.set_xlim(860, 2240)
     ax2.set_ylim(-14, 112)
     ax2.set_xlabel("主机侧 DSA 完成记录 p50 耗时 (ns)", fontsize=10)
     ax2.set_ylabel("独立门铃早到比例 (%)", fontsize=10)
-    ax2.set_title("B. 4 KiB 独立门铃（前冷尾热）：安全性 vs 延迟权衡", fontsize=11, fontweight="bold", pad=10)
+    ax2.set_title("B. 4 KiB 独立门铃（前冷尾热，W = 1）：安全性 vs 延迟权衡", fontsize=10.8, fontweight="bold", pad=10)
     ax2.text(
-        0.02, 0.57,
-        "硬件规范实测补充：\n非 Batch 独立描述符置 IDXD_OP_FLAG_FENCE=1\n被 dsa2 直接拒收 (status = 0x11 INVALID_FLAGS)",
+        0.02, 0.59,
+        "硬件规范与口径说明：\n"
+        "• 非 Batch 独立描述符置 IDXD_OP_FLAG_FENCE=1\n"
+        "  被 dsa2 直接拒收 (status = 0x11 INVALID_FLAGS)\n"
+        "• *组 3 横轴 1009 ns 截停于载荷 dsa_comp，\n"
+        "  尚未包含随后 SFENCE + MOVDIR64B 敲门铃耗时",
         transform=ax2.transAxes,
-        fontsize=8.1,
+        fontsize=7.9,
         va="center",
         bbox=dict(boxstyle="round,pad=0.42", facecolor="#f6f8fa", edgecolor="#d0d7de"),
     )
