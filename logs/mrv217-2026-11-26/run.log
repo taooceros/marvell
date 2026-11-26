@@ -1,0 +1,167 @@
+[2026-11-26T22:02:37Z] === V1A: DPDK 24.11 nb_txq=1 (ROC_NIX_TM_DEFAULT TL4=0x3007 bug) with BP=1 ===
+[2026-11-26T22:02:39Z]   TM topo (q=1): ['0x3007']
+[2026-11-26T22:02:43Z]   V1A rep=0 q1_bp1_d256_bug: rx=4.566M(55.5G) lost=433199 ret=0 fp=32
+[2026-11-26T22:02:46Z]   V1A rep=1 q1_bp1_d256_bug: rx=4.566M(55.5G) lost=433334 ret=0 fp=32
+[2026-11-26T22:02:50Z]   V1A rep=2 q1_bp1_d256_bug: rx=4.566M(55.5G) lost=433260 ret=0 fp=32
+[2026-11-26T22:02:52Z]   TM topo (q=2): ['0x3008', '0x3009']
+[2026-11-26T22:02:52Z] === V1B: 64B high-rate WMARK=64 skid boundary (zero card FIFO overflow, n=3 interleaved) ===
+[2026-11-26T22:02:55Z]   V1B rep=0 64B_14M_fifo_bp0_d256   : rx=11.687M lost=2309901 ooo= 85 ret=      0 fp=   32 dr=280
+[2026-11-26T22:02:59Z]   V1B rep=0 64B_14M_fifo_bp1_d256   : rx=13.993M lost=      9 ooo=  2 ret=1488830 fp=27075 dr=287
+[2026-11-26T22:03:03Z]   V1B rep=0 64B_14M_fifo_bp1_d512   : rx=13.985M lost=      0 ooo=  0 ret=1480900 fp=26895 dr=512
+[2026-11-26T22:03:06Z]   V1B rep=0 64B_14M_fifo_cr_d256    : rx=13.986M lost=      0 ooo=  0 ret=      0 fp=28188 dr=128
+[2026-11-26T22:03:10Z]   V1B rep=0 64B_25M_nofifo_bp1_d256 : rx=22.604M lost=      0 ooo=  0 ret=4610930 fp=    0 dr=280
+[2026-11-26T22:03:13Z]   V1B rep=0 64B_25M_nofifo_bp1_d512 : rx=22.618M lost=      0 ooo=  0 ret=4571851 fp=    0 dr=512
+[2026-11-26T22:03:17Z]   V1B rep=0 64B_25M_nofifo_cr_d256  : rx=21.554M lost=      0 ooo=  0 ret=      0 fp=    0 dr=128
+[2026-11-26T22:03:20Z]   V1B rep=1 64B_25M_nofifo_cr_d256  : rx=21.568M lost=      0 ooo=  0 ret=      0 fp=    0 dr=128
+[2026-11-26T22:03:23Z]   V1B rep=1 64B_25M_nofifo_bp1_d512 : rx=22.620M lost=      0 ooo=  0 ret=4572634 fp=    0 dr=512
+[2026-11-26T22:03:27Z]   V1B rep=1 64B_25M_nofifo_bp1_d256 : rx=22.603M lost=      0 ooo=  0 ret=4587666 fp=    0 dr=285
+[2026-11-26T22:03:30Z]   V1B rep=1 64B_14M_fifo_cr_d256    : rx=13.983M lost=      0 ooo=  0 ret=      0 fp=28201 dr=128
+[2026-11-26T22:03:34Z]   V1B rep=1 64B_14M_fifo_bp1_d512   : rx=13.986M lost=      0 ooo=  0 ret=1469468 fp=26869 dr=512
+[2026-11-26T22:03:38Z]   V1B rep=1 64B_14M_fifo_bp1_d256   : rx=13.987M lost=      6 ooo=  1 ret=1483744 fp=27081 dr=287
+[2026-11-26T22:03:41Z]   V1B rep=1 64B_14M_fifo_bp0_d256   : rx=11.688M lost=2309725 ooo= 87 ret=      0 fp=   32 dr=285
+[2026-11-26T22:03:44Z]   V1B rep=2 64B_14M_fifo_bp0_d256   : rx=11.687M lost=2310060 ooo= 84 ret=      0 fp=   32 dr=287
+[2026-11-26T22:03:48Z]   V1B rep=2 64B_14M_fifo_bp1_d256   : rx=13.981M lost=     20 ooo=  2 ret=1491618 fp=27086 dr=285
+[2026-11-26T22:03:51Z]   V1B rep=2 64B_14M_fifo_bp1_d512   : rx=13.985M lost=      0 ooo=  0 ret=1483440 fp=26894 dr=512
+[2026-11-26T22:03:55Z]   V1B rep=2 64B_14M_fifo_cr_d256    : rx=13.985M lost=      0 ooo=  0 ret=      0 fp=28197 dr=128
+[2026-11-26T22:03:58Z]   V1B rep=2 64B_25M_nofifo_bp1_d256 : rx=22.607M lost=      0 ooo=  0 ret=4611183 fp=    0 dr=283
+[2026-11-26T22:04:02Z]   V1B rep=2 64B_25M_nofifo_bp1_d512 : rx=22.624M lost=      0 ooo=  0 ret=4505398 fp=    0 dr=512
+[2026-11-26T22:04:05Z]   V1B rep=2 64B_25M_nofifo_cr_d256  : rx=21.533M lost=      0 ooo=  0 ret=      0 fp=    0 dr=128
+[2026-11-26T22:04:05Z] === V2_D1: E1 single-queue 1500B@5Mpps 1ms/10ms pause (8 configs x n=3 interleaved) ===
+[2026-11-26T22:04:09Z]   D1  rep=0 d1_bp0_d256      : rx=4.566M(55.5G) lost=433103 ret=      0 fp=   32 dr=262 rf_p50=0.6us rf_max=0.9us
+[2026-11-26T22:04:12Z]   D1  rep=0 d1_bp0_d512      : rx=4.589M(55.8G) lost=410737 ret=      0 fp=   32 dr=519 rf_p50=0.6us rf_max=0.9us
+[2026-11-26T22:04:15Z]   D1  rep=0 d1_bp1_d256      : rx=4.999M(60.8G) lost=     0 ret=2923151 fp= 4089 dr=263 rf_p50=0.6us rf_max=1.1us
+[2026-11-26T22:04:19Z]   D1  rep=0 d1_bp1_d512      : rx=4.999M(60.8G) lost=     0 ret=2782291 fp= 3890 dr=519 rf_p50=0.6us rf_max=0.9us
+[2026-11-26T22:04:22Z]   D1  rep=0 d1_cr_d256_r128  : rx=4.999M(60.8G) lost=     0 ret=      0 fp= 5000 dr=128 rf_p50=0.6us rf_max=0.9us
+[2026-11-26T22:04:26Z]   D1  rep=0 d1_cr_d512_r256  : rx=4.999M(60.8G) lost=     0 ret=      0 fp= 4873 dr=256 rf_p50=0.6us rf_max=1.0us
+[2026-11-26T22:04:29Z]   D1  rep=0 d1_cr_d256_r64   : rx=4.999M(60.8G) lost=     0 ret=      0 fp= 5080 dr= 64 rf_p50=0.7us rf_max=1.0us
+[2026-11-26T22:04:33Z]   D1  rep=0 d1_cr_d256_96kib : rx=4.999M(60.8G) lost=     0 ret=      0 fp= 5056 dr= 65 rf_p50=0.6us rf_max=1.0us
+[2026-11-26T22:04:36Z]   D1  rep=1 d1_cr_d256_96kib : rx=4.999M(60.8G) lost=     0 ret=      0 fp= 5060 dr= 65 rf_p50=0.7us rf_max=0.9us
+[2026-11-26T22:04:39Z]   D1  rep=1 d1_cr_d256_r64   : rx=4.999M(60.8G) lost=     0 ret=      0 fp= 5057 dr= 64 rf_p50=0.6us rf_max=1.0us
+[2026-11-26T22:04:43Z]   D1  rep=1 d1_cr_d512_r256  : rx=4.999M(60.8G) lost=     0 ret=      0 fp= 4879 dr=256 rf_p50=0.7us rf_max=1.0us
+[2026-11-26T22:04:46Z]   D1  rep=1 d1_cr_d256_r128  : rx=4.999M(60.8G) lost=     0 ret=      0 fp= 4995 dr=128 rf_p50=0.6us rf_max=1.0us
+[2026-11-26T22:04:50Z]   D1  rep=1 d1_bp1_d512      : rx=4.999M(60.8G) lost=     0 ret=2779748 fp= 3899 dr=529 rf_p50=0.6us rf_max=1.0us
+[2026-11-26T22:04:53Z]   D1  rep=1 d1_bp1_d256      : rx=4.999M(60.8G) lost=     0 ret=2926956 fp= 4082 dr=263 rf_p50=0.6us rf_max=1.0us
+[2026-11-26T22:04:57Z]   D1  rep=1 d1_bp0_d512      : rx=4.588M(55.8G) lost=410782 ret=      0 fp=   32 dr=518 rf_p50=0.6us rf_max=1.0us
+[2026-11-26T22:05:00Z]   D1  rep=1 d1_bp0_d256      : rx=4.566M(55.5G) lost=432907 ret=      0 fp=   32 dr=260 rf_p50=0.6us rf_max=1.0us
+[2026-11-26T22:05:03Z]   D1  rep=2 d1_bp0_d256      : rx=4.566M(55.5G) lost=433202 ret=      0 fp=   32 dr=262 rf_p50=0.7us rf_max=1.0us
+[2026-11-26T22:05:07Z]   D1  rep=2 d1_bp0_d512      : rx=4.589M(55.8G) lost=410110 ret=      0 fp=   32 dr=517 rf_p50=0.6us rf_max=0.9us
+[2026-11-26T22:05:10Z]   D1  rep=2 d1_bp1_d256      : rx=4.999M(60.8G) lost=     0 ret=2925425 fp= 4078 dr=263 rf_p50=0.6us rf_max=0.9us
+[2026-11-26T22:05:14Z]   D1  rep=2 d1_bp1_d512      : rx=4.999M(60.8G) lost=     0 ret=2778753 fp= 3902 dr=519 rf_p50=0.6us rf_max=1.0us
+[2026-11-26T22:05:17Z]   D1  rep=2 d1_cr_d256_r128  : rx=4.999M(60.8G) lost=     0 ret=      0 fp= 4995 dr=128 rf_p50=0.6us rf_max=1.0us
+[2026-11-26T22:05:21Z]   D1  rep=2 d1_cr_d512_r256  : rx=4.999M(60.8G) lost=     0 ret=      0 fp= 4872 dr=256 rf_p50=0.6us rf_max=0.9us
+[2026-11-26T22:05:24Z]   D1  rep=2 d1_cr_d256_r64   : rx=4.999M(60.8G) lost=     0 ret=      0 fp= 5056 dr= 64 rf_p50=0.6us rf_max=0.9us
+[2026-11-26T22:05:27Z]   D1  rep=2 d1_cr_d256_96kib : rx=4.999M(60.8G) lost=     0 ret=      0 fp= 5060 dr= 65 rf_p50=0.6us rf_max=0.9us
+[2026-11-26T22:05:27Z] === V2_D2: E1 dual-queue Q0 healthy (3.0M) + Q1 8ms/10ms pause & 60ms zero-overflow freeze (n=3) ===
+[2026-11-26T22:05:31Z]   D2  rep=0 d2_bp0_d512          : Q0=3.000M(lost=0,p99=1.44us,max=10.3us,ret=0) Q1=0.861M(lost=639074,dr=515,ret=0,fp=13,rf_max=0.8us)
+[2026-11-26T22:05:34Z]   D2  rep=0 d2_bp1_d256          : Q0=3.000M(lost=0,p99=1.57us,max=45.5us,ret=0) Q1=1.494M(lost=0,dr=264,ret=6311272,fp=11016,rf_max=1.0us)
+[2026-11-26T22:05:38Z]   D2  rep=0 d2_bp1_d512          : Q0=3.000M(lost=0,p99=1.57us,max=45.9us,ret=0) Q1=1.495M(lost=0,dr=520,ret=6163290,fp=10831,rf_max=1.0us)
+[2026-11-26T22:05:41Z]   D2  rep=0 d2_bp1_q1only_d256   : Q0=3.000M(lost=0,p99=1.61us,max=45.5us,ret=0) Q1=1.494M(lost=0,dr=264,ret=6279852,fp=11031,rf_max=1.0us)
+[2026-11-26T22:05:45Z]   D2  rep=0 d2_cr_d256_r128      : Q0=3.000M(lost=0,p99=1.61us,max=48.6us,ret=0) Q1=1.494M(lost=0,dr=127,ret=0,fp=11932,rf_max=1.0us)
+[2026-11-26T22:05:48Z]   D2  rep=0 d2_cr_d512_r256      : Q0=3.000M(lost=0,p99=1.60us,max=47.1us,ret=0) Q1=1.494M(lost=0,dr=256,ret=0,fp=11807,rf_max=1.0us)
+[2026-11-26T22:05:52Z]   D2  rep=0 d2_freeze60_bp1_d256 : Q0=3.000M(lost=0,p99=1.45us,max=12.6us,ret=0) Q1=1.500M(lost=0,dr=263,ret=3377286,fp=89017,rf_max=1.3us)
+[2026-11-26T22:05:55Z]   D2  rep=0 d2_freeze60_cr_r128  : Q0=3.000M(lost=0,p99=1.50us,max=15.1us,ret=0) Q1=1.500M(lost=0,dr=123,ret=0,fp=89926,rf_max=1.0us)
+[2026-11-26T22:05:59Z]   D2  rep=1 d2_freeze60_cr_r128  : Q0=3.000M(lost=0,p99=1.48us,max=8.9us,ret=0) Q1=1.500M(lost=0,dr=123,ret=0,fp=89920,rf_max=0.9us)
+[2026-11-26T22:06:02Z]   D2  rep=1 d2_freeze60_bp1_d256 : Q0=3.000M(lost=0,p99=1.45us,max=10.8us,ret=0) Q1=1.500M(lost=0,dr=261,ret=3126970,fp=89009,rf_max=0.9us)
+[2026-11-26T22:06:06Z]   D2  rep=1 d2_cr_d512_r256      : Q0=3.000M(lost=0,p99=1.59us,max=45.5us,ret=0) Q1=1.494M(lost=0,dr=256,ret=0,fp=11806,rf_max=1.2us)
+[2026-11-26T22:06:09Z]   D2  rep=1 d2_cr_d256_r128      : Q0=3.000M(lost=0,p99=1.62us,max=45.7us,ret=0) Q1=1.494M(lost=0,dr=128,ret=0,fp=11930,rf_max=1.0us)
+[2026-11-26T22:06:13Z]   D2  rep=1 d2_bp1_q1only_d256   : Q0=3.000M(lost=0,p99=1.56us,max=46.8us,ret=0) Q1=1.494M(lost=0,dr=264,ret=6265707,fp=11003,rf_max=1.0us)
+[2026-11-26T22:06:16Z]   D2  rep=1 d2_bp1_d512          : Q0=3.000M(lost=0,p99=1.59us,max=54.7us,ret=0) Q1=1.495M(lost=0,dr=520,ret=6142036,fp=10820,rf_max=0.9us)
+[2026-11-26T22:06:20Z]   D2  rep=1 d2_bp1_d256          : Q0=3.000M(lost=0,p99=1.60us,max=46.1us,ret=0) Q1=1.494M(lost=0,dr=264,ret=6269656,fp=11036,rf_max=1.2us)
+[2026-11-26T22:06:23Z]   D2  rep=1 d2_bp0_d512          : Q0=3.000M(lost=0,p99=1.43us,max=9.9us,ret=0) Q1=0.861M(lost=639073,dr=513,ret=0,fp=22,rf_max=1.1us)
+[2026-11-26T22:06:26Z]   D2  rep=2 d2_bp0_d512          : Q0=3.000M(lost=0,p99=1.44us,max=9.7us,ret=0) Q1=0.861M(lost=639065,dr=513,ret=0,fp=21,rf_max=0.9us)
+[2026-11-26T22:06:30Z]   D2  rep=2 d2_bp1_d256          : Q0=3.000M(lost=0,p99=1.61us,max=46.0us,ret=0) Q1=1.494M(lost=0,dr=264,ret=6278130,fp=11000,rf_max=11.1us)
+[2026-11-26T22:06:34Z]   D2  rep=2 d2_bp1_d512          : Q0=3.000M(lost=0,p99=1.60us,max=45.7us,ret=0) Q1=1.495M(lost=0,dr=520,ret=6156444,fp=10846,rf_max=1.2us)
+[2026-11-26T22:06:37Z]   [RETRY] V2_D2/d2_bp1_q1only_d256 rep=2 attempt=1: ['pf q0=1 q1=0']
+[2026-11-26T22:06:41Z]   D2  rep=2 d2_bp1_q1only_d256   : Q0=3.000M(lost=0,p99=1.56us,max=46.8us,ret=0) Q1=1.494M(lost=0,dr=264,ret=6268154,fp=11034,rf_max=1.1us)
+[2026-11-26T22:06:44Z]   D2  rep=2 d2_cr_d256_r128      : Q0=3.000M(lost=0,p99=1.63us,max=45.7us,ret=0) Q1=1.493M(lost=0,dr=128,ret=0,fp=11931,rf_max=1.0us)
+[2026-11-26T22:06:48Z]   D2  rep=2 d2_cr_d512_r256      : Q0=3.000M(lost=0,p99=1.60us,max=47.3us,ret=0) Q1=1.494M(lost=0,dr=256,ret=0,fp=11806,rf_max=1.0us)
+[2026-11-26T22:06:51Z]   D2  rep=2 d2_freeze60_bp1_d256 : Q0=3.000M(lost=0,p99=1.45us,max=11.3us,ret=0) Q1=1.500M(lost=0,dr=263,ret=3103232,fp=89009,rf_max=0.9us)
+[2026-11-26T22:06:55Z]   D2  rep=2 d2_freeze60_cr_r128  : Q0=3.000M(lost=0,p99=1.50us,max=9.5us,ret=0) Q1=1.500M(lost=0,dr=116,ret=0,fp=89926,rf_max=0.9us)
+[2026-11-26T22:06:55Z] === V3_E2: Real 100GbE 1500B burst (4/16/64/128 MiB) + concurrent 32 MiB KV (n=3 interleaved) ===
+[2026-11-26T22:07:00Z]   E2 TM topo (q=4): ['0x3008', '0x3009', '0x300a', '0x300b']  flows=1,2,7,3,6,5,9,4
+[2026-11-26T22:07:04Z]   E2  rep=0 kv_solo               : kv_p50=31.0ns p99=41.0ns p999=43.0ns imc=0.07GB/s
+[2026-11-26T22:07:07Z]   [RETRY] V3_E2/4MiB_large_mono rep=0 attempt=1: ['rx_ghz=3.726', 'kv_ghz=3.727']
+[2026-11-26T22:07:11Z]   E2  rep=0 4MiB_large_mono       : drop= 0.00% ddio= 1.53% kv_p99=113.0ns p999=249.0ns imc= 2.17GB/s net_pcie=  n/a  stalls=     0 fp=     0
+[2026-11-26T22:07:15Z]   E2  rep=0 4MiB_bp0_d256         : drop=71.59% ddio=89.42% kv_p99= 41.0ns p999= 43.0ns imc= 0.11GB/s net_pcie=  n/a  stalls=     0 fp=     0
+[2026-11-26T22:07:19Z]   E2  rep=0 4MiB_bp1_d256         : drop= 0.00% ddio=99.45% kv_p99= 41.0ns p999= 97.0ns imc= 0.11GB/s net_pcie= 82.6G stalls=     0 fp=     0
+[2026-11-26T22:07:23Z]   E2  rep=0 4MiB_bp1_d512         : drop= 0.00% ddio=96.50% kv_p99= 41.0ns p999=103.0ns imc= 0.14GB/s net_pcie= 53.2G stalls=     0 fp=     0
+[2026-11-26T22:07:26Z]   E2  rep=0 4MiB_bp1_d2048        : drop= 0.00% ddio=47.32% kv_p99=105.0ns p999=231.0ns imc= 0.92GB/s net_pcie=  0.0G stalls=     0 fp=     0
+[2026-11-26T22:07:30Z]   E2  rep=0 4MiB_credit_ring      : drop= 0.00% ddio=97.69% kv_p99= 41.0ns p999=105.0ns imc= 0.14GB/s net_pcie= 96.6G stalls=     0 fp=  1792
+[2026-11-26T22:07:33Z]   E2  rep=0 16MiB_large_mono      : drop= 0.00% ddio= 1.48% kv_p99=131.0ns p999=273.0ns imc= 5.12GB/s net_pcie=  n/a  stalls=     0 fp=     0
+[2026-11-26T22:07:37Z]   E2  rep=0 16MiB_bp0_d256        : drop=92.90% ddio=93.20% kv_p99= 41.0ns p999= 45.0ns imc= 0.08GB/s net_pcie=  n/a  stalls=     0 fp=     0
+[2026-11-26T22:07:41Z]   E2  rep=0 16MiB_bp1_d256        : drop= 0.00% ddio=99.60% kv_p99= 41.0ns p999= 99.0ns imc= 0.11GB/s net_pcie=100.5G stalls= 12072 fp=  2685
+[2026-11-26T22:07:45Z]   E2  rep=0 16MiB_bp1_d512        : drop= 0.00% ddio=97.18% kv_p99= 41.0ns p999=105.0ns imc= 0.20GB/s net_pcie= 97.6G stalls= 10968 fp=  1874
+[2026-11-26T22:07:48Z]   E2  rep=0 16MiB_bp1_d2048       : drop= 0.00% ddio=64.24% kv_p99=103.0ns p999=229.0ns imc= 1.46GB/s net_pcie= 74.7G stalls=     0 fp=     0
+[2026-11-26T22:07:51Z]   E2  rep=0 16MiB_credit_ring     : drop= 0.00% ddio=99.48% kv_p99= 41.0ns p999=101.0ns imc= 0.09GB/s net_pcie=103.5G stalls=     0 fp= 10240
+[2026-11-26T22:07:55Z]   E2  rep=0 64MiB_large_mono      : drop= 0.00% ddio= 3.09% kv_p99=149.0ns p999=289.0ns imc= 8.68GB/s net_pcie=  n/a  stalls=     0 fp=     0
+[2026-11-26T22:07:58Z]   E2  rep=0 64MiB_bp0_d256        : drop=98.21% ddio=77.00% kv_p99= 41.0ns p999= 95.0ns imc= 0.15GB/s net_pcie=  n/a  stalls=     0 fp=     0
+[2026-11-26T22:08:02Z]   E2  rep=0 64MiB_bp1_d256        : drop= 0.00% ddio=99.83% kv_p99= 41.0ns p999= 99.0ns imc= 0.10GB/s net_pcie=102.9G stalls= 25180 fp= 36056
+[2026-11-26T22:08:06Z]   E2  rep=0 64MiB_bp1_d512        : drop= 0.00% ddio=98.90% kv_p99= 41.0ns p999=123.0ns imc= 0.13GB/s net_pcie=102.5G stalls= 22694 fp= 35375
+[2026-11-26T22:08:09Z]   E2  rep=0 64MiB_bp1_d2048       : drop= 0.00% ddio=73.55% kv_p99=103.0ns p999=201.0ns imc= 1.58GB/s net_pcie=101.6G stalls= 20788 fp= 29845
+[2026-11-26T22:08:12Z]   E2  rep=0 64MiB_credit_ring     : drop= 0.00% ddio=98.77% kv_p99= 41.0ns p999=105.0ns imc= 0.14GB/s net_pcie=104.9G stalls=     0 fp= 43776
+[2026-11-26T22:08:16Z]   E2  rep=0 128MiB_large_mono     : drop= 0.00% ddio= 4.64% kv_p99=183.0ns p999=295.0ns imc= 9.33GB/s net_pcie=  n/a  stalls=     0 fp=     0
+[2026-11-26T22:08:19Z]   E2  rep=0 128MiB_bp0_d256       : drop=99.11% ddio=76.74% kv_p99= 41.0ns p999=101.0ns imc= 0.16GB/s net_pcie=  n/a  stalls=     0 fp=     0
+[2026-11-26T22:08:23Z]   E2  rep=0 128MiB_bp1_d256       : drop= 0.00% ddio=99.91% kv_p99= 41.0ns p999= 47.0ns imc= 0.08GB/s net_pcie=103.4G stalls= 47422 fp= 80926
+[2026-11-26T22:08:27Z]   E2  rep=0 128MiB_bp1_d512       : drop= 0.00% ddio=99.10% kv_p99= 41.0ns p999= 97.0ns imc= 0.12GB/s net_pcie=103.1G stalls= 48792 fp= 80235
+[2026-11-26T22:08:30Z]   E2  rep=0 128MiB_bp1_d2048      : drop= 0.00% ddio=72.85% kv_p99=103.0ns p999=193.0ns imc= 1.61GB/s net_pcie=102.2G stalls= 44286 fp= 74576
+[2026-11-26T22:08:34Z]   [RETRY] V3_E2/128MiB_credit_ring rep=0 attempt=1: ['rx_ghz=3.841', 'kv_ghz=3.841']
+[2026-11-26T22:08:38Z]   E2  rep=0 128MiB_credit_ring    : drop= 0.00% ddio=67.00% kv_p99= 41.0ns p999=121.0ns imc= 1.82GB/s net_pcie=105.1G stalls=     0 fp= 88576
+[2026-11-26T22:08:41Z]   E2  rep=1 kv_solo               : kv_p50=31.0ns p99=41.0ns p999=45.0ns imc=0.11GB/s
+[2026-11-26T22:08:45Z]   E2  rep=1 128MiB_credit_ring    : drop= 0.00% ddio=98.21% kv_p99= 41.0ns p999=103.0ns imc= 0.16GB/s net_pcie=105.1G stalls=     0 fp= 88576
+[2026-11-26T22:08:48Z]   E2  rep=1 128MiB_bp1_d2048      : drop= 0.00% ddio=75.98% kv_p99=101.0ns p999=191.0ns imc= 1.43GB/s net_pcie=102.3G stalls= 44901 fp= 74607
+[2026-11-26T22:08:52Z]   E2  rep=1 128MiB_bp1_d512       : drop= 0.00% ddio=99.86% kv_p99= 41.0ns p999=101.0ns imc= 0.18GB/s net_pcie=103.0G stalls= 47952 fp= 80249
+[2026-11-26T22:08:56Z]   E2  rep=1 128MiB_bp1_d256       : drop= 0.00% ddio=99.88% kv_p99= 41.0ns p999= 97.0ns imc= 0.08GB/s net_pcie=103.3G stalls= 43293 fp= 81049
+[2026-11-26T22:08:59Z]   E2  rep=1 128MiB_bp0_d256       : drop=99.11% ddio=89.45% kv_p99= 41.0ns p999= 43.0ns imc= 0.09GB/s net_pcie=  n/a  stalls=     0 fp=     0
+[2026-11-26T22:09:03Z]   E2  rep=1 128MiB_large_mono     : drop= 0.00% ddio= 4.33% kv_p99=181.0ns p999=295.0ns imc= 9.71GB/s net_pcie=  n/a  stalls=     0 fp=     0
+[2026-11-26T22:09:06Z]   E2  rep=1 64MiB_credit_ring     : drop= 0.00% ddio=97.55% kv_p99= 39.0ns p999=101.0ns imc= 0.20GB/s net_pcie=104.9G stalls=     0 fp= 43776
+[2026-11-26T22:09:10Z]   E2  rep=1 64MiB_bp1_d2048       : drop= 0.00% ddio=61.85% kv_p99=129.0ns p999=269.0ns imc= 2.73GB/s net_pcie=101.7G stalls= 17962 fp= 29771
+[2026-11-26T22:09:14Z]   E2  rep=1 64MiB_bp1_d512        : drop= 0.00% ddio=94.30% kv_p99= 39.0ns p999=103.0ns imc= 0.36GB/s net_pcie=102.7G stalls= 20824 fp= 35394
+[2026-11-26T22:09:17Z]   [RETRY] V3_E2/64MiB_bp1_d256 rep=1 attempt=1: ['rx_ghz=3.786', 'kv_ghz=3.787']
+[2026-11-26T22:09:21Z]   E2  rep=1 64MiB_bp1_d256        : drop= 0.00% ddio=99.57% kv_p99= 41.0ns p999=103.0ns imc= 0.10GB/s net_pcie=103.0G stalls= 21265 fp= 36165
+[2026-11-26T22:09:25Z]   E2  rep=1 64MiB_bp0_d256        : drop=98.21% ddio=83.28% kv_p99= 41.0ns p999= 47.0ns imc= 0.13GB/s net_pcie=  n/a  stalls=     0 fp=     0
+[2026-11-26T22:09:29Z]   E2  rep=1 64MiB_large_mono      : drop= 0.00% ddio= 2.61% kv_p99=155.0ns p999=289.0ns imc= 9.16GB/s net_pcie=  n/a  stalls=     0 fp=     0
+[2026-11-26T22:09:32Z]   E2  rep=1 16MiB_credit_ring     : drop= 0.00% ddio=96.10% kv_p99= 43.0ns p999=127.0ns imc= 0.44GB/s net_pcie=103.6G stalls=     0 fp= 10240
+[2026-11-26T22:09:36Z]   E2  rep=1 16MiB_bp1_d2048       : drop= 0.00% ddio=49.80% kv_p99=107.0ns p999=239.0ns imc= 2.39GB/s net_pcie= 73.9G stalls=     0 fp=     0
+[2026-11-26T22:09:40Z]   E2  rep=1 16MiB_bp1_d512        : drop= 0.00% ddio=93.54% kv_p99= 39.0ns p999=103.0ns imc= 0.32GB/s net_pcie= 97.5G stalls=  7709 fp=  1905
+[2026-11-26T22:09:44Z]   E2  rep=1 16MiB_bp1_d256        : drop= 0.00% ddio=99.72% kv_p99= 41.0ns p999= 97.0ns imc= 0.10GB/s net_pcie=100.7G stalls=  8694 fp=  2656
+[2026-11-26T22:09:48Z]   E2  rep=1 16MiB_bp0_d256        : drop=92.90% ddio=94.72% kv_p99= 41.0ns p999= 45.0ns imc= 0.08GB/s net_pcie=  n/a  stalls=     0 fp=     0
+[2026-11-26T22:09:51Z]   E2  rep=1 16MiB_large_mono      : drop= 0.00% ddio= 1.22% kv_p99=137.0ns p999=285.0ns imc= 6.03GB/s net_pcie=  n/a  stalls=     0 fp=     0
+[2026-11-26T22:09:55Z]   E2  rep=1 4MiB_credit_ring      : drop= 0.00% ddio=95.53% kv_p99= 41.0ns p999=103.0ns imc= 0.18GB/s net_pcie= 96.5G stalls=     0 fp=  1792
+[2026-11-26T22:09:58Z]   E2  rep=1 4MiB_bp1_d2048        : drop= 0.00% ddio=51.66% kv_p99=103.0ns p999=205.0ns imc= 0.98GB/s net_pcie=  0.0G stalls=     0 fp=     0
+[2026-11-26T22:10:02Z]   E2  rep=1 4MiB_bp1_d512         : drop= 0.00% ddio=91.98% kv_p99= 97.0ns p999=137.0ns imc= 0.37GB/s net_pcie= 53.7G stalls=     0 fp=     0
+[2026-11-26T22:10:05Z]   E2  rep=1 4MiB_bp1_d256         : drop= 0.00% ddio=98.65% kv_p99= 41.0ns p999=103.0ns imc= 0.12GB/s net_pcie= 83.0G stalls=     0 fp=     0
+[2026-11-26T22:10:10Z]   E2  rep=1 4MiB_bp0_d256         : drop=71.59% ddio=95.45% kv_p99= 41.0ns p999= 43.0ns imc= 0.10GB/s net_pcie=  n/a  stalls=     0 fp=     0
+[2026-11-26T22:10:13Z]   E2  rep=1 4MiB_large_mono       : drop= 0.00% ddio= 1.78% kv_p99=107.0ns p999=239.0ns imc= 2.60GB/s net_pcie=  n/a  stalls=     0 fp=     0
+[2026-11-26T22:10:17Z]   E2  rep=2 kv_solo               : kv_p50=31.0ns p99=41.0ns p999=47.0ns imc=0.08GB/s
+[2026-11-26T22:10:20Z]   E2  rep=2 4MiB_large_mono       : drop= 0.00% ddio= 1.40% kv_p99=109.0ns p999=243.0ns imc= 2.48GB/s net_pcie=  n/a  stalls=     0 fp=     0
+[2026-11-26T22:10:24Z]   E2  rep=2 4MiB_bp0_d256         : drop=71.59% ddio=96.05% kv_p99= 41.0ns p999= 43.0ns imc= 0.07GB/s net_pcie=  n/a  stalls=     0 fp=     0
+[2026-11-26T22:10:28Z]   E2  rep=2 4MiB_bp1_d256         : drop= 0.00% ddio=98.25% kv_p99= 41.0ns p999=105.0ns imc= 0.14GB/s net_pcie= 83.0G stalls=     0 fp=     0
+[2026-11-26T22:10:32Z]   E2  rep=2 4MiB_bp1_d512         : drop= 0.00% ddio=96.30% kv_p99= 41.0ns p999=103.0ns imc= 0.16GB/s net_pcie= 53.6G stalls=     0 fp=     0
+[2026-11-26T22:10:35Z]   E2  rep=2 4MiB_bp1_d2048        : drop= 0.00% ddio=56.69% kv_p99=103.0ns p999=199.0ns imc= 1.01GB/s net_pcie=  0.0G stalls=     0 fp=     0
+[2026-11-26T22:10:39Z]   E2  rep=2 4MiB_credit_ring      : drop= 0.00% ddio=74.90% kv_p99= 97.0ns p999=141.0ns imc= 0.50GB/s net_pcie= 96.3G stalls=     0 fp=  1792
+[2026-11-26T22:10:42Z]   E2  rep=2 16MiB_large_mono      : drop= 0.00% ddio= 1.29% kv_p99=137.0ns p999=285.0ns imc= 6.02GB/s net_pcie=  n/a  stalls=     0 fp=     0
+[2026-11-26T22:10:46Z]   E2  rep=2 16MiB_bp0_d256        : drop=92.90% ddio=90.78% kv_p99= 41.0ns p999= 43.0ns imc= 0.10GB/s net_pcie=  n/a  stalls=     0 fp=     0
+[2026-11-26T22:10:50Z]   E2  rep=2 16MiB_bp1_d256        : drop= 0.00% ddio=99.81% kv_p99= 39.0ns p999= 43.0ns imc= 0.19GB/s net_pcie=100.4G stalls=  8719 fp=  2684
+[2026-11-26T22:10:53Z]   E2  rep=2 16MiB_bp1_d512        : drop= 0.00% ddio=97.77% kv_p99= 93.0ns p999=129.0ns imc= 0.29GB/s net_pcie= 97.3G stalls=  7716 fp=  1882
+[2026-11-26T22:10:57Z]   E2  rep=2 16MiB_bp1_d2048       : drop= 0.00% ddio=58.92% kv_p99=105.0ns p999=233.0ns imc= 1.85GB/s net_pcie= 74.8G stalls=     0 fp=     0
+[2026-11-26T22:11:01Z]   E2  rep=2 16MiB_credit_ring     : drop= 0.00% ddio=94.01% kv_p99= 99.0ns p999=169.0ns imc= 0.39GB/s net_pcie=103.5G stalls=     0 fp= 10240
+[2026-11-26T22:11:04Z]   E2  rep=2 64MiB_large_mono      : drop= 0.00% ddio= 2.79% kv_p99=153.0ns p999=291.0ns imc= 9.11GB/s net_pcie=  n/a  stalls=     0 fp=     0
+[2026-11-26T22:11:08Z]   E2  rep=2 64MiB_bp0_d256        : drop=98.21% ddio=69.13% kv_p99= 41.0ns p999= 95.0ns imc= 0.07GB/s net_pcie=  n/a  stalls=     0 fp=     0
+[2026-11-26T22:11:11Z]   E2  rep=2 64MiB_bp1_d256        : drop= 0.00% ddio=99.87% kv_p99= 41.0ns p999= 93.0ns imc= 0.12GB/s net_pcie=103.2G stalls= 21095 fp= 36067
+[2026-11-26T22:11:15Z]   E2  rep=2 64MiB_bp1_d512        : drop= 0.00% ddio=98.22% kv_p99= 41.0ns p999=105.0ns imc= 0.33GB/s net_pcie=102.6G stalls= 20759 fp= 35435
+[2026-11-26T22:11:18Z]   E2  rep=2 64MiB_bp1_d2048       : drop= 0.00% ddio=66.48% kv_p99=107.0ns p999=233.0ns imc= 2.34GB/s net_pcie=101.6G stalls= 17708 fp= 29813
+[2026-11-26T22:11:22Z]   E2  rep=2 64MiB_credit_ring     : drop= 0.00% ddio=99.40% kv_p99= 41.0ns p999=105.0ns imc= 0.28GB/s net_pcie=104.9G stalls=     0 fp= 43776
+[2026-11-26T22:11:25Z]   E2  rep=2 128MiB_large_mono     : drop= 0.00% ddio= 4.64% kv_p99=183.0ns p999=293.0ns imc= 9.48GB/s net_pcie=  n/a  stalls=     0 fp=     0
+[2026-11-26T22:11:29Z]   E2  rep=2 128MiB_bp0_d256       : drop=99.11% ddio=71.36% kv_p99= 41.0ns p999= 43.0ns imc= 0.07GB/s net_pcie=  n/a  stalls=     0 fp=     0
+[2026-11-26T22:11:33Z]   E2  rep=2 128MiB_bp1_d256       : drop= 0.00% ddio=99.75% kv_p99= 41.0ns p999=101.0ns imc= 0.09GB/s net_pcie=103.3G stalls= 43313 fp= 80945
+[2026-11-26T22:11:37Z]   [RETRY] V3_E2/128MiB_bp1_d512 rep=2 attempt=1: ['rx_ghz=3.787', 'kv_ghz=3.786']
+[2026-11-26T22:11:41Z]   E2  rep=2 128MiB_bp1_d512       : drop= 0.00% ddio=97.03% kv_p99= 41.0ns p999=105.0ns imc= 0.25GB/s net_pcie=103.0G stalls= 43674 fp= 80262
+[2026-11-26T22:11:45Z]   E2  rep=2 128MiB_bp1_d2048      : drop= 0.00% ddio=66.99% kv_p99=103.0ns p999=215.0ns imc= 2.00GB/s net_pcie=102.1G stalls= 40273 fp= 74700
+[2026-11-26T22:11:49Z]   [RETRY] V3_E2/128MiB_credit_ring rep=2 attempt=1: ['rx_ghz=3.763', 'kv_ghz=3.760']
+[2026-11-26T22:11:53Z]   [RETRY] V3_E2/128MiB_credit_ring rep=2 attempt=2: ['rx_ghz=3.817', 'kv_ghz=3.817']
+[2026-11-26T22:11:57Z]   [RETRY] V3_E2/128MiB_credit_ring rep=2 attempt=3: ['rx_ghz=3.802', 'kv_ghz=3.803']
+[2026-11-26T22:12:01Z]   [RETRY] V3_E2/128MiB_credit_ring rep=2 attempt=4: ['rx_ghz=3.796', 'kv_ghz=3.798']
+[2026-11-26T22:12:05Z]   E2  rep=2 128MiB_credit_ring    : drop= 0.00% ddio=99.41% kv_p99= 41.0ns p999=117.0ns imc= 0.23GB/s net_pcie=105.1G stalls=     0 fp= 88576
+[2026-11-26T22:12:05Z] === Restoring full hardware & CSR baseline ===
+[2026-11-26T22:12:14Z] Waiting 21s for post-restore EDAC/AER recheck ...
+[2026-11-26T22:12:36Z] DONE! wall=599.92s baseline_restored_ok=True csrs_restored_exact=True deltas={'host_edac_ue_delta': {'mc0': 0, 'mc1': 0, 'mc2': 0, 'mc3': 0, 'mc4': 0, 'mc5': 0, 'mc6': 0, 'mc7': 0}, 'host_rp_aer_delta': {'cor': 0, 'nonfatal': 0, 'fatal': 0}, 'card_edac_delta': {'EDAC_mc0': 0, 'EDAC_llc0': 0, 'EDAC_mdc0': 0, 'EDAC_gic0': 0, 'EDAC_ea0': 0, 'EDAC_CPU_SUM': 0}}

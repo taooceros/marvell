@@ -1,0 +1,57 @@
+{
+  "issue": "MRV-217",
+  "audit_ts_utc": "2026-11-26T21:35:00Z",
+  "card_kernel": "6.12.51-gfe390b3669c9",
+  "host_kernel": "6.17.7",
+  "verified_safe_sdp_csrs": {
+    "SDPX_EPFX_RINFO(0)": {
+      "phys": "0x86e0800209f0",
+      "source": "linux-marvell/drivers/soc/marvell/octeontx2-sdp/sdp.h:25,37",
+      "orig_val": "0x0008000800000008",
+      "decoded": "NVFS=8, RPVF=8, SRN=8 -> PF0(ens1/sdp1-0)=rings 0..7, VF0(99:02.0/sdp1-1)=rings 8..15"
+    },
+    "SDPX_MACX_PF_RING_CTL(0)": {
+      "phys": "0x86e08002c000",
+      "source": "linux-marvell/drivers/soc/marvell/octeontx2-sdp/sdp.h:25,45",
+      "orig_val": "0x0000000000080001",
+      "decoded": "RPPF=8, PF_SRN=0, NPFS=1"
+    },
+    "SDPX_LINK_CFG": {
+      "phys": "0x86e0c0080180",
+      "source": "linux-marvell/drivers/soc/marvell/octeontx2-sdp/sdp.h:25,29",
+      "orig_val": "0x0000000000070080",
+      "decoded": "base_chan=0x80 (128), log2_num_chan=7 (128 channels: 128..255)"
+    },
+    "SDPX_GBL_CONTROL": {
+      "phys": "0x86e0c0080200",
+      "source": "linux-marvell/drivers/soc/marvell/octeontx2-sdp/sdp.h:25,31; sdp.c:1775-1777",
+      "orig_val": "0x0000000000000004",
+      "decoded": "bit 2 BPFLR_D=1 (disable clearing SDPX_OUT_BP_EN on VF FLR)"
+    },
+    "SDPX_OUT_BP_ENX_W1S(0)": {
+      "phys": "0x86e0c0080280",
+      "source": "linux-marvell/drivers/soc/marvell/octeontx2-sdp/sdp.h:25,30; sdp.c:417-421",
+      "orig_val": "0x0000000000000000",
+      "decoded": "rings 0..63 hardware backpressure all disabled (0)"
+    },
+    "SDPX_OUT_BP_ENX_W1S(1)": {
+      "phys": "0x86e0c0080290",
+      "source": "linux-marvell/drivers/soc/marvell/octeontx2-sdp/sdp.h:25,30; sdp.c:417-421",
+      "orig_val": "0x0000000000000000",
+      "decoded": "rings 64..127 hardware backpressure all disabled (0)"
+    }
+  },
+  "safe_6_reg_21s_edac_delta": 0,
+  "faulting_legacy_cn9k_csr": {
+    "name": "SDPX_OUT_WMARK",
+    "phys": "0x86e0c0060000",
+    "source": "linux-marvell/drivers/soc/marvell/octeontx2-sdp/sdp.h:28 (CN9K legacy global WMARK; replaced on CN10K by per-ring CNXK_EP_R_OUT_WMARK(ring)=0x10160+ring*0x20000)",
+    "observed_val": "0xfffffffffffffffb (-5)",
+    "edac_impact": "ea0/ue_count 61 -> 62 (1 recoverable EA: SEI-UER at dmesg [501498.132783]); never accessed again"
+  },
+  "w1c_source_status": "No CN10K SDPX_OUT_BP_ENX_W1C offset exists in linux-marvell, marvell-dpdk, pcie_ep_octeon_*, dao, or coreboot BDK. Candidate kernel-source-verified restore path: SDPX_GBL_CONTROL[2] BPFLR_D=0 + host VF0 (0000:99:02.0) VFIO_DEVICE_RESET (PCIe FLR) -> restore BPFLR_D=1.",
+  "nix_tm_live_audit": {
+    "sdp1_0_lf2": "SQ(0..7)->SMQ(1..8)->TL4(1..8): default_chan=128..135, NIX_AF_TL4[1..8]_SDP_LINK_CFG=0x3000..0x3007 (ENA=1, BP_ENA=1, relchan=0..7)",
+    "sdp1_1_lf3_1q_refl": "SQ(0)->SMQ(9)->TL4(9): default_chan=136 (ring 8), BUT NIX_AF_TL4[9]_SDP_LINK_CFG=0x3007 (relchan=7!) due to dpdk-24.11 ROC_NIX_TM_DEFAULT bug when nb_txq==1 (node->rel_chan=0xFFFF wraps 0x08+0xFFFF=0x07). nb_txq>=2 triggers ROC_NIX_TM_SDP (per-SQ TL4 with relchan=8+q)."
+  }
+}
