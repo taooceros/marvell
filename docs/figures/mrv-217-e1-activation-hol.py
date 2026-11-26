@@ -42,13 +42,13 @@ def main():
 
     # ---- Panel A: V1A + V2_D1 single-queue (1500 B @ 5.0 Mpps, 1 ms / 10 ms pause) ----
     d1_items = [
-        ("V1A",   "q1_bp1_d256_bug",  "1队列+BP=1\nD=256\n(TL4=0x3007错位)", "#b91c1c"),
-        ("V2_D1", "d1_bp0_d256",      "BP=0\nD=256\n(默认无反压)",          "#dc2626"),
-        ("V2_D1", "d1_bp1_d256",      "BP=1\nD=256\n(WMARK=64)",            "#0284c7"),
-        ("V2_D1", "d1_bp1_d512",      "BP=1\nD=512\n(WMARK=128)",           "#0369a1"),
-        ("V2_D1", "d1_cr_d256_r128",  "CreditRing\nD=256\nR=128",           "#15803d"),
-        ("V2_D1", "d1_cr_d256_r64",   "CreditRing\nD=256\nR=64",            "#16a34a"),
-        ("V2_D1", "d1_cr_d256_96kib", "CreditRing\nD=256\n96 KiB字节",      "#0f766e"),
+        ("V1A",   "q1_bp1_d256_bug",  "nb_txq=1\n+BP=1 D=256\n(DPDK错位Bug)", "#b91c1c"),
+        ("V2_D1", "d1_bp0_d256",      "BP=0\nD=256\n(默认无反压)",            "#dc2626"),
+        ("V2_D1", "d1_bp1_d256",      "BP=1\nD=256\n(WMARK=64)",              "#0284c7"),
+        ("V2_D1", "d1_bp1_d512",      "BP=1\nD=512\n(WMARK=128)",             "#0369a1"),
+        ("V2_D1", "d1_cr_d256_r128",  "CreditRing\nD=256\nR=128",             "#15803d"),
+        ("V2_D1", "d1_cr_d256_r64",   "CreditRing\nD=256\nR=64",              "#16a34a"),
+        ("V2_D1", "d1_cr_d256_96kib", "CreditRing\nD=256\n96 KiB字节",        "#0f766e"),
     ]
     for p, t, _, _ in d1_items:
         rows = by_pt[(p, t)]
@@ -86,38 +86,51 @@ def main():
     q1_lost_k = [med([r["q1_lost"] for r in by_pt[(p, t)]]) / 1e3 for p, t, _, _ in d2_items]
     q1_rf_max = [med([r["q1_resume_first_max_us"] for r in by_pt[(p, t)]]) for p, t, _, _ in d2_items]
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16.0, 5.8), gridspec_kw={"width_ratios": [1.05, 1.15]})
+    # Verify pause residency D - WMARK (~192 / 384 pkts) vs drain-loop refill peak (263 / 519)
+    d1_bp1_256_rows = by_pt[("V2_D1", "d1_bp1_d256")]
+    d1_bp1_512_rows = by_pt[("V2_D1", "d1_bp1_d512")]
+    bp1_res_256 = d1_bp1_256_rows[0]["rx_desc"] - d1_bp1_256_rows[0]["rx_desc"] // 4
+    bp1_res_512 = d1_bp1_512_rows[0]["rx_desc"] - d1_bp1_512_rows[0]["rx_desc"] // 4
+    fp_diff = int(round(
+        med([r["card_stats"]["q0_fifo_peak"] for r in d1_bp1_256_rows])
+        - med([r["card_stats"]["q0_fifo_peak"] for r in d1_bp1_512_rows])
+    ))
+    assert 170 <= fp_diff <= 210, f"expected card FIFO peak diff ~192 (D-WMARK delta), got {fp_diff}"
+    assert d1_dr[4] == 128 and d1_dr[5] == 64 and d1_dr[6] == 65, f"unexpected CreditRing caps: {d1_dr[4:]}"
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16.8, 6.0), gridspec_kw={"width_ratios": [1.10, 1.12]})
 
     # ---- Left: Panel A ----
     x1 = np.arange(len(d1_items))
-    bars1 = ax1.bar(x1, d1_gbps, width=0.58, color=[c for _, _, _, c in d1_items], edgecolor="#1e293b", linewidth=0.6, zorder=3)
+    bars1 = ax1.bar(x1, d1_gbps, width=0.56, color=[c for _, _, _, c in d1_items], edgecolor="#1e293b", linewidth=0.6, zorder=3)
     ax1.axhline(60.8, color="#15803d", linestyle="--", linewidth=1.1, alpha=0.85, zorder=2)
     ax1.set_xticks(x1)
-    ax1.set_xticklabels([lbl for _, _, lbl, _ in d1_items], fontsize=8.3)
+    ax1.set_xticklabels([lbl for _, _, lbl, _ in d1_items], fontsize=8.1)
     ax1.set_ylabel("主机有效收包吞吐（Gbps，满额 60.8 Gbps）", fontsize=10.0)
-    ax1.set_ylim(0, 88)
-    ax1.set_title("A. E1 单队列（1500 B @ 5 Mpps, 1 ms/10 ms 停顿）：\nnb_txq=1 错位丢包 vs nb_txq≥2 BP=1 零丢但锁满主机环", fontsize=10.4, fontweight="bold", pad=10)
+    ax1.set_ylim(0, 100)
+    ax1.set_title("A. E1 单队列（1500 B @ 5 Mpps, 1 ms/10 ms 停顿）：\nDPDK nb_txq=1 错位 Bug vs BP=1 静态环深/WMARK vs CreditRing 细窗", fontsize=10.2, fontweight="bold", pad=10)
 
     for idx, (bar, g, lk, dr, retm) in enumerate(zip(bars1, d1_gbps, d1_lost_k, d1_dr, d1_ret_k)):
         cx = bar.get_x() + bar.get_width() / 2
         if lk > 0.5:
             ax1.annotate(
-                f"{g:.1f}G\n丢 {lk:.0f}K 包\n(环冲穿 {dr})",
-                xy=(cx, g + 0.5), xytext=(cx, 64.0),
-                ha="center", va="bottom", fontsize=8.0, color="#991b1b", fontweight="bold",
+                f"{g:.1f}G\n丢 {lk:.0f}K 包\n(排空峰值 {dr})",
+                xy=(cx, g + 0.5), xytext=(cx, 63.8),
+                ha="center", va="bottom", fontsize=7.8, color="#991b1b", fontweight="bold",
                 arrowprops=dict(arrowstyle="->", color="#991b1b", lw=0.9),
             )
         elif idx in (2, 3):
+            res_est = bp1_res_256 if idx == 2 else bp1_res_512
             ax1.text(
-                cx, 63.0,
-                f"{g:.1f}G · 0 丢\n环占满 {dr}\n(重试 {retm:.1f}M)",
-                ha="center", va="bottom", fontsize=7.9, color="#0369a1", fontweight="bold",
+                cx, 62.6,
+                f"{g:.1f}G · 0 丢\n驻留≈{res_est} 包\n排空峰值 {dr}\n(重试 {retm:.1f}M)",
+                ha="center", va="bottom", fontsize=7.5, color="#0369a1", fontweight="bold",
             )
         else:
             ax1.text(
-                cx, 63.0,
+                cx, 62.6,
                 f"{g:.1f}G · 0 丢\n精确封顶 {dr}\n(重试 0)",
-                ha="center", va="bottom", fontsize=7.9, color="#166534", fontweight="bold",
+                ha="center", va="bottom", fontsize=7.8, color="#166534", fontweight="bold",
             )
 
     bp1_d1_rf_max = max(
@@ -128,10 +141,11 @@ def main():
     for t in ("d1_bp1_d256", "d1_bp1_d512"):
         assert all(r["lost"] == 0 for r in by_pt[("V2_D1", t)])
     ax1.text(
-        3.0, 82.5,
-        f"注：BP=1 在 1500 B 下零丢包且无 DROP 态卡死（恢复 ≤{bp1_d1_rf_max:.1f} µs），但主机占满全环（{d1_dr[2]}/{d1_dr[3]} 槽），无法表达 R=64 或字节窗",
-        ha="center", va="center", fontsize=8.0, color="#0f172a",
-        bbox=dict(boxstyle="round,pad=0.30", fc="#f1f5f9", ec="#64748b", lw=0.7),
+        3.0, 91.5,
+        f"注：BP=1 在 1500 B 下零丢且无 DROP 卡死（恢复 ≤{bp1_d1_rf_max:.1f} µs）；停顿期真实主机驻留约 D-WMARK≈{bp1_res_256}/{bp1_res_512} 包（卡 FIFO 差 {fp_diff} 包佐证），\n"
+        f"排空峰值 {d1_dr[2]}/{d1_dr[3]} 源于排空循环内 port.rx() 每 64 包自动敲 SLIST_DBELL 提前放行新包；但硬件水位仍无法表达 R=64 或字节窗",
+        ha="center", va="center", fontsize=7.5, color="#0f172a",
+        bbox=dict(boxstyle="round,pad=0.32", fc="#f1f5f9", ec="#64748b", lw=0.7),
     )
     # ---- Right: Panel B ----
     x2 = np.arange(len(d2_items))

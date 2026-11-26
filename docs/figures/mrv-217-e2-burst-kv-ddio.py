@@ -55,13 +55,14 @@ def main():
     solo_p99 = med([r["kv"]["p99_ns"] for r in solo_rows])
     solo_p999 = med([r["kv"]["p999_ns"] for r in solo_rows])
 
+    b0_drops = [med([r["drop_pct"] for r in by_tag[f"{b}_bp0_d256"]]) for b in BURSTS]
     arms = [
-        ("large_mono",  "大环 Large SDP (D=8192, FIFO)",      "#dc2626", "o",  "-",  2.0),
-        ("bp0_d256",    "BP=0 默认小环 (D=256, 丢包93–99%)",  "#94a3b8", "^",  ":",  1.6),
-        ("bp1_d2048",   "BP=1 未改驱动最小环 (D=2048)",       "#d97706", "s",  "--", 2.0),
-        ("bp1_d512",    "BP=1 + 卡FIFO (D=512, WMARK=128)",   "#0369a1", "v",  "-.", 2.1),
-        ("bp1_d256",    "BP=1 + 卡FIFO (D=256, WMARK=64)",    "#0284c7", "P",  "-",  2.3),
-        ("credit_ring", "CreditRing (D=512, BAR4 R=256)",     "#15803d", "D",  "-",  2.5),
+        ("large_mono",  "大环 Large SDP (D=8192, FIFO)", "#dc2626", "o", "-", 2.0),
+        ("bp0_d256",    f"BP=0 默认小环 (D=256, 丢包{min(b0_drops):.0f}–{max(b0_drops):.0f}%)", "#94a3b8", "^", ":", 1.6),
+        ("bp1_d2048",   "BP=1 默认最小环 (D=2048)",      "#d97706", "s", "--", 2.0),
+        ("bp1_d512",    "BP=1 + 卡FIFO (D=512, WMARK=128)", "#0369a1", "v", "-.", 2.1),
+        ("bp1_d256",    "BP=1 + 卡FIFO (D=256, WMARK=64)",  "#0284c7", "P", "-", 2.3),
+        ("credit_ring", "CreditRing (D=512, BAR4 R=256)", "#15803d", "D", "-", 2.5),
     ]
 
     for a, _, _, _, _, _ in arms:
@@ -142,7 +143,7 @@ def main():
                  fontsize=8.0, color="#0369a1", fontweight="bold",
                  bbox=dict(boxstyle="round,pad=0.24", fc="white", ec="#bae6fd", alpha=0.94),
                  arrowprops=dict(arrowstyle="->", color="#0369a1", lw=0.9))
-    ax2.annotate(f"BP=1 D=2048 (未改驱动): {b2048_ddio_128:.1f}%",
+    ax2.annotate(f"BP=1 D=2048 (默认最小环): {b2048_ddio_128:.1f}%",
                  xy=(3, b2048_ddio_128), xytext=(0.55, max(20.0, b2048_ddio_128 - 22)),
                  fontsize=8.0, color="#b45309", fontweight="bold",
                  arrowprops=dict(arrowstyle="->", color="#b45309", lw=0.9))
@@ -200,7 +201,7 @@ def main():
     h2, l2 = ax3_r.get_legend_handles_labels()
     ax3.legend(h1 + h2, l1 + l2, loc="upper right", fontsize=7.4, framealpha=0.92)
 
-    fig.suptitle("MRV-217 验证 3（E2 实测 100GbE 1500 B 突发 + 并发 32 MiB KV）：BP=1 (D=256/512) 追平 CreditRing，未改驱动 D=2048 仍溢出 DDIO", fontsize=11.6, fontweight="bold", y=0.995)
+    fig.suptitle("MRV-217 验证 3（E2 实测 100GbE 1500 B 突发 + 并发 32 MiB KV）：BP=1 (D=256/512) 追平 CreditRing，默认最小环 D=2048 仍溢出 DDIO", fontsize=11.6, fontweight="bold", y=0.995)
     png = mrvplot.save(fig, "mrv-217-e2-burst-kv-ddio")
     print(f"Saved {png}")
 
