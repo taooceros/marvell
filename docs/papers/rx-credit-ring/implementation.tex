@@ -1,9 +1,9 @@
 \section{Implementation}
 \label{sec:implementation}
 
-We prototype \sys{} and all comparative baselines in Rust and C atop unmodified
-DPDK~26.10.1 (\texttt{octeon\_ep} host VF PMD and \texttt{cnxk} SmartNIC PMD),
-with zero Linux kernel or SmartNIC firmware changes.
+We prototype \sys{} and all baselines in Rust and C atop DPDK~26.10.1
+(\texttt{octeon\_ep} host VF PMD and \texttt{cnxk} SmartNIC PMD), leaving the
+SDP DMA hardware, descriptor format, Linux kernel, and firmware unchanged.
 
 \paragraph{Testbed.}
 A passive 100GbE copper link (Ethernet PAUSE disabled and verified zero)
@@ -27,22 +27,23 @@ connects three hosts:
   and flow-churn profiles.
 \end{itemize}
 
-\paragraph{Standard DPDK DMA, BAR4 lease, and ISM trade-off.}
-The host uses standard AVX2 \texttt{octeon\_ep} receive rings with
-\texttt{allow\_small\_oq=1} ($D=256$--$512$, $W_{\text{mark}}=\min(256,D/4)$).
-During 8-core bring-up (\S\ref{sec:eval-e4}), enabling in-memory status updates
-(\texttt{ism\_enable=1}) caused 8 polling cores to emit $\sim$50\,Mops/s of
-empty-poll uncached MMIO writes that saturated CN106's MMIO path (capping
-254\,B at 31.7\,Gbps); disabling ISM (\texttt{ism\_enable=0}) reduced MMIO
-writes 75$\times$ and unlocked 99--100\,Gbps across 8 cores, at the cost of
-synchronous register reads capping 8-core 254\,B at $\sim$45\,Mpps and raising
-control RTT from 2.53 to 7.6--8.4\,$\mu$s. We therefore use standard
-\texttt{ism\_enable=1} for single-core low-latency suites (E1, E2, E3, E5; with
-\texttt{rx\_poll\_mem=1} in E3/E5) and \texttt{ism\_enable=0} uniformly across
-all baselines for multi-core and sensitivity suites (E4, E6). Credit updates
-write to BAR4 Window~15 protected by a TCP nonce lease protocol so the host
-never accesses BAR4 unless the SmartNIC data plane is bound; Window~15 is
-restored to firmware defaults on exit.
+\paragraph{Host DPDK additions, BAR4 lease, and ISM trade-off.}
+The host uses standard AVX2 \texttt{octeon\_ep} SDP DMA rings and
+\texttt{rte\_eth\_rx\_burst()}/\texttt{rte\_mbuf} with two \sys{} additions:
+(1)~a $\sim$6-line unfenced \texttt{MOVDIR64B} credit hook in our Rust RX loop
+after packet release (Algorithm~\ref{alg:creditring}), movable into
+\texttt{rte\_eth\_add\_rx\_callback()} or PMD refill after \texttt{SLIST\_DBELL};
+and (2)~a 16-LoC (+12 net, 3 files) \texttt{allow\_small\_oq=1} devarg relaxing
+the 2,048-slot ring floor to 256 ($W_{\text{mark}}=\min(256,D/4)$). Two
+orthogonal PMD patches apply uniformly to all baselines: optional
+\texttt{rx\_poll\_mem=1} polling (+139/-5 LoC, 4 files; E3/E5 only, not needed
+by \sys{}) and a 9-LoC (+5 net) Socket-1 NUMA fix in \texttt{otx\_ep\_ism\_setup()}
+(165 ins / 13 del total). In 8-core E4, \texttt{ism\_enable=1} emitted
+$\sim$50\,Mops/s of empty-poll MMIO writes (capping 254\,B at 31.7\,Gbps);
+\texttt{ism\_enable=0} cut MMIO 75$\times$ and hit 99--100\,Gbps (sync reads
+cap 8-core 254\,B at $\sim$45\,Mpps, RTT 7.6--8.4\,$\mu$s). We use
+\texttt{ism\_enable=1} in E1--E3/E5 and \texttt{ism\_enable=0} in E4/E6;
+credits write BAR4 Window~15 under a TCP nonce lease restored on exit.
 
 \paragraph{Unmodified applications and faithful baselines.}
 We link upstream \textbf{Memcached~1.6.45} (\texttt{git diff = 0} lines

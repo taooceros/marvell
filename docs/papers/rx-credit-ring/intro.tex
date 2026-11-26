@@ -50,10 +50,10 @@ We ask whether a receive path can break the host-memory conservation wall
 \emph{without} dual-path switching, custom receive APIs, or bespoke host-NIC
 data transports. Our key observation is that \textbf{on-path SmartNICs}
 (Marvell OCTEON~10, AMD Pensando, Intel IPU) already sit inline between the
-Ethernet MAC and PCIe DMA engine. By placing a per-queue elastic FIFO directly
-inline in SmartNIC L3 and DDR5 while keeping the host's \textbf{normal,
-unmodified NIC DMA receive path}, fast delivery and burst buffering collapse
-into a \textbf{single unified FIFO} gated by an $O(1)$ per-queue credit window.
+Ethernet MAC and PCIe DMA engine. Placing a per-queue elastic FIFO inline in
+SmartNIC L3/DDR5 while preserving standard NIC DMA rings and
+\texttt{rte\_eth\_rx\_burst()} collapses fast delivery and burst buffering into
+one FIFO gated by an $O(1)$ per-queue credit window.
 
 Keeping a compact 128--256-slot host ring saturated at 100\,Gbps demands
 ultra-low-cost credit return. Standard hardware watermarks are coarse and
@@ -68,10 +68,10 @@ stays within 0.5--7.0\,Mpps, remaining 25--350$\times$ below the PCIe ingress
 saturation cliff where high-rate unfenced MMIO interferes with co-located cores.
 
 \paragraph{Contributions and headline findings.}
-We implement \sys{} over unmodified DPDK \texttt{octeon\_ep} SDP DMA rings on a
-Marvell OCTEON~10 CN106 SmartNIC and evaluate it across \textbf{1,723
-hardware-verified runs} (zero corruption, zero page faults, 100\%
-non-multiplexed PMUs, zero EDAC/AER increments) on a dual-host 100GbE testbed:
+We implement \sys{} over standard DPDK \texttt{octeon\_ep} SDP DMA rings on a
+CN106 SmartNIC ($\sim$6-line RX-loop credit hook, 16-LoC \texttt{allow\_small\_oq}
+PMD patch, \S\ref{sec:implementation}) and evaluate \textbf{1,723
+hardware-verified runs} (0 corruption/PF/EDAC/AER, 100\% non-multiplexed PMUs):
 \begin{itemize}
 \item \textbf{Architecture and unfenced signaling (\S\ref{sec:overview}--\S\ref{sec:design},
   \S\ref{sec:eval-e1}):} We unify on-path elastic buffering with normal NIC DMA

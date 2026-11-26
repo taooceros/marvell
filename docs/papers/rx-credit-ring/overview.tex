@@ -5,9 +5,9 @@
   \centering
   \includegraphics[width=\textwidth]{figures/fig1_architecture.png}
   \caption{Architectural contrast between (a) off-path dual-path caching (\ceio{})
-  and (b) \sys{}. By placing an elastic FIFO inline on an on-path SmartNIC and
-  keeping standard NIC DMA receive rings untouched, \sys{} collapses fast
-  delivery and burst buffering into one FIFO gated by unfenced 64-byte MMIO credits.}
+  and (b) \sys{}. Placing an elastic FIFO inline on an on-path SmartNIC while
+  preserving standard NIC DMA rings and \texttt{rte\_eth\_rx\_burst()} collapses
+  fast delivery and burst buffering into one FIFO gated by unfenced 64\,B MMIO credits.}
   \label{fig:arch}
 \end{figure*}
 
@@ -18,12 +18,12 @@ dual-path complexity while preserving full compatibility with existing host
 stacks:
 
 \begin{enumerate}
-\item \textbf{Unmodified standard NIC DMA data plane.}
-  Packets cross PCIe through normal DPDK DMA receive rings (e.g., standard
-  AVX2-vectorized \texttt{octeon\_ep} SDP rings). Host software receives
-  ordinary \texttt{mbuf}s via \texttt{rte\_eth\_rx\_burst()}, supporting
-  64\,B--4\,KiB frames and zero-modification upstream servers (Memcached~1.6.45)
-  while automatically using large PCIe TLPs for full 100GbE line-rate draining.
+\item \textbf{Standard NIC DMA data plane and host API.}
+  Packets cross PCIe via standard AVX2 \texttt{octeon\_ep} SDP DMA rings with
+  no ASIC edits or bespoke transports. Apps receive ordinary \texttt{mbuf}s via
+  \texttt{rte\_eth\_rx\_burst()} (no \texttt{async\_recv()} or 2P1C merge ring),
+  running unmodified Memcached~1.6.45 with only a $\sim$6-line credit hook and
+  16-LoC PMD ring-floor patch (\S\ref{sec:implementation}).
 \item \textbf{DDIO-locked rings and pools.}
   Each host queue uses a compact hardware ring ($D=512$ descriptors) gated by a
   tighter logical credit window ($R_{\text{eff}}=128$--$256$) and backed by a

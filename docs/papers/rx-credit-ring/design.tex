@@ -73,7 +73,7 @@ packets never strand credits.
   \item \quad \texttt{sdp\_tx\_burst(q, k)}; \texttt{submitted\_q += k}
 \end{enumerate}
 \vspace{3pt}
-\textbf{Host Core (per queue $q$, unmodified DPDK RX + 1-line credit hook):}
+\textbf{Host Core (per queue $q$, standard DPDK RX + $\sim$6-line credit hook):}
 \begin{enumerate}[leftmargin=1.4em, itemsep=0.5pt, topsep=2pt]
   \item \texttt{n = rte\_eth\_rx\_burst(sdp\_port, q, mbufs, 64)} \hfill\textit{// normal DMA}
   \item process \texttt{mbufs[0..n)} in unmodified app; \texttt{rte\_pktmbuf\_free\_bulk}

@@ -13,17 +13,18 @@ slow-to-fast draining pauses, a software merge ring, and custom receive APIs
 that add fixed CPU overhead and degrade under flow churn.
 
 We present \sys{}, a receive-path architecture that collapses burst absorption
-and cache-resident delivery into a single unified data path on on-path
-SmartNICs while leaving standard NIC DMA rings and host application APIs
-untouched. \sys{} keeps a compact, DDIO-locked receive ring and buffer pool on
+and cache-resident delivery into one unified path on on-path SmartNICs while
+preserving standard NIC DMA rings and host receive APIs. \sys{} keeps a compact,
+DDIO-locked receive ring and buffer pool on
 each host core, buffers excess traffic inline in SmartNIC L3 and DDR5 memory,
 and gates standard DMA delivery with an $O(1)$ per-queue credit counter. Host
 cores return batched credits via a single \emph{unfenced} 64-byte posted MMIO
 write per receive burst, avoiding store-buffer fence stalls while remaining
 25--350$\times$ below the PCIe/mesh interference cliff.
 
-Implemented over unmodified DPDK DMA rings on a Marvell OCTEON~10 CN106
-SmartNIC and evaluated across 1,723 verified 100GbE runs, \sys{} adds only
+Implemented over standard DPDK SDP DMA rings ($\sim$6-line credit hook, 16-LoC
+PMD floor patch) on a Marvell OCTEON~10 CN106 SmartNIC and evaluated across
+1,723 verified 100GbE runs, \sys{} adds only
 +0.20 host cycles/packet for signaling (67$\times$ cheaper than fenced MMIO)
 with $\le$0.35\% neighbor impact. Across 64\,B--1500\,B bursts up to 128\,MiB, \sys{}
 sustains 0.00\% loss, 98--100\% DDIO hits, 61--160$\times$ lower host DRAM
