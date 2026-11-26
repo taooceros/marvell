@@ -57,7 +57,7 @@ def main():
     # --- Left panel: KV p99 tail latency ---
     ax_lat.axvspan(3.5, 7.45, color="#FEE2E2", alpha=0.33, zorder=0)
     ax_lat.text(
-        5.48, 290, "大突发区（超出 60 MiB 共享 L3）",
+        5.48, 300, "大突发区（超出 60 MiB 共享 L3）",
         ha="center", va="top", fontsize=9.8, color="#991B1B",
     )
     ax_lat.axhline(solo_p99, color="#475569", linestyle=":", linewidth=1.4, zorder=1)
@@ -99,23 +99,24 @@ def main():
 
     # Zero-overlap callouts placed in wide-open whitespace
     ax_lat.annotate(
-        "单调环全程拖慢\n3.7–6.3 倍 (153–259 ns)",
-        xy=(1.95, 256), xytext=(0.25, 194),
-        fontsize=9.3, color="#B91C1C",
+        "单调环全程拖慢 3.7–6.3×\n(p99 153–259 · p999 289–315 ns)",
+        xy=(1.95, 256), xytext=(0.12, 192),
+        fontsize=9.1, color="#B91C1C",
         arrowprops=dict(arrowstyle="->", color="#C82829", lw=1.2),
         bbox=dict(boxstyle="round,pad=0.30", fc="white", ec="#FCA5A5", alpha=0.96),
     )
     ax_lat.annotate(
-        "LIFO 仅救 ≤4 MiB\n64 MiB 仍飙至 205 ns (5.0×)",
-        xy=(6.0, 208), xytext=(4.92, 242),
-        fontsize=9.2, color="#B45309",
+        "LIFO 仅救 ≤4 MiB（64M 205 ns）\n128M 稀释，p999 仍 287–293 ns",
+        xy=(6.0, 208), xytext=(7.38, 246),
+        ha="right", va="bottom",
+        fontsize=8.6, color="#B45309",
         arrowprops=dict(arrowstyle="->", color="#D97706", lw=1.2),
-        bbox=dict(boxstyle="round,pad=0.30", fc="white", ec="#FCD34D", alpha=0.96),
+        bbox=dict(boxstyle="round,pad=0.28", fc="white", ec="#FCD34D", alpha=0.96),
     )
     ax_lat.annotate(
-        "主动网卡全程 41 ns\n0 丢包，与单跑一致",
-        xy=(6.05, 44), xytext=(4.85, 84),
-        fontsize=9.3, color="#0F766E",
+        "主动网卡 p99 = 41–42 ns\n大突发 p999 43–47 ns · 0 丢包",
+        xy=(6.05, 44), xytext=(4.42, 84),
+        fontsize=9.1, color="#0F766E",
         arrowprops=dict(arrowstyle="->", color="#0F766E", lw=1.3),
         bbox=dict(boxstyle="round,pad=0.30", fc="#F0FDFA", ec="#5EEAD4", alpha=0.96),
     )
@@ -126,13 +127,13 @@ def main():
         arrowprops=dict(arrowstyle="->", color="#94A3B8", lw=0.9),
     )
 
-    ax_lat.set_title("① 同 CPU 并发 KV 查表 p99 尾延迟（越低越好）", fontsize=11.5, pad=10)
+    ax_lat.set_title("① 同 CPU 并发 KV 整窗 p99 尾延迟（越低越好）", fontsize=11.5, pad=10)
     ax_lat.set_xlabel("单次突发大小（每轮共发送 512 MiB）", fontsize=10.5, labelpad=7)
     ax_lat.set_ylabel("KV 随机查表 p99 尾延迟 (ns)", fontsize=10.5)
     ax_lat.set_xticks(x)
     ax_lat.set_xticklabels(BURST_XLABELS, fontsize=10)
     ax_lat.set_xlim(-0.45, 7.45)
-    ax_lat.set_ylim(0, 302)
+    ax_lat.set_ylim(0, 310)
     ax_lat.yaxis.set_major_locator(mticker.MultipleLocator(50))
 
     # --- Right panel: Packet drop rate ---
@@ -158,9 +159,9 @@ def main():
     ax_drop.text(6.95, 92.5, "99.8%", ha="center", va="top", fontsize=9.4, color="#991B1B")
 
     ax_drop.annotate(
-        "被动 256 KiB 热环：\n突发超 256 KiB 即大量丢包\n（1 MiB 丢 75% → 128 MiB 丢 99.8%）",
-        xy=(4.5, 97.5), xytext=(2.85, 50),
-        fontsize=9.4, color="#475569",
+        "被动 256 KiB 热环（满即丢包）：\n1 MiB 丢 75% → 128 MiB 丢 99.8%\n（闭环 TCP/RoCE 将触发 RTO 或 PFC）",
+        xy=(4.5, 97.5), xytext=(2.60, 48),
+        fontsize=9.2, color="#475569",
         arrowprops=dict(arrowstyle="->", color="#64748B", lw=1.2),
         bbox=dict(boxstyle="round,pad=0.32", fc="white", ec="#CBD5E1", alpha=0.96),
     )
