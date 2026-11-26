@@ -82,7 +82,7 @@ def main():
         ax1.bar(x + offset, ird_v, bottom=cwr_v + iwr_v, width=w, color="#f59e0b", hatch=hatch, edgecolor="white",
                 label="卡→主机读 (iio1_inb_rd)" if pi == 1 else None)
         for i in range(len(p_wls)):
-            lbl = f"{short}\n{tot[i]:.0f}B" if i < 2 else f"{short} {tot[i]:.0f}B"
+            lbl = f"{short}\n{tot[i]:.0f}B"
             ax1.text(x[i] + offset, tot[i] + 65, lbl, ha="center", va="bottom", fontsize=7.6,
                      fontweight="bold" if pol == "direct_safe" else "normal",
                      color="#1a7f37" if pol == "direct_safe" else "#475569")
@@ -91,13 +91,13 @@ def main():
         ts = sum(med([pcie_breakdown_bytes(r)[k] for r in by_id[f"sat_sdp_fair_{wkey}_w64"]]) for k in range(3))
         td = sum(med([pcie_breakdown_bytes(r)[k] for r in by_id[f"sat_direct_safe_{wkey}_w64"]]) for k in range(3))
         pct = (td - ts) / ts * 100.0
-        ax1.text(x[i], max(ts, td) + 500 if i < 2 else max(ts, td) + 275, f"{pct:+.1f}%",
+        ax1.text(x[i], max(ts, td) + 530, f"{pct:+.1f}%",
                  ha="center", va="bottom", fontsize=9.0, fontweight="bold", color="#1a7f37")
 
     ax1.set_xticks(x)
     ax1.set_xticklabels([lb for _, lb in p_wls], fontsize=9.0)
     ax1.set_ylabel("双向 PCIe 总流量（B/req，斜线=SDP / 实心=DirectPush）", fontsize=9.5)
-    ax1.set_ylim(0, 5200)
+    ax1.set_ylim(0, 5480)
     ax1.set_title("(a) 双向 PCIe 每请求字节拆解（含 iio1_cpu_wr）", fontsize=10.8, fontweight="bold", pad=8)
     ax1.legend(loc="upper left", fontsize=8.4, frameon=True, framealpha=0.92)
 
@@ -141,17 +141,40 @@ def main():
     ax2.set_title("(b) 主机 DRAM（IMC）每请求带宽消耗", fontsize=10.8, fontweight="bold", pad=8)
     ax2.legend(loc="upper left", fontsize=8.4, frameon=True, framealpha=0.92)
 
+    # Dynamically pull get1024 padding DRAM read numbers for footnote
+    rs_1024_sdp = by_id["sat_sdp_fair_get1024_zipf_w64"]
+    rs_1024_dp = by_id["sat_direct_safe_get1024_zipf_w64"]
+    imc_1024_sdp = med([r["host"]["pmu"]["imc_bytes_per_req"] for r in rs_1024_sdp])
+    imc_1024_dp = med([r["host"]["pmu"]["imc_bytes_per_req"] for r in rs_1024_dp])
+    rd_1024_sdp = med([r["host"]["pmu"]["imc_cas_rd"] / r["host"]["tx_rpcs"] for r in rs_1024_sdp])
+    rd_1024_dp = med([r["host"]["pmu"]["imc_cas_rd"] / r["host"]["tx_rpcs"] for r in rs_1024_dp])
+    ird_1024_lines = med([r["host"]["pmu"]["iio1_inb_rd"] / r["host"]["tx_rpcs"] for r in rs_1024_dp])
+    # Reply = 8B UDP hdr + 24B binary hdr + 4B flags + 1024B value = 1060 B -> head+reply touches lines 0..16 (17 lines) + tail line 31 (1 line)
+    mc_reply_b = 8 + 24 + 4 + 1024
+    touched_head_lines = (8 + mc_reply_b + 63) // 64
+    untouched_pad_lines = int(round(ird_1024_lines)) - touched_head_lines - 1
+    imc_diff_b = imc_1024_sdp - imc_1024_dp
+
     fig.suptitle(
         "MRV-206：100% 非复用主机 IIO1 与 IMC 硬件计数（双向 PCIe 与 DRAM 流量，原版 Memcached 1.6.45，n=3 中位数）",
         fontsize=11.4, fontweight="bold", y=0.975,
     )
-    fig.tight_layout(rect=[0.0, 0.01, 1.0, 0.925])
+    fig.text(
+        0.5, 0.008,
+        f"注：未绘出的 1 KiB 读（get1024）双路同现高 IMC 流量（SDP {imc_1024_sdp:.0f} B / DP {imc_1024_dp:.0f} B，其中 IMC 读占 {rd_1024_sdp:.1f} / {rd_1024_dp:.1f} 行 = {rd_1024_sdp*64:.0f} / {rd_1024_dp*64:.0f} B），\n"
+        f"系 wire_total_bytes 将 {mc_reply_b} B 回包扩至 {ird_1024_lines*64:.0f} B（{ird_1024_lines:.0f} 行）后，中间 {untouched_pad_lines} 条未触碰填充行（{untouched_pad_lines*64} B）被网卡非分配式 PCIe RdCurr 直读主存所致（双路同源陪读，叠加常规读写后仅差 ~{imc_diff_b:.0f} B）。",
+        ha="center", va="bottom", fontsize=7.5, color="#475569",
+    )
+    fig.tight_layout(rect=[0.0, 0.068, 1.0, 0.925])
     png = mrvplot.HERE / "mrv-206-pcie-imc.png"
     svg = mrvplot.HERE / "mrv-206-pcie-imc.svg"
     fig.savefig(png)
     fig.savefig(svg)
     plt.close(fig)
-    print(f"Saved {png} and {svg}")
+    print(
+        f"Saved {png} and {svg} (get1024 IMC: sdp={imc_1024_sdp:.1f}B [rd={rd_1024_sdp:.2f}L], "
+        f"dp={imc_1024_dp:.1f}B [rd={rd_1024_dp:.2f}L], ird={ird_1024_lines:.2f}L, pad={untouched_pad_lines}L={untouched_pad_lines*64}B)"
+    )
 
 
 if __name__ == "__main__":

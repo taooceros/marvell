@@ -193,16 +193,27 @@ def main():
     ax2.set_title("(b) Facebook ETC 混合负载（40% 8B + 40% 128B 95/5 + 20% 3.8KiB）", fontsize=10.3, fontweight="bold", pad=8)
     ax2.legend(loc="upper left", fontsize=7.9, frameon=True, framealpha=0.92)
 
+    # Dynamically pull direct_peek etc_mix 1.80M r=1..2 vs r=3 host_rtt_mean_us for footnote
+    pk18_ok = pois_ok[("direct_peek", "etc_mix", 1800)]
+    pk18_sat = pois_sat[("direct_peek", "etc_mix", 1800)]
+    hrtt_ok = med([r["card"]["host_rtt_mean_us"] for r in pk18_ok])
+    hrtt_r3 = pk18_sat[0]["card"]["host_rtt_mean_us"]
+    p99_r3 = pk18_sat[0]["client"]["tot_p99_us"]
+    p999_r3 = pk18_sat[0]["client"]["tot_p999_us"]
+    wcap_r3 = pk18_sat[0]["client"]["window_cap_hits"]
+
     fig.suptitle(
         "MRV-206：开环泊松负载–延迟与拐点曲线（原版 Memcached 1.6.45，实心=无损验证点，空心=拐点饱和尝试）",
         fontsize=11.4, fontweight="bold", y=0.975,
     )
     fig.text(
         0.5, 0.008,
-        "*注：DirectPush（窥探版）ETC 混合第 3 轮在 1.80M 因偶发 1.4 ms 瞬态停顿（0 丢包、p99=21.55 µs、wcap=325,766）提前终止，故 1.80–2.70M 为前 2 轮中位数（n=2）；安全直取版与 SDP 均含完整 n=3。",
-        ha="center", va="bottom", fontsize=7.9, color="#475569",
+        f"*注：DirectPush（窥探版）ETC 混合第 3 轮在 1.80M 因共享宿主 cpu40 单次 ~{p999_r3/1000:.1f} ms 内核调度抢占"
+        f"（卡测主机往返均值 {hrtt_ok:.2f}→{hrtt_r3:.2f} µs，0 丢包，p99={p99_r3:.2f} µs，wcap={wcap_r3:,}）触发早停，"
+        "故 1.80–2.70M 为前 2 轮中位数（n=2）；安全直取版与 SDP 均含完整 n=3。",
+        ha="center", va="bottom", fontsize=7.6, color="#475569",
     )
-    fig.tight_layout(rect=[0.0, 0.04, 1.0, 0.925])
+    fig.tight_layout(rect=[0.0, 0.048, 1.0, 0.925])
     png = mrvplot.HERE / "mrv-206-poisson-knee.png"
     svg = mrvplot.HERE / "mrv-206-poisson-knee.svg"
     fig.savefig(png)
