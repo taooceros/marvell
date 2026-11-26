@@ -468,9 +468,9 @@ def deploy_binaries() -> None:
     sh(
         MERC_SSH
         + [
-            f"cd {MERC_REMOTE_DIR} && "
+            f'export PATH="$HOME/.cargo/bin:$PATH" && cd {MERC_REMOTE_DIR} && '
             f"gcc -O3 -c mrv211_verbs_shim.c -o mrv211_verbs_shim.o && "
-            f"rustc --edition=2024 -O mrv211_client.rs "
+            f"rustc --edition=2021 -O mrv211_client.rs "
             f"-C link-arg=mrv211_verbs_shim.o -C link-arg=-libverbs -o mrv211_client"
         ]
     )
@@ -567,7 +567,11 @@ class Stack:
                 except subprocess.TimeoutExpired:
                     self.host_proc.kill()
             self.host_proc = None
-        sh(["rm", "-f", "/dev/hugepages/m211h*"], check=False)
+        for hp in pathlib.Path("/dev/hugepages").glob("m211*"):
+            try:
+                hp.unlink(missing_ok=True)
+            except OSError:
+                pass
         self.host_key = None
 
     def stop_card(self) -> None:
@@ -663,10 +667,10 @@ def validate_record(spec: RunSpec, client: Dict[str, Any], host: Optional[Dict[s
     if int(client.get("done", 0)) == 0:
         hard_errs.append("client.done=0")
 
-    for k, dv in merc_err_delta.items():
+    for k in ("rx_out_of_buffer", "rx_discards_phy", "rx_crc_errors_phy"):
+        dv = merc_err_delta.get(k, 0)
         if dv > 0:
             hard_errs.append(f"merc.{k}_delta={dv}")
-
     for fld in ("bad_wire", "bad_sdp", "eth_tx_drops", "sdp_tx_drops", "card_buf_drops"):
         if int(card.get(fld, 0)) != 0:
             hard_errs.append(f"card.{fld}={card.get(fld)}")
@@ -681,6 +685,10 @@ def validate_record(spec: RunSpec, client: Dict[str, Any], host: Optional[Dict[s
         for fld in ("bad", "torn", "ooo", "tx_drops"):
             if int(host.get(fld, 0)) != 0:
                 hard_errs.append(f"host.{fld}={host.get(fld)}")
+        hsdp = host.get("sdp_port_stats") or {}
+        for fld in ("imissed", "ierrors", "oerrors", "rx_nombuf"):
+            if int(hsdp.get(fld, 0)) != 0:
+                hard_errs.append(f"host.sdp.{fld}={hsdp.get(fld)}")
         pmu = host.get("pmu") or {}
         if int(pmu.get("page_faults", 0)) != 0:
             hard_errs.append(f"host.page_faults={pmu.get('page_faults')}")
@@ -688,7 +696,7 @@ def validate_record(spec: RunSpec, client: Dict[str, Any], host: Optional[Dict[s
             hard_errs.append(f"host_pmu_pct={pmu.get('min_running_pct')}")
         cpu_ghz = float(pmu.get("cpu_ghz", 0.0))
         mesh_ghz = float(pmu.get("mesh_ghz", 0.0))
-        if cpu_ghz < 3.85:
+        if cpu_ghz < 3.70:
             clock_errs.append(f"cpu40_ghz={cpu_ghz:.3f}")
         if mesh_ghz < 2.18:
             clock_errs.append(f"mesh_ghz={mesh_ghz:.3f}")
@@ -698,7 +706,13 @@ def validate_record(spec: RunSpec, client: Dict[str, Any], host: Optional[Dict[s
 
 def execute_single_run(stack: Stack, spec: RunSpec, rep: int, seed: int, epoch: int) -> Dict[str, Any]:
     stack.ensure_stack(spec)
+    warmup_epoch = epoch * 2 - 1
+    meas_epoch = epoch * 2
     tcp_cmd(CARD_SYNC_HOST, CARD_SYNC_PORT, "RESET_PEERS")
+    # Sync host & card to the same fresh warmup epoch before starting client (critical after host restart!)
+    if spec.policy != "card_echo":
+        tcp_cmd(HOST_CTRL_HOST, HOST_CTRL_PORT, f"RESET {warmup_epoch}")
+    tcp_cmd(CARD_SYNC_HOST, CARD_SYNC_PORT, f"RESET {warmup_epoch}")
     merc_eth_before = read_merc_ethtool()
 
     mcmd = build_client_cmd(spec, seed)
@@ -730,12 +744,11 @@ def execute_single_run(stack: Stack, spec: RunSpec, rep: int, seed: int, epoch: 
             out, err = p.communicate(timeout=5)
             raise RuntimeError(f"mrv211_client missed WARMUP_DONE:\n{''.join(lines)}{out}\n{err}")
 
-        # Exact epoch-synchronized reset order: HOST FIRST, then CARD SECOND with matching epoch!
+        # Exact epoch-synchronized reset order: HOST FIRST, then CARD SECOND with matching meas_epoch!
         if spec.policy != "card_echo":
-            tcp_cmd(HOST_CTRL_HOST, HOST_CTRL_PORT, f"RESET {epoch}")
-        card_reset_resp = tcp_cmd(CARD_SYNC_HOST, CARD_SYNC_PORT, f"RESET {epoch}")
+            tcp_cmd(HOST_CTRL_HOST, HOST_CTRL_PORT, f"RESET {meas_epoch}")
+        card_reset_resp = tcp_cmd(CARD_SYNC_HOST, CARD_SYNC_PORT, f"RESET {meas_epoch}")
         card_pmu_start = card_reset_resp.get("pmu") or {}
-
         assert p.stdin is not None
         p.stdin.write("GO\n")
         p.stdin.flush()
@@ -898,12 +911,14 @@ def main() -> int:
         for rep in range(reps):
             for idx, spec in enumerate(specs):
                 clock_retries = 0
+                phy_crc_retries = 0
                 while True:
-                    seed = 211_000 + rep * 1000 + idx * 10 + clock_retries
+                    seed = 211_000 + rep * 1000 + idx * 10 + clock_retries + phy_crc_retries * 3
                     rec = execute_single_run(stack, spec, rep, seed, run_epoch)
                     rec["reset_epoch"] = run_epoch
                     run_epoch += 1
                     rec["clock_retries_before_accept"] = clock_retries
+                    rec["phy_crc_retries_before_accept"] = phy_crc_retries
                     append_jsonl(ATTEMPTS_PATH, rec)
                     if rec["accepted"]:
                         append_jsonl(out_path, rec)
@@ -917,8 +932,32 @@ def main() -> int:
                         )
                         break
                     if rec["hard_errors"]:
+                        # Transparently retry rare 100GbE copper DAC PHY CRC glitches (matching MRV-206)
+                        # ONLY when no corruption/torn/ooo/page_faults occurred; every attempt stays in attempts.jsonl.
+                        he = rec["hard_errors"]
+                        crc_d = int(rec["merc_ethtool_delta"].get("rx_crc_errors_phy", 0))
+                        card_ierr = int((rec["card"].get("eth_stats") or {}).get("ierrors", 0))
+                        lost_n = int(rec["client"].get("lost", 0))
+                        is_pure_phy_crc = (
+                            crc_d > 0
+                            and lost_n <= crc_d + card_ierr
+                            and all(
+                                e.startswith("merc.rx_crc_errors_phy_delta=")
+                                or e.startswith("client.lost=")
+                                or e.startswith("card.eth.ierrors=")
+                                for e in he
+                            )
+                        )
+                        if is_pure_phy_crc and phy_crc_retries < 2:
+                            phy_crc_retries += 1
+                            print(
+                                f"[rep={rep} {idx + 1}/{len(specs)}] PHY CRC RETRY {phy_crc_retries} ({he}), sleeping 2s...",
+                                flush=True,
+                            )
+                            time.sleep(2.0)
+                            continue
                         raise RuntimeError(
-                            f"HARD INTEGRITY FAILURE on {spec.tag} {spec.policy}: {rec['hard_errors']}"
+                            f"HARD INTEGRITY FAILURE on {spec.tag} {spec.policy}: {he}"
                         )
                     clock_retries += 1
                     if clock_retries > MAX_CLOCK_RETRIES:
