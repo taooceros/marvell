@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[2]
 RUNS_PATH = ROOT / "logs/mrv213-2026-11-26/runs.jsonl"
 
 BURST_ORDER = ["64KiB", "256KiB", "1MiB", "4MiB", "16MiB", "32MiB", "64MiB", "128MiB"]
-BURST_LABELS = ["64K", "256K", "1M", "4M", "16M", "32M", "64M", "128M"]
+BURST_LABELS = ["64K*", "256K*", "1M", "4M", "16M", "32M", "64M", "128M"]
 
 
 def med(xs):
@@ -48,6 +48,8 @@ def assert_verified(r):
         assert ms["phy"]["tx_pause"] == 0 and ms["phy"]["rx_pause"] == 0
         if r["arm"] not in ("small-drop", "native-bp"):
             assert r["lost_pkts"] == 0 and r["gaps"] == 0 and r["ooo"] == 0
+        else:
+            assert cs["sdp_tx_drops"] == 0 and cs["sdp_tx_stalls"] == 0 and cs["fifo_enq"] == 0
 
 
 def main():
@@ -63,11 +65,11 @@ def main():
     solo_p999 = med([r["kv"]["p999_ns"] for r in solo_rows])
 
     arms = [
-        ("large_mono",  "① 大环单调池 (8192槽/FIFO)",     "#dc2626", "o",  "-",  2.1),
-        ("large_lifo",  "③ 大环理想LIFO池 (8192槽/LIFO)", "#f97316", "s",  "--", 1.9),
-        ("small_drop",  "② 被动小环满即丢 (256槽)",        "#94a3b8", "^",  ":",  1.6),
-        ("native_bp",   "④ 原生SDP低水位 (零BAR4消融)",     "#64748b", "v",  "-.", 1.7),
-        ("credit_ring", "⑤ 本文CreditRing (热环+BAR4信用)", "#1a7f37", "D",  "-",  2.6),
+        ("large_mono",  "① 大环单调池 (8192槽/FIFO)",       "#dc2626", "o",  "-",  2.1),
+        ("large_lifo",  "③ 大环理想LIFO池 (8192槽/LIFO)",   "#f97316", "s",  "--", 1.9),
+        ("small_drop",  "② 被动小环 (256槽, BP_EN=0)",      "#94a3b8", "^",  ":",  1.6),
+        ("native_bp",   "④ 原生SDP低水位 (512槽, BP_EN=0)", "#64748b", "v",  "-.", 1.7),
+        ("credit_ring", "⑤ 本文CreditRing (热环+BAR4信用)",  "#1a7f37", "D",  "-",  2.6),
     ]
 
     x = np.arange(len(BURST_ORDER))
@@ -78,7 +80,7 @@ def main():
 
     # Shade host hot-ring capacity boundary (4Q * 256 R_eff * 1500B = 1.5 MiB)
     ax1.axvline(2.35, color="#cbd5e1", linestyle="--", linewidth=1.1, zorder=0)
-    ax1.text(2.60, 338, "主机热环边界 (~1.5 MiB)\n右侧超出部分转入卡 FIFO", color="#475569", fontsize=8.4, va="top")
+    ax1.text(2.72, 338, "主机热环边界 (~1.5 MiB)\n右侧超出部分转入卡 FIFO", color="#475569", fontsize=8.4, va="top")
     for tag, label, col, mk, ls, lw in arms:
         y99 = [med([r["kv"]["p99_ns"] for r in by_key[(tag, b)]]) for b in BURST_ORDER]
         lo99 = [y - min(r["kv"]["p99_ns"] for r in by_key[(tag, b)]) for y, b in zip(y99, BURST_ORDER)]
@@ -124,7 +126,7 @@ def main():
 
     ax1.set_xticks(x)
     ax1.set_xticklabels(BURST_LABELS)
-    ax1.set_xlabel("单次 100GbE 突发规模（1500 B 帧，B）")
+    ax1.set_xlabel("单次 100GbE 突发规模（1500 B 帧；*前两档实发均 256 包 / 375 KiB）")
     ax1.set_ylabel("同 Socket 并发 32 MiB KV 延迟（ns）")
     ax1.set_ylim(0, max(lm_p999) + 56)
     ax1.set_title("A. 并发 KV 尾延迟（实线 p99 / 点线 p999）", fontsize=11.5, fontweight="bold")
@@ -141,11 +143,15 @@ def main():
 
     sd_128 = med([r["drop_pct"] for r in by_key[("small_drop", "128MiB")]])
     nb_128 = med([r["drop_pct"] for r in by_key[("native_bp", "128MiB")]])
-    nb_32 = med([r["drop_pct"] for r in by_key[("native_bp", "32MiB")]])
+    nb_64 = med([r["drop_pct"] for r in by_key[("native_bp", "64MiB")]])
     ax2.annotate(
-        f"② 被动小环：{sd_128:.1f}% 丢包\n④ 原生SDP低水位：{nb_128:.1f}% 静默丢包\n(CN106 默认VF0从不反压卡侧)",
-        xy=(x[-2], nb_32), xytext=(2.6, 56),
-        fontsize=9.2, color="#334155", fontweight="bold",
+        (
+            f"SDPX_OUT_BP_ENX_W1S = 0 (无反压被动 OQ 静默丢包)\n"
+            f"② 256槽：{sd_128:.1f}% 丢包 ｜ ④ 512槽：{nb_128:.1f}% 丢包\n"
+            f"卡侧全程 sdp_tx_drops = 0, fifo_enq = 0"
+        ),
+        xy=(x[-2], nb_64), xytext=(3.60, 44),
+        fontsize=8.6, color="#334155", fontweight="bold",
         bbox=dict(boxstyle="round,pad=0.35", facecolor="#f8fafc", edgecolor="#94a3b8", lw=1.0),
         arrowprops=dict(arrowstyle="->", color="#475569", lw=1.1),
     )
@@ -159,13 +165,13 @@ def main():
 
     ax2.set_xticks(x)
     ax2.set_xticklabels(BURST_LABELS)
-    ax2.set_xlabel("单次 100GbE 突发规模（1500 B 帧，B）")
+    ax2.set_xlabel("单次 100GbE 突发规模（1500 B 帧；*前两档实发均 256 包 / 375 KiB）")
     ax2.set_ylabel("端到端丢包率（%）")
     ax2.set_ylim(-4, 108)
     ax2.set_title("B. 端到端丢包率：无 BAR4 信用必丢包，有信用严格 0%", fontsize=11.5, fontweight="bold")
 
     fig.suptitle(
-        "MRV-213（1500 B 满线速 100GbE，n=3 中位数）：大环保零丢包却打爆 KV，小环/原生 SDP 保 KV 却静默狂丢，仅 CreditRing 两难全解",
+        "MRV-213（1500 B 满线速 100GbE，n=3 中位数）：大环保零丢包却打爆 KV，256/512 槽无反压被动小环狂丢，仅 CreditRing 两难全解",
         fontsize=12.0, fontweight="bold", y=0.99,
     )
     out = mrvplot.save(fig, "mrv-213-kv-drop-1500b")
