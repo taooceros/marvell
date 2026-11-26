@@ -173,21 +173,23 @@ def main():
     sh_8c = med([r["summary"]["host_wire_gbps"] for r in by_cfg["p1_sh-ring_c8_256B_unif"]])
     cred_4c_256 = med([r["summary"]["host_wire_gbps"] for r in by_cfg["p1_credit-sdp_c4_256B_unif"]])
     cred_8c_256 = med([r["summary"]["host_wire_gbps"] for r in by_cfg["p1_credit-sdp_c8_256B_unif"]])
+    cred_8c_loss = med([r["summary"]["e2e_loss_pct"] for r in by_cfg["p1_credit-sdp_c8_256B_unif"]])
     priv_4c_256 = med([r["summary"]["host_wire_gbps"] for r in by_cfg["p1_priv-ring_c4_256B_unif"]])
     priv_8c_256 = med([r["summary"]["host_wire_gbps"] for r in by_cfg["p1_priv-ring_c8_256B_unif"]])
+    priv_8c_loss = med([r["summary"]["e2e_loss_pct"] for r in by_cfg["p1_priv-ring_c8_256B_unif"]])
 
     ax3.axhline(100.0, color="#666666", linestyle="--", linewidth=1.1, zorder=2)
-    ax3.text(-0.12, 103.5, "100 Gbps 线速", fontsize=9.2, color="#555555")
+    ax3.text(-0.14, 103.5, "100 Gbps 线速", fontsize=9.2, color="#555555")
 
     ax3.annotate(
-        f"本文 4→8 核 {cred_4c_256:.1f}→{cred_8c_256:.1f}G\n追平大环 ({priv_8c_256:.1f}G)\n全案受 ~45 Mpps 读墙封顶",
+        f"本文 8 核 {cred_8c_256:.1f}G（FIFO 丢 {cred_8c_loss:.2f}%）\n追平大环 {priv_8c_256:.1f}G（丢 {priv_8c_loss:.2f}%）\n~45 Mpps 读墙 + 卡 L3 溢出",
         xy=(3, cred_8c_256),
-        xytext=(-0.14, 77.0),
-        fontsize=8.4,
+        xytext=(-0.16, 78.5),
+        fontsize=7.5,
         fontweight="bold",
         color="#084e6e",
-        bbox=dict(boxstyle="round,pad=0.24", facecolor="#eef7fb", edgecolor="#0b6e99", alpha=0.96),
-        arrowprops=dict(arrowstyle="->", color="#0b6e99", lw=1.4, connectionstyle="arc3,rad=-0.06"),
+        bbox=dict(boxstyle="round,pad=0.22", facecolor="#eef7fb", edgecolor="#0b6e99", alpha=0.96),
+        arrowprops=dict(arrowstyle="->", color="#0b6e99", lw=1.4, connectionstyle="arc3,rad=-0.05"),
     )
     ax3.annotate(
         f"静态共享锁（含小池缓存双锁放大）\n4 核 {sh_4c:.1f} → 8 核 {sh_8c:.1f} Gbps",
@@ -210,7 +212,7 @@ def main():
 
     handles, labels = ax1.get_legend_handles_labels()
     fig.suptitle(
-        "均匀流量扩核（1 → 8 核）：本文信用环守住主机缓存，8 核小包追平满线速（n=3 中值）",
+        "均匀流量扩核（1 → 8 核）：本文信用环守住主机缓存，8 核小包追平大环（n=3 中值）",
         fontsize=13.8, fontweight="bold", y=0.99,
     )
     fig.legend(
