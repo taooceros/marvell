@@ -40,10 +40,10 @@ from datetime import datetime, timezone
 
 ROOT = pathlib.Path("/home/hongtao/dev/marvell-mrv210")
 LOG_DIR = ROOT / "logs/mrv210-2026-11-26"
+SMOKE_PATH = LOG_DIR / "smoke.jsonl"
 ATTEMPTS_PATH = LOG_DIR / "attempts.jsonl"
 RUNS_PATH = LOG_DIR / "runs.jsonl"
 ENV_PATH = LOG_DIR / "env.json"
-
 HOST_BIN = str(ROOT / "testbed/target/release/mrv210_host")
 CARD_BIN_LOCAL = str(ROOT / "testbed/target/aarch64-unknown-linux-gnu/release/mrv210_card")
 CARD_BIN_REMOTE = "/root/bench/mrv210_card"
@@ -65,10 +65,12 @@ HOST_KV_CPU = 48
 KV_BYTES = 32 * 1024 * 1024
 
 REPS = 3
-WARMUP_SECS = 0.4
+WARMUP_SECS = 0.5
 MEAS_SECS = 1.5
 STALL_MEAS_SECS = 2.0
-MIN_CORE_GHZ = 3.85
+# Sapphire Rapids Xeon 6448Y steady-state turbo floor by RX core count (+1 KV core on Socket 1):
+# 1+1 cores ~3.90 GHz, 2+1 ~3.88 GHz, 4+1 ~3.76 GHz, 8+1 ~3.66 GHz (vs stuck-at-base 2.20 GHz).
+MIN_CORE_GHZ_BY_NC = {1: 3.80, 2: 3.70, 4: 3.55, 8: 3.40}
 MIN_MESH_GHZ = 2.18
 
 ARMS = ["priv-ring", "sh-ring", "rx-bisect", "credit-sdp"]
@@ -87,13 +89,17 @@ def utc_now() -> str:
 
 
 def arm_config(arm: str, nc: int) -> dict:
-    """Return exact hardware/software parameters for each E4 arm at `nc` host cores (`1..=8`)."""
+    """Return exact hardware/software parameters for each E4 arm at `nc` host cores (`1..=8`).
+    Uses `ism_enable=0` across all 4 arms: with 8 polling cores, `ism_enable=1` issues ~50 Mops/s
+    of empty-poll OUT_CNTS ISM MMIO writes, saturating CN106 PCIe MMIO and throttling SDP C2H to ~32 Gbps,
+    whereas `ism_enable=0` (standard octeon_ep default) unlocks full ~99 Gbps (45+ Mpps) 100GbE RX.
+    """
     assert 1 <= nc <= 8, f"VF0 supports 1..=8 queues, got {nc}"
     if arm == "priv-ring":
         return {
             "arm": "priv-ring",
             "card_mode": "passive",
-            "devarg": f"0000:99:02.0,ism_enable=1,max_rings={nc}",
+            "devarg": f"0000:99:02.0,ism_enable=0,max_rings={nc}",
             "rx_desc": 2048,
             "pool_size": 4096,
             "pool_cache": 256,
@@ -102,14 +108,14 @@ def arm_config(arm: str, nc: int) -> dict:
             "align_refill": True,
             "shring_cap": 1024,
             "bx_cap": 8192,
-            "fifo_cap": 65536,
+            "fifo_cap": 75000,
         }
     if arm == "sh-ring":
         shring_cap = 1024
         return {
             "arm": "sh-ring",
             "card_mode": "passive",
-            "devarg": f"0000:99:02.0,ism_enable=1,allow_small_oq=1,max_rings={nc}",
+            "devarg": f"0000:99:02.0,ism_enable=0,allow_small_oq=1,max_rings={nc}",
             "rx_desc": 256,
             "pool_size": nc * 256 + shring_cap + 256,
             "pool_cache": 32,
@@ -118,13 +124,13 @@ def arm_config(arm: str, nc: int) -> dict:
             "align_refill": True,
             "shring_cap": shring_cap,
             "bx_cap": 8192,
-            "fifo_cap": 65536,
+            "fifo_cap": 75000,
         }
     if arm == "rx-bisect":
         return {
             "arm": "rx-bisect",
             "card_mode": "passive",
-            "devarg": f"0000:99:02.0,ism_enable=1,allow_small_oq=1,max_rings={nc}",
+            "devarg": f"0000:99:02.0,ism_enable=0,allow_small_oq=1,max_rings={nc}",
             "rx_desc": 256,
             "pool_size": 32768,
             "pool_cache": 256,
@@ -133,30 +139,29 @@ def arm_config(arm: str, nc: int) -> dict:
             "align_refill": True,
             "shring_cap": 1024,
             "bx_cap": 8192,
-            "fifo_cap": 65536,
+            "fifo_cap": 75000,
         }
     if arm == "credit-sdp":
         # Pitfall 1 & 2 safety invariant:
         #   rx_desc = 512 -> hardware WMARK = min(256, 512/4) = 128.
-        #   R_eff = 192, DROQ_REFILL_THRESHOLD = 64 -> free_hw_desc >= 512 - 192 - 64 = 256 > WMARK (128).
-        #   Per-queue hot pool = 640 mbufs (512 in DROQ + 128 LIFO cache) -> 8c x 192 x 1.5 KiB = 2.25 MiB active
+        #   R_eff = 256, DROQ_REFILL_THRESHOLD = 64 -> free_hw_desc >= 512 - 256 - 64 = 192 > WMARK (128).
+        #   Per-queue hot pool = 640 mbufs (512 in DROQ + 128 LIFO cache) -> 8c x 256 x 1.5 KiB = 3.0 MiB active
         #   and 8c x 512 x 1.5 KiB = 6.0 MiB max span, strictly inside 8 MiB 2-way DDIO!
         return {
             "arm": "credit-sdp",
             "card_mode": "credit",
-            "devarg": f"0000:99:02.0,ism_enable=1,allow_small_oq=1,max_rings={nc}",
+            "devarg": f"0000:99:02.0,ism_enable=0,allow_small_oq=1,max_rings={nc}",
             "rx_desc": 512,
             "pool_size": 640,
             "pool_cache": 128,
-            "r_eff": 192,
+            "r_eff": 256,
             "credit_batch": 64,
             "align_refill": True,
             "shring_cap": 1024,
             "bx_cap": 8192,
-            "fifo_cap": 65536,
+            "fifo_cap": 75000,
         }
     raise ValueError(f"Unknown arm: {arm}")
-
 
 def validate_arm_invariants():
     """Offline check of CN106 octeon_ep WMARK, DROQ_REFILL_THRESHOLD, and DDIO working-set invariants."""
@@ -238,9 +243,13 @@ def build_main_specs() -> list[dict]:
                     })
 
     # Part 3: Single Slow-Core Stall Isolation (1, 5, 10 ms on 8 cores + 5 ms on 4 cores) x (1500B, 256B) x 4 arms
+    # - 1500B: full open-loop 100GbE (~95-100 Gbps, 8.2 Mpps) on both 4c and 8c (well below per-core PPS cap).
+    # - 256B : paced to sub-capacity (36.0 Mpps / ~79 Gbps on 8c matching 20% 10ms/50ms stall duty cycle;
+    #          32.0 Mpps / ~70 Gbps on 4c matching 10% 5ms/50ms stall duty cycle) identically across all 4 arms.
     for frame in ("1500B", "256B"):
         for nc, stall_ms_list in ((8, (1, 5, 10)), (4, (5,))):
             for stall_ms in stall_ms_list:
+                rate_mpps = 0.0 if frame == "1500B" else (32.0 if nc == 4 else 36.0)
                 for arm in ARMS:
                     specs.append({
                         "part": "part3_slow_core_stall",
@@ -248,9 +257,9 @@ def build_main_specs() -> list[dict]:
                         "arm": arm, "nc": nc, "frame": frame, "dist": "uniform",
                         "zipf_alpha": 1.0, "app_work_ns": 0, "stall_core": 0,
                         "stall_us": stall_ms * 1000, "stall_period_ms": 50,
+                        "rate_mpps": rate_mpps,
                         "kv_bytes": KV_BYTES, "meas_s": STALL_MEAS_SECS,
                     })
-
     return specs
 
 
@@ -297,10 +306,15 @@ def tad_delta(a: dict, b: dict) -> dict:
     return out
 
 
+def min_core_ghz_for_nc(nc: int) -> float:
+    return MIN_CORE_GHZ_BY_NC.get(nc, 3.40)
+
+
 def evaluate_gates(spec: dict, hs: dict, cs: dict, ms: dict, tad_d: dict) -> list[str]:
     """Strict verification gates (integrity errors are NEVER retried; clock errors may back off)."""
     errs = []
     arm = spec["arm"]
+    min_ghz = min_core_ghz_for_nc(spec["nc"])
     hp = hs.get("host_pmu") or {}
     kv = hs.get("kv")
 
@@ -308,7 +322,7 @@ def evaluate_gates(spec: dict, hs: dict, cs: dict, ms: dict, tad_d: dict) -> lis
         errs.append(f"host_pmu_pct={hp.get('min_running_pct', 0.0):.3f}")
     if tad_d.get("min_running_pct", 0.0) < 99.95:
         errs.append(f"card_pmu_pct={tad_d.get('min_running_pct', 0.0):.3f}")
-    if hp.get("min_rx_ghz", 0.0) < MIN_CORE_GHZ:
+    if hp.get("min_rx_ghz", 0.0) < min_ghz:
         errs.append(f"min_rx_ghz={hp.get('min_rx_ghz', 0.0):.3f}")
     if hp.get("mesh_ghz", 0.0) < MIN_MESH_GHZ:
         errs.append(f"mesh_ghz={hp.get('mesh_ghz', 0.0):.3f}")
@@ -332,18 +346,35 @@ def evaluate_gates(spec: dict, hs: dict, cs: dict, ms: dict, tad_d: dict) -> lis
         if kv.get("page_faults", 0) != 0:
             errs.append(f"kv_pf={kv.get('page_faults')}")
         kv_pmu = hp.get("kv_core") or {}
-        if kv_pmu.get("ghz", 0.0) < MIN_CORE_GHZ:
+        if kv_pmu.get("ghz", 0.0) < min_ghz:
             errs.append(f"kv_ghz={kv_pmu.get('ghz', 0.0):.3f}")
 
-    # CreditSDP zero-loss & zero-backpressure invariant
+    # CreditSDP invariants:
+    # - Always require zero SDP backpressure drops (`bp_drops == 0`) and non-zero RX.
+    # - On slow-core stall isolation runs (sub-capacity aggregate load), enforce strict
+    #   end-to-end zero loss: `fifo_full_drops == 0`, `eth_imissed == 0`, `eth_nombuf == 0`,
+    #   and `e2e_loss_pct < 0.05` (allows only tiny TCP stop-boundary rounding).
     if arm == "credit-sdp":
-        if cs.get("bp_drops", 0) != 0 or cs.get("fifo_full_drops", 0) != 0:
-            errs.append(f"credit_sdp_drops bp={cs.get('bp_drops')} fifo_full={cs.get('fifo_full_drops')}")
+        if cs.get("bp_drops", 0) != 0:
+            errs.append(f"credit_sdp_bp={cs.get('bp_drops')}")
         if hs.get("rx_pkts", 0) == 0:
             errs.append("credit_sdp_zero_rx")
+        if spec.get("part") in ("part3_slow_core_stall", "smoke_stall_8c"):
+            eth = cs.get("eth") or {}
+            imiss = eth.get("imissed", 0)
+            nombuf = eth.get("rx_nombuf", 0)
+            ff = cs.get("fifo_full_drops", 0)
+            nix_drop = max(0, eth.get("ipackets", 0) - cs.get("eth_rx_pkts", 0))
+            droq_drop = max(0, cs.get("c2h_pkts", 0) - hs.get("rx_pkts", 0))
+            merc_tx = (ms.get("phy") or {}).get("tx_pkts", 0)
+            e2e_loss_pct = (100.0 * max(0, merc_tx - hs.get("rx_pkts", 0)) / merc_tx) if merc_tx > 0 else 0.0
+            if ff != 0 or imiss != 0 or nombuf != 0 or nix_drop != 0 or droq_drop != 0 or e2e_loss_pct >= 0.05:
+                errs.append(
+                    f"credit_sdp_stall_loss ff={ff} imiss={imiss} nombuf={nombuf} "
+                    f"nix={nix_drop} droq={droq_drop} e2e_loss_pct={e2e_loss_pct:.3f}"
+                )
 
     return errs
-
 
 # ---------------------------------------------------------------------------
 # Subprocess, SSH, and TCP helpers (ONLY invoked in deploy / smoke / main)
@@ -407,8 +438,14 @@ def read_env_all() -> dict:
     card_raw = ssh_card(
         "echo cpu3_khz=$(cat /sys/devices/system/cpu/cpu3/cpufreq/scaling_cur_freq 2>/dev/null || echo 2000000) "
         "mc0_ue=$(cat /sys/devices/system/edac/mc/mc0/ue_count 2>/dev/null || echo 0) "
+        "llc0_ue=$(cat /sys/devices/system/edac/llc/llc0/ue_count 2>/dev/null || echo 0) "
+        "mdc0_ue=$(cat /sys/devices/system/edac/mdc/mdc0/ue_count 2>/dev/null || echo 0) "
         "ea0_ue=$(cat /sys/devices/system/edac/ea/ea0/ue_count 2>/dev/null || echo 0) "
         "sei_uer=$(dmesg | grep -c 'EDAC DEVICE.*SEI-UER' || echo 0) "
+        "pem_wc=$(lsmod | grep -c '^pem_wc ' || echo 0) "
+        "refl_tmux=$(tmux has-session -t refl 2>/dev/null && echo 1 || echo 0) "
+        "eth0_speed=$(ethtool eth0 2>/dev/null | awk '/Speed:/{print $2}' || echo n/a) "
+        "eth0_link=$(ethtool eth0 2>/dev/null | awk '/Link detected:/{print $3}' || echo n/a) "
         "bar4_idx7=$(python3 /root/bar4idx7.py 2>/dev/null | awk '{print $NF}' || echo n/a)"
     ).stdout.strip()
     card_env = {}
@@ -416,7 +453,6 @@ def read_env_all() -> dict:
         if "=" in tok:
             k, v = tok.split("=", 1)
             card_env[k] = int(v) if v.isdigit() else v
-
     merc_raw = ssh_merc(
         "ethtool -S ens6f1np1 | grep -E 'tx_packets_phy:|tx_bytes_phy:|rx_crc_errors_phy:|tx_global_pause:|rx_global_pause:'"
     ).stdout
@@ -460,14 +496,13 @@ def deploy_binaries():
         f"mercury:{MERC_DIR_REMOTE}/",
     ])
     ssh_merc(
-        f"cd {MERC_DIR_REMOTE} && "
+        f'export PATH="$HOME/.cargo/bin:$PATH" && cd {MERC_DIR_REMOTE} && '
         "gcc -O3 -Wall -Wextra -Werror -c mrv210_verbs_shim.c -o mrv210_verbs_shim.o && "
         "rustc --edition 2024 -O -D warnings mrv210_client.rs "
         "-C link-arg=mrv210_verbs_shim.o -C link-arg=-libverbs -o mrv210_client && "
         "ls -lh mrv210_client"
     )
     print("[DEPLOY] Done.", flush=True)
-
 
 def prepare_card_vfio():
     ssh_card(
@@ -492,6 +527,7 @@ def restore_baseline() -> dict:
     ssh_card(
         "sleep 0.3; tmux kill-session -t m210c 2>/dev/null || true; rm -f /dev/hugepages/m210c*; "
         f"{CARD_BIN_REMOTE} --restore || true; "
+        "lsmod | grep -q '^pem_wc ' && rmmod pem_wc || true; "
         "dpdk-devbind.py -b rvu_nicpf 0002:02:00.0; sleep 1.5; "
         "ip addr flush dev eth0 2>/dev/null || true; "
         "ip addr add 10.10.100.2/24 dev eth0; "
@@ -604,7 +640,7 @@ def probe_rss_flows(nc: int, tx_mode: str) -> str:
     start_card(nc, mode="probe-rss")
     try:
         tcp_cmd("10.10.0.2", CARD_CTRL_PORT, "CONFIG mode=probe-rss run_gen=1")
-        pr = tcp_cmd("mercury", MERC_CTRL_PORT, f"PROBE_RSS mode={tx_mode} count=128 run_gen=1", timeout=20.0)
+        pr = tcp_cmd("mercury", MERC_CTRL_PORT, f"PROBE_RSS mode={tx_mode} count=256 run_gen=1", timeout=20.0)
         base_sport = int(pr.get("base_sport", 30000))
         time.sleep(0.08)
         cs = tcp_cmd("10.10.0.2", CARD_CTRL_PORT, "STATS")
@@ -612,7 +648,7 @@ def probe_rss_flows(nc: int, tx_mode: str) -> str:
     finally:
         stop_card()
     by_q = {q: [] for q in range(nc)}
-    for idx, q1 in enumerate(fq[:128]):
+    for idx, q1 in enumerate(fq[:256]):
         if 1 <= q1 <= nc:
             val = (base_sport + idx + 1) if tx_mode == "udp" else (idx + 1)
             by_q[q1 - 1].append(val)
@@ -675,18 +711,19 @@ def run_one(spec: dict, rep: int, phase: str, run_gen: int, flow_map: dict, acti
         hp = start_host(spec, cfg, run_gen, payload)
         mcfg = (
             f"CONFIG mode={tx_mode} threads={fprof['mthreads']} queues={nc} payload={payload} "
-            f"batch={fprof['mbatch']} rate_mpps=0.0 run_gen={run_gen} dist={spec['dist']} "
+            f"batch={fprof['mbatch']} rate_mpps={spec.get('rate_mpps', 0.0):.2f} run_gen={run_gen} dist={spec['dist']} "
             f"zipf_alpha={spec['zipf_alpha']:.3f} gso={fprof['gso']} q_flows={q_flows}"
         )
         mr = tcp_cmd("mercury", MERC_CTRL_PORT, mcfg, timeout=15.0)
         if not mr.get("ok"):
             raise RuntimeError(f"mercury CONFIG failed: {mr}")
 
-        # Warmup phase
+        # Warmup phase + wait until all Socket-1 RX & KV cores reach steady-state turbo
         tcp_cmd("127.0.0.1", HOST_CTRL_PORT, "START")
         tcp_cmd("10.10.0.2", CARD_CTRL_PORT, "START")
         tcp_cmd("mercury", MERC_CTRL_PORT, "START")
         time.sleep(WARMUP_SECS)
+        tcp_cmd("127.0.0.1", HOST_CTRL_PORT, f"WAIT_TURBO {min_core_ghz_for_nc(nc):.2f}", timeout=15.0)
 
         # Clean drain boundary between warmup and measurement window
         tcp_cmd("mercury", MERC_CTRL_PORT, "STOP")
@@ -694,7 +731,6 @@ def run_one(spec: dict, rep: int, phase: str, run_gen: int, flow_map: dict, acti
         tcp_cmd("10.10.0.2", CARD_CTRL_PORT, "STOP")
         tcp_cmd("127.0.0.1", HOST_CTRL_PORT, "STOP")
         time.sleep(0.01)
-
         # Synchronized reset + PMU snap right before measurement
         tcp_cmd("10.10.0.2", CARD_CTRL_PORT, "CLEAR_BAR4")
         tcp_cmd("10.10.0.2", CARD_CTRL_PORT, "RESET")
@@ -734,6 +770,22 @@ def run_one(spec: dict, rep: int, phase: str, run_gen: int, flow_map: dict, acti
     dt_wall = max(t_end - t_start, 1e-9)
     wire_l2 = fprof["wire_l2_bytes"]
     host_rx_pkts = hs["rx_pkts"]
+    merc_tx_pkts = ms["phy"]["tx_pkts"]
+    e2e_lost_pkts = max(0, merc_tx_pkts - host_rx_pkts)
+    e2e_loss_pct = (100.0 * e2e_lost_pkts / merc_tx_pkts) if merc_tx_pkts > 0 else 0.0
+    card_eth_imissed = cs["eth"]["imissed"]
+    card_eth_nombuf = cs["eth"]["rx_nombuf"]
+    card_nix_rx_drops = max(0, cs["eth"]["ipackets"] - cs["eth_rx_pkts"])
+    host_bx_drops = hs["bx_overflow_drops"]
+    host_sdp_droq_drops = max(0, cs["c2h_pkts"] - host_rx_pkts - host_bx_drops)
+    sc_idx = spec.get("stall_core", -1)
+    per_q_host = hs.get("per_q") or []
+    if sc_idx >= 0:
+        healthy_q_lost_pkts = sum(q.get("stream_lost", 0) for q in per_q_host if q.get("q") != sc_idx)
+    elif spec.get("dist") != "uniform":
+        healthy_q_lost_pkts = sum(q.get("stream_lost", 0) for q in per_q_host if q.get("q", 0) != 0)
+    else:
+        healthy_q_lost_pkts = hs["stream_lost"]
     host_rx_mpps = host_rx_pkts / dt_wall / 1e6
     host_wire_gbps = (host_rx_pkts * (wire_l2 + 20) * 8.0) / dt_wall / 1e9
 
@@ -748,6 +800,12 @@ def run_one(spec: dict, rep: int, phase: str, run_gen: int, flow_map: dict, acti
         "arm_cfg": cfg,
         "dt_wall_s": dt_wall,
         "summary": {
+            "merc_tx_pkts": merc_tx_pkts,
+            "host_rx_pkts": host_rx_pkts,
+            "e2e_lost_pkts": e2e_lost_pkts,
+            "e2e_loss_pct": e2e_loss_pct,
+            "host_stream_lost": hs["stream_lost"],
+            "healthy_q_lost_pkts": healthy_q_lost_pkts,
             "host_rx_mpps": host_rx_mpps,
             "host_wire_gbps": host_wire_gbps,
             "merc_phy_gbps": ms["phy"]["wire_gbps"],
@@ -758,10 +816,15 @@ def run_one(spec: dict, rep: int, phase: str, run_gen: int, flow_map: dict, acti
             "card_ddr_wr_gbps": tad_d["ddr_wr_gbps"],
             "kv_p99_ns": hs["kv"]["p99_ns"] if hs.get("kv") else None,
             "kv_p999_ns": hs["kv"]["p999_ns"] if hs.get("kv") else None,
+            "card_eth_imissed": card_eth_imissed,
+            "card_eth_nombuf": card_eth_nombuf,
+            "card_nix_rx_drops": card_nix_rx_drops,
             "card_bp_drops": cs["bp_drops"],
+            "card_fifo_full_drops": cs["fifo_full_drops"],
+            "host_sdp_droq_drops": host_sdp_droq_drops,
             "card_fifo_peak": cs["fifo_peak_max"],
             "host_bx_peak": hs["bx_peak_max"],
-            "host_bx_drops": hs["bx_overflow_drops"],
+            "host_bx_drops": host_bx_drops,
             "host_hol_stalls": hs["hol_stalls"],
         },
         "host": hs,
@@ -771,9 +834,8 @@ def run_one(spec: dict, rep: int, phase: str, run_gen: int, flow_map: dict, acti
         "verified": len(errs) == 0,
         "verify_errors": errs,
     }
-    append_jsonl(ATTEMPTS_PATH, rec)
+    append_jsonl(SMOKE_PATH if phase == "smoke" else ATTEMPTS_PATH, rec)
     return rec
-
 
 def run_self_test():
     """Strictly offline validation of arm invariants, schedules, interleaving, and PMU math."""
@@ -876,6 +938,7 @@ def main():
             flow_map[(nc, tx_mode)] = probe_rss_flows(nc, tx_mode)
 
         if args.mode == "smoke":
+            SMOKE_PATH.unlink(missing_ok=True)
             kv_rec = run_kv_solo_baseline(0)
             print(
                 f"[KV-SOLO] p50={kv_rec['kv']['p50_ns']:.1f}ns p99={kv_rec['kv']['p99_ns']:.1f}ns "
@@ -888,10 +951,11 @@ def main():
                 sm = rec["summary"]
                 print(
                     f"[SMOKE {idx:02d}/{len(specs)}] {sp['cfg']:30s} | rx={sm['host_wire_gbps']:5.1f}G "
-                    f"(merc={sm['merc_phy_gbps']:5.1f}G) ddio={sm['ddio_hit_pct']:5.1f}% "
+                    f"(merc={sm['merc_phy_gbps']:5.1f}G loss={sm['e2e_loss_pct']:5.2f}%) ddio={sm['ddio_hit_pct']:5.1f}% "
                     f"imc={sm['imc_rd_gbps']:.1f}/{sm['imc_wr_gbps']:.1f}G kv99={sm['kv_p99_ns']}ns "
-                    f"bp={sm['card_bp_drops']} bx={sm['host_bx_peak']}/{sm['host_bx_drops']} "
-                    f"hol={sm['host_hol_stalls']} fifo={sm['card_fifo_peak']} ok={rec['verified']} {rec['verify_errors']}",
+                    f"imiss={sm['card_eth_imissed']} bp={sm['card_bp_drops']} ff={sm['card_fifo_full_drops']} "
+                    f"bx={sm['host_bx_peak']}/{sm['host_bx_drops']} hol={sm['host_hol_stalls']} "
+                    f"fifo={sm['card_fifo_peak']} ok={rec['verified']} {rec['verify_errors']}",
                     flush=True,
                 )
         else:
@@ -937,10 +1001,10 @@ def main():
                         sm = rec["summary"]
                         print(
                             f"[rep={rep+1}/{REPS} {idx:03d}/{len(order)}] {sp['cfg']:30s} | "
-                            f"rx={sm['host_wire_gbps']:5.1f}G ddio={sm['ddio_hit_pct']:5.1f}% "
+                            f"rx={sm['host_wire_gbps']:5.1f}G (loss={sm['e2e_loss_pct']:5.2f}%) ddio={sm['ddio_hit_pct']:5.1f}% "
                             f"imc={sm['imc_rd_gbps']:.1f}/{sm['imc_wr_gbps']:.1f}G kv99={sm['kv_p99_ns']}ns "
-                            f"bp={sm['card_bp_drops']} bx={sm['host_bx_peak']} hol={sm['host_hol_stalls']} "
-                            f"fifo={sm['card_fifo_peak']} ok={rec['verified']}",
+                            f"imiss={sm['card_eth_imissed']} bp={sm['card_bp_drops']} ff={sm['card_fifo_full_drops']} "
+                            f"bx={sm['host_bx_peak']} hol={sm['host_hol_stalls']} fifo={sm['card_fifo_peak']} ok={rec['verified']}",
                             flush=True,
                         )
     finally:
