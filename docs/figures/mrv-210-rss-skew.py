@@ -119,10 +119,10 @@ def main():
             cx = b.get_x() + b.get_width() / 2.0
             if j == 0 and key == "credit-sdp":
                 ax2.text(
-                    cx + 0.02, 2200,
-                    f"0 包\n严格零丢\n总 {g:.1f}G",
-                    ha="center", va="bottom", fontsize=9.2, fontweight="bold", color="#084e6e",
-                    bbox=dict(boxstyle="round,pad=0.25", facecolor="#eef7fb", edgecolor="#0b6e99", lw=1.2),
+                    cx + 0.035, 2000,
+                    f"0 包 零丢\n总 {g:.1f}G\nq0 冲卡 L3",
+                    ha="center", va="bottom", fontsize=8.6, fontweight="bold", color="#084e6e",
+                    bbox=dict(boxstyle="round,pad=0.22", facecolor="#eef7fb", edgecolor="#0b6e99", lw=1.2),
                 )
             elif j == 1 and key == "credit-sdp":
                 ax2.text(
@@ -134,22 +134,27 @@ def main():
             else:
                 col = "#a65c00" if key == "sh-ring" else "#333333"
                 fw = "bold" if key == "sh-ring" else "normal"
+                suffix = "*" if (j == 0 and key == "rx-bisect") else ""
                 ax2.text(
                     cx, hl * 1.38,
-                    f"{fmt_pkts_short(hl)}\n({g:.1f}G)",
+                    f"{fmt_pkts_short(hl)}{suffix}\n({g:.1f}G)",
                     ha="center", va="bottom", fontsize=8.9, fontweight=fw, color=col,
                 )
 
     ax2.set_yscale("symlog", linthresh=5000.0, linscale=0.35)
     ax2.set_yticks([0, 1e4, 1e5, 1e6, 1e7])
     ax2.set_yticklabels(["0", "1 万", "10 万", "100 万", "1000 万"], fontsize=10.5)
-    ax2.set_ylim(-800, 3.2e8)
+    ax2.set_ylim(-800, 7.5e8)
+    ax2.text(
+        0.02, 0.97,
+        "* 分离大环固定 256 槽无反压放大模拟丢包；本文 4:1 热点 q0 顶满 75K 冲穿卡 48 MiB L3",
+        transform=ax2.transAxes, fontsize=8.3, color="#444444", va="top",
+    )
 
     ax2.set_title("(b) 256 B 小包（8 核偏斜）：非主热点队列 (q1–q7) 丢包与总吞吐", fontsize=11.6, fontweight="bold", pad=10)
     ax2.set_xticks(gx)
     ax2.set_xticklabels([d[1] for d in dists], fontsize=10.5)
     ax2.set_ylabel("q1–q7 合计丢包数（对数坐标）", fontsize=11)
-
     handles, labels = ax1.get_legend_handles_labels()
     fig.suptitle(
         "8 核流量偏斜（4:1 与 Zipf）：本文信用环保住主机缓存，4:1 下 7 条健康队列严格零丢包（n=3 中值）",

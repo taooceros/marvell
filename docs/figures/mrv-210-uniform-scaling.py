@@ -147,12 +147,15 @@ def main():
             ha="center", va="bottom", fontsize=9.8, color=col, fontweight=fw,
         )
 
-    ax2.text(0.02, 0.96, "空心圆点 = 单轮实测 (n=3)", transform=ax2.transAxes, fontsize=8.8, color="#444444", va="top")
+    ax2.text(
+        0.02, 0.965, "空心圆点 = 单轮 (n=3)；L3 缺失 > 1.07% 跃入 DRAM",
+        transform=ax2.transAxes, fontsize=8.2, color="#444444", va="top",
+    )
     ax2.set_title("(b) 1500 B 8 核：并发 KV 尾延迟 (p99)", fontsize=12, fontweight="bold", pad=10)
     ax2.set_xticks(bx)
     ax2.set_xticklabels(bar_labels, fontsize=10)
     ax2.set_ylabel("同主机 32 MiB KV p99 延迟 (ns)", fontsize=11)
-    ax2.set_ylim(0, 126)
+    ax2.set_ylim(0, 132)
 
     # ---- Panel (c): 256 B small-packet throughput scaling (1 -> 8 cores) ----
     for key, label, color, marker, ls, lw in ARMS:
@@ -174,26 +177,26 @@ def main():
     priv_8c_256 = med([r["summary"]["host_wire_gbps"] for r in by_cfg["p1_priv-ring_c8_256B_unif"]])
 
     ax3.axhline(100.0, color="#666666", linestyle="--", linewidth=1.1, zorder=2)
-    ax3.text(0.05, 102.5, "100 Gbps 线速", fontsize=9.5, color="#555555")
+    ax3.text(-0.12, 103.5, "100 Gbps 线速", fontsize=9.2, color="#555555")
 
     ax3.annotate(
-        f"本文 4 核 {cred_4c_256:.1f} → 8 核 {cred_8c_256:.1f}G\n1–4 核略低于大环 ({priv_4c_256:.0f}G)\n8 核追平满线速 ({priv_8c_256:.1f}G)",
+        f"本文 4→8 核 {cred_4c_256:.1f}→{cred_8c_256:.1f}G\n追平大环 ({priv_8c_256:.1f}G)\n全案受 ~45 Mpps 读墙封顶",
         xy=(3, cred_8c_256),
-        xytext=(-0.10, 72.0),
-        fontsize=8.9,
+        xytext=(-0.14, 77.0),
+        fontsize=8.4,
         fontweight="bold",
         color="#084e6e",
-        bbox=dict(boxstyle="round,pad=0.26", facecolor="#eef7fb", edgecolor="#0b6e99", alpha=0.96),
-        arrowprops=dict(arrowstyle="->", color="#0b6e99", lw=1.5),
+        bbox=dict(boxstyle="round,pad=0.24", facecolor="#eef7fb", edgecolor="#0b6e99", alpha=0.96),
+        arrowprops=dict(arrowstyle="->", color="#0b6e99", lw=1.4, connectionstyle="arc3,rad=-0.06"),
     )
     ax3.annotate(
-        f"共享锁竞争塌方\n4 核 {sh_4c:.1f} → 8 核 {sh_8c:.1f} Gbps",
+        f"静态共享锁（含小池缓存双锁放大）\n4 核 {sh_4c:.1f} → 8 核 {sh_8c:.1f} Gbps",
         xy=(3, sh_8c),
-        xytext=(0.82, 18.0),
-        fontsize=10.0,
+        xytext=(0.72, 14.0),
+        fontsize=9.1,
         fontweight="bold",
         color="#a65c00",
-        bbox=dict(boxstyle="round,pad=0.32", facecolor="#fff8ee", edgecolor="#d9822b", alpha=0.96),
+        bbox=dict(boxstyle="round,pad=0.28", facecolor="#fff8ee", edgecolor="#d9822b", alpha=0.96),
         arrowprops=dict(arrowstyle="->", color="#d9822b", lw=1.4),
     )
 
@@ -203,11 +206,11 @@ def main():
     ax3.set_xlabel("主机接收核数（45.8 Mpps 均匀流）", fontsize=11)
     ax3.set_ylabel("主机实收吞吐 (Gbps)", fontsize=11)
     ax3.set_xlim(-0.2, 3.2)
-    ax3.set_ylim(0, 114)
+    ax3.set_ylim(0, 118)
 
     handles, labels = ax1.get_legend_handles_labels()
     fig.suptitle(
-        "均匀流量扩核（1 → 8 核）：本文信用环避开大环缓存冲穿与共享锁塌方（n=3 中值）",
+        "均匀流量扩核（1 → 8 核）：本文信用环守住主机缓存，8 核小包追平满线速（n=3 中值）",
         fontsize=13.8, fontweight="bold", y=0.99,
     )
     fig.legend(

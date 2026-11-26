@@ -76,9 +76,9 @@ def main():
     ax1.set_ylim(-0.07, 38)
 
     ax1.annotate(
-        f"共享锁全核阻塞 {sh_10:.1f}%\n（7 健康核丢 {sh_10_hl / 1e4:.0f} 万包）",
-        xy=(2, sh_10), xytext=(0.08, 16.0),
-        fontsize=9.6, fontweight="bold", color="#a65c00",
+        f"静态共享锁全核阻塞 {sh_10:.1f}%\n（7 健康核丢 {sh_10_hl / 1e4:.0f} 万包）",
+        xy=(2, sh_10), xytext=(0.04, 16.0),
+        fontsize=9.3, fontweight="bold", color="#a65c00",
         bbox=dict(boxstyle="round,pad=0.3", facecolor="#fff8ee", edgecolor="#d9822b", alpha=0.96),
         arrowprops=dict(arrowstyle="->", color="#d9822b", lw=1.4),
     )
@@ -89,9 +89,9 @@ def main():
         arrowprops=dict(arrowstyle="->", color="#c94c4c", lw=1.2),
     )
     ax1.annotate(
-        f"分离大环溢出 {rb_10:.2f}%\n（丢 {rb_10_drop / 1e4:.1f} 万包）",
-        xy=(2, rb_10), xytext=(1.06, 0.25),
-        fontsize=9.0, color="#44505c",
+        f"分离大环 Bx=8192\n溢出 {rb_10:.2f}%（丢 {rb_10_drop / 1e4:.1f} 万）",
+        xy=(2.0, rb_10), xytext=(1.02, 0.31),
+        fontsize=8.2, color="#44505c",
         arrowprops=dict(arrowstyle="->", color="#6c7a89", lw=1.2, shrinkB=5),
     )
     ax1.annotate(
@@ -130,16 +130,16 @@ def main():
     ax2.set_ylim(-0.035, 125)
 
     ax2.annotate(
-        f"共享锁塌方 {sh2_5:.1f}%\n（7 健康核丢 {sh2_5_hl / 1e4:.0f} 万包）",
-        xy=(1, sh2_5), xytext=(0.15, 12.5),
-        fontsize=9.6, fontweight="bold", color="#a65c00",
+        f"静态共享锁塌方 {sh2_5:.1f}%\n（7 健康核丢 {sh2_5_hl / 1e4:.0f} 万包）",
+        xy=(1, sh2_5), xytext=(0.10, 12.5),
+        fontsize=9.3, fontweight="bold", color="#a65c00",
         bbox=dict(boxstyle="round,pad=0.3", facecolor="#fff8ee", edgecolor="#d9822b", alpha=0.96),
         arrowprops=dict(arrowstyle="->", color="#d9822b", lw=1.4),
     )
     ax2.annotate(
-        f"分离大环溢出 {rb2_10:.2f}%\n（丢 {rb2_10_drop / 1e4:.0f} 万包）",
-        xy=(2, rb2_10), xytext=(0.12, 2.3),
-        fontsize=9.5, fontweight="bold", color="#44505c",
+        f"分离大环 Bx=8192 溢出 {rb2_10:.2f}%\n（丢 {rb2_10_drop / 1e4:.0f} 万包）",
+        xy=(2, rb2_10), xytext=(0.06, 2.3),
+        fontsize=8.9, fontweight="bold", color="#44505c",
         arrowprops=dict(arrowstyle="->", color="#6c7a89", lw=1.3),
     )
     ax2.annotate(
@@ -205,10 +205,10 @@ def main():
     priv_imc = imc_vals[1]
     cred_imc = imc_vals[4]
     ax3.annotate(
-        f"常驻溢出写 {priv_imc:.2f} GB/s\n（本文仅 {cred_imc:.2f} GB/s）",
-        xy=(1 + w / 2 + 0.04, p999_vals[1] - 10), xytext=(0.90, 184),
-        fontsize=9.1, fontweight="bold", color="#a82828",
-        bbox=dict(boxstyle="round,pad=0.28", facecolor="#fff5f5", edgecolor="#c94c4c", alpha=0.96),
+        f"溢出写 {priv_imc:.2f} vs 本文 {cred_imc:.2f} GB/s\np99 跨 1.07% 阶跃 · p999 含双通道排队",
+        xy=(1 + w / 2, p999_vals[1] + 19), xytext=(-0.24, 198),
+        fontsize=8.3, fontweight="bold", color="#a82828",
+        bbox=dict(boxstyle="round,pad=0.26", facecolor="#fff5f5", edgecolor="#c94c4c", alpha=0.96),
         arrowprops=dict(arrowstyle="->", color="#c94c4c", lw=1.3),
     )
 
@@ -224,8 +224,7 @@ def main():
     ax3.set_xticks(cx)
     ax3.set_xticklabels(labels_c, fontsize=9.8)
     ax3.set_ylabel("同主机 32 MiB KV 延迟 (ns)", fontsize=10.5)
-    ax3.set_ylim(0, 236)
-
+    ax3.set_ylim(0, 248)
     handles, labels = ax1.get_legend_handles_labels()
     fig.suptitle(
         "单慢核卡顿隔离（8 核中 1 核暂停 1–10 ms）：本文信用环实现 0.00% 丢包、健康核零牵连与低邻居延迟（n=3 中值）",
