@@ -96,7 +96,7 @@ def main():
     ax1.set_yticklabels([lbl for _, lbl, _ in tiers], fontsize=10)
     ax1.invert_yaxis()
     ax1.set_xlabel("每 32 包返还一次信用的主机新增周期（cycles/批，相对关闭信用）", fontsize=9.8)
-    ax1.set_title("(a) 主机 CPU 信令开销（B = 32，越低越好）", fontsize=11.2, pad=10)
+    ax1.set_title("(a) 主机 CPU 信令开销（A0 微基准，B = 32，越低越好）", fontsize=10.9, pad=10)
     ax1.set_xlim(0, 620)
     ax1.axvline(64.0, color="#27ae60", linestyle="--", linewidth=1.2, alpha=0.85)
     ax1.text(
@@ -121,7 +121,7 @@ def main():
             color="#0b4f8c" if idx == 0 else "#2c3e50",
         )
 
-    # ---- Right panel: Control-loop RTT tau_rtt & 100GbE BDP ----
+    # ---- Right panel: Control-loop RTT tau_rtt & 100GbE BDP / descriptor slot lower bound ----
     x = np.arange(len(rtt_tiers))
     w = 0.36
     b1 = ax2.bar(x - w / 2, rtt64, width=w, label="64 B 小包", color="#1f77b4", edgecolor="#2c3e50", linewidth=0.6)
@@ -129,24 +129,35 @@ def main():
     b1[3].set_color("#95a5a6")
     b2[3].set_color("#bdc3c7")
 
+    # Compute exact descriptor-slot BDP lower bounds R_min = lambda_pps * tau_rtt + B (B = 32)
+    b_batch = 32
+    rate_1500_mpps = 100e9 / (8.0 * (1500 + 20)) / 1e6  # 8.2237 Mpps
+    rmin_1500_slots = rate_1500_mpps * rtt1500[0] + b_batch
+    rmin_1500_kib = bdp1500[0] + (b_batch * 1500.0) / 1024.0
+    rate_64_cn106_mpps = 90.0
+    rate_64_line_mpps = 100e9 / (8.0 * (64 + 20)) / 1e6  # 148.8095 Mpps
+    rmin_64_lo_slots = rate_64_cn106_mpps * rtt64[0] + b_batch
+    rmin_64_hi_slots = rate_64_line_mpps * rtt64[0] + b_batch
+    rmin_64_lo_kib = round(rmin_64_lo_slots) * 2
+    rmin_64_hi_kib = round(rmin_64_hi_slots) * 2
+
     ax2.set_xticks(x)
     ax2.set_xticklabels([lbl for _, lbl in rtt_tiers], fontsize=9.8)
     ax2.set_ylabel("信用控制环中位 RTT  τ_rtt（µs）", fontsize=10)
-    ax2.set_title("(b) 信用控制环 RTT 与 100GbE 最小热环 BDP", fontsize=11.2, pad=10)
-    ax2.set_ylim(0, 5.1)
-    ax2.legend(loc="upper left", frameon=True, fontsize=9.2)
-
+    ax2.set_title("(b) 控制环 RTT 与最小热环下界（区分 1500 B / 64 B 槽位）", fontsize=10.6, pad=10)
+    ax2.set_ylim(0, 5.85)
+    ax2.legend(loc="upper left", ncol=2, frameon=True, fontsize=8.8)
     ax2_r = ax2.twinx()
     ax2_r.set_ylim(0, ax2.get_ylim()[1] * (12.5e3 / 1024.0))
-    ax2_r.set_ylabel("100GbE 最小热环下界 BDP（KiB）", fontsize=9.8, color="#555555")
+    ax2_r.set_ylabel("12.5 GB/s 在途字节积（KiB）", fontsize=9.6, color="#555555")
     ax2_r.spines["top"].set_visible(False)
     ax2_r.grid(False)
 
-    for bar, us, kib in zip(b1, rtt64, bdp64):
+    for bar, us in zip(b1, rtt64):
         ax2.text(
             bar.get_x() + bar.get_width() / 2,
             us + 0.08,
-            f"{us:.2f} µs\n({kib:.0f} KiB)",
+            f"{us:.2f} µs",
             ha="center",
             va="bottom",
             fontsize=8.3,
@@ -159,23 +170,25 @@ def main():
             f"{us:.2f} µs\n({kib:.0f} KiB)",
             ha="center",
             va="bottom",
-            fontsize=8.3,
+            fontsize=8.2,
             color="#1a252f",
         )
 
     ax2.text(
-        1.55,
-        4.35,
-        "含 B=32 批还额下界 ≈ 78 KiB (1500 B)\n256–512 KiB 热环 = 3.3–6.6× 裕度 (驻留 DDIO)",
-        ha="center",
+        -0.40,
+        4.42,
+        f"每包 1 槽描述符下界 R_min = λ_pps·τ_rtt + B (B = 32)：\n"
+        f"• 1500 B (8.2 Mpps)：~{round(rmin_1500_slots)} 槽 / {rmin_1500_kib:.1f} KiB (256–512 KiB 热环 = 3.3–6.6×)\n"
+        f"• 64 B (90–148.8 Mpps)：{round(rmin_64_lo_slots)}–{round(rmin_64_hi_slots)} 槽 / {rmin_64_lo_kib}–{rmin_64_hi_kib} KiB mbuf 跨度",
+        ha="left",
         va="center",
-        fontsize=8.5,
+        fontsize=7.5,
         color="#0b4f8c",
-        bbox=dict(boxstyle="round,pad=0.3", fc="#eef6fc", ec="#1f77b4", lw=0.8),
+        bbox=dict(boxstyle="round,pad=0.30", fc="#eef6fc", ec="#1f77b4", lw=0.8),
     )
     fig.suptitle(
-        "MRV-212 对照 A：无 SFENCE BAR4 信用仅耗 +0.20 周期/包，控制环 RTT 仅 2.15–2.53 µs（n = 3，零错零缺页）",
-        fontsize=12.0,
+        "MRV-212 对照 A：无 SFENCE BAR4 信用 A0 仅耗 +0.20 周期/包，控制环 RTT 仅 2.15–2.53 µs（n = 3，零错零缺页）",
+        fontsize=11.6,
         y=0.97,
     )
     fig.tight_layout(rect=[0, 0, 1, 0.92])

@@ -35,8 +35,8 @@ def main():
     by_gt = load_runs()
 
     d1_arms = [
-        ("1500B_5M_native_bp_d256", "原生 SDP\n256 槽", "#d64541", False),
-        ("1500B_5M_native_bp_d512", "原生 SDP\n512 槽", "#e67e22", False),
+        ("1500B_5M_native_bp_d256", "原生 SDP\n(无反压 256槽)", "#d64541", False),
+        ("1500B_5M_native_bp_d512", "原生 SDP\n(无反压 512槽)", "#e67e22", False),
         ("1500B_5M_bar4_nofence_R256", "BAR4 信用\nR=256", "#1f77b4", True),
         ("1500B_5M_bar4_nofence_R128", "BAR4 信用\nR=128", "#2980b9", True),
         ("1500B_5M_bar4_nofence_R64", "BAR4 信用\nR=64", "#3498db", True),
@@ -54,7 +54,7 @@ def main():
                 assert d["lost"] == 0 and d["meas_seq_gap_lost"] == 0 and d["ooo"] == 0
 
     d2_arms = [
-        ("1500B_native_bp_d512", "原生 SDP\n(512 槽)", False),
+        ("1500B_native_bp_d512", "原生 SDP\n(无反压 512槽)", False),
         ("1500B_bar4_nofence_R128", "BAR4 信用\n(R = 128)", True),
         ("1500B_bar4_nofence_R256", "BAR4 信用\n(R = 256)", True),
     ]
@@ -79,34 +79,53 @@ def main():
     d2_q1_lost_k = [med([d["q1_meas_seq_gap_lost"] for d in by_gt[("D2", t)]]) / 1e3 for t, _, _ in d2_arms]
     d2_q1_dr_max = [int(med([d["q1_drained_max"] for d in by_gt[("D2", t)]])) for t, _, _ in d2_arms]
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13.4, 5.2), gridspec_kw={"width_ratios": [1.32, 1.0]})
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13.8, 5.4), gridspec_kw={"width_ratios": [1.34, 1.0]})
 
     # ---- Left panel: D1 single-queue (1500 B @ 5.0 Mpps, 1 ms pause / 10 ms awake) ----
     x1 = np.arange(len(d1_arms))
-    bars1 = ax1.bar(x1, d1_gbps, width=0.58, color=[c for _, _, c, _ in d1_arms], edgecolor="#2c3e50", linewidth=0.6)
-    ax1.axhline(60.8, color="#27ae60", linestyle="--", linewidth=1.0, alpha=0.8)
+    bars1 = ax1.bar(x1, d1_gbps, width=0.58, color=[c for _, _, c, _ in d1_arms], edgecolor="#2c3e50", linewidth=0.6, zorder=3)
+    ax1.axhline(60.8, color="#27ae60", linestyle="--", linewidth=1.0, alpha=0.85, zorder=2)
     ax1.set_xticks(x1)
-    ax1.set_xticklabels([lbl for _, lbl, _, _ in d1_arms], fontsize=9.2)
+    ax1.set_xticklabels([lbl for _, lbl, _, _ in d1_arms], fontsize=8.8)
     ax1.set_ylabel("主机有效收包吞吐（Gbps，1500 B 满额 60.8 Gbps）", fontsize=9.8)
-    ax1.set_title("(a) 单队列偶发停顿 1 ms/10 ms：零丢包且主机积压精确封顶", fontsize=10.8, pad=10)
-    ax1.set_ylim(0, 75)
+    ax1.set_title("(a) 单队列偶发停顿 1 ms/10 ms：被动小环静默丢包 vs BAR4 零丢包", fontsize=10.4, pad=10)
+    ax1.set_ylim(0, 86)
 
     for bar, gbps, lost_k, dr in zip(bars1, d1_gbps, d1_lost_k, d1_dr_max):
+        cx = bar.get_x() + bar.get_width() / 2
         if lost_k > 0:
-            label = f"{gbps:.1f} Gbps\n丢 {lost_k:.0f}K 包\n(环冲穿 {dr})"
-            col = "#922b21"
+            # Place loss callout cleanly above the 60.8 Gbps line with pointer to bar top
+            ax1.annotate(
+                f"{gbps:.1f} Gbps\n丢 {lost_k:.0f}K 包\n(环冲穿 {dr})",
+                xy=(cx, gbps + 0.4),
+                xytext=(cx, 63.2),
+                ha="center",
+                va="bottom",
+                fontsize=8.5,
+                color="#922b21",
+                arrowprops=dict(arrowstyle="->", color="#922b21", lw=0.95, shrinkA=1, shrinkB=2),
+            )
         else:
-            label = f"{gbps:.1f} Gbps\n0 丢包\n(封顶 {dr} 包)"
-            col = "#0b4f8c"
-        ax1.text(
-            bar.get_x() + bar.get_width() / 2,
-            gbps + 1.4,
-            label,
-            ha="center",
-            va="bottom",
-            fontsize=8.6,
-            color=col,
-        )
+            ax1.text(
+                cx,
+                62.4,
+                f"{gbps:.1f} Gbps\n0 丢包\n(封顶 {dr} 包)",
+                ha="center",
+                va="bottom",
+                fontsize=8.5,
+                color="#0b4f8c",
+            )
+
+    ax1.text(
+        2.5,
+        80.8,
+        "注：octep_cp_agent 未置位 SDPX_OUT_BP_ENX_W1S，实测原生 SDP 退化为无反压被动小环（tx_retries = 0）",
+        ha="center",
+        va="center",
+        fontsize=8.1,
+        color="#7b241c",
+        bbox=dict(boxstyle="round,pad=0.28", fc="#fdf2e9", ec="#d35400", lw=0.75),
+    )
 
     # ---- Right panel: D2 dual-queue (Q0 healthy 3.0 Mpps + Q1 8 ms paused 1.5 Mpps) ----
     x2 = np.arange(len(d2_arms))
@@ -123,7 +142,7 @@ def main():
     ax2.set_ylim(0, 4.25)
     handles = [
         mpatches.Patch(facecolor="#7f8c8d", edgecolor="#2c3e50", label="Q0 健康队列 (3.0M)"),
-        mpatches.Patch(facecolor="#d64541", edgecolor="#2c3e50", label="Q1 停顿队列 (原生丢包)"),
+        mpatches.Patch(facecolor="#d64541", edgecolor="#2c3e50", label="Q1 停顿队列 (被动小环丢包)"),
         mpatches.Patch(facecolor="#1f77b4", edgecolor="#2c3e50", label="Q1 停顿队列 (BAR4 零丢)"),
     ]
     ax2.legend(handles=handles, loc="upper center", ncol=2, frameon=True, fontsize=8.4)
@@ -156,8 +175,8 @@ def main():
         )
 
     fig.suptitle(
-        "MRV-212 对照 D：CN106 原生 SDP 低水位默认静默丢包，显式无 SFENCE BAR4 信用实现全链路零丢包与精确窗口封顶",
-        fontsize=11.6,
+        "MRV-212 对照 D：CN106 原生 SDP（未置位 SDPX_OUT_BP_ENX_W1S）退化为无反压小环丢包，BAR4 信用零丢且精确封顶",
+        fontsize=11.3,
         y=0.97,
     )
     fig.tight_layout(rect=[0, 0, 1, 0.92])
