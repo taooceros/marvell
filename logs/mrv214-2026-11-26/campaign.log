@@ -1,0 +1,266 @@
+APP_WORK CAL: {"dt_s": 1.000002, "steps": 17209216, "cycles": 3872733631, "instr": 5588399493, "cpu40_ghz": 3.8724, "cycles_per_step": 225.0384, "min_running_pct": 100.0}
+MERC READY: MRV214_CLIENT READY port=7557 dev=mlx5_2 ifname=ens6f1np1 src=10.10.100.1 dst=10.10.100.2 tsc_hz=2199932198
+  RSS probe (nc=2, fk=uc64): all 2 queues covered (min 64 flows/q)
+  RSS probe (nc=2, fk=ud): all 2 queues covered (min 64 flows/q)
+  RSS probe (nc=2, fk=udp): all 2 queues covered (min 64 flows/q)
+  RSS probe (nc=4, fk=uc64): all 4 queues covered (min 31 flows/q)
+  RSS probe (nc=4, fk=ud): all 4 queues covered (min 31 flows/q)
+  RSS probe (nc=4, fk=udp): all 4 queues covered (min 31 flows/q)
+  RSS probe (nc=8, fk=uc64): all 8 queues covered (min 15 flows/q)
+  RSS probe (nc=8, fk=ud): all 8 queues covered (min 15 flows/q)
+  RSS probe (nc=8, fk=udp): all 8 queues covered (min 15 flows/q)
+[rep=1/3  1/80] s1a_1500b_r16_oq512_b8                 | rx=  2.06M ( 25.0G) cyc=1891.7 ddio=100.0% imc= 0.7/ 0.4G cpuWr= 0.29M stalls=177549 OK
+[rep=1/3  2/80] s1a_1500b_r24_oq512_b8                 | rx=  3.09M ( 37.5G) cyc=1260.1 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.43M stalls=31759 OK
+  [CLOCK_RETRY #1] s1a_1500b_r32_oq512_b8 rep=0 errs=['transient_page_faults=6']
+[rep=1/3  3/80] s1a_1500b_r32_oq512_b8                 | rx=  4.03M ( 49.0G) cyc=963.7 ddio=100.0% imc= 0.7/ 0.3G cpuWr= 0.57M stalls=21698 OK
+  [CLOCK_RETRY #1] s1a_1500b_r48_oq512_b8 rep=0 errs=['min_core_ghz=3.826<3.85']
+[rep=1/3  4/80] s1a_1500b_r48_oq512_b8                 | rx=  6.03M ( 73.3G) cyc=644.7 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.84M stalls=4908 OK
+[rep=1/3  5/80] s1a_1500b_r64_oq512_b8                 | rx=  7.59M ( 92.2G) cyc=514.3 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.06M stalls=1567 OK
+[rep=1/3  6/80] s1a_1500b_r96_oq512_b8                 | rx=  8.10M ( 98.5G) cyc=481.3 ddio=100.0% imc= 0.8/ 0.3G cpuWr= 1.13M stalls=73 OK
+[rep=1/3  7/80] s1a_1500b_r128_oq512_b8                | rx=  8.10M ( 98.5G) cyc=478.6 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.13M stalls=22 OK
+[rep=1/3  8/80] s1a_1500b_r192_oq512_b8                | rx=  8.11M ( 98.6G) cyc=480.8 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.13M stalls=2 OK
+[rep=1/3  9/80] s1a_1500b_r256_oq512_b8                | rx=  8.10M ( 98.5G) cyc=481.2 ddio=100.0% imc= 1.1/ 0.6G cpuWr= 1.13M stalls=0 OK
+[rep=1/3 10/80] s1a_1500b_r128_oq256_b8                | rx=  8.12M ( 98.7G) cyc=479.0 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 1.13M stalls=119 OK
+  [CLOCK_RETRY #1] s1b_1500b_oq512_r256_b8 rep=0 errs=['transient_page_faults=4']
+[rep=1/3 11/80] s1b_1500b_oq512_r256_b8                | rx=  8.11M ( 98.6G) cyc=477.2 ddio=100.0% imc= 1.8/ 0.8G cpuWr= 1.13M stalls=107 OK
+[rep=1/3 12/80] s1b_1500b_oq1024_r512_b8               | rx=  8.12M ( 98.7G) cyc=477.9 ddio=100.0% imc= 0.7/ 0.4G cpuWr= 1.12M stalls=7 OK
+[rep=1/3 13/80] s1b_1500b_oq2048_r1024_b8              | rx=  8.12M ( 98.7G) cyc=477.2 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.12M stalls=0 OK
+[rep=1/3 14/80] s1b_1500b_oq4096_r2048_b8              | rx=  8.12M ( 98.8G) cyc=479.8 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 1.13M stalls=0 OK
+  [CLOCK_RETRY #1] s1b_1500b_oq8192_r4096_b8 rep=0 errs=['transient_page_faults=1']
+[rep=1/3 15/80] s1b_1500b_oq8192_r4096_b8              | rx=  8.11M ( 98.7G) cyc=477.2 ddio=100.0% imc= 0.7/ 0.4G cpuWr= 1.12M stalls=0 OK
+[rep=1/3 16/80] s1b_1500b_oq8192_r7680_b8              | rx=  8.12M ( 98.7G) cyc=478.6 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.12M stalls=0 OK
+[rep=1/3 17/80] s1c_1500b_fifo_6m_oq2048_r1024         | rx=  8.11M ( 98.6G) cyc=480.0 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.12M stalls=0 OK
+[rep=1/3 18/80] s1c_1500b_fifo_8m_oq2048_r1024         | rx=  8.11M ( 98.6G) cyc=480.9 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.13M stalls=0 OK
+[rep=1/3 19/80] s1c_1500b_fifo_10m_oq2048_r1024        | rx=  8.10M ( 98.5G) cyc=480.3 ddio=100.0% imc= 1.0/ 0.5G cpuWr= 1.12M stalls=0 OK
+[rep=1/3 20/80] s1c_1500b_fifo_12m_oq2048_r1024        | rx=  8.11M ( 98.6G) cyc=480.7 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 1.13M stalls=0 OK
+[rep=1/3 21/80] s1c_1500b_fifo_32m_oq8192_r4096        | rx=  8.10M ( 98.5G) cyc=480.1 ddio= 99.7% imc= 0.4/ 0.5G cpuWr= 1.12M stalls=0 OK
+[rep=1/3 22/80] s1c_1500b_fifo_64m_oq8192_r4096        | rx=  8.11M ( 98.6G) cyc=478.0 ddio= 79.9% imc=14.7/20.6G cpuWr= 1.13M stalls=0 OK
+[rep=1/3 23/80] s1c_1500b_fifo_128m_oq8192_r4096       | rx=  8.12M ( 98.8G) cyc=477.5 ddio= 41.2% imc=30.7/61.4G cpuWr= 1.12M stalls=0 OK
+[rep=1/3 24/80] s1c_1500b_pitfall2_r256_pool128m       | rx=  8.12M ( 98.7G) cyc=480.6 ddio= 43.8% imc=30.8/59.3G cpuWr= 1.12M stalls=599 OK
+[rep=1/3 25/80] s1d_1500b_8q_oq256_4m                  | rx=  8.10M ( 98.5G) cyc=3800.8 ddio=100.0% imc= 0.6/ 0.3G cpuWr= 0.63M stalls=0 OK
+  [CLOCK_RETRY #1] s1d_1500b_8q_oq512_8m rep=0 errs=['transient_page_faults=1']
+[rep=1/3 26/80] s1d_1500b_8q_oq512_8m                  | rx=  8.11M ( 98.6G) cyc=3798.8 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.63M stalls=0 OK
+[rep=1/3 27/80] s1d_1500b_8q_oq1024_16m                | rx=  8.11M ( 98.7G) cyc=3760.4 ddio=100.0% imc= 0.6/ 0.4G cpuWr= 0.63M stalls=0 OK
+[rep=1/3 28/80] s1d_1500b_8q_oq2048_32m                | rx=  8.11M ( 98.6G) cyc=3788.7 ddio=100.0% imc= 0.8/ 0.5G cpuWr= 0.63M stalls=0 OK
+[rep=1/3 29/80] s1d_1500b_8q_oq4096_64m                | rx=  8.12M ( 98.7G) cyc=3819.6 ddio= 92.5% imc=27.5/12.5G cpuWr= 0.63M stalls=0 OK
+[rep=1/3 30/80] s1d_1500b_8q_oq8192_128m               | rx=  8.13M ( 98.8G) cyc=3778.2 ddio= 38.6% imc=81.2/88.9G cpuWr= 0.63M stalls=0 OK
+[rep=1/3 31/80] s2a_uc64_4c1h_off                      | FAIL int=['c2h_lost=15530991 (card=132962241 host=117431250)'] clk=['min_core_ghz=3.813<3.85']
+[rep=1/3 32/80] s2a_uc64_4c1h_nofence_b8               | rx= 39.20M ( 26.3G) cyc= 98.9 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 5.51M stalls=348943 OK
+[rep=1/3 33/80] s2a_uc64_4c1h_nofence_b16              | rx= 51.26M ( 34.4G) cyc= 76.1 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 4.00M stalls=247178 OK
+[rep=1/3 34/80] s2a_uc64_4c1h_nofence_b32              | rx= 57.19M ( 38.4G) cyc= 68.0 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 2.67M stalls=186494 OK
+[rep=1/3 35/80] s2a_uc64_4c1h_nofence_b64              | rx= 63.46M ( 42.6G) cyc= 61.2 ddio=100.0% imc= 0.6/ 0.3G cpuWr= 1.98M stalls=132506 OK
+[rep=1/3 36/80] s2a_uc64_4c1h_nofence_b128             | rx= 56.52M ( 38.0G) cyc= 68.7 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.31M stalls=225534 OK
+[rep=1/3 37/80] s2a_uc64_4c1h_sfence_b32               | rx= 53.30M ( 35.8G) cyc= 73.0 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 2.47M stalls=227022 OK
+[rep=1/3 38/80] s2a_1500b_1c1h_off                     | FAIL int=['c2h_lost=64 (card=12363472 host=12363408)'] clk=[]
+[rep=1/3 39/80] s2a_1500b_1c1h_nofence_b8              | rx=  8.10M ( 98.5G) cyc=481.0 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 1.13M stalls=1 OK
+[rep=1/3 40/80] s2a_1500b_1c1h_nofence_b16             | rx=  8.11M ( 98.6G) cyc=479.2 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.63M stalls=0 OK
+[rep=1/3 41/80] s2a_1500b_1c1h_nofence_b32             | rx=  8.10M ( 98.5G) cyc=480.3 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.37M stalls=6 OK
+[rep=1/3 42/80] s2a_1500b_1c1h_nofence_b64             | rx=  8.10M ( 98.5G) cyc=480.9 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.25M stalls=2 OK
+[rep=1/3 43/80] s2a_1500b_1c1h_nofence_b128            | rx=  8.10M ( 98.5G) cyc=479.5 ddio=100.0% imc= 0.6/ 0.3G cpuWr= 0.18M stalls=13 OK
+  [CLOCK_RETRY #1] s2a_1500b_1c1h_sfence_b32 rep=0 errs=['transient_page_faults=2']
+[rep=1/3 44/80] s2a_1500b_1c1h_sfence_b32              | rx=  8.12M ( 98.7G) cyc=478.9 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.37M stalls=2 OK
+[rep=1/3 45/80] s2b_1500b_r128_b8                      | rx=  8.10M ( 98.6G) cyc=480.9 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 1.13M stalls=15 OK
+[rep=1/3 46/80] s2b_1500b_r128_b16                     | rx=  8.12M ( 98.7G) cyc=480.4 ddio=100.0% imc= 0.6/ 0.3G cpuWr= 0.63M stalls=10 OK
+[rep=1/3 47/80] s2b_1500b_r128_b32                     | rx=  8.10M ( 98.5G) cyc=480.1 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.37M stalls=107 OK
+[rep=1/3 48/80] s2b_1500b_r128_b64                     | rx=  8.11M ( 98.6G) cyc=478.7 ddio=100.0% imc= 0.6/ 0.3G cpuWr= 0.25M stalls=1628 OK
+[rep=1/3 49/80] s2b_1500b_r128_b96                     | rx=  6.72M ( 81.7G) cyc=578.1 ddio=100.0% imc= 0.9/ 0.3G cpuWr= 0.17M stalls=398432 OK
+[rep=1/3 50/80] s2b_1500b_r128_b128                    | rx=  5.91M ( 71.9G) cyc=659.5 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.13M stalls=463687 OK
+  [CLOCK_RETRY #1] s2b_1500b_r64_b8 rep=0 errs=['min_core_ghz=3.786<3.85']
+[rep=1/3 51/80] s2b_1500b_r64_b8                       | rx=  7.62M ( 92.7G) cyc=511.4 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 1.06M stalls=1742 OK
+[rep=1/3 52/80] s2b_1500b_r64_b16                      | rx=  6.99M ( 85.0G) cyc=555.3 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.54M stalls=88167 OK
+[rep=1/3 53/80] s2b_1500b_r64_b32                      | rx=  6.39M ( 77.7G) cyc=608.8 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.30M stalls=291377 OK
+[rep=1/3 54/80] s2b_1500b_r64_b48                      | rx=  4.46M ( 54.2G) cyc=869.8 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.16M stalls=427350 OK
+[rep=1/3 55/80] s2b_1500b_r64_b64                      | rx=  4.40M ( 53.5G) cyc=885.7 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.14M stalls=471119 OK
+[rep=1/3 56/80] s2b_1500b_r64_b96                      | rx=  0.98M ( 11.9G) cyc=3990.8 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.03M stalls=555869 OK
+[rep=1/3 57/80] s3_64b_c1_h1_credit                    | rx= 19.05M ( 12.8G) cyc=203.5 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.89M stalls=35 OK
+[rep=1/3 58/80] s3_64b_c1_h1_off                       | rx= 22.92M ( 15.4G) cyc=169.9 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.36M stalls=0 OK
+[rep=1/3 59/80] s3_64b_c2_h2_credit                    | rx= 40.53M ( 27.2G) cyc=192.0 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.90M stalls=46 OK
+[rep=1/3 60/80] s3_64b_c2_h2_off                       | FAIL int=['c2h_lost=367 (card=70111678 host=70111311)'] clk=[]
+[rep=1/3 61/80] s3_64b_c4_h4_credit                    | rx= 81.42M ( 54.7G) cyc=191.2 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 3.80M stalls=121 OK
+[rep=1/3 62/80] s3_64b_c4_h4_off                       | FAIL int=['c2h_lost=5859 (card=136063264 host=136057405)'] clk=[]
+[rep=1/3 63/80] s3_64b_c8_h4_credit                    | rx= 99.34M ( 66.8G) cyc=156.8 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 4.35M stalls=116944 OK
+[rep=1/3 64/80] s3_64b_c8_h4_off                       | FAIL int=['c2h_lost=6796768 (card=151458075 host=144661307)'] clk=[]
+[rep=1/3 65/80] s3_254b_c1_h1_credit                   | rx= 14.16M ( 31.0G) cyc=273.6 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.66M stalls=21 OK
+[rep=1/3 66/80] s3_254b_c1_h1_off                      | rx= 13.86M ( 30.4G) cyc=281.5 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.22M stalls=0 OK
+[rep=1/3 67/80] s3_254b_c2_h2_credit                   | rx= 26.72M ( 58.6G) cyc=291.1 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 1.25M stalls=13 OK
+[rep=1/3 68/80] s3_254b_c2_h2_off                      | rx= 27.58M ( 60.5G) cyc=282.4 ddio=100.0% imc= 0.7/ 0.3G cpuWr= 0.43M stalls=0 OK
+[rep=1/3 69/80] s3_254b_c4_h2_credit                   | rx= 45.62M (100.0G) cyc=170.9 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 1.99M stalls=326 OK
+[rep=1/3 70/80] s3_254b_c4_h2_off                      | rx= 45.62M (100.0G) cyc=170.9 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.59M stalls=0 OK
+[rep=1/3 71/80] s3_254b_c8_h2_credit                   | rx= 45.62M (100.0G) cyc=170.7 ddio=100.0% imc= 0.7/ 0.3G cpuWr= 2.04M stalls=243 OK
+[rep=1/3 72/80] s3_254b_c8_h2_off                      | rx= 45.62M (100.0G) cyc=170.6 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.55M stalls=0 OK
+[rep=1/3 73/80] s3_1500b_c1_h1_credit                  | rx=  8.12M ( 98.7G) cyc=480.4 ddio=100.0% imc= 0.3/ 0.3G cpuWr= 0.37M stalls=9 OK
+[rep=1/3 74/80] s3_1500b_c1_h1_off                     | FAIL int=['c2h_lost=147 (card=12375396 host=12375249)'] clk=[]
+[rep=1/3 75/80] s3_1500b_c2_h1_credit                  | rx=  8.11M ( 98.6G) cyc=479.5 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.37M stalls=0 OK
+[rep=1/3 76/80] s3_1500b_c2_h1_off                     | rx=  8.11M ( 98.6G) cyc=480.0 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.12M stalls=0 OK
+[rep=1/3 77/80] s3_1500b_c4_h1_credit                  | rx=  8.11M ( 98.7G) cyc=477.6 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.37M stalls=0 OK
+[rep=1/3 78/80] s3_1500b_c4_h1_off                     | rx=  8.10M ( 98.5G) cyc=481.6 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.12M stalls=0 OK
+[rep=1/3 79/80] s3_1500b_c8_h1_credit                  | rx=  8.12M ( 98.8G) cyc=479.8 ddio= 96.3% imc= 0.5/ 3.9G cpuWr= 0.38M stalls=0 OK
+  [CLOCK_RETRY #1] s3_1500b_c8_h1_off rep=0 errs=['min_core_ghz=3.842<3.85']
+[rep=1/3 80/80] s3_1500b_c8_h1_off                     | rx=  8.11M ( 98.6G) cyc=477.6 ddio= 83.7% imc= 1.0/15.9G cpuWr= 0.12M stalls=0 OK
+[rep=2/3  1/80] s3_1500b_c8_h1_off                     | rx=  8.10M ( 98.5G) cyc=480.0 ddio= 88.8% imc= 0.5/11.0G cpuWr= 0.12M stalls=0 OK
+[rep=2/3  2/80] s3_1500b_c8_h1_credit                  | rx=  8.13M ( 98.8G) cyc=479.6 ddio= 90.7% imc= 0.4/ 9.2G cpuWr= 0.38M stalls=0 OK
+[rep=2/3  3/80] s3_1500b_c4_h1_off                     | rx=  8.13M ( 98.9G) cyc=477.8 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.12M stalls=0 OK
+[rep=2/3  4/80] s3_1500b_c4_h1_credit                  | rx=  8.12M ( 98.8G) cyc=479.9 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.37M stalls=0 OK
+[rep=2/3  5/80] s3_1500b_c2_h1_off                     | rx=  8.10M ( 98.5G) cyc=479.7 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.12M stalls=0 OK
+[rep=2/3  6/80] s3_1500b_c2_h1_credit                  | rx=  8.10M ( 98.5G) cyc=480.1 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.37M stalls=2 OK
+[rep=2/3  7/80] s3_1500b_c1_h1_off                     | rx=  8.11M ( 98.6G) cyc=479.8 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.12M stalls=0 OK
+[rep=2/3  8/80] s3_1500b_c1_h1_credit                  | rx=  8.10M ( 98.5G) cyc=479.8 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.37M stalls=123 OK
+[rep=2/3  9/80] s3_254b_c8_h2_off                      | rx= 45.62M (100.0G) cyc=170.3 ddio=100.0% imc= 0.6/ 0.3G cpuWr= 0.54M stalls=0 OK
+[rep=2/3 10/80] s3_254b_c8_h2_credit                   | rx= 45.62M (100.0G) cyc=170.9 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 2.04M stalls=205 OK
+[rep=2/3 11/80] s3_254b_c4_h2_off                      | FAIL int=['c2h_lost=2000 (card=69428672 host=69426672)'] clk=[]
+[rep=2/3 12/80] s3_254b_c4_h2_credit                   | rx= 45.62M (100.0G) cyc=170.9 ddio=100.0% imc= 0.3/ 0.3G cpuWr= 1.99M stalls=222 OK
+[rep=2/3 13/80] s3_254b_c2_h2_off                      | FAIL int=['c2h_lost=140 (card=42077051 host=42076911)'] clk=[]
+[rep=2/3 14/80] s3_254b_c2_h2_credit                   | rx= 26.73M ( 58.6G) cyc=287.5 ddio=100.0% imc= 1.1/ 0.5G cpuWr= 1.25M stalls=59 OK
+[rep=2/3 15/80] s3_254b_c1_h1_off                      | FAIL int=['c2h_lost=3720 (card=21141168 host=21137448)'] clk=[]
+[rep=2/3 16/80] s3_254b_c1_h1_credit                   | rx= 14.42M ( 31.6G) cyc=270.2 ddio=100.0% imc= 0.7/ 0.3G cpuWr= 0.68M stalls=26 OK
+[rep=2/3 17/80] s3_64b_c8_h4_off                       | FAIL int=['c2h_lost=5868914 (card=151762067 host=145893153)'] clk=[]
+[rep=2/3 18/80] s3_64b_c8_h4_credit                    | rx= 99.48M ( 66.9G) cyc=156.5 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 4.36M stalls=103816 OK
+[rep=2/3 19/80] s3_64b_c4_h4_off                       | FAIL int=['c2h_lost=720 (card=135962409 host=135961689)'] clk=[]
+[rep=2/3 20/80] s3_64b_c4_h4_credit                    | rx= 77.71M ( 52.2G) cyc=199.6 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 3.62M stalls=42 OK
+[rep=2/3 21/80] s3_64b_c2_h2_off                       | FAIL int=['c2h_lost=2726 (card=70202822 host=70200096)'] clk=[]
+[rep=2/3 22/80] s3_64b_c2_h2_credit                    | rx= 39.80M ( 26.7G) cyc=195.9 ddio=100.0% imc= 0.3/ 0.2G cpuWr= 1.86M stalls=64 OK
+[rep=2/3 23/80] s3_64b_c1_h1_off                       | FAIL int=['c2h_lost=1921 (card=35160396 host=35158475)'] clk=[]
+[rep=2/3 24/80] s3_64b_c1_h1_credit                    | rx= 18.20M ( 12.2G) cyc=213.7 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.85M stalls=97 OK
+[rep=2/3 25/80] s2b_1500b_r64_b96                      | rx=  0.98M ( 11.9G) cyc=3977.3 ddio=100.0% imc= 0.8/ 0.3G cpuWr= 0.03M stalls=552167 OK
+[rep=2/3 26/80] s2b_1500b_r64_b64                      | rx=  4.40M ( 53.5G) cyc=886.0 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.14M stalls=471067 OK
+[rep=2/3 27/80] s2b_1500b_r64_b48                      | rx=  4.35M ( 52.8G) cyc=897.2 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.16M stalls=431919 OK
+[rep=2/3 28/80] s2b_1500b_r64_b32                      | rx=  6.37M ( 77.5G) cyc=608.6 ddio=100.0% imc= 0.8/ 0.4G cpuWr= 0.30M stalls=292255 OK
+[rep=2/3 29/80] s2b_1500b_r64_b16                      | rx=  7.34M ( 89.3G) cyc=530.2 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.57M stalls=59892 OK
+[rep=2/3 30/80] s2b_1500b_r64_b8                       | rx=  7.67M ( 93.3G) cyc=507.6 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.07M stalls=1529 OK
+[rep=2/3 31/80] s2b_1500b_r128_b128                    | rx=  5.85M ( 71.2G) cyc=660.1 ddio=100.0% imc= 1.9/ 0.8G cpuWr= 0.13M stalls=461793 OK
+[rep=2/3 32/80] s2b_1500b_r128_b96                     | rx=  6.72M ( 81.7G) cyc=579.0 ddio=100.0% imc= 5.6/ 2.6G cpuWr= 0.17M stalls=400369 OK
+[rep=2/3 33/80] s2b_1500b_r128_b64                     | rx=  8.11M ( 98.6G) cyc=479.0 ddio=100.0% imc= 0.6/ 0.4G cpuWr= 0.25M stalls=5938 OK
+[rep=2/3 34/80] s2b_1500b_r128_b32                     | rx=  8.12M ( 98.7G) cyc=479.7 ddio=100.0% imc= 0.6/ 0.3G cpuWr= 0.37M stalls=1008 OK
+[rep=2/3 35/80] s2b_1500b_r128_b16                     | rx=  8.11M ( 98.6G) cyc=480.3 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.63M stalls=254 OK
+[rep=2/3 36/80] s2b_1500b_r128_b8                      | rx=  8.10M ( 98.5G) cyc=477.9 ddio=100.0% imc= 0.7/ 0.3G cpuWr= 1.13M stalls=1463 OK
+[rep=2/3 37/80] s2a_1500b_1c1h_sfence_b32              | rx=  8.13M ( 98.8G) cyc=478.8 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.37M stalls=404 OK
+[rep=2/3 38/80] s2a_1500b_1c1h_nofence_b128            | rx=  8.09M ( 98.4G) cyc=480.5 ddio=100.0% imc= 0.6/ 0.3G cpuWr= 0.18M stalls=22 OK
+[rep=2/3 39/80] s2a_1500b_1c1h_nofence_b64             | rx=  8.10M ( 98.5G) cyc=480.6 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.25M stalls=32 OK
+[rep=2/3 40/80] s2a_1500b_1c1h_nofence_b32             | rx=  8.10M ( 98.5G) cyc=481.1 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.37M stalls=5379 OK
+[rep=2/3 41/80] s2a_1500b_1c1h_nofence_b16             | rx=  8.09M ( 98.4G) cyc=480.4 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.63M stalls=0 OK
+[rep=2/3 42/80] s2a_1500b_1c1h_nofence_b8              | rx=  8.10M ( 98.5G) cyc=481.2 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 1.13M stalls=2 OK
+[rep=2/3 43/80] s2a_1500b_1c1h_off                     | FAIL int=['c2h_lost=20958 (card=12371392 host=12350434)'] clk=[]
+[rep=2/3 44/80] s2a_uc64_4c1h_sfence_b32               | rx= 55.23M ( 37.1G) cyc= 70.6 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 2.59M stalls=231738 OK
+[rep=2/3 45/80] s2a_uc64_4c1h_nofence_b128             | rx= 56.83M ( 38.2G) cyc= 68.6 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 1.33M stalls=233975 OK
+[rep=2/3 46/80] s2a_uc64_4c1h_nofence_b64              | rx= 63.60M ( 42.7G) cyc= 61.1 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 1.99M stalls=131261 OK
+[rep=2/3 47/80] s2a_uc64_4c1h_nofence_b32              | rx= 57.89M ( 38.9G) cyc= 67.2 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 2.70M stalls=194894 OK
+[rep=2/3 48/80] s2a_uc64_4c1h_nofence_b16              | rx= 50.11M ( 33.7G) cyc= 77.9 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 3.90M stalls=236018 OK
+[rep=2/3 49/80] s2a_uc64_4c1h_nofence_b8               | rx= 39.21M ( 26.4G) cyc= 99.1 ddio=100.0% imc= 1.0/ 0.6G cpuWr= 5.51M stalls=300940 OK
+[rep=2/3 50/80] s2a_uc64_4c1h_off                      | FAIL int=['c2h_lost=12678010 (card=138238666 host=125560656)'] clk=[]
+[rep=2/3 51/80] s1d_1500b_8q_oq8192_128m               | rx=  8.06M ( 98.1G) cyc=3828.3 ddio= 40.9% imc=83.0/88.8G cpuWr= 0.63M stalls=0 OK
+[rep=2/3 52/80] s1d_1500b_8q_oq4096_64m                | rx=  8.11M ( 98.6G) cyc=3773.9 ddio= 92.7% imc=28.5/12.8G cpuWr= 0.63M stalls=0 OK
+[rep=2/3 53/80] s1d_1500b_8q_oq2048_32m                | rx=  8.11M ( 98.6G) cyc=3820.1 ddio=100.0% imc= 0.6/ 0.3G cpuWr= 0.63M stalls=0 OK
+[rep=2/3 54/80] s1d_1500b_8q_oq1024_16m                | rx=  8.08M ( 98.3G) cyc=3829.5 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.63M stalls=3037 OK
+[rep=2/3 55/80] s1d_1500b_8q_oq512_8m                  | rx=  8.11M ( 98.6G) cyc=3808.3 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.63M stalls=0 OK
+[rep=2/3 56/80] s1d_1500b_8q_oq256_4m                  | rx=  8.10M ( 98.5G) cyc=3828.7 ddio=100.0% imc= 0.6/ 0.3G cpuWr= 0.63M stalls=0 OK
+[rep=2/3 57/80] s1c_1500b_pitfall2_r256_pool128m       | rx=  8.10M ( 98.5G) cyc=478.8 ddio= 43.7% imc=30.8/59.3G cpuWr= 1.12M stalls=373 OK
+[rep=2/3 58/80] s1c_1500b_fifo_128m_oq8192_r4096       | rx=  8.11M ( 98.7G) cyc=480.0 ddio= 41.3% imc=30.2/61.3G cpuWr= 1.12M stalls=0 OK
+[rep=2/3 59/80] s1c_1500b_fifo_64m_oq8192_r4096        | rx=  8.11M ( 98.7G) cyc=480.3 ddio= 78.8% imc=14.0/21.5G cpuWr= 1.13M stalls=0 OK
+[rep=2/3 60/80] s1c_1500b_fifo_32m_oq8192_r4096        | rx=  8.11M ( 98.6G) cyc=479.4 ddio= 99.7% imc= 0.6/ 0.7G cpuWr= 1.13M stalls=0 OK
+[rep=2/3 61/80] s1c_1500b_fifo_12m_oq2048_r1024        | rx=  8.11M ( 98.6G) cyc=480.3 ddio=100.0% imc= 0.9/ 0.5G cpuWr= 1.13M stalls=0 OK
+[rep=2/3 62/80] s1c_1500b_fifo_10m_oq2048_r1024        | rx=  8.14M ( 98.9G) cyc=477.4 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 1.13M stalls=0 OK
+[rep=2/3 63/80] s1c_1500b_fifo_8m_oq2048_r1024         | rx=  8.13M ( 98.9G) cyc=476.4 ddio=100.0% imc= 0.6/ 0.3G cpuWr= 1.13M stalls=0 OK
+[rep=2/3 64/80] s1c_1500b_fifo_6m_oq2048_r1024         | rx=  8.12M ( 98.7G) cyc=480.1 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 1.13M stalls=0 OK
+[rep=2/3 65/80] s1b_1500b_oq8192_r7680_b8              | rx=  8.14M ( 99.0G) cyc=475.8 ddio=100.0% imc= 0.9/ 0.3G cpuWr= 1.13M stalls=0 OK
+  [CLOCK_RETRY #1] s1b_1500b_oq8192_r4096_b8 rep=1 errs=['min_core_ghz=3.841<3.85']
+[rep=2/3 66/80] s1b_1500b_oq8192_r4096_b8              | rx=  8.10M ( 98.5G) cyc=479.8 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.12M stalls=0 OK
+[rep=2/3 67/80] s1b_1500b_oq4096_r2048_b8              | rx=  8.13M ( 98.8G) cyc=478.0 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.13M stalls=0 OK
+[rep=2/3 68/80] s1b_1500b_oq2048_r1024_b8              | rx=  8.12M ( 98.7G) cyc=480.3 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 1.12M stalls=0 OK
+[rep=2/3 69/80] s1b_1500b_oq1024_r512_b8               | rx=  8.13M ( 98.9G) cyc=479.1 ddio=100.0% imc= 0.9/ 0.4G cpuWr= 1.13M stalls=0 OK
+[rep=2/3 70/80] s1b_1500b_oq512_r256_b8                | rx=  8.12M ( 98.7G) cyc=479.2 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.13M stalls=18 OK
+[rep=2/3 71/80] s1a_1500b_r128_oq256_b8                | rx=  8.11M ( 98.7G) cyc=480.6 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 1.13M stalls=21 OK
+[rep=2/3 72/80] s1a_1500b_r256_oq512_b8                | rx=  8.11M ( 98.6G) cyc=476.8 ddio=100.0% imc= 0.6/ 0.4G cpuWr= 1.13M stalls=2 OK
+[rep=2/3 73/80] s1a_1500b_r192_oq512_b8                | rx=  8.11M ( 98.6G) cyc=479.8 ddio=100.0% imc= 0.9/ 0.3G cpuWr= 1.13M stalls=10 OK
+[rep=2/3 74/80] s1a_1500b_r128_oq512_b8                | rx=  8.10M ( 98.5G) cyc=480.6 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.13M stalls=13 OK
+[rep=2/3 75/80] s1a_1500b_r96_oq512_b8                 | rx=  8.11M ( 98.6G) cyc=478.5 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 1.13M stalls=105 OK
+[rep=2/3 76/80] s1a_1500b_r64_oq512_b8                 | rx=  7.74M ( 94.2G) cyc=503.7 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.08M stalls=925 OK
+[rep=2/3 77/80] s1a_1500b_r48_oq512_b8                 | rx=  5.94M ( 72.2G) cyc=655.1 ddio=100.0% imc= 1.1/ 0.4G cpuWr= 0.83M stalls=6366 OK
+[rep=2/3 78/80] s1a_1500b_r32_oq512_b8                 | rx=  4.03M ( 49.0G) cyc=963.3 ddio=100.0% imc= 0.6/ 0.3G cpuWr= 0.56M stalls=21930 OK
+[rep=2/3 79/80] s1a_1500b_r24_oq512_b8                 | rx=  3.10M ( 37.7G) cyc=1255.8 ddio=100.0% imc= 0.3/ 0.2G cpuWr= 0.44M stalls=42900 OK
+[rep=2/3 80/80] s1a_1500b_r16_oq512_b8                 | rx=  2.11M ( 25.6G) cyc=1843.3 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.30M stalls=180159 OK
+[rep=3/3  1/80] s1a_1500b_r16_oq512_b8                 | rx=  2.10M ( 25.6G) cyc=1849.9 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.30M stalls=178245 OK
+[rep=3/3  2/80] s1a_1500b_r24_oq512_b8                 | rx=  3.11M ( 37.8G) cyc=1253.0 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.44M stalls=45282 OK
+[rep=3/3  3/80] s1a_1500b_r32_oq512_b8                 | rx=  4.03M ( 49.1G) cyc=963.3 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.57M stalls=22905 OK
+[rep=3/3  4/80] s1a_1500b_r48_oq512_b8                 | rx=  5.93M ( 72.1G) cyc=657.4 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.83M stalls=5969 OK
+[rep=3/3  5/80] s1a_1500b_r64_oq512_b8                 | rx=  7.61M ( 92.5G) cyc=512.3 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 1.06M stalls=1672 OK
+  [CLOCK_RETRY #1] s1a_1500b_r96_oq512_b8 rep=2 errs=['min_core_ghz=3.787<3.85']
+[rep=3/3  6/80] s1a_1500b_r96_oq512_b8                 | rx=  8.10M ( 98.5G) cyc=479.7 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.13M stalls=77 OK
+[rep=3/3  7/80] s1a_1500b_r128_oq512_b8                | rx=  8.11M ( 98.7G) cyc=479.4 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 1.13M stalls=17 OK
+[rep=3/3  8/80] s1a_1500b_r192_oq512_b8                | rx=  8.10M ( 98.5G) cyc=480.2 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.13M stalls=16 OK
+[rep=3/3  9/80] s1a_1500b_r256_oq512_b8                | rx=  8.10M ( 98.5G) cyc=479.2 ddio=100.0% imc= 0.6/ 0.3G cpuWr= 1.13M stalls=0 OK
+[rep=3/3 10/80] s1a_1500b_r128_oq256_b8                | rx=  8.10M ( 98.5G) cyc=479.6 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 1.13M stalls=16 OK
+[rep=3/3 11/80] s1b_1500b_oq512_r256_b8                | rx=  8.10M ( 98.5G) cyc=481.3 ddio=100.0% imc= 0.7/ 0.3G cpuWr= 1.13M stalls=17 OK
+[rep=3/3 12/80] s1b_1500b_oq1024_r512_b8               | rx=  8.13M ( 98.9G) cyc=479.5 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 1.13M stalls=26 OK
+[rep=3/3 13/80] s1b_1500b_oq2048_r1024_b8              | rx=  8.13M ( 98.8G) cyc=478.7 ddio=100.0% imc= 0.6/ 0.3G cpuWr= 1.13M stalls=0 OK
+[rep=3/3 14/80] s1b_1500b_oq4096_r2048_b8              | rx=  8.11M ( 98.6G) cyc=480.8 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.12M stalls=0 OK
+[rep=3/3 15/80] s1b_1500b_oq8192_r4096_b8              | rx=  8.12M ( 98.7G) cyc=476.2 ddio=100.0% imc= 0.9/ 0.3G cpuWr= 1.13M stalls=0 OK
+[rep=3/3 16/80] s1b_1500b_oq8192_r7680_b8              | rx=  8.11M ( 98.6G) cyc=478.8 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.12M stalls=0 OK
+[rep=3/3 17/80] s1c_1500b_fifo_6m_oq2048_r1024         | rx=  8.12M ( 98.7G) cyc=478.9 ddio=100.0% imc= 0.6/ 0.3G cpuWr= 1.13M stalls=0 OK
+[rep=3/3 18/80] s1c_1500b_fifo_8m_oq2048_r1024         | rx=  8.12M ( 98.7G) cyc=480.1 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.13M stalls=0 OK
+[rep=3/3 19/80] s1c_1500b_fifo_10m_oq2048_r1024        | rx=  8.11M ( 98.6G) cyc=480.5 ddio=100.0% imc= 0.8/ 0.5G cpuWr= 1.13M stalls=0 OK
+[rep=3/3 20/80] s1c_1500b_fifo_12m_oq2048_r1024        | rx=  8.11M ( 98.6G) cyc=480.6 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.13M stalls=0 OK
+[rep=3/3 21/80] s1c_1500b_fifo_32m_oq8192_r4096        | rx=  8.13M ( 98.8G) cyc=479.6 ddio= 99.7% imc= 0.5/ 0.6G cpuWr= 1.13M stalls=0 OK
+[rep=3/3 22/80] s1c_1500b_fifo_64m_oq8192_r4096        | rx=  8.13M ( 98.9G) cyc=479.2 ddio= 81.1% imc=14.5/19.3G cpuWr= 1.13M stalls=0 OK
+[rep=3/3 23/80] s1c_1500b_fifo_128m_oq8192_r4096       | rx=  8.13M ( 98.8G) cyc=476.8 ddio= 41.4% imc=30.3/61.2G cpuWr= 1.12M stalls=0 OK
+[rep=3/3 24/80] s1c_1500b_pitfall2_r256_pool128m       | rx=  8.10M ( 98.4G) cyc=479.6 ddio= 43.8% imc=31.1/59.3G cpuWr= 1.12M stalls=547 OK
+[rep=3/3 25/80] s1d_1500b_8q_oq256_4m                  | rx=  8.10M ( 98.5G) cyc=3795.5 ddio=100.0% imc= 0.6/ 0.3G cpuWr= 0.63M stalls=0 OK
+[rep=3/3 26/80] s1d_1500b_8q_oq512_8m                  | rx=  8.09M ( 98.3G) cyc=3814.9 ddio=100.0% imc= 0.7/ 0.3G cpuWr= 0.63M stalls=0 OK
+[rep=3/3 27/80] s1d_1500b_8q_oq1024_16m                | rx=  8.11M ( 98.6G) cyc=3789.4 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.63M stalls=0 OK
+[rep=3/3 28/80] s1d_1500b_8q_oq2048_32m                | rx=  8.11M ( 98.7G) cyc=3777.6 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.63M stalls=0 OK
+[rep=3/3 29/80] s1d_1500b_8q_oq4096_64m                | rx=  8.12M ( 98.8G) cyc=3780.4 ddio= 92.6% imc=28.7/12.9G cpuWr= 0.63M stalls=0 OK
+[rep=3/3 30/80] s1d_1500b_8q_oq8192_128m               | rx=  8.10M ( 98.5G) cyc=3804.1 ddio= 40.3% imc=83.7/89.4G cpuWr= 0.63M stalls=0 OK
+[rep=3/3 31/80] s2a_uc64_4c1h_off                      | FAIL int=['c2h_lost=10826885 (card=137304854 host=126477969)'] clk=[]
+[rep=3/3 32/80] s2a_uc64_4c1h_nofence_b8               | rx= 39.27M ( 26.4G) cyc= 98.9 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 5.52M stalls=300778 OK
+[rep=3/3 33/80] s2a_uc64_4c1h_nofence_b16              | rx= 51.46M ( 34.6G) cyc= 75.6 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 4.02M stalls=238228 OK
+[rep=3/3 34/80] s2a_uc64_4c1h_nofence_b32              | rx= 58.65M ( 39.4G) cyc= 66.3 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 2.75M stalls=181639 OK
+[rep=3/3 35/80] s2a_uc64_4c1h_nofence_b64              | rx= 62.41M ( 41.9G) cyc= 62.4 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.94M stalls=136559 OK
+  [CLOCK_RETRY #1] s2a_uc64_4c1h_nofence_b128 rep=2 errs=['transient_page_faults=1']
+[rep=3/3 36/80] s2a_uc64_4c1h_nofence_b128             | rx= 56.77M ( 38.1G) cyc= 68.7 ddio=100.0% imc= 0.8/ 0.5G cpuWr= 1.32M stalls=227501 OK
+[rep=3/3 37/80] s2a_uc64_4c1h_sfence_b32               | rx= 54.93M ( 36.9G) cyc= 70.7 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 2.57M stalls=229333 OK
+[rep=3/3 38/80] s2a_1500b_1c1h_off                     | rx=  8.20M ( 99.7G) cyc=473.7 ddio=100.0% imc= 0.6/ 0.3G cpuWr= 0.12M stalls=0 OK
+[rep=3/3 39/80] s2a_1500b_1c1h_nofence_b8              | rx=  8.11M ( 98.6G) cyc=481.0 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.13M stalls=0 OK
+[rep=3/3 40/80] s2a_1500b_1c1h_nofence_b16             | rx=  8.09M ( 98.4G) cyc=477.9 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.63M stalls=32 OK
+[rep=3/3 41/80] s2a_1500b_1c1h_nofence_b32             | rx=  8.10M ( 98.5G) cyc=479.0 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.37M stalls=0 OK
+[rep=3/3 42/80] s2a_1500b_1c1h_nofence_b64             | rx=  8.10M ( 98.5G) cyc=481.3 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.25M stalls=12 OK
+[rep=3/3 43/80] s2a_1500b_1c1h_nofence_b128            | rx=  8.10M ( 98.5G) cyc=480.2 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.18M stalls=195 OK
+[rep=3/3 44/80] s2a_1500b_1c1h_sfence_b32              | rx=  8.12M ( 98.7G) cyc=479.6 ddio=100.0% imc= 0.6/ 0.3G cpuWr= 0.37M stalls=13 OK
+[rep=3/3 45/80] s2b_1500b_r128_b8                      | rx=  8.12M ( 98.7G) cyc=479.5 ddio=100.0% imc= 0.9/ 0.6G cpuWr= 1.13M stalls=11 OK
+[rep=3/3 46/80] s2b_1500b_r128_b16                     | rx=  8.09M ( 98.4G) cyc=481.9 ddio=100.0% imc= 0.6/ 0.3G cpuWr= 0.63M stalls=147 OK
+[rep=3/3 47/80] s2b_1500b_r128_b32                     | rx=  8.11M ( 98.6G) cyc=478.6 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.37M stalls=601 OK
+[rep=3/3 48/80] s2b_1500b_r128_b64                     | rx=  8.13M ( 98.8G) cyc=479.7 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.25M stalls=4668 OK
+[rep=3/3 49/80] s2b_1500b_r128_b96                     | rx=  6.70M ( 81.5G) cyc=581.2 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.17M stalls=396509 OK
+[rep=3/3 50/80] s2b_1500b_r128_b128                    | rx=  5.85M ( 71.2G) cyc=662.9 ddio=100.0% imc= 0.6/ 0.3G cpuWr= 0.13M stalls=461727 OK
+[rep=3/3 51/80] s2b_1500b_r64_b8                       | rx=  7.79M ( 94.8G) cyc=499.7 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.09M stalls=970 OK
+[rep=3/3 52/80] s2b_1500b_r64_b16                      | rx=  7.12M ( 86.5G) cyc=545.2 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.55M stalls=78229 OK
+[rep=3/3 53/80] s2b_1500b_r64_b32                      | rx=  6.30M ( 76.6G) cyc=618.7 ddio=100.0% imc= 0.3/ 0.3G cpuWr= 0.29M stalls=290346 OK
+[rep=3/3 54/80] s2b_1500b_r64_b48                      | rx=  4.42M ( 53.7G) cyc=882.6 ddio=100.0% imc= 0.6/ 0.3G cpuWr= 0.16M stalls=428299 OK
+[rep=3/3 55/80] s2b_1500b_r64_b64                      | rx=  4.38M ( 53.2G) cyc=886.9 ddio=100.0% imc= 0.8/ 0.4G cpuWr= 0.14M stalls=471232 OK
+[rep=3/3 56/80] s2b_1500b_r64_b96                      | rx=  0.97M ( 11.9G) cyc=3992.2 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.03M stalls=551554 OK
+[rep=3/3 57/80] s3_64b_c1_h1_credit                    | rx= 18.49M ( 12.4G) cyc=210.7 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.87M stalls=38 OK
+[rep=3/3 58/80] s3_64b_c1_h1_off                       | FAIL int=['c2h_lost=2949 (card=34738497 host=34735548)'] clk=['min_core_ghz=3.779<3.85']
+[rep=3/3 59/80] s3_64b_c2_h2_credit                    | rx= 40.41M ( 27.2G) cyc=192.4 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 1.89M stalls=39 OK
+[rep=3/3 60/80] s3_64b_c2_h2_off                       | FAIL int=['c2h_lost=430 (card=69814814 host=69814384)'] clk=[]
+  [CLOCK_RETRY #1] s3_64b_c4_h4_credit rep=2 errs=['transient_page_faults=1']
+[rep=3/3 61/80] s3_64b_c4_h4_credit                    | rx= 75.89M ( 51.0G) cyc=205.4 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 3.54M stalls=50 OK
+[rep=3/3 62/80] s3_64b_c4_h4_off                       | FAIL int=['c2h_lost=1139 (card=136744996 host=136743857)'] clk=[]
+[rep=3/3 63/80] s3_64b_c8_h4_credit                    | rx= 99.60M ( 66.9G) cyc=155.3 ddio=100.0% imc= 0.6/ 0.3G cpuWr= 4.36M stalls=134069 OK
+[rep=3/3 64/80] s3_64b_c8_h4_off                       | FAIL int=['c2h_lost=5163672 (card=149469282 host=144305610)'] clk=[]
+[rep=3/3 65/80] s3_254b_c1_h1_credit                   | rx= 14.21M ( 31.1G) cyc=273.3 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.67M stalls=55 OK
+[rep=3/3 66/80] s3_254b_c1_h1_off                      | FAIL int=['c2h_lost=39 (card=21101862 host=21101823)'] clk=[]
+[rep=3/3 67/80] s3_254b_c2_h2_credit                   | rx= 26.62M ( 58.4G) cyc=292.5 ddio=100.0% imc= 0.9/ 0.3G cpuWr= 1.25M stalls=19 OK
+[rep=3/3 68/80] s3_254b_c2_h2_off                      | rx= 27.59M ( 60.5G) cyc=281.9 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.43M stalls=0 OK
+[rep=3/3 69/80] s3_254b_c4_h2_credit                   | rx= 45.62M (100.0G) cyc=171.0 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 1.99M stalls=428 OK
+[rep=3/3 70/80] s3_254b_c4_h2_off                      | FAIL int=['c2h_lost=125 (card=69559680 host=69559555)'] clk=[]
+[rep=3/3 71/80] s3_254b_c8_h2_credit                   | rx= 45.62M (100.0G) cyc=170.8 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 2.03M stalls=5421 OK
+[rep=3/3 72/80] s3_254b_c8_h2_off                      | rx= 45.62M (100.0G) cyc=171.0 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.54M stalls=0 OK
+[rep=3/3 73/80] s3_1500b_c1_h1_credit                  | rx=  8.11M ( 98.7G) cyc=480.2 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.37M stalls=29 OK
+[rep=3/3 74/80] s3_1500b_c1_h1_off                     | FAIL int=['c2h_lost=824 (card=12345388 host=12344564)'] clk=[]
+[rep=3/3 75/80] s3_1500b_c2_h1_credit                  | rx=  8.10M ( 98.5G) cyc=481.5 ddio=100.0% imc= 0.8/ 0.3G cpuWr= 0.37M stalls=0 OK
+[rep=3/3 76/80] s3_1500b_c2_h1_off                     | rx=  8.12M ( 98.8G) cyc=478.3 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.12M stalls=0 OK
+[rep=3/3 77/80] s3_1500b_c4_h1_credit                  | rx=  8.12M ( 98.8G) cyc=479.8 ddio=100.0% imc= 0.4/ 0.3G cpuWr= 0.37M stalls=0 OK
+[rep=3/3 78/80] s3_1500b_c4_h1_off                     | rx=  8.11M ( 98.7G) cyc=479.3 ddio=100.0% imc= 0.5/ 0.3G cpuWr= 0.12M stalls=0 OK
+[rep=3/3 79/80] s3_1500b_c8_h1_credit                  | rx=  8.10M ( 98.5G) cyc=476.8 ddio= 95.7% imc= 0.4/ 4.4G cpuWr= 0.37M stalls=0 OK
+[rep=3/3 80/80] s3_1500b_c8_h1_off                     | rx=  8.11M ( 98.6G) cyc=481.0 ddio= 96.2% imc= 0.8/ 4.0G cpuWr= 0.12M stalls=0 OK
+POST-RESTORE: waiting 21 s for delayed EDAC/AER/SEI-UER audit...
+EDAC/AER DELTAS: {"saturn_edac_ue_delta": 0, "saturn_rp_aer_delta": {"aer_rootport_total_err_cor": 0, "aer_rootport_total_err_nonfatal": 0, "aer_rootport_total_err_fatal": 0}, "cn106_ea0_ue_delta": 0, "cn106_mc0_ue_delta": 0, "cn106_edac_ue_delta": 0, "cn106_sei_uer_delta": 0}
+FINISHED: done=217 failed=23 clock_retries=12
