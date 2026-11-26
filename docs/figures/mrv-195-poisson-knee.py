@@ -77,9 +77,12 @@ def load_data():
         for rk in sorted(by_r):
             if len(curves[key].get(rk, [])) < 3:
                 has_drop = any(a["client"]["lost"] > 0 for a in by_r[rk])
-                ov_info[key] = (rk / 1000.0, has_drop)
+                has_wcap_only = any(
+                    a["client"]["lost"] == 0 and a["client"].get("window_cap_hits", 0) > 0
+                    for a in by_r[rk]
+                )
+                ov_info[key] = (rk / 1000.0, has_drop, has_wcap_only)
                 break
-
     return curves, w1, ov_info
 
 
@@ -146,23 +149,29 @@ def main():
         ax1.plot([w1_x, xs[0]], [w1_y, ys[0]], color=col, linewidth=1.2, linestyle=":", alpha=0.65, zorder=2)
         ax1.plot(xs, ys, marker=mk, markersize=7.0, linewidth=2.5, color=col, label=label, zorder=4)
 
-    sdp_ov_64, sdp_drop_64 = ov_info[("part2b_get64_zipf", "sdp_fair")]
-    ds_ov_64, ds_drop_64 = ov_info[("part2b_get64_zipf", "direct_safe")]
+    def ov_desc(has_drop: bool, has_wcap_only: bool) -> str:
+        if has_drop and has_wcap_only:
+            return "队列溢出/触窗过载"
+        if has_drop:
+            return "队列溢出丢包"
+        return "触并发上限（零丢包）"
+
+    sdp_ov_64, sdp_drop_64, sdp_wcap_64 = ov_info[("part2b_get64_zipf", "sdp_fair")]
+    ds_ov_64, ds_drop_64, ds_wcap_64 = ov_info[("part2b_get64_zipf", "direct_safe")]
     ax1.axvline(sdp_ov_64, color="#dc2626", linestyle="--", linewidth=1.5, alpha=0.85, zorder=1)
     ax1.text(
         sdp_ov_64 - 0.16, 28.6,
-        f"SDP 在 {f1(sdp_ov_64)}M\n{'队列溢出丢包' if sdp_drop_64 else '达并发上限'}",
+        f"SDP 在 {f1(sdp_ov_64)}M\n{ov_desc(sdp_drop_64, sdp_wcap_64)}",
         ha="right", va="top", fontsize=9.2, fontweight="bold", color="#b91c1c",
         bbox=dict(boxstyle="round,pad=0.30", facecolor="#fef2f2", edgecolor="#fca5a5", alpha=0.96),
     )
     ax1.axvline(ds_ov_64, color="#1a7f37", linestyle="--", linewidth=1.4, alpha=0.78, zorder=1)
     ax1.text(
         ds_ov_64 - 0.16, 22.8,
-        f"DirectPush 在 {f1(ds_ov_64)}M\n{'丢包' if ds_drop_64 else '触并发上限（零丢包）'}",
+        f"DirectPush 在 {f1(ds_ov_64)}M\n{ov_desc(ds_drop_64, ds_wcap_64)}",
         ha="right", va="top", fontsize=8.9, fontweight="bold", color="#116329",
         bbox=dict(boxstyle="round,pad=0.30", facecolor="#f0fdf4", edgecolor="#86efac", alpha=0.96),
     )
-
     x_cmp = g64_sdp_max / 1000.0
     ax1.annotate(
         "", xy=(x_cmp, g64_ds_p99 + 0.55), xytext=(x_cmp, g64_sdp_p99 - 0.55),
@@ -210,12 +219,12 @@ def main():
         xs, ys = full_n3_xy(curves[("part2b_mix_zipf", pol)], "tot_p99_us", n_reps)
         ax2.plot(xs, ys, linestyle="--", linewidth=1.7, color=col, alpha=0.78, label=lbl_dash, zorder=3)
 
-    sdp_ov_m, sdp_drop_m = ov_info[("part2b_mix_zipf", "sdp_fair")]
-    ds_ov_m, ds_drop_m = ov_info[("part2b_mix_zipf", "direct_safe")]
+    sdp_ov_m, sdp_drop_m, sdp_wcap_m = ov_info[("part2b_mix_zipf", "sdp_fair")]
+    ds_ov_m, ds_drop_m, ds_wcap_m = ov_info[("part2b_mix_zipf", "direct_safe")]
     ax2.axvline(sdp_ov_m, color="#dc2626", linestyle="--", linewidth=1.5, alpha=0.85, zorder=1)
     ax2.text(
         sdp_ov_m - 0.08, 46.2,
-        f"SDP 在 {f1(sdp_ov_m)}M\n{'队列溢出丢包' if sdp_drop_m else '达并发上限'}",
+        f"SDP 在 {f1(sdp_ov_m)}M\n{ov_desc(sdp_drop_m, sdp_wcap_m)}",
         ha="right", va="top", fontsize=9.1, fontweight="bold", color="#b91c1c",
         bbox=dict(boxstyle="round,pad=0.28", facecolor="#fef2f2", edgecolor="#fca5a5", alpha=0.96),
         zorder=6,
@@ -223,12 +232,11 @@ def main():
     ax2.axvline(ds_ov_m, color="#1a7f37", linestyle="--", linewidth=1.4, alpha=0.78, zorder=1)
     ax2.text(
         ds_ov_m - 0.08, 46.2,
-        f"DirectPush 在 {f1(ds_ov_m)}M\n{'丢包' if ds_drop_m else '触并发上限（零丢包）'}",
+        f"DirectPush 在 {f1(ds_ov_m)}M\n{ov_desc(ds_drop_m, ds_wcap_m)}",
         ha="right", va="top", fontsize=8.8, fontweight="bold", color="#116329",
         bbox=dict(boxstyle="round,pad=0.28", facecolor="#f0fdf4", edgecolor="#86efac", alpha=0.96),
         zorder=6,
     )
-
     xm_cmp = mix_sdp_max / 1000.0
     ax2.annotate(
         "", xy=(xm_cmp, mix_ds_sm + 0.65), xytext=(xm_cmp, mix_sdp_sm - 0.65),
@@ -273,8 +281,8 @@ def main():
     fig.text(
         0.5, 0.015,
         f"仅绘全部 {n_reps}/{n_reps} 轮零错包通过点的中位数（零协调省略，空心点为空载单请求基线）；过载虚线由原始重试日志标出（DirectPush 全程零非物理错包丢包）。\n"
-        f"SDP 混合负载中小请求与整体 p99 几乎重合（大包阻塞队列）；DirectPush 小请求直推绕开大包 DMA。均匀键趋势一致（{f1(mu_sdp_max / 1000.0)}M 小请求降 {f1(abs(mu_sm_drop))}%）。",
-        ha="center", va="bottom", fontsize=8.7, color="#475569",
+        f"SDP 混合负载受 {sdp_queues}Q×256 巨帧共享队列限制（小请求被大包阻塞）；DirectPush 大小包分离直推（{sdp_queues}Q×1024 小包槽）绕开大包 DMA。均匀键趋势一致（{f1(mu_sdp_max / 1000.0)}M 小请求降 {f1(abs(mu_sm_drop))}%）。",
+        ha="center", va="bottom", fontsize=8.5, color="#475569",
     )
     fig.tight_layout(rect=[0.0, 0.075, 1.0, 0.925])
 

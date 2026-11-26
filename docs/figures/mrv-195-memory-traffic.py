@@ -1,6 +1,6 @@
-"""MRV-195 Figure 3: Card-to-host PCIe data movement (pure network runs without
-background work) and real host DDR5 memory bandwidth cliff when large-reply
-staging spills out of the CPU last-level cache.
+"""MRV-195 Figure 3: Bidirectional PCIe data movement (inbound DMA/snoop + host
+outbound MMIO/MOVDIR64B writes on pure network runs without app-work) and real
+host DDR5 memory bandwidth (L3-hot vs 128 MiB pool spill).
 
 Reads raw verified n=3 runs directly from `logs/mrv195-2026-11-25/runs.jsonl`.
 All numbers shown in the figure are computed dynamically from the raw jsonl.
@@ -72,11 +72,11 @@ def load_data():
     return aw0, sat, p128
 
 
-def inb_wr_rd_bytes(rs):
+def pcie_bytes(rs):
     wr = med([r["host"]["pmu"]["iio1_inb_wr"] * 64.0 / r["host"]["rx_rpcs"] for r in rs])
     rd = med([r["host"]["pmu"]["iio1_inb_rd"] * 64.0 / r["host"]["rx_rpcs"] for r in rs])
-    return wr, rd
-
+    cw = med([r["host"]["pmu"]["iio1_cpu_wr"] * 64.0 / r["host"]["rx_rpcs"] for r in rs])
+    return wr, rd, cw
 
 def main():
     aw0, sat, p128 = load_data()
@@ -97,17 +97,20 @@ def main():
         r_txt = f"{rk_m:.0f}M" if abs(rk_m - round(rk_m)) < 0.05 else f"{rk_m:.1f}M"
         wls_a.append((wl, kd, f"{base}\n同速 @{r_txt}"))
 
-    w4_s, r4_s = inb_wr_rd_bytes(aw0[("sdp_fair", "get4096", "zipf")])
-    w4_d, r4_d = inb_wr_rd_bytes(aw0[("direct_safe", "get4096", "zipf")])
-    tot4_s, tot4_d = w4_s + r4_s, w4_d + r4_d
-    diff4_pct = (tot4_d - tot4_s) / tot4_s * 100.0
+    w4_s, r4_s, c4_s = pcie_bytes(aw0[("sdp_fair", "get4096", "zipf")])
+    w4_d, r4_d, c4_d = pcie_bytes(aw0[("direct_safe", "get4096", "zipf")])
+    inb4_s, inb4_d = w4_s + r4_s, w4_d + r4_d
+    bi4_s, bi4_d = inb4_s + c4_s, inb4_d + c4_d
+    inb4_diff_pct = (inb4_d - inb4_s) / inb4_s * 100.0
+    bi4_diff_pct = (bi4_d - bi4_s) / bi4_s * 100.0
 
-    small_cuts = []
+    small_inb_cuts = []
+    small_bi_cuts = []
     for wl in ("get64", "get256"):
-        ws, rs_ = inb_wr_rd_bytes(aw0[("sdp_fair", wl, "zipf")])
-        wd, rd_ = inb_wr_rd_bytes(aw0[("direct_safe", wl, "zipf")])
-        small_cuts.append((ws + rs_ - (wd + rd_)) / (ws + rs_) * 100.0)
-
+        ws, rs_, cs = pcie_bytes(aw0[("sdp_fair", wl, "zipf")])
+        wd, rd_, cd = pcie_bytes(aw0[("direct_safe", wl, "zipf")])
+        small_inb_cuts.append((ws + rs_ - (wd + rd_)) / (ws + rs_) * 100.0)
+        small_bi_cuts.append((ws + rs_ + cs - (wd + rd_ + cd)) / (ws + rs_ + cs) * 100.0)
     wls_b = [
         ("get1024", "zipf", "1 KiB 读（热点）"),
         ("get4096", "zipf", "4 KiB 读（热点）"),
@@ -136,55 +139,77 @@ def main():
     hot_all_lo = min(dram_sdp_vals + dram_hot_vals)
     hot_all_hi = max(dram_sdp_vals + dram_hot_vals)
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15.6, 6.2))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15.8, 6.4))
 
-    # ==== Panel A: Card-to-host inbound PCIe bytes/req (stacked write + read) ====
+    # ==== Panel A: Bidirectional PCIe bytes/req (inbound DMA write/read + host outbound write) ====
     ax1.grid(axis="y", visible=False)
     ax1.grid(axis="x", alpha=0.28)
     y_a = np.arange(len(wls_a))
-    bh = 0.34
+    bh = 0.33
 
-    sdp_wr, sdp_rd, ds_wr, ds_rd = [], [], [], []
+    sdp_wr, sdp_rd, sdp_cw = [], [], []
+    ds_wr, ds_rd, ds_cw = [], [], []
     for wl, kd, _ in wls_a:
         assert len(aw0[("sdp_fair", wl, kd)]) == n_reps
         assert len(aw0[("direct_safe", wl, kd)]) == n_reps
-        ws, rs_ = inb_wr_rd_bytes(aw0[("sdp_fair", wl, kd)])
-        wd, rd_ = inb_wr_rd_bytes(aw0[("direct_safe", wl, kd)])
+        ws, rs_, cs = pcie_bytes(aw0[("sdp_fair", wl, kd)])
+        wd, rd_, cd = pcie_bytes(aw0[("direct_safe", wl, kd)])
         sdp_wr.append(ws)
         sdp_rd.append(rs_)
+        sdp_cw.append(cs)
         ds_wr.append(wd)
         ds_rd.append(rd_)
+        ds_cw.append(cd)
 
-    ax1.barh(y_a - bh / 2 - 0.02, sdp_wr, height=bh, color="#94a3b8", label="SDP：网卡写入主机", zorder=3)
-    ax1.barh(y_a - bh / 2 - 0.02, sdp_rd, left=sdp_wr, height=bh, color="#475569", label="SDP：网卡回读主机", zorder=3)
-    ax1.barh(y_a + bh / 2 + 0.02, ds_wr, height=bh, color="#86efac", label="DirectPush：网卡写入主机", zorder=3)
-    ax1.barh(y_a + bh / 2 + 0.02, ds_rd, left=ds_wr, height=bh, color="#1a7f37", label="DirectPush：网卡回读主机", zorder=3)
+    sdp_inb = [w + r for w, r in zip(sdp_wr, sdp_rd)]
+    ds_inb = [w + r for w, r in zip(ds_wr, ds_rd)]
+    y_sdp = y_a - bh / 2 - 0.025
+    y_ds = y_a + bh / 2 + 0.025
 
-    max_xa = max(w + r for w, r in zip(sdp_wr, sdp_rd))
+    ax1.barh(y_sdp, sdp_wr, height=bh, color="#94a3b8", label="SDP：网卡入向写主机", zorder=3)
+    ax1.barh(y_sdp, sdp_rd, left=sdp_wr, height=bh, color="#475569", label="SDP：网卡入向回读主机", zorder=3)
+    ax1.barh(y_sdp, sdp_cw, left=sdp_inb, height=bh, color="#f59e0b", edgecolor="white", linewidth=0.6, zorder=3)
+
+    ax1.barh(y_ds, ds_wr, height=bh, color="#86efac", label="DirectPush：网卡入向写主机", zorder=3)
+    ax1.barh(y_ds, ds_rd, left=ds_wr, height=bh, color="#1a7f37", label="DirectPush：网卡入向回读主机", zorder=3)
+    ax1.barh(
+        y_ds, ds_cw, left=ds_inb, height=bh, color="#f59e0b", edgecolor="white", linewidth=0.6,
+        label="主机出向写网卡（直推 / 门铃）", zorder=3,
+    )
+
+    max_xa = max(inb + cw for inb, cw in zip(sdp_inb, sdp_cw))
     for i in range(len(wls_a)):
-        tot_s = sdp_wr[i] + sdp_rd[i]
-        tot_d = ds_wr[i] + ds_rd[i]
-        diff = (tot_d - tot_s) / tot_s * 100.0
-        sign = "+" if diff > 0 else ""
-        ax1.text(tot_s + 24, y_a[i] - bh / 2 - 0.02, f"{r_half_up(tot_s)} B", va="center", ha="left", fontsize=9.2, color="#475569")
-        extra = "（回包网卡零回读）" if ds_rd[i] < 1.0 else ""
+        inb_s = sdp_inb[i]
+        inb_d = ds_inb[i]
+        bi_s = inb_s + sdp_cw[i]
+        bi_d = inb_d + ds_cw[i]
+        bi_diff = (bi_d - bi_s) / bi_s * 100.0
+        inb_diff = (inb_d - inb_s) / inb_s * 100.0
         ax1.text(
-            tot_d + 24, y_a[i] + bh / 2 + 0.02,
-            f"{r_half_up(tot_d)} B  ({sign}{r_half_up(diff)}%){extra}",
-            va="center", ha="left", fontsize=9.5, fontweight="bold", color="#116329",
+            bi_s + 24, y_sdp[i],
+            f"{r_half_up(bi_s)} B（入向 {r_half_up(inb_s)}）",
+            va="center", ha="left", fontsize=8.8, color="#475569",
+        )
+        if ds_rd[i] < 1.0:
+            ds_lbl = f"{r_half_up(bi_d)} B ({f1(bi_diff)}%)\n入向 {r_half_up(inb_d)} B ({r_half_up(inb_diff)}%，零回读)"
+        else:
+            ds_lbl = f"{r_half_up(bi_d)} B ({f1(bi_diff)}%)\n入向 {r_half_up(inb_d)} B ({r_half_up(inb_diff)}%)"
+        ax1.text(
+            bi_d + 24, y_ds[i] + 0.02,
+            ds_lbl,
+            va="center", ha="left", fontsize=8.8, fontweight="bold", color="#116329", linespacing=1.18,
         )
 
-    ax1.set_xlim(0, max_xa * 1.48)
+    ax1.set_xlim(0, max_xa * 1.56)
     ax1.set_yticks(y_a)
     ax1.set_yticklabels([w[2] for w in wls_a], fontsize=10.2, fontweight="bold")
     ax1.invert_yaxis()
-    ax1.set_xlabel("网卡跨 PCIe 读写主机流量（字节/请求，越短越好）", fontsize=10.4, labelpad=8)
+    ax1.set_xlabel("双向 PCIe 跨线流量（入向 DMA + 主机出向写，字节/请求，越短越好）", fontsize=10.0, labelpad=8)
     ax1.set_title(
-        f"A. 网卡跨 PCIe 交互总量（驻留缓存）：小请求降 {r_half_up(min(small_cuts))}%–{r_half_up(max(small_cuts))}%",
-        fontsize=11.2, fontweight="bold", pad=12,
+        f"A. 双向 PCIe 流量：小请求双向降 {f1(min(small_bi_cuts))}%–{f1(max(small_bi_cuts))}%（入向监听降 {r_half_up(min(small_inb_cuts))}%–{r_half_up(max(small_inb_cuts))}%）",
+        fontsize=10.6, fontweight="bold", pad=12,
     )
-    ax1.legend(loc="upper right", frameon=True, facecolor="white", edgecolor="#cbd5e1", framealpha=0.96, fontsize=8.9)
-
+    ax1.legend(loc="upper right", frameon=True, facecolor="white", edgecolor="#cbd5e1", framealpha=0.96, fontsize=8.6)
     # ==== Panel B: Real host DDR5 bandwidth (L3-hot vs 128 MiB pool spill) ====
     ax2.grid(axis="y", visible=False)
     ax2.grid(axis="x", alpha=0.28)
@@ -226,17 +251,16 @@ def main():
     )
 
     fig.suptitle(
-        f"MRV-195 主机交互与主存带宽：小请求免去网卡回读降 {r_half_up(min(small_cuts))}%–{r_half_up(max(small_cuts))}%，大池溢出则主存流量暴涨 {r_half_up(min(bw_ratios))}–{r_half_up(max(bw_ratios))}×",
-        fontsize=12.6, fontweight="bold", y=0.97,
+        f"MRV-195 双向 PCIe 流量与主存带宽：小请求双向降 {f1(min(small_bi_cuts))}%–{f1(max(small_bi_cuts))}%（入向降 {r_half_up(min(small_inb_cuts))}%–{r_half_up(max(small_inb_cuts))}%），大池溢出主存暴涨 {r_half_up(min(bw_ratios))}–{r_half_up(max(bw_ratios))}×",
+        fontsize=12.1, fontweight="bold", y=0.97,
     )
     fig.text(
         0.5, 0.015,
-        f"全部取纯网络无背景计算轮次（{n_reps} 轮交错中位数）。左图网卡跨 PCIe 读写由主机末级缓存承接（4 KiB 读两路均走 DMA：{r_half_up(tot4_d)} vs {r_half_up(tot4_s)} B/请求，{f1(diff4_pct)}%）；\n"
-        f"右图实测 DDR5 带宽：热池驻留缓存时两路均仅 {hot_all_lo:.2f}–{hot_all_hi:.2f} GB/s 背景流量，{big_pool_mib} MiB 大池溢出后暴涨 {r_half_up(min(bw_ratios))}–{r_half_up(max(bw_ratios))}×、单核吞吐跌 {r_half_up(abs(max(tp_drops)))}%–{r_half_up(abs(min(tp_drops)))}%。",
-        ha="center", va="bottom", fontsize=8.7, color="#475569",
+        f"全部取纯网络无背景计算轮次（{n_reps} 轮交错中位数）。左图补齐主机出向写，区分双向总跨线与入向 DMA/缓存监听（64/256 B 消除 100% 非投递回读往返；4 KiB 读双向 {r_half_up(bi4_d)} vs {r_half_up(bi4_s)} B，{f1(bi4_diff_pct)}%，入向 {f1(inb4_diff_pct)}%）；\n"
+        f"右图实测 DDR5 带宽：热池驻留缓存时两路均仅 {hot_all_lo:.2f}–{hot_all_hi:.2f} GB/s；DirectPush 大值发送池扩至 {big_pool_mib} MiB 溢出缓存后暴涨 {r_half_up(min(bw_ratios))}–{r_half_up(max(bw_ratios))}×、吞吐跌 {r_half_up(abs(max(tp_drops)))}%–{r_half_up(abs(min(tp_drops)))}%（≤ 256 B 零发送池不受影响）。",
+        ha="center", va="bottom", fontsize=8.4, color="#475569",
     )
     fig.tight_layout(rect=[0.0, 0.075, 1.0, 0.925])
-
     png = mrvplot.HERE / "mrv-195-memory-traffic.png"
     svg = mrvplot.HERE / "mrv-195-memory-traffic.svg"
     fig.savefig(png)
