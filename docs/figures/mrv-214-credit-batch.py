@@ -46,9 +46,9 @@ def main():
     fig.text(
         0.5,
         0.935,
-        "左图：64 B 满载 (4 卡核→1 主核 cpu40, R_eff=256) · 右图：1500 B (1C→1H) B ≤ R_eff/2 饥饿阈值 · n=3 中位数(min–max，64 B 无信用对照 n=5)",
+        "左图：64 B 满载 (4C→1H cpu40, R_eff=256, 固定 BURST_N=64 批尾连发 64/B 笔) · 右图：1500 B (1C→1H) B ≤ R_eff/2 · n=3 中位数(无信用 n=5)",
         ha="center",
-        fontsize=9.2,
+        fontsize=8.9,
         color="#444444",
     )
 
@@ -65,6 +65,21 @@ def main():
         wr_m.append(mw); wr_lo.append(lw); wr_hi.append(hw)
         cyc_m.append(statistics.median([x["rates"]["cycles_per_pkt"] for x in rs]))
 
+    def cyc64_parts(cfg):
+        rs = by_cfg[cfg]
+        tot = statistics.median([x["rates"]["cycles_per_pkt"] * 64.0 for x in rs])
+        sb = statistics.median([x["rates"]["cycles_per_pkt"] * 64.0 * x["host_pmu"]["sb_stall_pct"] / 100.0 for x in rs])
+        nsb = statistics.median([x["rates"]["cycles_per_pkt"] * 64.0 * (1.0 - x["host_pmu"]["sb_stall_pct"] / 100.0) for x in rs])
+        return tot, sb, nsb
+
+    tot64, sb64, nsb64 = cyc64_parts("s2a_uc64_4c1h_nofence_b64")
+    tot8, sb8, nsb8 = cyc64_parts("s2a_uc64_4c1h_nofence_b8")
+    nsb_share_pct = (nsb8 - nsb64) / (tot8 - tot64) * 100.0
+    b8_rs = by_cfg["s2a_uc64_4c1h_nofence_b8"]
+    b8_upd = statistics.median([x["card_final"]["credit_updates"] / x["card_final"]["elapsed_s"] / 1e6 for x in b8_rs])
+    b8_wr = statistics.median([x["host_final"]["credit_writes"] / x["host_final"]["elapsed_s"] / 1e6 for x in b8_rs])
+    b8_overwrite_pct = (1.0 - b8_upd / b8_wr) * 100.0
+
     rs_sf = by_cfg["s2a_uc64_4c1h_sfence_b32"]
     sf_rx, sf_lo, sf_hi = stats3(rs_sf, lambda x: x["rates"]["host_rx_mpps"])
     sf_sb = statistics.median([x["host_pmu"]["sb_stall_pct"] for x in rs_sf])
@@ -73,7 +88,6 @@ def main():
     off_rx = statistics.median([x["rates"]["host_rx_mpps"] for x in rs_off])
     off_lost = statistics.median([x["c2h_lost"] for x in rs_off])
     b64_1500_wr = statistics.median([x["host_pmu"]["iio1_cpu_wr_gbps"] for x in by_cfg["s2a_1500b_1c1h_nofence_b64"]])
-
     ax1.axvspan(27, 74, color="#eaf7ee", alpha=0.65, zorder=0)
     l1 = ax1.errorbar(
         bs, rx_m, yerr=[rx_lo, rx_hi], fmt="o-", color="#1f5aa6", linewidth=2.3, markersize=7,
@@ -94,12 +108,11 @@ def main():
     ax1.set_xticks(bs)
     ax1.set_xticklabels([str(b) for b in bs])
     ax1.set_xlim(6.8, 158)
-    ax1.set_ylim(22, 98)
-    ax1.set_xlabel("信用批回粒度 B（每 B 包发 1 笔 64 B MOVDIR64B）", fontsize=10)
+    ax1.set_ylim(16, 99)
+    ax1.set_xlabel("信用批回粒度 B（s2a_uc64 固定 BURST_N=64 批尾连发 64/B 笔 MOVDIR64B）", fontsize=9.4)
     ax1.set_ylabel("主机单核无丢包收包率（Mpps）", fontsize=10, color="#1f5aa6")
     ax1.tick_params(axis="y", labelcolor="#1f5aa6")
-    ax1.set_title("A. 64 B 高频开销：B=32–64 为最优甜点（低 CPU & 低反向 PCIe）", fontsize=10.5, fontweight="bold", pad=8)
-
+    ax1.set_title("A. 64 B (BURST_N=64)：B < 64 同行连发致串行退化，B = 64 峰值", fontsize=10.3, fontweight="bold", pad=8)
     ax1_r = ax1.twinx()
     ax1_r.spines["top"].set_visible(False)
     l3 = ax1_r.errorbar(
@@ -108,31 +121,32 @@ def main():
     )
     ax1_r.set_ylabel("主机→卡反向 PCIe 写带宽（IIO1，Gbps）", fontsize=10, color="#0f766e")
     ax1_r.tick_params(axis="y", labelcolor="#0f766e")
-    ax1_r.set_ylim(0, 4.3)
+    ax1_r.set_ylim(-0.35, 4.35)
     ax1_r.grid(False)
 
     ax1.annotate(
-        f"最优 B=64\n{rx_m[3]:.1f}M ({cyc_m[3]:.1f} cyc/pkt)\n反向 {wr_m[3]:.2f} Gbps",
-        xy=(64, rx_m[3]), xytext=(34, 68.5), fontsize=8.4, fontweight="bold", color="#136f45",
+        f"峰值 B=64（每批仅发 1 笔）\n{rx_m[3]:.1f}M ({cyc_m[3]:.1f} cyc/pkt)\n反向 {wr_m[3]:.2f} Gbps",
+        xy=(64, rx_m[3]), xytext=(28.5, 67.5), fontsize=8.2, fontweight="bold", color="#136f45",
         bbox=dict(boxstyle="round,pad=0.26", fc="white", ec="#136f45", alpha=0.94),
         arrowprops=dict(arrowstyle="->", color="#136f45", lw=1.1),
     )
     ax1.annotate(
-        f"B=8 过频\n{rx_m[0]:.1f}M ({cyc_m[0]:.1f} cyc/pkt)\n反向 {wr_m[0]:.2f}G",
-        xy=(8, rx_m[0]), xytext=(10.5, 25.5), fontsize=8.2, color="#a61c1c",
+        f"B=8 批尾连发 8 笔同行写\n{rx_m[0]:.1f}M ({cyc_m[0]:.1f} cyc/pkt, 反向 {wr_m[0]:.2f}G)\n{b8_overwrite_pct:.0f}% 覆写 · ~{nsb_share_pct:.0f}% 为非 SB 串行",
+        xy=(8, rx_m[0]), xytext=(10.2, 26.8), fontsize=7.9, color="#a61c1c",
+        bbox=dict(boxstyle="round,pad=0.22", fc="#fff8f8", ec="#dc2626", alpha=0.92),
         arrowprops=dict(arrowstyle="->", color="#a61c1c", lw=1.0),
     )
     ax1.annotate(
         f"B=128=R_eff/2\n卡停顿↑ → {rx_m[4]:.1f}M",
-        xy=(128, rx_m[4]), xytext=(68, 41.0), fontsize=8.2, color="#9a3412",
+        xy=(128, rx_m[4]), xytext=(68, 43.0), fontsize=8.2, color="#9a3412",
         arrowprops=dict(arrowstyle="->", color="#9a3412", lw=1.0),
     )
     ax1.text(
-        150, 24.2,
-        f"注：1500 B 线速下 B=64 反向写仅 {b64_1500_wr:.2f} Gbps",
-        ha="right", fontsize=8.0, color="#444444",
+        150, 18.6,
+        f"生产规则：每批 rx_burst 至多发 1 笔最新 taken（1500 B B=64 反向写 {b64_1500_wr:.2f}G）",
+        ha="right", fontsize=7.8, fontweight="bold", color="#136f45",
+        bbox=dict(boxstyle="round,pad=0.22", fc="#eaf7ee", ec="#15803d", alpha=0.92),
     )
-
     handles = [l1, l2, l3]
     labels = [h.get_label() for h in handles]
     ax1.legend(handles, labels, loc="upper left", bbox_to_anchor=(0.01, 0.99), fontsize=7.9, framealpha=0.93)

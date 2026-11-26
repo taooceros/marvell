@@ -59,6 +59,9 @@ def main():
         statistics.median([x["c2h_lost"] for x in by_cfg[f"s3_64b_c{nc}_h{min(nc,4)}_off"]])
         for nc in cores
     ]
+    fifo_drop_c8 = statistics.median([x["rates"]["steady_fifo_drops"] for x in by_cfg["s3_64b_c8_h4_credit"]])
+    s2_b32 = statistics.median([x["rates"]["host_rx_mpps"] for x in by_cfg["s2a_uc64_4c1h_nofence_b32"]])
+    s2_b64 = statistics.median([x["rates"]["host_rx_mpps"] for x in by_cfg["s2a_uc64_4c1h_nofence_b64"]])
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13.6, 5.4))
     fig.suptitle(
@@ -70,9 +73,9 @@ def main():
     fig.text(
         0.5,
         0.935,
-        "CN106 Neoverse-N2 2.0 GHz (1/2/4/8 核) ⇄ saturn 3.9 GHz (rx_desc=512, R_eff=256/Q, B=32 无 SFENCE) · n=3 中位数(min–max，64 B 1 核无信用 n=5)",
+        "CN106 2.0 GHz (1/2/4/8 卡核) ⇄ saturn 3.9 GHz (ism_enable=0, rx_desc=512, R_eff=256/Q, B=32 无 SFENCE；254 B 配 hc=1–2、64 B 配 hc=1–4 主核)",
         ha="center",
-        fontsize=9.2,
+        fontsize=8.9,
         color="#444444",
     )
 
@@ -82,21 +85,20 @@ def main():
 
     ax1.errorbar(
         x_pos, g1500_c, yerr=[lo1500, hi1500], fmt="s-", color="#15803d", linewidth=2.3, markersize=7,
-        capsize=3.5, label="1500 B UDP (1 主核, 有信用 0 丢包)", zorder=4,
+        capsize=3.5, label="1500 B UDP (hc=1 单主核, C2H 0 丢包)", zorder=4,
     )
     ax1.errorbar(
         x_pos, g254_c, yerr=[lo254, hi254], fmt="o-", color="#1f5aa6", linewidth=2.3, markersize=7,
-        capsize=3.5, label="254 B UD (1–2 主核, 有信用 0 丢包)", zorder=4,
+        capsize=3.5, label="254 B UD (hc=min(nc,2) 多主核, C2H 0 丢包)", zorder=4,
     )
     ax1.errorbar(
         x_pos, g64_c, yerr=[lo64, hi64], fmt="D-", color="#d97706", linewidth=2.3, markersize=6.8,
-        capsize=3.5, label="64 B UC (1–4 主核, 有信用 0 丢包)", zorder=4,
+        capsize=3.5, label="64 B UC (hc=min(nc,4) 多主核, C2H 0 丢包)", zorder=4,
     )
     ax1.plot(
         x_pos, g64_o, "D--", color="#9ca3af", linewidth=1.5, markersize=5.2,
-        label=f"64 B 无信用对照 (8 核时反跌且静默丢 {lost_o[3]/1e6:.2f}M)", zorder=2,
+        label=f"64 B 无信用对照 (hc=min(nc,4), 8 核 OQ 静默丢 {lost_o[3]/1e6:.2f}M)", zorder=2,
     )
-
     ax1.set_xticks(x_pos)
     ax1.set_xticklabels([f"{c} 核" for c in cores], fontsize=10)
     ax1.set_xlim(-0.35, 3.45)
@@ -112,25 +114,25 @@ def main():
         arrowprops=dict(arrowstyle="->", color="#15803d", lw=1.1),
     )
     ax1.annotate(
-        f"4 核即达 {g254_c[2]:.1f}G\n({p254_c[2]:.2f} Mpps, 0 丢包)",
-        xy=(2, g254_c[2]), xytext=(1.75, 76), fontsize=8.6, fontweight="bold", color="#1f5aa6",
+        f"4 卡核 + hc=2 主核\n达 {g254_c[2]:.1f}G ({p254_c[2]:.2f}M, C2H 0 丢)",
+        xy=(2, g254_c[2]), xytext=(1.55, 74), fontsize=8.4, fontweight="bold", color="#1f5aa6",
         bbox=dict(boxstyle="round,pad=0.24", fc="white", ec="#1f5aa6", alpha=0.92),
         arrowprops=dict(arrowstyle="->", color="#1f5aa6", lw=1.1),
     )
     ax1.annotate(
-        f"8 核达 {g64_c[3]:.1f}G\n({p64_c[3]:.1f} Mpps, 0 丢包)",
-        xy=(3, g64_c[3]), xytext=(1.88, 35), fontsize=8.6, fontweight="bold", color="#b45309",
+        f"8 卡核 + hc=4 主核\n达 {g64_c[3]:.1f}G ({p64_c[3]:.1f}M, C2H 0 丢)",
+        xy=(3, g64_c[3]), xytext=(1.72, 34), fontsize=8.4, fontweight="bold", color="#b45309",
         bbox=dict(boxstyle="round,pad=0.24", fc="white", ec="#d97706", alpha=0.92),
         arrowprops=dict(arrowstyle="->", color="#d97706", lw=1.1),
     )
-    ax1.legend(loc="lower right", fontsize=8.0, framealpha=0.92)
+    ax1.legend(loc="lower right", fontsize=7.8, framealpha=0.92)
 
     # ---------------- Panel B: 64 B packet rate & silent drop comparison ----------------
     w = 0.34
     ax2.bar(
         x_pos - w / 2, p64_c, width=w, yerr=[plo_c, phi_c], capsize=3.5,
         color="#1f5aa6", edgecolor="#163e73", linewidth=0.8,
-        label="BAR4 无 SFENCE 信用环（全程 c2h_lost = 0）", zorder=3,
+        label="BAR4 无 SFENCE 信用环（C2H c2h_lost = 0；过载由入口 FIFO 削峰）", zorder=3,
     )
     ax2.bar(
         x_pos + w / 2, p64_o, width=w, yerr=[plo_o, phi_o], capsize=3.5,
@@ -153,19 +155,24 @@ def main():
                  fontsize=7.9, color=col, fontweight=fw)
 
     ax2.annotate(
-        f"8 核过载反转：\n信用环反高 +{p64_c[3]-p64_o[3]:.1f}M (+{(p64_c[3]/p64_o[3]-1)*100:.1f}%)\n且 0 丢包 vs 静默丢 {lost_o[3]/1e6:.2f}M!",
-        xy=(3 - w / 2, p64_c[3] + 1.0), xytext=(0.05, 76), fontsize=8.4, fontweight="bold", color="#136f45",
-        bbox=dict(boxstyle="round,pad=0.3", fc="#eaf7ee", ec="#15803d", alpha=0.94),
+        f"8 卡核 + hc=4 主核过载反转：\n信用环反高 +{p64_c[3]-p64_o[3]:.1f}M (+{(p64_c[3]/p64_o[3]-1)*100:.1f}%)\nC2H c2h_lost = 0（入口 FIFO 削峰 {fifo_drop_c8/1e6:.2f}M）\nvs 无信用 OQ 静默丢 {lost_o[3]/1e6:.2f}M!",
+        xy=(3 - w / 2, p64_c[3] + 1.0), xytext=(-0.32, 71), fontsize=8.0, fontweight="bold", color="#136f45",
+        bbox=dict(boxstyle="round,pad=0.28", fc="#eaf7ee", ec="#15803d", alpha=0.94),
         arrowprops=dict(arrowstyle="->", color="#15803d", lw=1.2, connectionstyle="arc3,rad=-0.16"),
+    )
+    ax2.text(
+        -0.32, 108.5,
+        f"注：单主核 64 B 无丢包上限为 {s2_b32:.1f}–{s2_b64:.1f} Mpps（扫描二）",
+        fontsize=7.9, color="#444444",
     )
 
     ax2.set_xticks(x_pos)
-    ax2.set_xticklabels([f"{c} 卡核\n({min(c,4)} 主核)" for c in cores], fontsize=9.5)
-    ax2.set_ylim(0, 128)
-    ax2.set_xlabel("CN106 卡核数 / saturn 主机核数配置（64 B UC 线速压力 148.8 Mpps）", fontsize=9.8)
+    ax2.set_xticklabels([f"{c} 卡核\n(hc={min(c,4)} 主核)" for c in cores], fontsize=9.2)
+    ax2.set_ylim(0, 138)
+    ax2.set_xlabel("CN106 卡核数 / saturn 多主核配置（64 B UC 线速压力 148.8 Mpps）", fontsize=9.8)
     ax2.set_ylabel("主机有效收包率（Mpps）", fontsize=10)
-    ax2.set_title("B. 64 B 极限包率：4 核近似线性扩展，8 核有信用反超无信用", fontsize=10.5, fontweight="bold", pad=8)
-    ax2.legend(loc="upper left", fontsize=8.4, framealpha=0.92)
+    ax2.set_title("B. 64 B 极限包率（多主核）：4 核近线性，8 核有信用反超无信用", fontsize=10.3, fontweight="bold", pad=8)
+    ax2.legend(loc="upper left", fontsize=8.0, framealpha=0.92)
 
     fig.tight_layout(rect=[0, 0, 1, 0.91])
     out = mrvplot.save(fig, "mrv-214-card-core-scaling")

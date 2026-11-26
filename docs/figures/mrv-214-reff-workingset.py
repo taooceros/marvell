@@ -62,6 +62,10 @@ def main():
         m, l, h = stats3(rs, lambda x: x["rates"]["host_wire_gbps"])
         ys.append(m); lo.append(l); hi.append(h)
         stalls.append(statistics.median([x["rates"]["steady_credit_stalls"] for x in rs]))
+    rtts = [
+        r / statistics.median([x["rates"]["host_rx_mpps"] for x in by_cfg[f"s1a_1500b_r{r}_oq512_b8"]])
+        for r in [16, 24, 32, 48, 64]
+    ]
 
     rs_oq256 = by_cfg["s1a_1500b_r128_oq256_b8"]
     m256, l256, h256 = stats3(rs_oq256, lambda x: x["rates"]["host_wire_gbps"])
@@ -99,8 +103,8 @@ def main():
         arrowprops=dict(arrowstyle="->", color="#a61c1c", lw=1.0),
     )
     ax1.annotate(
-        f"满速拐点 R_eff ≥ 96\n({ys[5]:.1f} Gbps，停顿趋零)",
-        xy=(96, ys[5]), xytext=(108, 66), fontsize=9.0, fontweight="bold", color="#136f45",
+        f"满速拐点 R_eff ≥ 96\n({ys[5]:.1f} Gbps，停顿趋零)\nism_enable=0 环路 RTT≈{min(rtts):.1f}–{max(rtts):.1f} µs",
+        xy=(96, ys[5]), xytext=(86, 58), fontsize=8.6, fontweight="bold", color="#136f45",
         bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="#136f45", alpha=0.92),
         arrowprops=dict(arrowstyle="->", color="#136f45", lw=1.2),
     )
@@ -153,11 +157,11 @@ def main():
 
     ax2.errorbar(
         x_e, y_e, yerr=[lo_e, hi_e], fmt="^-", color="#1f5aa6", linewidth=2.0, markersize=6,
-        capsize=3, label=f"1Q 仅读头尾 (touch=0): 12–16 MiB 起缓增 (32M 仍 {dd_e[-1]:.1f}%)", zorder=4,
+        capsize=3, label=f"1Q 仅读头尾 (touch=0): 12–16M 缓增 (32M {dd_e[-1]:.1f}%)", zorder=4,
     )
     ax2.errorbar(
         x_c, y_c, yerr=[lo_c, hi_c], fmt="o-", color="#d97706", linewidth=2.0, markersize=5.5,
-        capsize=3, label="1Q 全包读 (touch=64): ≤32 MiB 零溢出，过 60 MiB 陡升", zorder=3,
+        capsize=3, label="1Q 全包读 (touch=64): ≤32M 零溢出 (IMC ≤1.3G)", zorder=3,
     )
     ax2.errorbar(
         x_d, y_d, yerr=[lo_d, hi_d], fmt="s--", color="#15803d", linewidth=2.0, markersize=5.5,
@@ -165,7 +169,7 @@ def main():
     )
     ax2.scatter(
         x_p2, y_p2, marker="*", s=190, color="#dc2626", edgecolor="black", linewidth=0.6,
-        label=f"反例(坑点2): R_eff=256 但 128 MiB 大池 ({y_p2[0]:.1f}G)", zorder=5,
+        label=f"反例(坑点2): R_eff=256 + 128M 池 ({y_p2[0]:.1f}G)", zorder=5,
     )
 
     ax2.set_xscale("log", base=2)
@@ -175,32 +179,32 @@ def main():
     ax2.set_ylim(-4, 206)
     ax2.set_xlabel("实测独立 mbuf DMA 工作集（MiB，IovaTracker 去重槽数 × 2 KiB）", fontsize=10)
     ax2.set_ylabel("主机 Socket-1 DRAM 总带宽（IMC 读+写，Gbps）", fontsize=10)
-    ax2.set_title("B. 右边界：仅读头尾 12–16 MiB 缓增，真正陡崖在 ~60 MiB 全 LLC", fontsize=10.5, fontweight="bold", pad=8)
+    ax2.set_title("B. 右边界：仅读头尾 12–16 MiB 缓增，陡崖在 ~60 MiB 空载 LLC", fontsize=10.4, fontweight="bold", pad=8)
 
     ax2.text(12.8, 183, "touch=0 缓增起点\n~12–16 MiB", fontsize=8.1, color="#1f5aa6", fontweight="bold", ha="left")
-    ax2.text(64.0, 183, "Socket-1 全 LLC\n60 MiB 规格", fontsize=8.2, color="#c0392b", fontweight="bold", ha="left")
-    ax2.text(2.8, 160, "实测零溢写区\n(≤10 MiB, DDIO≥99.7%)", fontsize=8.4, color="#136f45", fontweight="bold", ha="center",
-             bbox=dict(boxstyle="round,pad=0.25", fc="white", ec="#136f45", alpha=0.9))
+    ax2.text(64.0, 183, "Socket-1 空载 LLC\n60 MiB 规格", fontsize=8.1, color="#c0392b", fontweight="bold", ha="left")
+    ax2.text(2.6, 165, "实测零溢写区\n(≤10 MiB / 实写 ≤7.5 MiB\nDDIO ≥99.7%)", fontsize=8.0, color="#136f45", fontweight="bold", ha="center",
+             bbox=dict(boxstyle="round,pad=0.24", fc="white", ec="#136f45", alpha=0.9))
 
     ax2.annotate(
-        f"touch=0 12→16→32 MiB 缓增\nIMC写 {wr_e[4]:.1f}→{wr_e[5]:.1f}→{wr_e[6]:.1f}G (仍 {dd_e[-1]:.1f}% DDIO)",
-        xy=(32, y_e[-1]), xytext=(5.5, 41), fontsize=8.0, color="#1f5aa6",
+        f"touch=0 12→16→32 MiB 缓增\nIMC写 {wr_e[4]:.1f}→{wr_e[5]:.1f}→{wr_e[6]:.1f}G\n(空载 LLC 预取提升 → 仍 {dd_e[-1]:.1f}%)",
+        xy=(32, y_e[-1]), xytext=(3.8, 36), fontsize=7.9, color="#1f5aa6",
         bbox=dict(boxstyle="round,pad=0.22", fc="white", ec="#1f5aa6", alpha=0.9),
         arrowprops=dict(arrowstyle="->", color="#1f5aa6", lw=1.0),
     )
     ax2.annotate(
-        f"8Q 128 MiB\n{y_d[-1]:.1f}G (DDIO {dd_d[-1]:.1f}%)",
-        xy=(128, y_d[-1]), xytext=(16.5, 146), fontsize=8.5, fontweight="bold", color="#15803d",
+        f"8Q 128 MiB\n{y_d[-1]:.1f}G 中位数 (DDIO {dd_d[-1]:.1f}%)",
+        xy=(128, y_d[-1]), xytext=(15.5, 146), fontsize=8.3, fontweight="bold", color="#15803d",
         bbox=dict(boxstyle="round,pad=0.24", fc="white", ec="#15803d", alpha=0.92),
         arrowprops=dict(arrowstyle="->", color="#15803d", lw=1.1),
     )
     ax2.annotate(
         f"1Q / 坑点2 (128 MiB)\n{y_c[-1]:.1f}G / {y_p2[0]:.1f}G\n(DDIO {dd_c[-1]:.1f}% / {dd_p2[0]:.1f}%)",
-        xy=(128, y_p2[0]), xytext=(14.0, 88), fontsize=8.2, color="#b91c1c",
+        xy=(128, y_p2[0]), xytext=(17.5, 86), fontsize=8.1, color="#b91c1c",
         bbox=dict(boxstyle="round,pad=0.25", fc="#fff5f5", ec="#dc2626", alpha=0.92),
         arrowprops=dict(arrowstyle="->", color="#dc2626", lw=1.0),
     )
-    ax2.legend(loc="upper left", bbox_to_anchor=(0.01, 0.72), fontsize=7.6, framealpha=0.92)
+    ax2.legend(loc="upper left", bbox_to_anchor=(0.01, 0.74), fontsize=7.2, framealpha=0.92)
 
     fig.tight_layout(rect=[0, 0, 1, 0.91])
     out = mrvplot.save(fig, "mrv-214-reff-workingset")
