@@ -104,7 +104,7 @@ def main():
     ax2.set_xticklabels([s[1] for s in imc_specs], fontsize=9.2)
     ax2.set_ylim(0, imc_max * 1.26)
     ax2.set_ylabel("Socket-1 IMC 内存读写带宽（GB/s）", fontsize=9.8)
-    ax2.set_title("(b) 主机 DDR5 带宽降 64%–83%", fontsize=10.5, fontweight="bold", pad=8)
+    ax2.set_title("(b) 所选高压工况主机 DDR5 带宽降 64%–83%", fontsize=10.2, fontweight="bold", pad=8)
 
     # (c) Co-located 32 MiB tenant p99 latency (ns) — includes NFV 1.5M honest caveat!
     ten_specs = [
@@ -153,8 +153,8 @@ def main():
         frameon=True, framealpha=0.95, bbox_to_anchor=(0.5, 0.94),
     )
     fig.suptitle(
-        "紧致热环把主机内存带宽砍掉 64%–83% 并保护 DDIO 与共置租户（三档小环缓存收益相当，唯 CreditSDP 0 丢包）",
-        fontsize=11.2, fontweight="bold", y=0.99,
+        "紧致热环在所选高压工况把主机内存带宽砍掉 64%–83% 并保护 DDIO 与共置租户（三档小环缓存收益相当，唯 CreditSDP 0 丢包）",
+        fontsize=10.8, fontweight="bold", y=0.99,
     )
     fig.tight_layout(rect=[0, 0, 1, 0.865])
     png = mrvplot.HERE / "mrv-209-ddio-tenant-imc.png"

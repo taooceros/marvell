@@ -1,9 +1,9 @@
-"""MRV-209 Figure 3 (3-second plain-Chinese view, Step 1 symmetric CPU fix):
+"""MRV-209 Figure 3 (3-second plain-Chinese view, Step 3 final independent tau_empty):
 (a) Steady-state open-loop Poisson p99 latency (proving zero idle/steady-state tax)
-(b) 100% symmetric host cpu40 active time per request derived from wall time and
-    empty-poll rate regression: active_ns/req = (dt_s - empty_polls * tau_empty) / rx_rpcs
-    (R^2 = 0.990-0.99998; includes port.rx equally across all 4 policies, avoiding the
-    mrv209_host.rs t_busy0 instrumentation asymmetry between CeioStyle and single-path arms).
+(b) 100% symmetric host cpu40 active time per request using ONLY per-(policy, app)
+    independent tau_empty regression: active_ns/req = (dt_s - empty_polls * tau_empty) / rx_rpcs
+    (R^2 = 0.990-0.99998; includes port.rx equally and cancels CeioStyle's empty-poll rdtsc()
+    overhead of +2.7-3.3 ns/poll), plus MC 1.4M true idle wall-clock margin annotation.
 
 100% dynamically computed from `logs/mrv209-2026-11-26/runs.jsonl`.
 """
@@ -135,11 +135,36 @@ def main():
             x[i], ymax_i + bmax * 0.085, lbl,
             ha="center", va="bottom", fontsize=8.0, fontweight="bold", color="#1a7f37", linespacing=1.1,
         )
+    # Annotate MC 1.4M true idle wall-clock margin (independent tau_empty, deducting 88.0 vs 85.3 ns)
+    k_mc14 = ("sec4_poisson_and_flows", "etc_mix", "poisson", 1400, 0, 256)
+    tau_cs_s = tau_s[("credit_sdp", "memcached")]
+    tau_ce_s = tau_s[("ceio_style", "memcached")]
+    tau_ls_s = tau_s[("large_sdp", "memcached")]
+    idle_cs = med([r["host"]["empty_polls"] * tau_cs_s / r["host"]["dt_s"] for r in cells[k_mc14 + ("credit_sdp",)]]) * 100.0
+    idle_ce = med([r["host"]["empty_polls"] * tau_ce_s / r["host"]["dt_s"] for r in cells[k_mc14 + ("ceio_style",)]]) * 100.0
+    idle_ls = med([r["host"]["empty_polls"] * tau_ls_s / r["host"]["dt_s"] for r in cells[k_mc14 + ("large_sdp",)]]) * 100.0
+    d_idle_ce = (idle_cs - idle_ce) / idle_ce * 100.0
+    d_idle_ls = (idle_cs - idle_ls) / idle_ls * 100.0
+    ep_cs = med([r["host"]["empty_polls"] / r["host"]["dt_s"] for r in cells[k_mc14 + ("credit_sdp",)]])
+    ep_ls = med([r["host"]["empty_polls"] / r["host"]["dt_s"] for r in cells[k_mc14 + ("large_sdp",)]])
+    d_ep_ls = (ep_cs - ep_ls) / ep_ls * 100.0
+    note_txt = (
+        f"MC 1.4M 真实空闲壁钟余量（独立 τ_empty）：\n"
+        f"vs CEIO：{idle_cs:.1f}% vs {idle_ce:.1f}%（+{d_idle_ce:.1f}%，扣 {tau_ce_s*1e9:.1f} vs {tau_cs_s*1e9:.1f} ns）\n"
+        f"vs Large SDP：{idle_cs:.1f}% vs {idle_ls:.1f}%（+{d_idle_ls:.1f}%；空轮询 +{d_ep_ls:.1f}%）"
+    )
+    ax2.text(
+        0.985, 0.96, note_txt,
+        transform=ax2.transAxes, ha="right", va="top", multialignment="left",
+        fontsize=7.9, color="#0f172a", linespacing=1.35,
+        bbox={"boxstyle": "round,pad=0.45", "facecolor": "#f8fafc", "edgecolor": "#cbd5e1", "alpha": 0.95},
+    )
+
     ax2.set_xticks(x)
     ax2.set_xticklabels([s[1] for s in comp_specs], fontsize=9.4)
-    ax2.set_ylim(0, bmax * 1.30)
-    ax2.set_ylabel("对称口径主机 cpu40 每请求总活跃耗时（ns/req）", fontsize=9.6)
-    ax2.set_title("(b) 对称口径主机 CPU：比大环省 6%–12%、比 CEIO 省 4%–8%", fontsize=10.4, fontweight="bold", pad=9)
+    ax2.set_ylim(0, bmax * 1.32)
+    ax2.set_ylabel("独立 τ_empty 对称口径 cpu40 每请求活跃耗时（ns/req）", fontsize=9.3)
+    ax2.set_title("(b) 独立 τ_empty 对称口径主机 CPU：比大环省 6%–12%、比 CEIO 省 4%–8%", fontsize=10.0, fontweight="bold", pad=9)
 
     handles, labels = ax1.get_legend_handles_labels()
     fig.legend(

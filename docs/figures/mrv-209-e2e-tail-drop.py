@@ -19,7 +19,7 @@ RUNS_PATH = ROOT / "logs/mrv209-2026-11-26/runs.jsonl"
 POLS = [
     ("large_sdp", "Large SDP（2048 环 · 大池）", "#64748b"),
     ("small_sdp_drop", "Small SDP（256 环 · 无卡缓冲）", "#dc2626"),
-    ("ceio_style", "CEIO-style（512 环 · 反应切道）", "#d97706"),
+    ("ceio_style", "CEIO-style（512 环 · 双路径归并）", "#d97706"),
     ("credit_sdp", "CreditSDP 本文（512 环 · 无 SFENCE 信用）", "#1a7f37"),
 ]
 
@@ -122,7 +122,7 @@ def main():
     ]
 
     draw_panel(ax1, cells, mc_specs, "(a) 原版 Memcached 1.6.45：微突发 p99 砍半且 0 丢包", y_headroom=1.28)
-    draw_panel(ax2, cells, nfv_specs, "(b) 有状态 5 元组 NFV：0 丢包且无 CEIO 切道恶化", y_headroom=1.22)
+    draw_panel(ax2, cells, nfv_specs, "(b) 有状态 5 元组 NFV：0 丢包且无 CEIO 归并排队恶化", y_headroom=1.22)
 
     handles, labels = ax1.get_legend_handles_labels()
     fig.legend(
