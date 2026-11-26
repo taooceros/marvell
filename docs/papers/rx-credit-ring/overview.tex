@@ -1,0 +1,29 @@
+\section{\sys{} Overview}\label{sec:overview}
+
+Figure~\ref{fig:arch} contrasts \ceio{}'s dual-path architecture against \sys{}'s single unified credit-gated push path. Instead of routing packets through a match-action table that alternates between host LLC and NIC DRAM rings, \sys{} organizes the receive path around three architectural pillars.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.97\textwidth]{figures/fig2_architecture.png}
+  \caption{Architectural comparison between (a) \ceio{}'s dual-path elastic buffering (per-flow RMT rule switching, separate host fast-path and NIC slow-path rings, phase pauses, 2P1C software merge ring, and host DMA pull) and (b) \sys{}'s single unified credit-gated push path (on-NIC 48~MiB L3 + 6-channel DDR5 elastic FIFO, $O(1)$ local credit gate, a single 256~KiB L3-pinned RX hot ring with a compact $\le$2~MiB DPI DMA extension for large frames, and batched posted MMIO credit returns).}
+  \label{fig:arch}
+\end{figure*}
+
+\paragraph{1. Strictly L3-pinned 256~KiB host hot ring.}
+The host never exposes a 128~MiB receive ring to incoming PCIe writes. Instead, each host receive core exposes only a single \textbf{256~KiB inline hot ring} (4,096 $\times$ 64~B cache-line cells) occupying just 3.1\% of our Xeon server's 8~MiB 2-way DDIO budget. Every pushed cache line hits L3 (100.0\% DDIO), leaving the rest of the shared 60~MiB LLC completely untouched for co-located applications. When carrying large 1--4~KiB Ethernet frames at 100GbE (\S\ref{sec:design-framing}, \S\ref{sec:eval-rx}), the NIC applies the exact same credit-gated push discipline over compact native DMA receive rings ($\le$2~MiB aggregate across four lanes), still well within 2-way DDIO.
+
+\paragraph{2. Single unified credit-gated FIFO push path.}
+Every incoming wire packet enters the NIC's elastic FIFO for its target host core. Before injecting a cell over PCIe into the host hot ring, the NIC checks a single local integer invariant: $\texttt{pushed} - \texttt{taken} < R$, where $R$ is the host ring capacity in cells and \texttt{taken} is cached locally in NIC memory.
+\begin{itemize}
+  \item \emph{Zero backlog (fast regime):} Credits are immediately available. The NIC writes the 64~B cell straight to the host hot ring via an outbound write-combining (WC) posted PCIe write. Checking the NIC-local credit counter adds just 6~ns to an unloaded round trip (\S\ref{sec:eval-burst}).
+  \item \emph{Burst backlog (elastic regime):} When the host core lags behind a microburst and credits reach zero, the NIC stops pushing across PCIe and simply continues appending arriving packets into its own on-NIC FIFO. No RMT rule is modified, no fast path is paused, and no packet is dropped. As soon as the host consumes a batch of cells (default $B = 512$) and advances the NIC's \texttt{TAKEN} register with a single posted MMIO write, the NIC resumes pushing from the head of the exact same FIFO into the exact same host hot ring.
+\end{itemize}
+
+\paragraph{3. Two-tier on-NIC absorption and conservation duality.}
+Unlike passive host rings that either spill host DRAM or drop bursts, \sys{} exploits the active NIC's own memory hierarchy as a two-tier shock absorber:
+\begin{itemize}
+  \item \emph{Moderate bursts ($\le$32~MiB):} Absorbed entirely inside the CN106's 48~MiB on-NIC L3 cache. Neither host DRAM nor NIC DRAM is touched, achieving \emph{true system-wide DRAM elimination} ($\approx$0.015 host lines/pkt and 0.001 NIC lines/pkt).
+  \item \emph{Heavy bursts ($>$48~MiB, tested up to 128~MiB):} Overflow cleanly into the NIC's dedicated 6-channel DDR5. While physical memory bandwidth is conserved across the system ($\sim$1.98 NIC DRAM lines/pkt versus 1.90 host DRAM lines/pkt on a 128~MiB host ring), 100\% of that burst DRAM traffic is offloaded off the host, cutting host IMC traffic by 98.9\% while maintaining a flat 0.905~$\mu$s steady sequential refill hop.
+\end{itemize}
+
+Because all delivery is NIC-pushed through one ordered ring per host core, host software requires no dual-ring polling, no 2P1C software merge ring, and no asynchronous DMA pull API. Section~\ref{sec:design} details the cell format, credit protocol, deadlock-freedom conditions, and large-frame DMA extension that make this unified path safe and fast on unmodified PCIe silicon.

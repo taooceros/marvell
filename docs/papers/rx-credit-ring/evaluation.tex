@@ -1,0 +1,159 @@
+\section{Evaluation}\label{sec:eval}
+
+We evaluate \sys{} on real 100GbE hardware to answer four questions:
+\begin{enumerate}
+  \item What is the zero-backlog overhead of unified credit gating, and how does on-NIC burst absorption behave across the NIC's 48~MiB L3 boundary (\S\ref{sec:eval-burst})?
+  \item Can \sys{} protect a co-located cache-sensitive KV service under 1--128~MiB bursts without packet drops, and what limits multi-core NIC refill throughput (\S\ref{sec:eval-kv})?
+  \item Can a single host core saturate 100GbE RX across small and large frames while keeping DDIO at 100\% (\S\ref{sec:eval-rx})?
+  \item What end-to-end throughput, tail latency, host CPU, PCIe, and DRAM gains does \sys{} deliver on a real dual-host 100GbE in-memory RPC/KV server (\S\ref{sec:eval-rpc})?
+\end{enumerate}
+We then synthesize operational boundaries and architectural lessons in \S\ref{sec:eval-lessons}.
+
+\subsection{Zero-Backlog Cost and Burst Duality}\label{sec:eval-burst}
+
+To isolate the pure effect of receive-buffer placement with zero confounding variables, we hold the direct BAR4/WC hardware path, clocks (1 host core at 3.90~GHz, 1 NIC core at 2.00~GHz), 64~B cell format, and 100~M~cells/s burst arrival cadence fixed, changing \emph{only} whether bursts enter a 128~MiB host receive ring or wait in the active NIC's elastic FIFO behind a 256~KiB host hot ring ($B{=}512$).
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3.0pt}
+\renewcommand{\arraystretch}{1.10}
+\begin{tabularx}{\columnwidth}{Y r r r r}
+\toprule
+\textbf{Benchmark} & \textbf{Mean} & \textbf{$p50$} & \textbf{$p99$} & \textbf{M/s} \\
+\midrule
+$W{=}1$ RTT (Credit OFF) & 0.887 & 0.885 & 0.935 & 1.12 \\
+$W{=}1$ RTT (\sys{} ON) & 0.893 & 0.895 & 0.945 & 1.11 \\
+\midrule
+$W{=}32$ Loop (Credit OFF) & 2.507 & 2.455 & 2.645 & 13.05 \\
+$W{=}32$ Loop (\sys{} ON) & 2.462 & 2.455 & 2.655 & 13.30 \\
+\midrule
+C2H Stream (\sys{} ON) & --- & --- & --- & 176.91 \\
+\bottomrule
+\end{tabularx}
+\caption{Zero-backlog overhead of \sys{}'s NIC-local credit check ($n{=}3$ medians, 64~B cells, 256~KiB hot ring; latencies in $\mu$s). Checking credits adds +6~ns to mean $W{=}1$ RTT, incurs zero throughput loss at $W{=}32$, and sustains 176.91~M~cells/s (11.32~GB/s, 100.0\% DDIO).}
+\label{tab:zero-backlog}
+\end{table}
+
+\paragraph{Negligible zero-backlog overhead.}
+Table~\ref{tab:zero-backlog} quantifies the fast-path cost of checking credits when no burst is queued. Because \sys{} verifies credits against a NIC-local cached counter without crossing PCIe or rewriting flow rules, unloaded $W{=}1$ mean round-trip time rises by only \textbf{+6.0~ns} (0.887 $\to$ 0.893~$\mu$s; $p50$ 0.885 $\to$ 0.895~$\mu$s; $p99$ 0.935 $\to$ 0.945~$\mu$s)---over an order of magnitude smaller than the 260~ns (+18\%) 64~B fast-path overhead reported for \ceio{}~\cite{liu2025ceio}. At $W{=}32$, closed-loop throughput shows zero degradation (13.05 $\to$ 13.30~M/s, $p50$ flat at 2.455~$\mu$s), and unidirectional credit-gated streaming reaches 176.91~M~cells/s (11.32~GB/s) with 100.0\% DDIO hit rate.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.97\textwidth]{figures/fig3_mrv158_burst_duality.png}
+  \caption{Controlled burst sweep from 64~KiB to 128~MiB (1 host core, 1 NIC core, 64~B cells, 100~M/s arrival pace, $n{=}3$ medians). (a) \sys{} holds host LLC read misses at 0.01\% and DDIO at 100.0\%, whereas a 128~MiB host ring collapses to 91.2\% LLC misses and 16.3\% DDIO. (b) System-wide DRAM conservation duality: bursts $\le$32~MiB fit in NIC L3 (true DRAM elimination); bursts $>$48~MiB offload 98.9\% of host DRAM traffic onto NIC 6-channel DDR5. (c) Steady sequential credit-return refill hop stays constant at 0.905~$\mu$s ($p99$ 0.945~$\mu$s) across the 48~MiB NIC L3 cliff.}
+  \label{fig:mrv158}
+\end{figure*}
+
+\paragraph{Zero host cache pollution and 98.9\% host DRAM cut.}
+Figure~\ref{fig:mrv158}a sweeps burst backlog size from 64~KiB to 128~MiB (sending 4 bursts = 512~MiB total payload at 128~MiB). On the 128~MiB host ring, once bursts pass the 2-way DDIO budget (8~MiB), host LLC read misses climb steeply from 20.2\% (8~MiB) to 67.4\% (32~MiB) and \textbf{91.2\%} (128~MiB), while DDIO hit rate plunges to \textbf{16.3\%}. In contrast, \sys{} confines every PCIe write inside the 256~KiB hot ring, locking host LLC read misses at \textbf{0.01--0.02\%} and DDIO hits at \textbf{100.0\%} across all eleven burst sizes.
+
+\paragraph{System-wide DRAM conservation and offload duality.}
+Figure~\ref{fig:mrv158}b reveals a sharp two-regime conservation law governed by the NIC's 48~MiB L3 cache:
+\begin{itemize}
+  \item \emph{Regime 1 ($\le$32~MiB, true system-wide DRAM elimination):} The NIC's 48~MiB L3 absorbs the entire backlog without touching NIC DDR5 (0.000--0.001 NIC DRAM lines/pkt; 0.19~MiB at 32~MiB). Meanwhile, host IMC traffic stays at just 0.011--0.018 lines/pkt (3.86~MiB at 32~MiB versus 409.8~MiB / 1.60 lines/pkt on the 128~MiB host ring). Even at small bursts (64~KiB--1~MiB), resetting \sys{}'s NIC FIFO base removes the monotonic ring's 0.70--0.80 lines/pkt (178--206~MiB) of cross-burst stale writebacks.
+  \item \emph{Regime 2 ($>$48~MiB, complete host DRAM offload):} At 128~MiB (512~MiB total payload), the 128~MiB host ring generates \textbf{971.52~MiB} of host DRAM traffic (\textbf{1.90 lines/pkt}: 0.98 dirty writebacks + 0.92 LLC miss reads). \sys{} cuts host IMC traffic by \textbf{98.9\%} to \textbf{10.69~MiB} (\textbf{0.021 lines/pkt}), while the NIC's 6-channel DDR5 absorbs \textbf{1,014.41~MiB} (\textbf{1.98 lines/pkt}). Total DRAM movement is physically conserved, yet 100\% of it leaves the host socket.
+\end{itemize}
+
+\paragraph{Constant sub-microsecond refill and medium-burst drain trade-off.}
+Figure~\ref{fig:mrv158}c measures the single-hop latency from the host's \texttt{TAKEN} credit MMIO store to the newly refilled cell arriving in host L3 across queued NIC backlogs from 512~KiB to 128~MiB. Steady-state sequential refill latency remains flat at \textbf{0.905~$\mu$s $p50$} (\textbf{0.945~$\mu$s $p99$}) even well beyond the 48~MiB NIC L3 boundary, and NIC drain throughput drops by only 0.14\% from 32~MiB to 128~MiB (175.61 $\to$ 175.36~M/s). In contrast, the very first cold read immediately following a burst pause rises from 0.970~$\mu$s (512~KiB) to 1.163~$\mu$s (128~MiB), which bounds worst-case random multi-queue switching at $\approx$1.05--1.17~$\mu$s; a plausible explanation for the flat steady-state hop is the NIC core's sequential stream prefetcher overlapping subsequent DDR5 fetches during contiguous FIFO draining.
+
+Measuring drain time honestly also exposes a medium-burst trade-off with a single NIC core: for 1--32~MiB bursts that still fit largely inside the host's 60~MiB L3, draining directly from host L3 takes 3.07--5.39~ns/cell versus 4.44--5.66~ns/cell when streaming over PCIe from the NIC (+1.8\% to +15.4\% over the full arrival+drain cycle). Once bursts reach $\ge$48~MiB and spill host L3 to DRAM, \sys{} overtakes the 128~MiB host ring, draining \textbf{8.4\% faster} at 128~MiB (5.69 vs. 6.21~ns/cell; 3.2\% faster full cycle) with $< 10^{-4}$ dTLB misses/pkt on both.
+
+\subsection{Co-Located KV Isolation and the Multi-Core Refill Wall}\label{sec:eval-kv}
+
+Real servers rarely dedicate a socket exclusively to network receive rings. We next co-locate a latency-sensitive random-lookup in-memory KV store (32~MiB working set, plus a 16~MiB control) on a second dedicated physical core on the same Xeon socket while sweeping bursts from 64~KiB to 128~MiB across four receive buffer organizations: (1) 128~MiB monotonic host ring, (2) 128~MiB ideal LIFO host pool, (3) passive 256~KiB drop-on-full host ring (modeling a strictly host-capped ring without on-NIC storage), and (4) \sys{} (active NIC + 256~KiB hot ring).
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.97\textwidth]{figures/fig4_mrv165_kv_and_refill.png}
+  \caption{Co-located 32~MiB KV protection and multi-core NIC refill scaling (228 verified runs). (a) Only \sys{} and the drop-heavy passive ring preserve the 41~ns solo KV $p99$; monotonic rings degrade KV $p99$ 3.7--6.3$\times$ and ideal LIFO degrades it up to 5.0$\times$ at $\ge$16~MiB. (b) Passive 256~KiB drops 75.0--99.8\% of burst packets, while \sys{} sustains 0.0\% drops. (c) Scaling NIC refill from 1 to 4 cores (and expanding the hot ring to 1~MiB) converges at 177.2--177.3~M/s net card refill (177.9--178.6~M/s host drain; 99.1\% of the 179.0~M/s PCIe Gen5 $\times$4 64~B TLP wire wall), with drain crossover at 32--48~MiB.}
+  \label{fig:mrv165}
+\end{figure*}
+
+\paragraph{Only \sys{} achieves both zero KV jitter and zero drops.}
+Running solo on that dedicated core, the 32~MiB KV table fits comfortably inside the 60~MiB shared L3 with $p50 = 31$~ns, $p99 = 41$~ns, and $p999 = 43$~ns (0.04\% KV L3 miss). Figures~\ref{fig:mrv165}a--b show what happens under concurrent receive bursts:
+\begin{itemize}
+  \item \textbf{128~MiB Monotonic Ring:} Even at 64~KiB--4~MiB bursts, monotonic address sweeping thrashes host L3 and DDR5, inflating KV $p99$ to \textbf{257--259~ns} (6.3$\times$ worse) and $p999$ to \textbf{309--315~ns}, with KV L3 misses hitting 81.3--86.1\%. Across 16--128~MiB bursts, whole-window $p99$ stays 3.7--6.1$\times$ worse (153--249~ns) and $p999$ remains 289--303~ns.
+  \item \textbf{128~MiB Ideal LIFO Pool:} LIFO recycling eliminates small-burst pollution completely through 4~MiB ($p99 = 41$~ns). Once bursts reach 16--128~MiB, however, live unread packets overflow the shared L3 anyway: KV $p99$ jumps to \textbf{97~ns} (16~MiB), \textbf{171~ns} (32~MiB), and \textbf{205~ns} (64~MiB, 5.0$\times$ worse), while $p999$ pins at \textbf{287--293~ns} across 32--128~MiB. (The apparent whole-window $p99$ dip from 205~ns at 64~MiB to 165~ns at 128~MiB reflects dilution during the longer arrival interval while 2-way DDIO lets KV partially re-warm; true tail $p999$ remains 291~ns.)
+  \item \textbf{Passive 256~KiB Drop Ring:} Protects KV $p99$ at 41~ns, but drops \textbf{75.0\%} of packets at 1~MiB, \textbf{93.8\%} at 4~MiB, \textbf{98.4\%} at 16~MiB, and \textbf{99.8\%} at 128~MiB (which in closed-loop TCP/RoCE triggers severe timeouts or CCA collapse).
+  \item \textbf{\sys{}:} Sustains \textbf{0.0\% packet loss} across every burst size while keeping KV $p99$ flat at \textbf{41--42~ns} (pooled $n{=}6$ medians), $p999$ at \textbf{43--47~ns} across 1--128~MiB, KV L3 misses at 0.01--0.05\%, and DDIO at 100.0\%. Our 16~MiB KV control at 128~MiB burst confirms the same gap: monotonic and LIFO degrade KV to 121--123~ns $p99$ (255--259~ns $p999$), whereas \sys{} holds 41~ns $p99$ and 43~ns $p999$ with zero loss.
+\end{itemize}
+
+\paragraph{Why multi-core NIC refill hits the 64~B PCIe wire wall.}
+Can adding parallel NIC refill cores push \sys{}'s drain throughput higher and pull the 32--48~MiB drain crossover down to smaller bursts? Figure~\ref{fig:mrv165}c tests 1, 2, and 4 parallel CN106 refill cores (plus a 4-core diagnostic with a 1~MiB hot ring to rule out credit starvation) from 1~MiB to 64~MiB bursts.
+
+Remarkably, all three core counts overlap almost identically: across 8--64~MiB, net NIC refill saturates at \textbf{177.2--177.3~M/s} (host wall drain 177.9--178.6~M/s), even though a single NIC core's active software dequeue rate is 205--209~M/s. Host IIO hardware counters pinpoint the exact cause: every inbound PCIe write averages \textbf{64.0~B/TLP} (63.98--64.00~B), enforced by ordered per-cell write-combining. At 64~B per TLP, 177.3~M/s consumes \textbf{99.1\%} of the 179.02~M/s PCIe Gen5 $\times$4 physical wire limit (Eq.~\ref{eq:pcie-wall}). Consequently, the drain crossover remains at 32--48~MiB, where \sys{} surpasses the 128~MiB host ring by \textbf{+12.6\%} during drain at 64~MiB (178.0 vs. 158.1~M/s; +4.5\% full cycle). Overcoming this wire wall on Gen5 $\times$4 requires larger TLP granularity via bulk DMA refill (\S\ref{sec:eval-lessons}).
+
+\subsection{Single-Core 100GbE RX Saturation}\label{sec:eval-rx}
+
+We next connect our physical 100GbE peer (NVIDIA ConnectX-5) over the 3~m DAC and drive unidirectional wire traffic through the CN106 into \textbf{a single 3.90~GHz host core} across six L2 frame sizes: 64~B (minimum Ethernet), 110~B (40~B application payload, 1 \texttt{RxCell}), 134~B (64--72~B payload, 2 \texttt{RxCell}s), 326~B (256~B payload, DMA), 1094~B (1~KiB payload, DMA), and 4096~B (4~KiB payload, DMA).
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.96\textwidth]{figures/fig5_mrv172_rx_linerate.png}
+  \caption{End-to-end 100GbE unidirectional RX into a single 3.90~GHz host core (174 verified runs, $n{=}3$ medians). (a) \sys{} matches the CN106's 111.1~Mpps hardware cap at 64~B, saturates 100GbE at 110~B (96.2~Mpps) and 134~B (80.9~Mpps, 1.56--1.86$\times$ tuned SDP) with zero NIC-to-host drops, and sustains 100.1~Gbps at 1094--4096~B. (b) At 100GbE line rate for 1--4~KiB frames, \sys{}'s compact ($\le$2~MiB aggregate) L3-pinned DMA receive rings keep DDIO at 100.0\% and cut host DRAM bandwidth by 22.5$\times$ versus 2048-descriptor SDP ISM.}
+  \label{fig:mrv172}
+\end{figure*}
+
+First, Stage-1 pure PCIe isolation confirms that our NIC-to-host push mechanisms have ample headroom into one host core: 64~B write-combined cells reach \textbf{177.5~Mpps} (90.9~Gbps payload, 100.0\% DDIO), and 4-VF native \texttt{DPI ToHost} posted DMA writes deliver \textbf{105.4--105.5~Gbps} payload (100.0\% DDIO), cleanly exceeding 100GbE line rate.
+
+Figure~\ref{fig:mrv172}a shows Stage-2 full end-to-end 100GbE delivery into one host core, comparing \sys{} against two tuned SDP baselines: \texttt{SDP ISM 2048} (in-memory index updates, 2048 descriptors) and \texttt{SDP RPM 512} (in-buffer completion polling, 512 DDIO-sized descriptors):
+\begin{itemize}
+  \item \textbf{Small frames (64--134~B):} At 64~B, \sys{} delivers \textbf{111.11~Mpps} (74.7~Gbps wire, 33.1~cycles/pkt), exactly saturating the CN106's NIX0 wire-RX hardware ceiling (9.00~sclk/pkt) versus 81.06~Mpps for \texttt{SDP ISM} (28.6~M C2H drops) and 41.58~Mpps for \texttt{SDP RPM}. At 110~B (1 inline cell after NIC header strip), one host core reaches full \textbf{100.0~Gbps} (\textbf{96.16~Mpps}, 38.3~cycles/pkt, \textbf{1.75--1.86$\times$} SDP's 51.8--54.9~Mpps). At 134~B (carrying a full 64--72~B payload across 2 cells), one host core sustains \textbf{99.7~Gbps} (\textbf{80.93~Mpps}, 45.5~cycles/pkt, \textbf{1.56--1.76$\times$} SDP's 45.9--51.8~Mpps). Across all 24 \sys{} runs, NIC-to-host segment drops are identically \textbf{zero}.
+  \item \textbf{Large frames (326--4096~B):} All three paths reach 97.4--100.1~Gbps on one host core (326~B \sys{} sits at 97.4~Gbps due to minor NIC software enqueue jitter on 8-core wire RX, with zero C2H drops). However, Figure~\ref{fig:mrv172}b reveals a stark memory-hierarchy difference at 100.1~Gbps on 1094~B and 4096~B frames: \texttt{SDP ISM 2048}'s larger ring spills out of 2-way DDIO, dropping DDIO to \textbf{88.2--88.6\%} and burning \textbf{11.83--12.30~GB/s} of host DDR5 bandwidth. \sys{}'s compact L3-pinned DMA receive rings (512~KiB per lane = 2~MiB across four lanes) hold \textbf{100.0\% DDIO} and consume only \textbf{0.53--0.54~GB/s} of host DRAM---a \textbf{22.5$\times$ reduction} at full 100GbE line rate (and 2.1$\times$ below even 512-descriptor \texttt{SDP RPM}'s 1.11--1.12~GB/s).
+\end{itemize}
+\subsection{End-to-End 100GbE RPC/KV on DirectPush+\sys{}}\label{sec:eval-rpc}
+
+To test how \sys{} behaves inside a complete application datapath, we evaluate an open-addressing in-memory KV server holding a \textbf{32.5~MiB} hash table on a single pinned host core (3.89~GHz), fronted by 4 CN106 cores and driven by an 8-thread client on the 100GbE peer. Here \sys{}'s credit-gated RX ring operates as the receive stage of our full \emph{DirectPush} datapath, which also uses host-to-NIC \texttt{MOVDIR64B} BAR4 sub-rings for small ($\le$256~B) outbound replies, native \texttt{DPI DMA} for large ($\ge$1~KiB) values, and a hardened zero-atomic CN106 wire-ingress mode (\texttt{safe}, compared alongside standard \texttt{peek}). The end-to-end gains below therefore reflect this complete DirectPush datapath (with \sys{} on RX) compared against our tuned 4-queue asynchronous \texttt{SDP fair-full} baseline (\S\ref{sec:impl}) across 453 verified runs.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.97\textwidth]{figures/fig6_mrv195_rpc_e2e.png}
+  \caption{Dual-host 100GbE 32.5~MiB in-memory KV server on 1 host core comparing tuned 4-queue async SDP against the full DirectPush datapath using \sys{} on RX (453 verified runs, $n{=}3$ medians). (a) Single-core saturation throughput improves up to +55\% on 64~B, +30\% on 256~B, and +16\% on mixed Zipf workloads (*64/256~B capped by 4 CN106 cores). (b) Open-loop Poisson $p99$ latency drops by 63.5\% on 64~B GETs and 49.7\% on mixed small requests while extending lossless mixed headroom by +51\%. (c) Companion transmit-side cache-residency check: expanding the host's retained large-reply TX pool from 4~MiB (1,024 $\times$ 4~KiB slots) to 128~MiB (32,768 slots) triggers a 92--98$\times$ host DDR5 surge and 14--38\% throughput loss.}
+  \label{fig:mrv195}
+\end{figure*}
+
+\begin{table*}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3.8pt}
+\renewcommand{\arraystretch}{1.13}
+\begin{tabularx}{\textwidth}{Y r r r r r r r r}
+\toprule
+& \multicolumn{2}{c}{\textbf{$W{=}1$ RTT $p50$/$p99$ ($\mu$s)}} & \multicolumn{2}{c}{\textbf{Sat. Thrpt (Mrps)}} & \multicolumn{2}{c}{\textbf{Matched CPU (cyc/req)}} & \multicolumn{2}{c}{\textbf{Bidir PCIe (B/req)}} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}\cmidrule(lr){8-9}
+\textbf{Workload} & \textbf{SDP Fair} & \textbf{DP+CR} & \textbf{SDP Fair} & \textbf{DP+CR} & \textbf{SDP $\to$ DP} & \textbf{Raw / Net Save} & \textbf{SDP $\to$ DP} & \textbf{$\Delta$ (\%)} \\
+\midrule
+\texttt{get64} (Zipf) & 10.03 / 10.78 & \textbf{4.88 / 5.14} & 12.04 & \textbf{18.67} (+55\%) & 542 $\to$ 277 & \textbf{-48.9\% / -42.4\%} & 362 $\to$ 136 & \textbf{-62.5\%} \\
+\texttt{get256} (Zipf) & 10.06 / 10.87 & \textbf{5.12 / 5.38} & 10.78 & \textbf{14.01} (+30\%) & 615 $\to$ 348 & \textbf{-43.5\% / -39.0\%} & 552 $\to$ 348 & \textbf{-37.1\%} \\
+\texttt{get1024} (Zipf) & 10.54 / 11.38 & \textbf{6.68 / 7.08} & 5.44 & \textbf{6.10} (+12\%) & 1,156 $\to$ 781 & \textbf{-32.5\% / -27.1\%} & 1,331 $\to$ 1,160 & \textbf{-12.9\%} \\
+\texttt{get4096} (Zipf) & 12.16 / 14.31 & \textbf{8.22 / 10.16} & 1.66 & \textbf{1.72} (+4\%) & 2,965 $\to$ 2,330 & \textbf{-21.4\% / -15.2\%} & 4,415 $\to$ 4,231 & \textbf{-4.2\%} \\
+\texttt{mix} (Zipf) & --- & --- & 5.51 & \textbf{6.41} (+16\%) & 1,133 $\to$ 756 & \textbf{-33.2\% / -27.5\%} & 1,253 $\to$ 1,038 & \textbf{-17.2\%} \\
+\texttt{mix} (Uniform) & --- & --- & 5.17 & \textbf{5.88} (+14\%) & 1,168 $\to$ 806 & \textbf{-31.0\% / -25.8\%} & 1,253 $\to$ 1,038 & \textbf{-17.2\%} \\
+\bottomrule
+\end{tabularx}
+\caption{End-to-end 100GbE 32.5~MiB KV server summary comparing tuned 4-queue asynchronous \texttt{SDP fair-full} against the full DirectPush datapath incorporating \sys{} on RX (\texttt{DP+CR}, \texttt{direct\_safe}, $n{=}3$ medians). Matched-rate CPU cycles use calibrated spare-work accounting at 4.5~Mrps (\texttt{get64/256}), 2.5~Mrps (\texttt{get1024/mix}), and 1.0~Mrps (\texttt{get4096}); net savings additionally subtract per-poll empty-poll differences.}
+\label{tab:mrv195}
+\end{table*}
+
+\paragraph{Saturation throughput and CPU efficiency.}
+Figure~\ref{fig:mrv195}a and Table~\ref{tab:mrv195} report end-to-end gains across six workloads (small reads/writes \texttt{get64}, \texttt{put64}, \texttt{get256}; large values \texttt{get1024}, \texttt{get4096}, \texttt{put4096}; and an 80\% small / 20\% 4~KiB mix under Zipf and uniform keys). On 64~B GETs and PUTs, DirectPush+\sys{} boosts throughput by \textbf{+55\%} (12.04 $\to$ 18.67~Mrps for GET; 12.06 $\to$ 18.69~Mrps for PUT) even though 64~B and 256~B saturation is capped by the 4 CN106 forwarding cores rather than the host CPU; comparing \texttt{peek} (17.35~Mrps) against \texttt{safe} (18.67~Mrps) shows that removing atomic CN106 ingress adds the final 7.6\%. On 256~B GETs, throughput climbs \textbf{+30\%} (10.78 $\to$ 14.01~Mrps); on 1~KiB GETs and mixed workloads where the single host core saturates, DirectPush+\sys{} delivers \textbf{+12.1\%} (\texttt{get1024}), \textbf{+16.3\%} (\texttt{mix Zipf}, 5.51 $\to$ 6.41~Mrps), and \textbf{+13.7\%} (\texttt{mix Uniform}, 5.17 $\to$ 5.88~Mrps). On \texttt{put4096}, all interfaces saturate the 100GbE wire at 99.9~Gbps (2.80~Mrps).
+
+To measure true host CPU headroom without polling-loop distortion, we interleave calibrated compute work at matched request rates (Table~\ref{tab:mrv195}). DirectPush+\sys{} cuts raw host CPU cycles per RPC by \textbf{48.9\%} on 64~B (542 $\to$ 277~cycles), \textbf{43.5\%} on 256~B, \textbf{31.0--33.2\%} on 1~KiB and mixed workloads, and \textbf{21.4\%} on 4~KiB. Even after conservatively subtracting the lower per-iteration empty-poll cost (40.0 vs. 316.4~cycles/empty-poll), \emph{net} host CPU savings remain \textbf{42.4\%} (64~B), \textbf{39.0\%} (256~B), \textbf{25.8--27.5\%} (1~KiB and mixed), and \textbf{15.2\%} (4~KiB). Bidirectional PCIe traffic drops by \textbf{62.5\%} on 64~B (362 $\to$ 136~B/req, combining \sys{}'s descriptor-free 72~B inbound push with \texttt{MOVDIR64B} outbound push to eliminate all 207~B/req of NIC host reads), \textbf{37.1\%} on 256~B (399 $\to$ 0~B reads), and \textbf{17.2\%} on mixed workloads.
+
+\paragraph{Unloaded and open-loop Poisson tail latency.}
+At $W{=}1$, DirectPush+\sys{} halves end-to-end 64~B RPC latency from 10.03~$\mu$s to \textbf{4.88~$\mu$s} ($p99$ 10.78 $\to$ 5.14~$\mu$s) and lowers 4~KiB $p50$ from 12.16~$\mu$s to \textbf{8.22~$\mu$s} (Table~\ref{tab:mrv195}). Under open-loop Poisson arrivals (Figure~\ref{fig:mrv195}b), it cuts 64~B $p99$ latency at 7.5~Mrps by \textbf{63.5\%} (24.4 $\to$ 8.9~$\mu$s) and stays at 11.5~$\mu$s even at 10.5~Mrps (where SDP has already overloaded). On the mixed Zipf workload, it shields small requests behind 4~KiB values, slashing small-request $p99$ at 3.5~Mrps by \textbf{49.7\%} (32.0 $\to$ 16.1~$\mu$s; -51.2\% on uniform at 4.0~Mrps) and expanding lossless open-loop throughput under a 33~$\mu$s $p99$ SLO by \textbf{+51\%} (3.5 $\to$ 5.3~Mrps, sustaining 5.7~Mrps at 31.6~$\mu$s small $p99$).
+
+\paragraph{Companion cache-residency check on the retained reply TX pool.}
+Finally, Figure~\ref{fig:mrv195}c tests whether the exact same L3-residency discipline matters on the transmit side of our live KV server when sending large 1--4~KiB \texttt{GET} replies. Holding the entire RX credit ring and KV engine fixed, we enlarge only the host's retained large-reply TX buffer pool (from which the NIC reads replies via \texttt{DPI FromHost}) from its default \textbf{4~MiB} L3-hot footprint (\texttt{tx\_pool\_slots=1024} $\times$ 4~KiB) to \textbf{128~MiB} (\texttt{tx\_pool\_slots=32768}). Cycling through a 128~MiB retained reply pool evicts host L3 lines before the NIC reads them, multiplying host DDR5 bandwidth by \textbf{91.9$\times$} on \texttt{get1024} (0.13 $\to$ 12.07~GB/s), \textbf{98.3$\times$} on \texttt{get4096} (0.13 $\to$ 12.42~GB/s), and \textbf{93.7$\times$} on \texttt{mix} (0.10 $\to$ 9.24~GB/s), while cutting end-to-end throughput by \textbf{37.6\%} (6.10 $\to$ 3.81~Mrps), \textbf{17.1\%}, and \textbf{13.5\%}, respectively. Together with our RX burst results (\S\ref{sec:eval-burst}--\S\ref{sec:eval-rx}), this confirms that keeping \emph{all} host I/O rings and pools compactly inside the LLC is vital for full-stack 100GbE efficiency.
+
+\subsection{Lessons Learned and Boundaries}\label{sec:eval-lessons}
+
+Echoing \ceio{}'s reflection on practical boundaries~\cite{liu2025ceio}, our hardware evaluation uncovers three lessons that bound where \sys{} shines and guide next-generation NIC silicon:
+
+\begin{enumerate}
+  \item \textbf{TLP wire overhead---not NIC compute---sets the medium-burst crossover:} Our multi-core refill experiment (\S\ref{sec:eval-kv}) disproved our initial expectation that adding 2--4 NIC cores would pull the 32--48~MiB drain crossover below 16~MiB. Ordered 64~B posted writes hit 99.1\% of the PCIe Gen5 $\times$4 wire wall with a single core. On wider Gen5 $\times$8/$\times$16 links, multi-core refill scales immediately; on Gen5 $\times$4, lifting refill past 179~M/s requires switching backlogged drain bursts from 64~B core stores to aggregated 512~B--2~KiB native \texttt{DPI DMA} writes (raising the theoretical Gen5 $\times$4 net ceiling to $\approx$223--233~M~cells/s while keeping the host ring pinned at 256~KiB), which we leave as focused follow-up work.
+  \item \textbf{Where cache benefits narrow and platform boundaries apply:} Under lightly queued microbursts ($\le$4~MiB) with zero co-located cache pressure, an ideal LIFO host pool matches \sys{}'s cache hits and drains faster from host L3. Likewise, pure 4~KiB workloads amortize per-packet descriptor overhead, narrowing saturation speedup to +4\% (though compact L3-hot rings and pools still save 15.2\% net CPU and prevent 98$\times$ DRAM spill on oversized retained reply pools). Finally, our Xeon socket populates two DDR5 channels ($\sim$60~GB/s): while on-die invariants (LLC miss rates, 100\% DDIO, 98.9\% host DRAM byte cut, and the $\ge$2.5$\times$ unloaded DRAM-vs-L3 latency step) are channel-independent, two-channel queueing amplification on the 128~MiB baseline will partially moderate on 8-channel servers.
+  \item \textbf{From programmable SmartNICs to fixed-function NIC ASICs:} Our prototype uses 1--4 general-purpose ARM cores on a programmable DPU to manage credits and forward 100GbE traffic (capping 64/256~B KV saturation on the NIC side). Every operation in Algorithm~\ref{alg:protocol}---a per-ring \texttt{pushed}/\texttt{taken} comparator, a FIFO pointer into on-NIC SRAM/DRAM, and a bulk DMA write engine---maps directly to a small fixed-function hardware state machine inside a commodity NIC ASIC, eliminating datapath ARM cores altogether while preserving unmodified host IOMMU isolation and software simplicity.
+\end{enumerate}

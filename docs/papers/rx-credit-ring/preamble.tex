@@ -1,0 +1,55 @@
+% Standalone USENIX/OSDI two-column preamble for CreditRing
+\PassOptionsToPackage{dvipsnames,table}{xcolor}
+\usepackage{iftex}
+\ifPDFTeX
+  \expandafter\def\csname ver@breakurl.sty\endcsname{9999/12/31}
+\fi
+\usepackage{silence}
+\WarningFilter{latex}{Command \showhyphens}
+\usepackage{usenix-2020-09}
+\frenchspacing
+
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{microtype}
+
+\newfloat{algorithm}{t}{loa}
+\floatname{algorithm}{Algorithm}
+
+\definecolor{linkblue}{HTML}{1D4ED8}
+\definecolor{citeblue}{HTML}{0F766E}
+\definecolor{urlteal}{HTML}{0F766E}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=linkblue,
+  citecolor=citeblue,
+  urlcolor=urlteal,
+  pdftitle={CreditRing: A Unified Credit-Gated Push Ring for Cache-Efficient NIC-to-CPU Receive Paths},
+}
+
+% Clean float placement and spacing for two-column layout
+\renewcommand{\dbltopfraction}{0.92}
+\renewcommand{\topfraction}{0.90}
+\renewcommand{\bottomfraction}{0.80}
+\renewcommand{\textfraction}{0.08}
+\renewcommand{\floatpagefraction}{0.80}
+\renewcommand{\dblfloatpagefraction}{0.80}
+\setlength{\textfloatsep}{6.5pt plus 1.5pt minus 1.5pt}
+\setlength{\dbltextfloatsep}{7.5pt plus 1.5pt minus 1.5pt}
+\setlength{\floatsep}{6pt plus 1.5pt minus 1.5pt}
+\setlength{\abovecaptionskip}{4pt}
+\setlength{\belowcaptionskip}{1pt}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcommand{\sys}{\textsc{CreditRing}}
+\newcommand{\ceio}{CEIO}
+
+\setlist[itemize]{leftmargin=1.25em, itemsep=1.2pt, topsep=2pt, parsep=0pt}
+\setlist[enumerate]{leftmargin=1.4em, itemsep=1.2pt, topsep=2pt, parsep=0pt}

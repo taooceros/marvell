@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="404.963846pt" height="270.4pt" viewBox="0 0 404.963846 270.4" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-11-26T04:21:29.698679</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 270.4 
+L 404.963846 270.4 
+L 404.963846 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="line2d_1">
+    <path d="M 208.115055 230.722388 
+L 208.115055 22.483582 
+" clip-path="url(#pc218086745)" style="fill: none; stroke-dasharray: 1,1.65; stroke-dashoffset: 0; stroke: #cbd5e1"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 51.513975 127.558209 
+L 384.619871 127.558209 
+" clip-path="url(#pc218086745)" style="fill: none; stroke-dasharray: 1,1.65; stroke-dashoffset: 0; stroke: #cbd5e1"/>
+   </g>
+   <g id="patch_2">
+    <path d="M 217.879152 122.973134 
+L 380.488907 122.973134 
+Q 385.746497 122.973134 385.746497 117.623881 
+L 385.746497 28.597015 
+Q 385.746497 23.247761 380.488907 23.247761 
+L 217.879152 23.247761 
+Q 212.621561 23.247761 212.621561 28.597015 
+L 212.621561 117.623881 
+Q 212.621561 122.973134 217.879152 122.973134 
+z
+" clip-path="url(#pc218086745)" style="fill: #f0fdfa; stroke-dasharray: 3.7,1.6; stroke-dashoffset: 0; stroke: #5eead4; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 7px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #0f766e" x="379.737822" y="34.298011" transform="rotate(-0 379.737822 34.298011)">Optimal Regime</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 7.9px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #0f172a" x="215.625899" y="255.700218" transform="rotate(-0 215.625899 255.700218)">Host LLC Isolation &amp; Burst Elasticity  (Zero Drops + Zero Leaky DMA)</text>
+   </g>
+   <g id="text_3">
+    <text style="font-weight: 700; font-size: 7.8px; font-family: 'DejaVu Sans'; fill: #0f172a" transform="translate(18.064928 193.313428) rotate(-90)">Datapath &amp; Control Simplicity</text>
+    <text style="font-weight: 700; font-size: 7.8px; font-family: 'DejaVu Sans'; fill: #0f172a" transform="translate(27.427061 188.877178) rotate(-90)">(No Steering, No Path Split)</text>
+   </g>
+   <g id="patch_3">
+    <path d="M 59.775902 93.934328 
+L 194.595538 93.934328 
+Q 198.350959 93.934328 198.350959 90.113433 
+L 198.350959 39.677612 
+Q 198.350959 35.856716 194.595538 35.856716 
+L 59.775902 35.856716 
+Q 56.020481 35.856716 56.020481 39.677612 
+L 56.020481 90.113433 
+Q 56.020481 93.934328 59.775902 93.934328 
+z
+" clip-path="url(#pc218086745)" style="fill: #fef2f2; stroke: #fca5a5; stroke-width: 1.05; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 59.775902 172.262687 
+L 194.595538 172.262687 
+Q 198.350959 172.262687 198.350959 168.441791 
+L 198.350959 120.298507 
+Q 198.350959 116.477612 194.595538 116.477612 
+L 59.775902 116.477612 
+Q 56.020481 116.477612 56.020481 120.298507 
+L 56.020481 168.441791 
+Q 56.020481 172.262687 59.775902 172.262687 
+z
+" clip-path="url(#pc218086745)" style="fill: #fffbeb; stroke: #fcd34d; stroke-width: 1.05; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 59.775902 225.755224 
+L 194.595538 225.755224 
+Q 198.350959 225.755224 198.350959 221.934328 
+L 198.350959 186.78209 
+Q 198.350959 182.961194 194.595538 182.961194 
+L 59.775902 182.961194 
+Q 56.020481 182.961194 56.020481 186.78209 
+L 56.020481 221.934328 
+Q 56.020481 225.755224 59.775902 225.755224 
+z
+" clip-path="url(#pc218086745)" style="fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1.05; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 219.756862 225.755224 
+L 378.235654 225.755224 
+Q 381.991075 225.755224 381.991075 221.934328 
+L 381.991075 142.077612 
+Q 381.991075 138.256716 378.235654 138.256716 
+L 219.756862 138.256716 
+Q 216.001441 138.256716 216.001441 142.077612 
+L 216.001441 221.934328 
+Q 216.001441 225.755224 219.756862 225.755224 
+z
+" clip-path="url(#pc218086745)" style="fill: #eff6ff; stroke: #93c5fd; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 223.136742 114.185075 
+L 374.855774 114.185075 
+Q 379.36228 114.185075 379.36228 109.6 
+L 379.36228 43.880597 
+Q 379.36228 39.295522 374.855774 39.295522 
+L 223.136742 39.295522 
+Q 218.630236 39.295522 218.630236 43.880597 
+L 218.630236 109.6 
+Q 218.630236 114.185075 223.136742 114.185075 
+z
+" clip-path="url(#pc218086745)" style="fill: #ccfbf1; stroke: #0f766e; stroke-width: 1.65; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 6.45px; font-family: 'DejaVu Sans'; fill: #0f766e" transform="translate(303.878306 124.216799)">Unify into</text>
+    <text style="font-weight: 700; font-size: 6.45px; font-family: 'DejaVu Sans'; fill: #0f766e" transform="translate(303.878306 131.958562)">1 push FIFO</text>
+   </g>
+   <g id="patch_8">
+    <path d="M 48.631722 235.689552 
+Q 217.504277 235.689552 384.923387 235.689552 
+" clip-path="url(#pc218086745)" style="fill: none; stroke: #0f172a; stroke-width: 1.3; stroke-linecap: round"/>
+    <path d="M 380.523387 233.489552 
+L 384.923387 235.689552 
+L 380.523387 237.889552 
+z
+" clip-path="url(#pc218086745)" style="fill: #0f172a; stroke: #0f172a; stroke-width: 1.3; stroke-linecap: round"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 46.631927 233.688462 
+Q 46.631927 126.221681 46.631927 20.208344 
+" clip-path="url(#pc218086745)" style="fill: none; stroke: #0f172a; stroke-width: 1.3; stroke-linecap: round"/>
+    <path d="M 44.431927 24.608344 
+L 46.631927 20.208344 
+L 48.831927 24.608344 
+z
+" clip-path="url(#pc218086745)" style="fill: #0f172a; stroke: #0f172a; stroke-width: 1.3; stroke-linecap: round"/>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 6.6px; font-family: 'DejaVu Sans'; fill: #7f1d1d" transform="translate(81.288908 54.63871)">Large Host Ring / Ideal LIFO</text>
+    <text style="font-size: 6.6px; font-family: 'DejaVu Sans'; fill: #7f1d1d" transform="translate(90.692876 62.941819)">(128 MiB in host RAM)</text>
+    <text style="font-size: 6.6px; font-family: 'DejaVu Sans'; fill: #7f1d1d" transform="translate(82.713064 70.74271)">Leaky DMA: 91% LLC miss;</text>
+    <text style="font-size: 6.6px; font-family: 'DejaVu Sans'; fill: #7f1d1d" transform="translate(84.239829 78.79471)">KV p99 degrades 3.7-6.3x</text>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 6.5px; font-family: 'DejaVu Sans'; fill: #78350f" transform="translate(86.697829 134.268743)">Host-Capped Fixed Rings</text>
+    <text style="font-size: 6.5px; font-family: 'DejaVu Sans'; fill: #78350f" transform="translate(70.50115 142.198743)">(ShRing, rxBisect, Passive 256 KiB)</text>
+    <text style="font-size: 6.5px; font-family: 'DejaVu Sans'; fill: #78350f" transform="translate(73.112322 150.758431)">Host RAM bound: 75-99.8% burst</text>
+    <text style="font-size: 6.5px; font-family: 'DejaVu Sans'; fill: #78350f" transform="translate(75.492439 158.058743)">drops or frequent CCA cutbacks</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 6.6px; font-family: 'DejaVu Sans'; fill: #475569" transform="translate(91.386392 198.766771)">Reactive Rate Control</text>
+    <text style="font-size: 6.6px; font-family: 'DejaVu Sans'; fill: #475569" transform="translate(101.007439 206.426896)">(HostCC, RHCC)</text>
+    <text style="font-size: 6.6px; font-family: 'DejaVu Sans'; fill: #475569" transform="translate(72.105111 214.611412)">Reacts after LLC/IIO misses occur</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 6.4px; font-family: 'DejaVu Sans'; fill: #1e3a8a" transform="translate(244.267758 168.15597)">Dual-Path On-NIC Buffering (CEIO)</text>
+    <text style="font-size: 6.4px; font-family: 'DejaVu Sans'; fill: #1e3a8a" transform="translate(235.107258 175.96397)">Proactive credits + NIC DRAM slow path</text>
+    <text style="font-size: 6.4px; font-family: 'DejaVu Sans'; fill: #1e3a8a" transform="translate(249.281258 183.77197)">Fast/slow split, RMT rule churn,</text>
+    <text style="font-size: 6.4px; font-family: 'DejaVu Sans'; fill: #1e3a8a" transform="translate(231.734258 191.57997)">phase-exclusivity pause, 2P1C SW merge,</text>
+    <text style="font-size: 6.4px; font-family: 'DejaVu Sans'; fill: #1e3a8a" transform="translate(240.925258 199.29897)">host async_recv() pull, &gt;1K-flow cliff</text>
+   </g>
+   <g id="text_9">
+    <text style="font-weight: 700; font-size: 6.15px; font-family: 'DejaVu Sans'; fill: #134e4a" transform="translate(259.521907 63.407291)">CreditRing (This Work)</text>
+    <text style="font-weight: 700; font-size: 6.15px; font-family: 'DejaVu Sans'; fill: #134e4a" transform="translate(233.026938 70.910291)">Single Unified Credit-Gated Push Path</text>
+    <text style="font-weight: 700; font-size: 6.15px; font-family: 'DejaVu Sans'; fill: #134e4a" transform="translate(230.05716 78.413291)">256 KiB L3 hot ring + NIC L3/DDR5 FIFO</text>
+    <text style="font-weight: 700; font-size: 6.15px; font-family: 'DejaVu Sans'; fill: #134e4a" transform="translate(230.214754 85.940314)">0% drops, 100% DDIO, O(1) credit state</text>
+    <text style="font-weight: 700; font-size: 6.15px; font-family: 'DejaVu Sans'; fill: #134e4a" transform="translate(223.984516 93.419291)">No steering, no phase pause, no SW merge</text>
+   </g>
+   <g id="patch_10">
+    <path d="M 200.052956 151.983116 
+Q 207.176931 160.036647 213.486067 167.169017 
+" clip-path="url(#pc218086745)" style="fill: none; stroke-dasharray: 4.07,1.76; stroke-dashoffset: 0; stroke: #1d4ed8; stroke-width: 1.1; stroke-linecap: round"/>
+    <path d="M 212.449077 163.279974 
+L 213.486067 167.169017 
+L 209.752639 165.665184 
+z
+" clip-path="url(#pc218086745)" style="fill: #1d4ed8; stroke-dasharray: 4.07,1.76; stroke-dashoffset: 0; stroke: #1d4ed8; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 298.245174 135.873694 
+Q 298.245174 126.411464 298.245174 118.738088 
+" clip-path="url(#pc218086745)" style="fill: none; stroke: #0f766e; stroke-width: 1.6; stroke-linecap: round"/>
+    <path d="M 296.045174 123.138088 
+L 298.245174 118.738088 
+L 300.445174 123.138088 
+z
+" clip-path="url(#pc218086745)" style="fill: #0f766e; stroke: #0f766e; stroke-width: 1.6; stroke-linecap: round"/>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pc218086745">
+   <rect x="7.2" y="7.2" width="390.563846" height="256"/>
+  </clipPath>
+ </defs>
+</svg>

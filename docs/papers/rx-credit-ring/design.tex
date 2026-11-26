@@ -1,0 +1,96 @@
+\section{\sys{} Design}\label{sec:design}
+
+This section presents the detailed design of \sys{}: its unified credit-gated push protocol (\S\ref{sec:design-protocol}), its tiered on-NIC elastic buffering and locality mechanics (\S\ref{sec:design-elastic}), its compact credit-paced DMA extension for large frames (\S\ref{sec:design-framing}), and its multi-queue scaling and transport interaction (\S\ref{sec:design-scale}).
+
+\subsection{Unified Credit-Gated Push Protocol}\label{sec:design-protocol}
+
+A host receive core allocates a single physically contiguous, 2~MiB-hugepage-backed hot ring of $R$ cache-line-aligned slots (default $R = 4,096$ slots of 64~B, totaling 256~KiB) on its local NUMA socket. Rather than splitting descriptor rings from payload rings for small packets, each 64~B slot is a self-describing \texttt{RxCell} carrying a leading sequence guard, compact metadata (flags and byte length), inline payload bytes, and a trailing sequence copy in the final 8-byte word.
+
+\paragraph{Torn-write immunity without fences or locks.}
+PCIe does not guarantee atomicity across arbitrary sub-line boundaries, and hardware or software write-combining can split stores under congestion. Placing matching 32-bit monotonic sequence numbers at both the first and last 64-bit words of every 64~B \texttt{RxCell} lets the host core detect a complete, uncorrupted arrival with two ordinary cached L3 loads: a slot at index $\texttt{seq} \bmod R$ is ready if and only if both leading and trailing sequence fields equal the expected $\texttt{seq}$. No cross-PCIe read, atomic lock, or host memory fence is needed on the receive poll path.
+
+\paragraph{Batched credit accounting.}
+The NIC maintains two 64-bit monotonic counters per host receive ring: \texttt{pushed}, the next sequence number to write over PCIe, and \texttt{taken\_cached}, a NIC-local cache of the host's consumed sequence number read from a BAR-mapped \texttt{TAKEN} register in NIC memory. The host maintains a single local counter \texttt{taken} and advances the NIC's \texttt{TAKEN} register via one uncached posted MMIO write whenever it consumes a batch of $B$ cells (default $B = 512$, or 12.5\% of ring capacity) or drains the ring to empty before going idle.
+
+\begin{algorithm}[t]
+\centering
+\footnotesize
+\begin{tabular}{@{}p{\columnwidth}@{}}
+\toprule
+\textbf{State (NIC):} FIFO $Q$ (in NIC L3/DDR5); counters \texttt{pushed}, \texttt{taken\_cached}; BAR register \texttt{TAKEN}; ring capacity $R = 4,096$. \\
+\textbf{State (Host):} Hot ring $H[0..R{-}1]$ (256~KiB in L3); counter \texttt{taken}; batch $B = 512$. \\
+\midrule
+\textbf{On NIC (single unified loop):} \\
+\texttt{1:} \textbf{if} wire packet $p$ arrives \textbf{then} \\
+\texttt{2:} \quad \textbf{if} $Q$ is empty \textbf{and} $\texttt{pushed} - \texttt{taken\_cached} < R$ \textbf{then} \\
+\texttt{3:} \quad\quad \textsc{PushToHost}($p$, $\texttt{pushed} \bmod R$); $\texttt{pushed} \mathrel{+}= 1$ \\
+\texttt{4:} \quad \textbf{else} \textsc{Enqueue}($Q$, $p$) \hfill \emph{// absorb burst in NIC L3/DDR5} \\
+\texttt{5:} \textbf{while} $Q$ is non-empty \textbf{do} \\
+\texttt{6:} \quad \textbf{if} $\texttt{pushed} - \texttt{taken\_cached} \ge R$ \textbf{then} \\
+\texttt{7:} \quad\quad $\texttt{taken\_cached} \leftarrow \texttt{LOAD}(\texttt{TAKEN})$ \hfill \emph{// NIC-local read} \\
+\texttt{8:} \quad\quad \textbf{if} $\texttt{pushed} - \texttt{taken\_cached} \ge R$ \textbf{then break} \\
+\texttt{9:} \quad $p \leftarrow \textsc{Dequeue}(Q)$ \\
+\texttt{10:} \quad \textsc{PushToHost}($p$, $\texttt{pushed} \bmod R$); $\texttt{pushed} \mathrel{+}= 1$ \\
+\texttt{11:} \textbf{if} $Q$ just emptied \textbf{then} \textsc{ResetQueueBase}($Q$) \hfill \emph{// reset NIC L3 base} \\
+\midrule
+\textbf{On Host (single polling loop):} \\
+\texttt{12:} $c \leftarrow H[\texttt{taken} \bmod R]$ \hfill \emph{// cached L3 hit (100\% DDIO)} \\
+\texttt{13:} \textbf{if} $c.\text{head\_seq} = \texttt{taken} \land c.\text{tail\_seq} = \texttt{taken}$ \textbf{then} \\
+\texttt{14:} \quad \textsc{Process}($c$); $\texttt{taken} \mathrel{+}= 1$ \\
+\texttt{15:} \quad \textbf{if} $(\texttt{taken} \bmod B = 0)$ \textbf{then} $\texttt{MMIO\_STORE}(\texttt{TAKEN}, \texttt{taken})$ \\
+\texttt{16:} \textbf{else if} $\texttt{taken} > \texttt{last\_reported}$ \textbf{then} \\
+\texttt{17:} \quad $\texttt{MMIO\_STORE}(\texttt{TAKEN}, \texttt{taken})$; $\texttt{last\_reported} \leftarrow \texttt{taken}$ \\
+\bottomrule
+\end{tabular}
+\caption{\sys{} unified push and credit protocol (per host ring), contrasting with \ceio{}'s per-flow debt tracking, RMT rewrites, phase pauses, and 2P1C software merge ring~\cite{liu2025ceio}.}
+\label{alg:protocol}
+\end{algorithm}
+
+Algorithm~\ref{alg:protocol} shows the entire protocol. Contrast its 17 lines of ring-local state with \ceio{}'s multi-flow credit debt redistribution, RMT flow-table polling and rewriting, phase-exclusivity pause logic, and 2P1C software merge ring~\cite{liu2025ceio}. Three structural invariants hold by construction:
+
+\begin{enumerate}
+  \item \textbf{Zero host ring overflow:} A cell at sequence $s$ maps to slot $s \bmod R$, previously occupied by sequence $s - R$. Because Line~2 and Line~6 enforce $\texttt{pushed} - \texttt{taken\_cached} < R$ and \texttt{TAKEN} advances monotonically only after the host finishes reading sequence $s - R$ (Line~14), the NIC never overwrites an unread host slot.
+  \item \textbf{Strict FIFO ordering without phase pauses:} Whenever $Q$ is non-empty, new wire arrivals append to the tail of $Q$ (Line~4) while PCIe injection pops strictly from the head of $Q$ (Line~9). Zero-backlog packets skip $Q$ only when $Q$ is empty (Line~2). Every packet thus enters the host hot ring in exact wire arrival order without pausing a fast path or merging separate hardware rings.
+  \item \textbf{Deadlock freedom and pipelining:} As long as $B \le R/2$ (our default $B = 512 = R/8$), at most $B - 1$ consumed slots remain unreported at any instant, leaving $R - B = 3,584$ in-flight slots (224~KiB) to hide the $\approx$0.9~$\mu$s credit-return round trip while amortizing host MMIO writes to one posted store per 512 packets. The idle-flush clause (Lines~16--17) guarantees that even sub-batch arrivals immediately return credit when the host drains the ring.
+\end{enumerate}
+
+Notice also why zero-backlog overhead is negligible: in the common uncontended case ($Q$ empty, $\texttt{pushed} - \texttt{taken\_cached} < R$), Line~2 executes a single NIC-local register comparison without reading PCIe or even touching the BAR register unless the local credit cache needs refreshing (Line~7).
+
+\subsection{Tiered Buffering and Locality Reset}\label{sec:design-elastic}
+
+When bursts outpace the host core, \sys{} buffers excess packets inside the NIC's elastic FIFO $Q$, which naturally spans two hardware memory tiers on modern SmartNICs (on our CN106, 48~MiB of shared on-NIC L3 backed by 48~GB of 6-channel DDR5).
+
+\paragraph{Locality reset removes small-burst stale writebacks.}
+In a conventional monotonically advancing 128~MiB host receive ring, even tiny 64~KiB--1~MiB microbursts sweep continuously across the entire 128~MiB address space over consecutive bursts. Cache lines written during one burst sit idle long enough to be evicted as dirty writebacks to host DRAM before the ring wraps around, generating 0.70--0.80 host DRAM writes per packet even when each individual burst is 64~KiB (\S\ref{sec:eval-burst}).
+
+\sys{} eliminates this pathology on both sides of PCIe. On the host, all traffic reuses the same 256~KiB hot ring. On the NIC, whenever $Q$ drains to empty (Line~11), \sys{} resets $Q$'s base pointer to the start of its NIC buffer region, keeping repeated bursts $\le$32~MiB permanently pinned in the hottest portion of the NIC's 48~MiB L3 cache.
+
+\paragraph{Conservation duality and sequential drain latency.}
+Once a single burst exceeds the NIC's 48~MiB L3, $Q$ seamlessly spills into the NIC's 6-channel DDR5. Total DRAM traffic across the entire machine cannot disappear for a 128~MiB live burst: the NIC must write the burst into NIC DDR5 ($\approx$1 line/pkt) and read it back during drain ($\approx$1 line/pkt), totaling 1.98 NIC DRAM lines/pkt. \sys{}, however, relocates 100\% of that $\sim$2$\times$ DRAM load \emph{off the host's shared memory controllers} onto the NIC's dedicated memory channels. Furthermore, while the NIC drains $Q$ sequentially in FIFO order, steady-state credit-return-to-arrival latency stays flat at 0.905~$\mu$s ($p99$ 0.945~$\mu$s) from 512~KiB through 128~MiB, whereas the very first cold read after a burst pause rises from 0.970~$\mu$s to 1.163~$\mu$s (\S\ref{sec:eval-burst})---a contrast plausibly explained by the NIC core's sequential hardware prefetcher overlapping subsequent DDR5 reads during continuous FIFO draining.
+
+\subsection{Extending Credit Pacing to Large Frames}\label{sec:design-framing}
+
+A fixed 256~KiB inline ring works cleanly for 64--256~B control messages and small RPCs (1--4 cells per message, yielding 1,024--4,096 messages of ring depth). Storing entire 1.5~KiB or 4~KiB frames inline inside a 256~KiB ring, however, would shrink ring capacity to 64--170 frames---requiring smaller credit batches ($B \le R/2$) to avoid credit starvation or deadlock, and wasting CPU cycles on 64~B core stores for multi-kilobyte payloads.
+
+To handle both small and large frames without sacrificing cache residency, our prototype applies the same credit-paced push discipline across two transport tiers:
+\begin{itemize}
+  \item \textbf{Small frames ($\le$256~B):} Stripped of L2/L3/L4 headers on the NIC and pushed inline as 1--4 consecutive 64~B \texttt{RxCell}s via outbound write-combining posted writes directly into the 256~KiB host hot ring. Zero payload descriptors and zero NIC-side host memory reads occur.
+  \item \textbf{Large frames ($\ge$326~B to 4~KiB):} Delivered via native NIC DMA writes (\texttt{DPI ToHost}) into compact, credit-gated host DMA receive rings sized to stay strictly inside 2-way DDIO. In our 100GbE RX evaluation (\S\ref{sec:eval-rx}), four NIC DMA lanes write into per-lane host rings of 512~KiB each (512 $\times$ 1~KiB slots with $B{=}64$ at 1094~B, or 128 $\times$ 4~KiB slots with $B{=}32$ at 4096~B), totaling \textbf{2~MiB} across all four lanes---well inside our Xeon's 8~MiB 2-way DDIO slice and sustaining 100.0\% DDIO at full 100GbE line rate.
+\end{itemize}
+
+The same cache-residency discipline also governs retained host transmit buffers when an application sends large 1--4~KiB replies (\S\ref{sec:eval-rpc}): sizing the host's retained reply TX pool to fit inside L3 (1,024 $\times$ 4~KiB = 4~MiB) avoids the 92--98$\times$ host DRAM spill triggered by a 128~MiB pool.
+
+\subsection{Scaling, Refill Wall, and Transport}\label{sec:design-scale}
+
+\paragraph{$O(1)$ flow-count independence.}
+Unlike \ceio{}, which allocates per-flow credit budgets and rewrites per-flow RMT steering rules---creating a throughput cliff beyond 1,000 rapidly changing flows~\cite{liu2025ceio}---\sys{} enforces credits strictly \emph{per host receive ring} (one ring per host RX core). Whether one flow or 100,000 short-lived flows arrive via RSS onto a host core, the NIC checks the exact same two integers (\texttt{pushed} and \texttt{taken\_cached}). Per-flow fairness or priority queuing, when desired, lives cleanly inside the NIC's elastic queue $Q$ before the credit gate without touching PCIe paths or host driver state.
+
+\paragraph{PCIe write granularity and refill bandwidth.}
+To prevent silent reordering or torn cache lines across adjacent 64~B cells on our SmartNIC's write-combining outbound path, each posted cell write is emitted as an ordered 64~B Transaction Layer Packet (TLP). On a PCIe Gen5 $\times$4 link (128~Gbps raw, 128b/130b encoded), every 64~B write TLP carries 24~B of PCIe header and framing overhead (88~B on the wire), fixing the physical ceiling at:
+\begin{equation}\label{eq:pcie-wall}
+  R_{\text{64B}} = \frac{128\times 10^9 \cdot (128/130)}{8 \times 88} \approx 179.02\text{ M/s}.
+\end{equation}
+As we prove empirically in \S\ref{sec:eval-kv}, even a single CN106 ARM core saturates 99.1\% of this 179.0~M/s physical wall, so adding 2 or 4 NIC cores cannot accelerate 64~B cell refill on Gen5 $\times$4. Scaling refill beyond 179~M/s requires either wider PCIe lanes (Gen5 $\times$8/$\times$16) or aggregating contiguous backlogged cells into 512~B--2~KiB bulk DMA writes during drain, which we analyze in \S\ref{sec:eval-lessons}.
+
+\paragraph{Complementary transport congestion control.}
+Like \ceio{}, \sys{} operates transparently below transport protocols (TCP, DCTCP, eRPC, RoCE). While transport congestion control reacts to multi-RTT network congestion, \sys{} absorbs sub-millisecond incast bursts locally inside NIC L3/DDR5 without polluting host caches or triggering premature drops. Only if a sustained overload approaches the NIC's multi-gigabyte DDR5 buffer threshold does the NIC emit ECN marks or backpressure upstream senders.
