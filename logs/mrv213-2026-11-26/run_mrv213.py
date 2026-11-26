@@ -64,9 +64,9 @@ MB = 1024 * 1024
 
 # Burst schedule: (label, burst_bytes, measured_bursts, warmup_bursts)
 BURST_MATRIX = [
-    ("64KiB",  64 * KB,   256, 8),
-    ("256KiB", 256 * KB,  128, 4),
-    ("1MiB",   1 * MB,    64,  2),
+    ("64KiB",  64 * KB,   256, 32),
+    ("256KiB", 256 * KB,  128, 16),
+    ("1MiB",   1 * MB,    64,  4),
     ("4MiB",   4 * MB,    32,  2),
     ("16MiB",  16 * MB,   16,  2),
     ("32MiB",  32 * MB,   8,   2),
@@ -75,7 +75,7 @@ BURST_MATRIX = [
 ]
 
 SMOKE_BURSTS = [
-    ("256KiB", 256 * KB, 16, 2),
+    ("256KiB", 256 * KB, 16, 16),
     ("32MiB",  32 * MB,  4,  1),
     ("128MiB", 128 * MB, 2,  1),
 ]
@@ -87,20 +87,26 @@ MBUF_ABLATION_BURSTS = [
     ("128MiB", 128 * MB, 4,  1),
 ]
 
-# 5 single-variable standard-SDP arms:
+# 5 single-variable standard-SDP arms (card sdp1-1 TX ring held fixed at 2048 across all 5):
 #   (arm_tag, host_arm_flag, rx_desc, allow_small_oq, r_eff, card_sdp_tx_desc)
 ARMS = [
     ("large_mono",  "large-mono",  8192, False, 256, 2048),
-    ("small_drop",  "small-drop",  256,  True,  256, 256),
+    ("small_drop",  "small-drop",  256,  True,  256, 2048),
     ("large_lifo",  "large-lifo",  8192, False, 256, 2048),
     ("native_bp",   "native-bp",   512,  True,  256, 2048),
     ("credit_ring", "credit-ring", 512,  True,  256, 2048),
 ]
 
+# Offered burst rates:
+#   - 1500b: unthrottled full 100GbE (~96 Gbps wire, ~7.9 Mpps)
+#   - 256b (exact 254B L2 RoCEv2 UD, 184B 8B-aligned payload, 0 IB pad): 25.0 Mpps (~54.6 Gbps wire,
+#     strictly lossless for 1-core saturn large_mono/large_lifo and 4-core CN106 up to 128 MiB)
+#   - 64b  (exact 64B L2 RoCEv2 UC): 20.0 Mpps (~13.4 Gbps wire, strictly lossless for 1-core saturn
+#     large_mono/large_lifo and 4-core CN106 up to 128 MiB)
 PROFILE_CFG = {
-    "1500b": {"l2_bytes": 1500, "merc_threads": 8,  "merc_batch": 32, "probe_mode": "udp1500"},
-    "256b":  {"l2_bytes": 256,  "merc_threads": 16, "merc_batch": 32, "probe_mode": "ud256"},
-    "64b":   {"l2_bytes": 64,   "merc_threads": 16, "merc_batch": 64, "probe_mode": "uc64"},
+    "1500b": {"l2_bytes": 1500, "merc_threads": 8,  "merc_batch": 32, "merc_rate_mpps": 0.0,  "probe_mode": "udp1500"},
+    "256b":  {"l2_bytes": 254,  "merc_threads": 16, "merc_batch": 32, "merc_rate_mpps": 25.0, "probe_mode": "ud256"},
+    "64b":   {"l2_bytes": 64,   "merc_threads": 16, "merc_batch": 64, "merc_rate_mpps": 20.0, "probe_mode": "uc64"},
 }
 
 
@@ -215,6 +221,10 @@ def read_env_snapshot() -> dict:
         "echo ea0_ue=$(cat /sys/devices/system/edac/ea/ea0/ue_count 2>/dev/null || echo 0); "
         "echo ea0_ce=$(cat /sys/devices/system/edac/ea/ea0/ce_count 2>/dev/null || echo 0); "
         "echo sei_total=$(dmesg | grep -c 'EDAC DEVICE4' || echo 0); "
+        "echo pem_wc_loaded=$(lsmod | grep -c '^pem_wc ' || true); "
+        "echo refl_tmux=$(tmux has-session -t refl 2>/dev/null && echo 1 || echo 0); "
+        "echo eth0_oper=$(cat /sys/class/net/eth0/operstate 2>/dev/null || echo unbound); "
+        "echo eth0_speed=$(cat /sys/class/net/eth0/speed 2>/dev/null || echo 0); "
         "echo hp_total=$(cat /sys/kernel/mm/hugepages/hugepages-524288kB/nr_hugepages); "
         "echo hp_free=$(cat /sys/kernel/mm/hugepages/hugepages-524288kB/free_hugepages)"
     ).stdout.strip()
@@ -227,6 +237,7 @@ def read_env_snapshot() -> dict:
     merc_raw = ssh_merc(
         "echo mtu=$(cat /sys/class/net/ens6f1np1/mtu); "
         "echo oper=$(cat /sys/class/net/ens6f1np1/operstate); "
+        "echo mrv_procs=$(pgrep -fc '[m]rv213_client' || true); "
         "ethtool -S ens6f1np1 | grep -E 'tx_packets_phy:|tx_bytes_phy:|rx_crc_errors_phy:|tx_global_pause:|rx_global_pause:' || true"
     ).stdout.strip()
     merc_env = {}
@@ -259,6 +270,7 @@ def deploy_binaries() -> None:
         f"mercury:{MERC_REMOTE_DIR}/",
     ])
     ssh_merc(
+        f'export PATH="$HOME/.cargo/bin:$PATH" && '
         f"cd {MERC_REMOTE_DIR} && "
         f"gcc -O3 -Wall -Wextra -Werror -c mrv213_verbs_shim.c -o mrv213_verbs_shim.o && "
         f"rustc -O -D warnings mrv213_client.rs -C link-arg=mrv213_verbs_shim.o -C link-arg=-libverbs -o mrv213_client && "
@@ -385,9 +397,11 @@ class TestbedStack:
 
     def restore_baseline(self) -> dict:
         self.stop_mercury()
+        ssh_merc(f"rm -rf {MERC_REMOTE_DIR} /tmp/mrv213_merc.log", check=False)
         self.stop_card()
-        sh(["rm", "-f", "/dev/hugepages/m213h*"], check=False)
+        sh(["sh", "-c", "rm -f /dev/hugepages/m213h*"], check=False)
         out = ssh_card(
+            "if lsmod | grep -q '^pem_wc '; then rmmod pem_wc; fi; "
             f"{CARD_REMOTE_BIN} --restore 2>&1 || true; "
             "dpdk-devbind.py -b rvu_nicpf 0002:02:00.0; "
             "sleep 1.5; "
@@ -442,21 +456,28 @@ def check_quality_gates(rec: dict) -> tuple[list[str], list[str]]:
                 hard.append(f"merc_err cqe={ms['cqe_err']} post={ms['post_err']}")
             if ms["phy"]["tx_pause"] != 0 or ms["phy"]["rx_pause"] != 0:
                 hard.append(f"phy_pause tx={ms['phy']['tx_pause']} rx={ms['phy']['rx_pause']}")
-            if arm != "small-drop":
+            if cs["eth"]["imissed"] != 0:
+                hard.append(f"eth_imissed={cs['eth']['imissed']}")
+            if cs["fifo_drops"] != 0:
+                hard.append(f"fifo_drops={cs['fifo_drops']}")
+            if cs["eth_rx_pkts"] != rec["offered_pkts"]:
+                hard.append(f"wire_rx_mismatch eth_rx={cs['eth_rx_pkts']} offered={rec['offered_pkts']}")
+            if arm not in ("small-drop", "native-bp"):
+                # Lossless arms: large-mono, large-lifo, credit-ring must deliver 0.00% loss
                 if rec["lost_pkts"] != 0:
                     hard.append(f"unexpected_lost={rec['lost_pkts']}")
-                if cs["sdp_tx_drops"] != 0 or cs["fifo_drops"] != 0:
-                    hard.append(f"card_drops sdp={cs['sdp_tx_drops']} fifo={cs['fifo_drops']}")
-                if cs["eth"]["imissed"] != 0:
-                    hard.append(f"eth_imissed={cs['eth']['imissed']}")
+                if cs["sdp_tx_drops"] != 0:
+                    hard.append(f"card_sdp_drops={cs['sdp_tx_drops']}")
+                if rec["gaps"] != 0 or rec["ooo"] != 0:
+                    hard.append(f"seq_anomaly gaps={rec['gaps']} ooo={rec['ooo']}")
             else:
-                # Arm 2: every lost packet must be accounted for by card sdp_tx_drops (allow 0 unexplained wire loss)
-                unexplained = abs(rec["lost_pkts"] - cs["sdp_tx_drops"] - cs["eth"]["imissed"])
-                if unexplained > 0:
+                # Arms 2 (small-drop) & 4 (native-bp): MRV-212 proved CN106 default VF0 low-watermark
+                # triggers silent hardware OQ drops without backpressuring sdp1-1 TX; verify every
+                # offered packet was cleanly ingested at CN106 eth0 and sent/accounted at sdp1-1.
+                if cs["sdp_tx_pkts"] + cs["sdp_tx_drops"] != rec["offered_pkts"]:
                     hard.append(
-                        f"drop_accounting_mismatch lost={rec['lost_pkts']} sdp_drops={cs['sdp_tx_drops']} imissed={cs['eth']['imissed']}"
+                        f"card_sdp_accounting tx={cs['sdp_tx_pkts']} drops={cs['sdp_tx_drops']} offered={rec['offered_pkts']}"
                     )
-
     if kv is not None:
         kp = hp["kv"]
         if kv["bad"] != 0:
@@ -520,8 +541,8 @@ def build_schedule(part: str, reps: int, smoke: bool) -> list[dict]:
                         "card_fifo_mode": fifo_mode,
                         "merc_threads": pcfg["merc_threads"],
                         "merc_batch": pcfg["merc_batch"],
+                        "merc_rate_mpps": pcfg["merc_rate_mpps"],
                     })
-
     if part in ("all", "main_1500b"):
         add_profile_sweep("e2_1500b_kv32m", "1500b", "compact")
     if part in ("all", "size_sweep_256b"):
@@ -532,8 +553,11 @@ def build_schedule(part: str, reps: int, smoke: bool) -> list[dict]:
         pcfg = PROFILE_CFG["1500b"]
         ab_bursts = SMOKE_BURSTS if smoke else MBUF_ABLATION_BURSTS
         for rep in range(reps):
-            for b_lbl, b_bytes, n_bursts, wu_bursts in ab_bursts:
-                for fm, pool_sz in [("compact", 16384), ("mbuf", 131072)]:
+            modes = [("compact", 16384), ("mbuf", 131072)]
+            if rep % 2 == 1:
+                modes = list(reversed(modes))
+            for fm, pool_sz in modes:
+                for b_lbl, b_bytes, n_bursts, wu_bursts in ab_bursts:
                     sched.append({
                         "part": "e2_1500b_mbuf_ablation",
                         "tag": f"credit_ring_{fm}_1500b_{b_lbl}",
@@ -553,8 +577,8 @@ def build_schedule(part: str, reps: int, smoke: bool) -> list[dict]:
                         "card_fifo_mode": fm,
                         "merc_threads": pcfg["merc_threads"],
                         "merc_batch": pcfg["merc_batch"],
+                        "merc_rate_mpps": pcfg["merc_rate_mpps"],
                     })
-
     return sched
 
 
@@ -588,6 +612,7 @@ def build_host_cmd(spec: dict, run_gen: int, flows: str) -> list[str]:
             "--card-fifo-mode", spec["card_fifo_mode"],
             "--merc-threads", str(spec["merc_threads"]),
             "--merc-batch", str(spec["merc_batch"]),
+            "--merc-rate-mpps", str(spec.get("merc_rate_mpps", 0.0)),
             "--kv-bytes", str(32 * MB),
             "--kv-cpu", "41",
             "--warmup-ms", "1100",
@@ -595,7 +620,6 @@ def build_host_cmd(spec: dict, run_gen: int, flows: str) -> list[str]:
         ]
         if flows:
             app += ["--merc-flows", flows]
-
     return [
         str(HOST_BIN),
         "-l", "40",
@@ -623,7 +647,7 @@ def run_one_point(
         rg = run_gen_counter[0]
         run_gen_counter[0] += 4
         cmd = build_host_cmd(spec, rg, flows)
-        sh(["rm", "-f", "/dev/hugepages/m213h*"], check=False)
+        sh(["sh", "-c", "rm -f /dev/hugepages/m213h*"], check=False)
         p = subprocess.run(cmd, capture_output=True, text=True, timeout=180)
         lines = [l for l in p.stdout.splitlines() if l.startswith("MRV213 ")]
         if p.returncode != 0 or not lines:
@@ -712,6 +736,12 @@ def main() -> int:
                 print(f"  sample[{sp['arm_tag']}]: {' '.join(cmd)}")
         return 0
 
+    global ATTEMPTS_PATH, RUNS_PATH, ENV_PATH
+    if args.smoke:
+        ATTEMPTS_PATH = LOG_DIR / "smoke_attempts.jsonl"
+        RUNS_PATH = LOG_DIR / "smoke.jsonl"
+        ENV_PATH = LOG_DIR / "smoke_env.json"
+
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     if not args.skip_deploy:
         deploy_binaries()
@@ -719,7 +749,6 @@ def main() -> int:
     done_keys = load_completed_keys(RUNS_PATH) if args.resume else set()
     env_doc = {"issue": "MRV-213", "part": args.part, "reps": args.reps, "smoke": args.smoke}
     env_doc["env_before"] = read_env_snapshot()
-
     stack = TestbedStack()
     flow_cache: dict[str, str] = {}
     run_gen_counter = [100]
