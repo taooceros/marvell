@@ -39,6 +39,7 @@ import argparse
 import json
 import os
 import pathlib
+import shutil
 import socket
 import subprocess
 import sys
@@ -55,6 +56,16 @@ SMOKE_PATH = LOG_DIR / "smoke.jsonl"
 ENV_PATH = LOG_DIR / "env.json"
 
 HOST_BIN = str(ROOT / "testbed/target/release/mrv211_host")
+NUMACTL_FALLBACK = "/nix/store/00p2pzg3i0bdlg9iab09jyr46lnvpi6n-numactl-2.0.18/bin/numactl"
+
+
+def resolve_numactl() -> str:
+    found = shutil.which("numactl")
+    if found:
+        return found
+    if pathlib.Path(NUMACTL_FALLBACK).is_file():
+        return NUMACTL_FALLBACK
+    raise FileNotFoundError(f"Mandatory numactl binary not found in PATH or {NUMACTL_FALLBACK}")
 CARD_BIN_LOCAL = str(ROOT / "testbed/target/aarch64-unknown-linux-gnu/release/mrv211_card")
 CARD_BIN_REMOTE = "/root/bench/mrv211_card"
 MERC_SRC_DIR = ROOT / "testbed/mercury-client"
@@ -365,6 +376,8 @@ def build_host_cmd(h_key: Tuple[Any, ...]) -> List[str]:
         f"ism_enable=1,allow_small_oq=1,max_rings={max_rings}"
     )
     cmd = [
+        resolve_numactl(),
+        "--membind=1",
         HOST_BIN,
         "-l",
         "40",
@@ -808,7 +821,7 @@ def run_offline_self_test() -> None:
             hk = s.host_key()
             if hk is not None:
                 h_cmd = build_host_cmd(hk)
-                assert h_cmd[0] == HOST_BIN
+                assert HOST_BIN in h_cmd and "--membind=1" in h_cmd
                 assert "--mode" in h_cmd
             cl_cmd = build_client_cmd(s, seed=211)
             assert "--sync-reset" in cl_cmd
@@ -849,6 +862,8 @@ def main() -> int:
     ap.add_argument("--deploy", action="store_true", help="Deploy card binary and compile mercury client before running")
     ap.add_argument("--deploy-only", action="store_true", help="Only deploy binaries to card and mercury")
     ap.add_argument("--restore-only", action="store_true", help="Only restore card baseline & run 21 s EDAC audit")
+    ap.add_argument("--filter", type=str, default="", help="Optional 'tag:policy' exact filter (writes to /tmp/mrv211_probe.jsonl)")
+    ap.add_argument("--resume", action="store_true", help="Skip (rep, tag, policy) entries already accepted in runs.jsonl")
     args = ap.parse_args()
 
     verify_pitfall1_invariants()
@@ -858,6 +873,11 @@ def main() -> int:
         return 0
 
     specs = build_campaign_specs(args.suite, smoke=args.smoke)
+    if args.filter:
+        f_tag, f_pol = args.filter.split(":", 1)
+        specs = [s for s in specs if s.tag == f_tag and s.policy == f_pol]
+        if not specs:
+            raise ValueError(f"Filter {args.filter!r} matched 0 specs")
     reps = 1 if args.smoke else args.reps
 
     if args.dry_run:
@@ -894,22 +914,44 @@ def main() -> int:
         return 0
 
     LOG_DIR.mkdir(parents=True, exist_ok=True)
-    out_path = SMOKE_PATH if args.smoke else RUNS_PATH
+    out_path = pathlib.Path("/tmp/mrv211_probe.jsonl") if args.filter else (SMOKE_PATH if args.smoke else RUNS_PATH)
+    att_path = pathlib.Path("/tmp/mrv211_probe_attempts.jsonl") if args.filter else ATTEMPTS_PATH
+    prior_env: Dict[str, Any] = {}
+    if args.resume and not args.filter and ENV_PATH.exists():
+        try:
+            prior_env = json.loads(ENV_PATH.read_text())
+        except Exception:
+            prior_env = {}
     env_doc: Dict[str, Any] = {
         "issue": "MRV-211",
-        "started_utc": utc_now(),
+        "started_utc": prior_env.get("started_utc", utc_now()),
+        "resumed_utc": utc_now() if args.resume else None,
         "suite": args.suite,
         "smoke": args.smoke,
         "reps": reps,
         "specs_per_rep": len(specs),
-        "pre_audit": read_clocks_edac(),
+        "host_numactl": [resolve_numactl(), "--membind=1"],
+        "pre_audit": prior_env.get("pre_audit", read_clocks_edac()),
     }
+    done_keys = set()
+    run_epoch = 1
+    if args.resume and out_path.exists():
+        for ln in out_path.read_text().splitlines():
+            if ln.strip():
+                r = json.loads(ln)
+                done_keys.add((int(r["rep"]), r["spec"]["tag"], r["spec"]["policy"]))
+    if args.resume and att_path.exists():
+        for ln in att_path.read_text().splitlines():
+            if ln.strip():
+                r = json.loads(ln)
+                run_epoch = max(run_epoch, int(r.get("reset_epoch", 0)) + 1)
 
     try:
         # Interleaved repetitions: run rep 0..reps-1 across all specs in order
-        run_epoch = 1
         for rep in range(reps):
             for idx, spec in enumerate(specs):
+                if (rep, spec.tag, spec.policy) in done_keys:
+                    continue
                 clock_retries = 0
                 phy_crc_retries = 0
                 while True:
@@ -919,7 +961,7 @@ def main() -> int:
                     run_epoch += 1
                     rec["clock_retries_before_accept"] = clock_retries
                     rec["phy_crc_retries_before_accept"] = phy_crc_retries
-                    append_jsonl(ATTEMPTS_PATH, rec)
+                    append_jsonl(att_path, rec)
                     if rec["accepted"]:
                         append_jsonl(out_path, rec)
                         cl = rec["client"]
@@ -935,23 +977,36 @@ def main() -> int:
                         # Transparently retry rare 100GbE copper DAC PHY CRC glitches (matching MRV-206)
                         # ONLY when no corruption/torn/ooo/page_faults occurred; every attempt stays in attempts.jsonl.
                         he = rec["hard_errors"]
-                        crc_d = int(rec["merc_ethtool_delta"].get("rx_crc_errors_phy", 0))
+                        merc_d = rec["merc_ethtool_delta"]
+                        crc_d = int(merc_d.get("rx_crc_errors_phy", 0))
+                        lane_err_d = sum(int(merc_d.get(f"rx_err_lane_{i}_phy", 0)) for i in range(4))
                         card_ierr = int((rec["card"].get("eth_stats") or {}).get("ierrors", 0))
                         lost_n = int(rec["client"].get("lost", 0))
-                        is_pure_phy_crc = (
-                            crc_d > 0
-                            and lost_n <= crc_d + card_ierr
-                            and all(
-                                e.startswith("merc.rx_crc_errors_phy_delta=")
-                                or e.startswith("client.lost=")
-                                or e.startswith("card.eth.ierrors=")
-                                for e in he
-                            )
+                        sent_n = int(rec["client"].get("sent", 0))
+                        k = rec["card"]
+                        h = rec["host"]
+                        all_on_wire_ack_glitch = (
+                            lost_n > 0
+                            and lost_n <= max(crc_d + card_ierr + lane_err_d, 2)
+                            and int(k.get("eth_rx_pkts", -1)) == sent_n
+                            and int(k.get("eth_tx_pkts", -1)) == sent_n
+                            and (h is None or (int(h.get("rx_pkts", -1)) == sent_n and int(h.get("acks_sent", -1)) == sent_n))
+                            and (crc_d > 0 or lane_err_d > 0)
                         )
-                        if is_pure_phy_crc and phy_crc_retries < 2:
+                        only_wire_errs = all(
+                            e.startswith("merc.rx_crc_errors_phy_delta=")
+                            or e.startswith("client.lost=")
+                            or e.startswith("card.eth.ierrors=")
+                            for e in he
+                        )
+                        is_pure_phy_crc = only_wire_errs and (
+                            ((crc_d > 0 or card_ierr > 0) and lost_n <= crc_d + card_ierr)
+                            or all_on_wire_ack_glitch
+                        )
+                        if is_pure_phy_crc and phy_crc_retries < 3:
                             phy_crc_retries += 1
                             print(
-                                f"[rep={rep} {idx + 1}/{len(specs)}] PHY CRC RETRY {phy_crc_retries} ({he}), sleeping 2s...",
+                                f"[rep={rep} {idx + 1}/{len(specs)}] PHY CRC/WIRE RETRY {phy_crc_retries} ({he}, lane_err={lane_err_d}), sleeping 2s...",
                                 flush=True,
                             )
                             time.sleep(2.0)
@@ -975,7 +1030,8 @@ def main() -> int:
         env_doc["finished_utc"] = utc_now()
         env_doc["restore"] = restore_info
         env_doc["post_21s_audit"] = read_clocks_edac()
-        ENV_PATH.write_text(json.dumps(env_doc, indent=2) + "\n")
+        if not args.filter:
+            ENV_PATH.write_text(json.dumps(env_doc, indent=2) + "\n")
 
     return 0
 
