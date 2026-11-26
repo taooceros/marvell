@@ -1,0 +1,155 @@
+=== MRV-195 FORMAL n=3 INTERLEAVED CAMPAIGN START ===
+PRE-ENV: cpu40=3900000kHz(performance) uncore={'package_00_die_00': 2200000, 'package_01_die_01': 2200000} host_ue=0 rp_aer={'aer_rootport_total_err_cor': 0, 'aer_rootport_total_err_nonfatal': 0, 'aer_rootport_total_err_fatal': 0} card_edac={'mc0_ue': 0, 'mc0_ce': 0, 'ea0_ue': 59, 'ea0_ce': 0, 'sei_total': 54}
+[PART 0] cpu40 idle_cal kops/s = [3829.2, 3786.4, 3819.0] (med=3819.0)
+
+=== PART 1: SINGLE-CORE SATURATION MATRIX (W=512, T=8, n=3 interleaved) ===
+[001] part1_sat          r0 sdp_fair    get64   zipf    closed  W=  512 R=     0 -> 12.019 Mrps ( 14.8/14.8G) p50= 41.85 p99= 50.85 sm99= 50.85 cyc=  329 b%=  29 imc=  8.0B
+[002] part1_sat          r0 sdp_fair    put64   zipf    closed  W=  512 R=     0 -> 12.058 Mrps ( 14.9/14.9G) p50= 41.85 p99= 50.75 sm99= 50.75 cyc=  328 b%=  29 imc= 15.2B
+[003] part1_sat          r0 sdp_fair    get256  zipf    closed  W=  512 R=     0 -> 10.784 Mrps ( 29.9/13.3G) p50= 46.55 p99= 56.15 sm99= 56.15 cyc=  369 b%=  58 imc= 10.9B
+[004] part1_sat          r0 sdp_fair    get1024 zipf    closed  W=  512 R=     0 ->  5.355 Mrps ( 47.7/ 6.6G) p50= 94.65 p99=109.55 sm99=  0.00 cyc=  738 b%=  88 imc= 34.6B
+[005] part1_sat          r0 sdp_fair    get4096 zipf    closed  W=  512 R=     0 ->  1.657 Mrps ( 59.1/ 2.0G) p50=305.00 p99=325.00 sm99=  0.00 cyc= 2412 b%=  96 imc=116.1B
+[006] part1_sat          r0 sdp_fair    put4096 zipf    closed  W=  512 R=     0 ->  2.803 Mrps (  3.5/99.9G) p50=181.95 p99=205.00 sm99=  0.00 cyc= 1420 b%=  88 imc= 49.2B
+[007] part1_sat          r0 sdp_fair    mix     zipf    closed  W=  512 R=     0 ->  5.508 Mrps ( 47.4/ 7.5G) p50= 91.55 p99=113.25 sm99=112.85 cyc=  717 b%=  88 imc= 33.7B
+[008] part1_sat          r0 sdp_fair    mix     uniform closed  W=  512 R=     0 ->  5.167 Mrps ( 44.5/ 7.0G) p50= 97.95 p99=117.45 sm99=117.05 cyc=  769 b%=  88 imc= 30.4B
+[009] part1_sat          r0 direct_peek get64   zipf    closed  W=  512 R=     0 -> 17.331 Mrps ( 21.4/21.4G) p50= 28.75 p99= 34.25 sm99= 34.25 cyc=  229 b%=  83 imc=  5.2B
+[010] part1_sat          r0 direct_peek put64   zipf    closed  W=  512 R=     0 -> 17.329 Mrps ( 21.3/21.3G) p50= 28.75 p99= 34.25 sm99= 34.25 cyc=  228 b%=  83 imc=  8.3B
+[011] part1_sat          r0 direct_peek get256  zipf    closed  W=  512 R=     0 -> 13.396 Mrps ( 37.1/16.5G) p50= 37.35 p99= 45.05 sm99= 45.05 cyc=  297 b%=  90 imc=  7.8B
+[012] part1_sat          r0 direct_peek get1024 zipf    closed  W=  512 R=     0 ->  6.098 Mrps ( 54.3/ 7.5G) p50= 83.15 p99= 94.85 sm99=  0.00 cyc=  651 b%= 100 imc= 33.0B
+[013] part1_sat          r0 direct_peek get4096 zipf    closed  W=  512 R=     0 ->  1.708 Mrps ( 60.9/ 2.1G) p50=295.00 p99=345.00 sm99=  0.00 cyc= 2307 b%= 100 imc=144.9B
+[014] part1_sat          r0 direct_peek put4096 zipf    closed  W=  512 R=     0 ->  2.803 Mrps (  3.5/99.9G) p50=182.55 p99=193.25 sm99=  0.00 cyc= 1416 b%=  84 imc= 65.7B
+[015] part1_sat          r0 direct_peek mix     zipf    closed  W=  512 R=     0 ->  6.380 Mrps ( 54.9/ 8.6G) p50= 78.85 p99=102.15 sm99= 94.05 cyc=  622 b%= 100 imc= 14.5B
+[016] part1_sat          r0 direct_peek mix     uniform closed  W=  512 R=     0 ->  5.855 Mrps ( 50.4/ 7.9G) p50= 86.35 p99=107.65 sm99=101.85 cyc=  675 b%= 100 imc= 27.9B
+[017] part1_sat          r0 direct_safe get64   zipf    closed  W=  512 R=     0 -> 18.618 Mrps ( 22.9/22.9G) p50= 26.65 p99= 32.85 sm99= 32.85 cyc=  214 b%=  88 imc=  6.2B
+[018] part1_sat          r0 direct_safe put64   zipf    closed  W=  512 R=     0 -> 18.652 Mrps ( 23.0/23.0G) p50= 26.65 p99= 32.85 sm99= 32.85 cyc=  213 b%=  88 imc=  5.1B
+[019] part1_sat          r0 direct_safe get256  zipf    closed  W=  512 R=     0 -> 13.933 Mrps ( 38.6/17.2G) p50= 35.95 p99= 43.95 sm99= 43.95 cyc=  286 b%=  92 imc=  6.7B
+[020] part1_sat          r0 direct_safe get1024 zipf    closed  W=  512 R=     0 ->  6.098 Mrps ( 54.3/ 7.5G) p50= 83.35 p99= 94.65 sm99=  0.00 cyc=  651 b%= 100 imc= 15.8B
+  [RETRY 1/5] part1_sat r0 direct_safe get4096 zipf R=0.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[021] part1_sat          r0 direct_safe get4096 zipf    closed  W=  512 R=     0 ->  1.718 Mrps ( 61.2/ 2.1G) p50=295.00 p99=315.00 sm99=  0.00 cyc= 2318 b%= 100 imc= 99.8B
+[022] part1_sat          r0 direct_safe put4096 zipf    closed  W=  512 R=     0 ->  2.803 Mrps (  3.5/99.9G) p50=182.45 p99=189.15 sm99=  0.00 cyc= 1410 b%=  92 imc= 42.9B
+[023] part1_sat          r0 direct_safe mix     zipf    closed  W=  512 R=     0 ->  6.394 Mrps ( 55.1/ 8.7G) p50= 79.05 p99= 99.15 sm99= 92.85 cyc=  622 b%= 100 imc= 15.7B
+[024] part1_sat          r0 direct_safe mix     uniform closed  W=  512 R=     0 ->  5.872 Mrps ( 50.6/ 8.0G) p50= 86.35 p99=105.25 sm99=100.45 cyc=  675 b%= 100 imc= 17.2B
+  [EDAC/AER GATE part1 rep 0] card_edac={'mc0_ue': 0, 'mc0_ce': 0, 'ea0_ue': 59, 'ea0_ce': 0, 'sei_total': 54} (delta ea0=0, mc0=0) host_ue=0 rp_aer={'aer_rootport_total_err_cor': 0, 'aer_rootport_total_err_nonfatal': 0, 'aer_rootport_total_err_fatal': 0}
+[025] part1_sat          r1 direct_peek get64   zipf    closed  W=  512 R=     0 -> 17.364 Mrps ( 21.4/21.4G) p50= 28.75 p99= 34.25 sm99= 34.25 cyc=  229 b%=  83 imc=  6.3B
+[026] part1_sat          r1 direct_peek put64   zipf    closed  W=  512 R=     0 -> 17.360 Mrps ( 21.4/21.4G) p50= 28.75 p99= 34.15 sm99= 34.15 cyc=  229 b%=  83 imc=  6.8B
+[027] part1_sat          r1 direct_peek get256  zipf    closed  W=  512 R=     0 -> 13.396 Mrps ( 37.1/16.5G) p50= 37.35 p99= 45.15 sm99= 45.15 cyc=  298 b%=  90 imc= 10.1B
+[028] part1_sat          r1 direct_peek get1024 zipf    closed  W=  512 R=     0 ->  6.061 Mrps ( 54.0/ 7.5G) p50= 83.55 p99= 98.55 sm99=  0.00 cyc=  652 b%= 100 imc= 37.1B
+[029] part1_sat          r1 direct_peek get4096 zipf    closed  W=  512 R=     0 ->  1.722 Mrps ( 61.4/ 2.1G) p50=295.00 p99=325.00 sm99=  0.00 cyc= 2312 b%= 100 imc= 90.5B
+[030] part1_sat          r1 direct_peek put4096 zipf    closed  W=  512 R=     0 ->  2.803 Mrps (  3.5/99.9G) p50=182.55 p99=193.25 sm99=  0.00 cyc= 1415 b%=  84 imc= 43.2B
+[031] part1_sat          r1 direct_peek mix     zipf    closed  W=  512 R=     0 ->  6.393 Mrps ( 55.0/ 8.7G) p50= 78.65 p99=102.55 sm99= 94.65 cyc=  619 b%= 100 imc= 29.2B
+[032] part1_sat          r1 direct_peek mix     uniform closed  W=  512 R=     0 ->  5.871 Mrps ( 50.6/ 8.0G) p50= 86.05 p99=108.85 sm99=103.05 cyc=  672 b%= 100 imc= 24.2B
+[033] part1_sat          r1 direct_safe get64   zipf    closed  W=  512 R=     0 -> 18.670 Mrps ( 23.0/23.0G) p50= 26.65 p99= 32.75 sm99= 32.75 cyc=  214 b%=  88 imc=  4.7B
+[034] part1_sat          r1 direct_safe put64   zipf    closed  W=  512 R=     0 -> 18.698 Mrps ( 23.0/23.0G) p50= 26.65 p99= 32.75 sm99= 32.75 cyc=  212 b%=  88 imc=  6.3B
+[035] part1_sat          r1 direct_safe get256  zipf    closed  W=  512 R=     0 -> 14.014 Mrps ( 38.8/17.3G) p50= 35.75 p99= 43.75 sm99= 43.75 cyc=  285 b%=  92 imc=  6.7B
+  [RETRY 1/5] part1_sat r1 direct_safe get1024 zipf R=0.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[036] part1_sat          r1 direct_safe get1024 zipf    closed  W=  512 R=     0 ->  6.036 Mrps ( 53.8/ 7.4G) p50= 84.25 p99= 93.65 sm99=  0.00 cyc=  658 b%= 100 imc= 22.2B
+[037] part1_sat          r1 direct_safe get4096 zipf    closed  W=  512 R=     0 ->  1.712 Mrps ( 61.0/ 2.1G) p50=295.00 p99=355.00 sm99=  0.00 cyc= 2307 b%= 100 imc= 65.8B
+[038] part1_sat          r1 direct_safe put4096 zipf    closed  W=  512 R=     0 ->  2.803 Mrps (  3.5/99.9G) p50=182.45 p99=188.75 sm99=  0.00 cyc= 1420 b%=  93 imc= 57.5B
+[039] part1_sat          r1 direct_safe mix     zipf    closed  W=  512 R=     0 ->  6.407 Mrps ( 55.1/ 8.7G) p50= 78.95 p99= 99.05 sm99= 92.95 cyc=  620 b%= 100 imc= 15.4B
+  [RETRY 1/5] part1_sat r1 direct_safe mix uniform R=0.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[040] part1_sat          r1 direct_safe mix     uniform closed  W=  512 R=     0 ->  5.883 Mrps ( 50.7/ 8.0G) p50= 86.15 p99=105.15 sm99=100.45 cyc=  674 b%= 100 imc= 28.2B
+[041] part1_sat          r1 sdp_fair    get64   zipf    closed  W=  512 R=     0 -> 12.067 Mrps ( 14.9/14.9G) p50= 41.75 p99= 50.65 sm99= 50.65 cyc=  331 b%=  29 imc=  8.6B
+[042] part1_sat          r1 sdp_fair    put64   zipf    closed  W=  512 R=     0 -> 12.069 Mrps ( 14.9/14.9G) p50= 41.85 p99= 50.65 sm99= 50.65 cyc=  329 b%=  28 imc=  8.0B
+[043] part1_sat          r1 sdp_fair    get256  zipf    closed  W=  512 R=     0 -> 10.768 Mrps ( 29.8/13.3G) p50= 46.65 p99= 56.25 sm99= 56.25 cyc=  370 b%=  57 imc= 14.5B
+[044] part1_sat          r1 sdp_fair    get1024 zipf    closed  W=  512 R=     0 ->  5.442 Mrps ( 48.5/ 6.7G) p50= 93.25 p99=106.65 sm99=  0.00 cyc=  728 b%=  88 imc= 19.9B
+[045] part1_sat          r1 sdp_fair    get4096 zipf    closed  W=  512 R=     0 ->  1.658 Mrps ( 59.1/ 2.0G) p50=305.00 p99=335.00 sm99=  0.00 cyc= 2404 b%=  96 imc= 94.8B
+[046] part1_sat          r1 sdp_fair    put4096 zipf    closed  W=  512 R=     0 ->  2.803 Mrps (  3.5/99.9G) p50=181.85 p99=205.00 sm99=  0.00 cyc= 1417 b%=  88 imc= 43.0B
+[047] part1_sat          r1 sdp_fair    mix     zipf    closed  W=  512 R=     0 ->  5.545 Mrps ( 47.7/ 7.5G) p50= 90.95 p99=112.55 sm99=112.15 cyc=  712 b%=  88 imc= 46.9B
+[048] part1_sat          r1 sdp_fair    mix     uniform closed  W=  512 R=     0 ->  5.225 Mrps ( 44.9/ 7.1G) p50= 96.85 p99=116.15 sm99=115.65 cyc=  761 b%=  88 imc= 19.6B
+  [EDAC/AER GATE part1 rep 1] card_edac={'mc0_ue': 0, 'mc0_ce': 0, 'ea0_ue': 59, 'ea0_ce': 0, 'sei_total': 54} (delta ea0=0, mc0=0) host_ue=0 rp_aer={'aer_rootport_total_err_cor': 0, 'aer_rootport_total_err_nonfatal': 0, 'aer_rootport_total_err_fatal': 0}
+  [RETRY 1/5] part1_sat r2 direct_safe get64 zipf R=0.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[049] part1_sat          r2 direct_safe get64   zipf    closed  W=  512 R=     0 -> 18.692 Mrps ( 23.0/23.0G) p50= 26.55 p99= 32.75 sm99= 32.75 cyc=  212 b%=  88 imc=  4.3B
+[050] part1_sat          r2 direct_safe put64   zipf    closed  W=  512 R=     0 -> 18.689 Mrps ( 23.0/23.0G) p50= 26.65 p99= 32.75 sm99= 32.75 cyc=  212 b%=  88 imc=  5.6B
+[051] part1_sat          r2 direct_safe get256  zipf    closed  W=  512 R=     0 -> 14.030 Mrps ( 38.8/17.3G) p50= 35.65 p99= 43.65 sm99= 43.65 cyc=  283 b%=  92 imc=  8.7B
+[052] part1_sat          r2 direct_safe get1024 zipf    closed  W=  512 R=     0 ->  6.110 Mrps ( 54.5/ 7.5G) p50= 83.25 p99= 92.55 sm99=  0.00 cyc=  651 b%= 100 imc= 29.4B
+[053] part1_sat          r2 direct_safe get4096 zipf    closed  W=  512 R=     0 ->  1.722 Mrps ( 61.4/ 2.1G) p50=295.00 p99=345.00 sm99=  0.00 cyc= 2302 b%= 100 imc= 74.9B
+[054] part1_sat          r2 direct_safe put4096 zipf    closed  W=  512 R=     0 ->  2.803 Mrps (  3.5/99.9G) p50=182.45 p99=188.95 sm99=  0.00 cyc= 1418 b%=  92 imc= 35.1B
+[055] part1_sat          r2 direct_safe mix     zipf    closed  W=  512 R=     0 ->  6.410 Mrps ( 55.2/ 8.7G) p50= 78.85 p99= 99.05 sm99= 92.85 cyc=  620 b%= 100 imc= 22.7B
+[056] part1_sat          r2 direct_safe mix     uniform closed  W=  512 R=     0 ->  5.884 Mrps ( 50.6/ 8.0G) p50= 86.05 p99=106.25 sm99=101.95 cyc=  672 b%= 100 imc= 14.2B
+[057] part1_sat          r2 sdp_fair    get64   zipf    closed  W=  512 R=     0 -> 12.038 Mrps ( 14.8/14.8G) p50= 41.95 p99= 50.85 sm99= 50.85 cyc=  331 b%=  29 imc=  7.2B
+[058] part1_sat          r2 sdp_fair    put64   zipf    closed  W=  512 R=     0 -> 12.034 Mrps ( 14.8/14.8G) p50= 41.95 p99= 50.85 sm99= 50.85 cyc=  329 b%=  29 imc=  7.3B
+[059] part1_sat          r2 sdp_fair    get256  zipf    closed  W=  512 R=     0 -> 10.788 Mrps ( 29.9/13.3G) p50= 46.55 p99= 56.05 sm99= 56.05 cyc=  368 b%=  58 imc=  7.5B
+[060] part1_sat          r2 sdp_fair    get1024 zipf    closed  W=  512 R=     0 ->  5.462 Mrps ( 48.7/ 6.7G) p50= 93.05 p99=104.75 sm99=  0.00 cyc=  728 b%=  88 imc= 29.4B
+[061] part1_sat          r2 sdp_fair    get4096 zipf    closed  W=  512 R=     0 ->  1.664 Mrps ( 59.3/ 2.0G) p50=305.00 p99=325.00 sm99=  0.00 cyc= 2400 b%=  96 imc= 72.2B
+[062] part1_sat          r2 sdp_fair    put4096 zipf    closed  W=  512 R=     0 ->  2.803 Mrps (  3.5/99.9G) p50=181.85 p99=205.00 sm99=  0.00 cyc= 1414 b%=  88 imc= 65.9B
+[063] part1_sat          r2 sdp_fair    mix     zipf    closed  W=  512 R=     0 ->  5.510 Mrps ( 47.4/ 7.5G) p50= 91.25 p99=118.35 sm99=117.85 cyc=  713 b%=  88 imc= 26.4B
+[064] part1_sat          r2 sdp_fair    mix     uniform closed  W=  512 R=     0 ->  5.145 Mrps ( 44.3/ 7.0G) p50= 98.15 p99=120.05 sm99=119.55 cyc=  762 b%=  88 imc= 73.5B
+[065] part1_sat          r2 direct_peek get64   zipf    closed  W=  512 R=     0 -> 17.355 Mrps ( 21.4/21.4G) p50= 28.75 p99= 34.25 sm99= 34.25 cyc=  228 b%=  83 imc=  6.2B
+[066] part1_sat          r2 direct_peek put64   zipf    closed  W=  512 R=     0 -> 17.382 Mrps ( 21.4/21.4G) p50= 28.75 p99= 34.15 sm99= 34.15 cyc=  228 b%=  83 imc= 21.3B
+[067] part1_sat          r2 direct_peek get256  zipf    closed  W=  512 R=     0 -> 13.415 Mrps ( 37.1/16.5G) p50= 37.35 p99= 45.15 sm99= 45.15 cyc=  297 b%=  90 imc=  7.2B
+[068] part1_sat          r2 direct_peek get1024 zipf    closed  W=  512 R=     0 ->  6.084 Mrps ( 54.2/ 7.5G) p50= 83.25 p99= 96.95 sm99=  0.00 cyc=  651 b%= 100 imc= 18.9B
+[069] part1_sat          r2 direct_peek get4096 zipf    closed  W=  512 R=     0 ->  1.720 Mrps ( 61.3/ 2.1G) p50=295.00 p99=325.00 sm99=  0.00 cyc= 2307 b%= 100 imc= 58.8B
+[070] part1_sat          r2 direct_peek put4096 zipf    closed  W=  512 R=     0 ->  2.803 Mrps (  3.5/99.9G) p50=182.55 p99=193.25 sm99=  0.00 cyc= 1411 b%=  84 imc=146.4B
+[071] part1_sat          r2 direct_peek mix     zipf    closed  W=  512 R=     0 ->  6.398 Mrps ( 55.1/ 8.7G) p50= 78.65 p99=101.65 sm99= 93.15 cyc=  622 b%= 100 imc= 14.9B
+  [RETRY 1/5] part1_sat r2 direct_peek mix uniform R=0.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[072] part1_sat          r2 direct_peek mix     uniform closed  W=  512 R=     0 ->  5.878 Mrps ( 50.6/ 8.0G) p50= 86.05 p99=106.75 sm99=100.35 cyc=  676 b%= 100 imc= 28.5B
+  [EDAC/AER GATE part1 rep 2] card_edac={'mc0_ue': 0, 'mc0_ce': 0, 'ea0_ue': 59, 'ea0_ce': 0, 'sei_total': 53} (delta ea0=0, mc0=0) host_ue=0 rp_aer={'aer_rootport_total_err_cor': 0, 'aer_rootport_total_err_nonfatal': 0, 'aer_rootport_total_err_fatal': 0}
+
+=== PART 2A: W=1 UNLOADED END-TO-END LATENCY (n=3 interleaved) ===
+[073] part2a_w1          r0 sdp_fair    get64   zipf    closed  W=    1 R=     0 ->  0.098 Mrps (  0.1/ 0.1G) p50= 10.03 p99= 10.78 sm99= 10.78 cyc=41626 b%=   1 imc=889.7B
+[074] part2a_w1          r0 sdp_fair    get256  zipf    closed  W=    1 R=     0 ->  0.098 Mrps (  0.3/ 0.1G) p50= 10.05 p99= 10.93 sm99= 10.93 cyc=42053 b%=   1 imc=736.9B
+[075] part2a_w1          r0 sdp_fair    get1024 zipf    closed  W=    1 R=     0 ->  0.093 Mrps (  0.8/ 0.1G) p50= 10.54 p99= 11.38 sm99=  0.00 cyc=43960 b%=   2 imc=1737.6B
+[076] part2a_w1          r0 sdp_fair    get4096 zipf    closed  W=    1 R=     0 ->  0.078 Mrps (  2.8/ 0.1G) p50= 12.16 p99= 14.27 sm99=  0.00 cyc=52648 b%=   5 imc=1656.2B
+[077] part2a_w1          r0 direct_peek get64   zipf    closed  W=    1 R=     0 ->  0.182 Mrps (  0.2/ 0.2G) p50=  5.38 p99=  5.67 sm99=  5.67 cyc=22392 b%=   3 imc=460.0B
+[078] part2a_w1          r0 direct_peek get256  zipf    closed  W=    1 R=     0 ->  0.175 Mrps (  0.5/ 0.2G) p50=  5.59 p99=  5.92 sm99=  5.92 cyc=23487 b%=   3 imc=456.8B
+[079] part2a_w1          r0 direct_peek get1024 zipf    closed  W=    1 R=     0 ->  0.135 Mrps (  1.2/ 0.2G) p50=  7.18 p99=  7.58 sm99=  0.00 cyc=30035 b%=   4 imc=1597.8B
+[080] part2a_w1          r0 direct_peek get4096 zipf    closed  W=    1 R=     0 ->  0.106 Mrps (  3.8/ 0.1G) p50=  8.73 p99= 10.66 sm99=  0.00 cyc=38539 b%=   8 imc=1114.7B
+[081] part2a_w1          r0 direct_safe get64   zipf    closed  W=    1 R=     0 ->  0.200 Mrps (  0.2/ 0.2G) p50=  4.88 p99=  5.14 sm99=  5.14 cyc=20378 b%=   3 imc=423.3B
+[082] part2a_w1          r0 direct_safe get256  zipf    closed  W=    1 R=     0 ->  0.191 Mrps (  0.5/ 0.2G) p50=  5.09 p99=  5.37 sm99=  5.37 cyc=21518 b%=   3 imc=370.3B
+[083] part2a_w1          r0 direct_safe get1024 zipf    closed  W=    1 R=     0 ->  0.145 Mrps (  1.3/ 0.2G) p50=  6.70 p99=  7.08 sm99=  0.00 cyc=26625 b%=   4 imc=4089.9B
+[084] part2a_w1          r0 direct_safe get4096 zipf    closed  W=    1 R=     0 ->  0.112 Mrps (  4.0/ 0.1G) p50=  8.23 p99= 10.19 sm99=  0.00 cyc=36185 b%=   8 imc=1475.6B
+[085] part2a_w1          r1 direct_peek get64   zipf    closed  W=    1 R=     0 ->  0.182 Mrps (  0.2/ 0.2G) p50=  5.38 p99=  5.66 sm99=  5.66 cyc=22339 b%=   3 imc=451.4B
+[086] part2a_w1          r1 direct_peek get256  zipf    closed  W=    1 R=     0 ->  0.174 Mrps (  0.5/ 0.2G) p50=  5.59 p99=  5.93 sm99=  5.93 cyc=23572 b%=   3 imc=912.4B
+[087] part2a_w1          r1 direct_peek get1024 zipf    closed  W=    1 R=     0 ->  0.135 Mrps (  1.2/ 0.2G) p50=  7.17 p99=  7.61 sm99=  0.00 cyc=30038 b%=   4 imc=1331.6B
+[088] part2a_w1          r1 direct_peek get4096 zipf    closed  W=    1 R=     0 ->  0.106 Mrps (  3.8/ 0.1G) p50=  8.73 p99= 10.68 sm99=  0.00 cyc=38432 b%=   8 imc=1757.0B
+[089] part2a_w1          r1 direct_safe get64   zipf    closed  W=    1 R=     0 ->  0.200 Mrps (  0.2/ 0.2G) p50=  4.88 p99=  5.18 sm99=  5.18 cyc=20347 b%=   3 imc=411.3B
+[090] part2a_w1          r1 direct_safe get256  zipf    closed  W=    1 R=     0 ->  0.191 Mrps (  0.5/ 0.2G) p50=  5.12 p99=  5.43 sm99=  5.43 cyc=21607 b%=   3 imc=505.5B
+[091] part2a_w1          r1 direct_safe get1024 zipf    closed  W=    1 R=     0 ->  0.145 Mrps (  1.3/ 0.2G) p50=  6.67 p99=  7.18 sm99=  0.00 cyc=28052 b%=   4 imc=1209.5B
+[092] part2a_w1          r1 direct_safe get4096 zipf    closed  W=    1 R=     0 ->  0.112 Mrps (  4.0/ 0.1G) p50=  8.22 p99= 10.15 sm99=  0.00 cyc=36226 b%=   8 imc=1317.1B
+[093] part2a_w1          r1 sdp_fair    get64   zipf    closed  W=    1 R=     0 ->  0.098 Mrps (  0.1/ 0.1G) p50= 10.02 p99= 10.72 sm99= 10.72 cyc=41524 b%=   1 imc=786.9B
+[094] part2a_w1          r1 sdp_fair    get256  zipf    closed  W=    1 R=     0 ->  0.097 Mrps (  0.3/ 0.1G) p50= 10.07 p99= 10.86 sm99= 10.86 cyc=41962 b%=   1 imc=2084.1B
+[095] part2a_w1          r1 sdp_fair    get1024 zipf    closed  W=    1 R=     0 ->  0.093 Mrps (  0.8/ 0.1G) p50= 10.54 p99= 11.34 sm99=  0.00 cyc=43995 b%=   2 imc=1484.0B
+[096] part2a_w1          r1 sdp_fair    get4096 zipf    closed  W=    1 R=     0 ->  0.077 Mrps (  2.8/ 0.1G) p50= 12.16 p99= 14.31 sm99=  0.00 cyc=52712 b%=   5 imc=2174.9B
+[097] part2a_w1          r2 direct_safe get64   zipf    closed  W=    1 R=     0 ->  0.200 Mrps (  0.2/ 0.2G) p50=  4.88 p99=  5.08 sm99=  5.08 cyc=20300 b%=   3 imc=580.6B
+[098] part2a_w1          r2 direct_safe get256  zipf    closed  W=    1 R=     0 ->  0.191 Mrps (  0.5/ 0.2G) p50=  5.12 p99=  5.38 sm99=  5.38 cyc=21409 b%=   3 imc=632.2B
+[099] part2a_w1          r2 direct_safe get1024 zipf    closed  W=    1 R=     0 ->  0.145 Mrps (  1.3/ 0.2G) p50=  6.68 p99=  7.03 sm99=  0.00 cyc=27856 b%=   4 imc=1778.7B
+[100] part2a_w1          r2 direct_safe get4096 zipf    closed  W=    1 R=     0 ->  0.112 Mrps (  4.0/ 0.1G) p50=  8.21 p99= 10.16 sm99=  0.00 cyc=36346 b%=   8 imc=1461.7B
+[101] part2a_w1          r2 sdp_fair    get64   zipf    closed  W=    1 R=     0 ->  0.098 Mrps (  0.1/ 0.1G) p50= 10.03 p99= 10.79 sm99= 10.79 cyc=42054 b%=   1 imc=1920.7B
+[102] part2a_w1          r2 sdp_fair    get256  zipf    closed  W=    1 R=     0 ->  0.098 Mrps (  0.3/ 0.1G) p50= 10.06 p99= 10.87 sm99= 10.87 cyc=42054 b%=   1 imc=1364.2B
+[103] part2a_w1          r2 sdp_fair    get1024 zipf    closed  W=    1 R=     0 ->  0.093 Mrps (  0.8/ 0.1G) p50= 10.54 p99= 11.38 sm99=  0.00 cyc=43670 b%=   2 imc=1746.2B
+[104] part2a_w1          r2 sdp_fair    get4096 zipf    closed  W=    1 R=     0 ->  0.078 Mrps (  2.8/ 0.1G) p50= 12.16 p99= 14.32 sm99=  0.00 cyc=53148 b%=   5 imc=2503.8B
+[105] part2a_w1          r2 direct_peek get64   zipf    closed  W=    1 R=     0 ->  0.182 Mrps (  0.2/ 0.2G) p50=  5.38 p99=  5.62 sm99=  5.62 cyc=22364 b%=   3 imc=694.4B
+[106] part2a_w1          r2 direct_peek get256  zipf    closed  W=    1 R=     0 ->  0.174 Mrps (  0.5/ 0.2G) p50=  5.61 p99=  5.89 sm99=  5.89 cyc=23377 b%=   3 imc=538.6B
+[107] part2a_w1          r2 direct_peek get1024 zipf    closed  W=    1 R=     0 ->  0.135 Mrps (  1.2/ 0.2G) p50=  7.18 p99=  7.61 sm99=  0.00 cyc=30047 b%=   4 imc=1607.0B
+[108] part2a_w1          r2 direct_peek get4096 zipf    closed  W=    1 R=     0 ->  0.106 Mrps (  3.8/ 0.1G) p50=  8.73 p99= 10.68 sm99=  0.00 cyc=38553 b%=   8 imc=1597.2B
+
+=== PART 2B: OPEN-LOOP POISSON LOAD-p99 KNEE CURVES (n=3 interleaved) ===
+[109] part2b_mix_zipf    r0 sdp_fair    mix     zipf    poisson W= 8192 R=   500 ->  0.500 Mrps (  4.3/ 0.7G) p50= 10.72 p99= 15.41 sm99= 14.38 cyc= 8020 b%=   8 imc=219.5B
+[110] part2b_mix_zipf    r0 sdp_fair    mix     zipf    poisson W= 8192 R=  1500 ->  1.498 Mrps ( 12.9/ 2.0G) p50= 12.47 p99= 19.39 sm99= 18.57 cyc= 2652 b%=  24 imc= 79.8B
+[111] part2b_mix_zipf    r0 sdp_fair    mix     zipf    poisson W= 8192 R=  2500 ->  2.500 Mrps ( 21.5/ 3.4G) p50= 14.77 p99= 25.05 sm99= 24.35 cyc= 1584 b%=  41 imc= 48.4B
+  [RETRY 1/5] part2b_mix_zipf r0 sdp_fair mix zipf R=3500.0: ['client lost=93 bad=0 torn=0 send_err=0']
+[112] part2b_mix_zipf    r0 sdp_fair    mix     zipf    poisson W= 8192 R=  3500 ->  3.502 Mrps ( 30.1/ 4.7G) p50= 18.50 p99= 32.45 sm99= 32.05 cyc= 1138 b%=  56 imc= 28.3B
+  [RETRY 1/5] part2b_mix_zipf r0 sdp_fair mix zipf R=4500.0: ['client lost=2751 bad=0 torn=0 send_err=0']
+  [RETRY 2/5] part2b_mix_zipf r0 sdp_fair mix zipf R=4500.0: ['client lost=1069 bad=0 torn=0 send_err=0']
+  [RETRY 3/5] part2b_mix_zipf r0 sdp_fair mix zipf R=4500.0: ['client lost=1224 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+  [RETRY 4/5] part2b_mix_zipf r0 sdp_fair mix zipf R=4500.0: ['client lost=2315 bad=0 torn=0 send_err=0']
+  [RETRY 5/5] part2b_mix_zipf r0 sdp_fair mix zipf R=4500.0: ['client lost=3243 bad=0 torn=0 send_err=0']
+Traceback (most recent call last):
+  File "/home/hongtao/dev/marvell-mrv195/logs/mrv195-2026-11-25/run_mrv195.py", line 888, in <module>
+    main()
+    ~~~~^^
+  File "/home/hongtao/dev/marvell-mrv195/logs/mrv195-2026-11-25/run_mrv195.py", line 879, in main
+    run_campaign(stack, do_restore=args.restore)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongtao/dev/marvell-mrv195/logs/mrv195-2026-11-25/run_mrv195.py", line 753, in run_campaign
+    exec_case(
+    ~~~~~~~~~^
+        f"part2b_{curve_name}",
+        ^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        allow_skip_on_wcap=opt_skip,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/hongtao/dev/marvell-mrv195/logs/mrv195-2026-11-25/run_mrv195.py", line 678, in exec_case
+    raise RuntimeError(f"Failed after {max_retries} attempts: {part} r{rep} {pol} {wl} {kd} R={rk} errs={last_errs}")
+RuntimeError: Failed after 5 attempts: part2b_mix_zipf r0 sdp_fair mix zipf R=4500.0 errs=['client lost=3243 bad=0 torn=0 send_err=0']

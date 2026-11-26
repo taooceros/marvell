@@ -1,0 +1,395 @@
+=== MRV-195 FORMAL n=3 INTERLEAVED CAMPAIGN START (resume_from_2b=True) ===
+PRE-ENV: cpu40=3900000kHz(performance) uncore={'package_00_die_00': 2200000, 'package_01_die_01': 2200000} host_ue=0 rp_aer={'aer_rootport_total_err_cor': 0, 'aer_rootport_total_err_nonfatal': 0, 'aer_rootport_total_err_fatal': 0} card_edac={'mc0_ue': 0, 'mc0_ce': 0, 'ea0_ue': 59, 'ea0_ce': 0, 'sei_total': 53}
+[RESUMED] kept 111 verified rows (part0=3, part1=72, part2a=36), idle_kps_med=3819.0
+
+=== PART 2B: OPEN-LOOP POISSON LOAD-p99 KNEE CURVES (T=8, W=4096, n=3 interleaved) ===
+[109] part2b_mix_zipf    r0 sdp_fair    mix     zipf    poisson W= 4096 R=   500 ->  0.500 Mrps (  4.3/ 0.7G) p50= 10.74 p99= 15.52 sm99= 14.51 cyc= 8004 b%=   8 imc=220.5B
+[110] part2b_mix_zipf    r0 sdp_fair    mix     zipf    poisson W= 4096 R=  1500 ->  1.500 Mrps ( 12.9/ 2.0G) p50= 12.47 p99= 19.57 sm99= 18.73 cyc= 2650 b%=  25 imc= 91.3B
+[111] part2b_mix_zipf    r0 sdp_fair    mix     zipf    poisson W= 4096 R=  2500 ->  2.501 Mrps ( 21.6/ 3.4G) p50= 14.78 p99= 25.35 sm99= 24.75 cyc= 1602 b%=  41 imc= 45.1B
+[112] part2b_mix_zipf    r0 sdp_fair    mix     zipf    poisson W= 4096 R=  3000 ->  3.001 Mrps ( 25.8/ 4.1G) p50= 16.34 p99= 28.75 sm99= 28.25 cyc= 1330 b%=  48 imc= 31.6B
+[113] part2b_mix_zipf    r0 sdp_fair    mix     zipf    poisson W= 4096 R=  3500 ->  3.503 Mrps ( 30.2/ 4.7G) p50= 18.52 p99= 32.55 sm99= 32.05 cyc= 1138 b%=  56 imc= 47.5B
+  [RETRY 1/2] part2b_mix_zipf r0 sdp_fair mix zipf R=4000.0: ['client lost=3361 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=449072']
+  [RETRY 2/2] part2b_mix_zipf r0 sdp_fair mix zipf R=4000.0: ['client lost=1605 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=2908']
+  [OVERLOAD KNEE REACHED] part2b_mix_zipf r0 sdp_fair mix zipf R=4000.0: ['client lost=1605 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=2908']
+[114] part2b_mix_zipf    r0 direct_peek mix     zipf    poisson W= 4096 R=   500 ->  0.500 Mrps (  4.3/ 0.7G) p50=  6.07 p99= 11.48 sm99=  8.09 cyc= 8012 b%=  13 imc=241.0B
+[115] part2b_mix_zipf    r0 direct_peek mix     zipf    poisson W= 4096 R=  1500 ->  1.501 Mrps ( 12.9/ 2.0G) p50=  6.74 p99= 14.44 sm99= 10.29 cyc= 2651 b%=  36 imc= 75.7B
+[116] part2b_mix_zipf    r0 direct_peek mix     zipf    poisson W= 4096 R=  2500 ->  2.500 Mrps ( 21.5/ 3.4G) p50=  7.88 p99= 18.86 sm99= 13.38 cyc= 1594 b%=  56 imc= 42.8B
+  [RETRY 1/5] part2b_mix_zipf r0 direct_peek mix zipf R=3000.0: ['poisson window_cap_hits=169036']
+[117] part2b_mix_zipf    r0 direct_peek mix     zipf    poisson W= 4096 R=  3000 ->  2.997 Mrps ( 25.8/ 4.1G) p50=  8.68 p99= 21.65 sm99= 15.29 cyc= 1334 b%=  64 imc= 45.0B
+[118] part2b_mix_zipf    r0 direct_peek mix     zipf    poisson W= 4096 R=  3500 ->  3.500 Mrps ( 30.1/ 4.7G) p50=  9.71 p99= 24.35 sm99= 17.43 cyc= 1140 b%=  71 imc= 26.4B
+[119] part2b_mix_zipf    r0 direct_peek mix     zipf    poisson W= 4096 R=  4000 ->  4.004 Mrps ( 34.4/ 5.4G) p50= 11.01 p99= 27.95 sm99= 20.75 cyc=  996 b%=  78 imc= 21.9B
+  [PHY-CRC RETRY 1/5] part2b_mix_zipf r0 direct_peek mix zipf R=4500.0: ['client lost=2 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[120] part2b_mix_zipf    r0 direct_peek mix     zipf    poisson W= 4096 R=  4500 ->  4.501 Mrps ( 38.8/ 6.1G) p50= 12.46 p99= 29.55 sm99= 22.25 cyc=  886 b%=  83 imc= 30.4B
+[121] part2b_mix_zipf    r0 direct_peek mix     zipf    poisson W= 4096 R=  5000 ->  5.001 Mrps ( 43.0/ 6.8G) p50= 14.19 p99= 33.85 sm99= 26.15 cyc=  798 b%=  88 imc= 19.1B
+  [RETRY 1/2] part2b_mix_zipf r0 direct_peek mix zipf R=5300.0: ['poisson window_cap_hits=718232']
+[122] part2b_mix_zipf    r0 direct_peek mix     zipf    poisson W= 4096 R=  5300 ->  5.304 Mrps ( 45.6/ 7.2G) p50= 15.46 p99= 38.85 sm99= 30.25 cyc=  752 b%=  91 imc= 17.7B
+  [RETRY 1/2] part2b_mix_zipf r0 direct_peek mix zipf R=5700.0: ['poisson window_cap_hits=13']
+[123] part2b_mix_zipf    r0 direct_peek mix     zipf    poisson W= 4096 R=  5700 ->  5.699 Mrps ( 49.0/ 7.7G) p50= 18.00 p99=245.00 sm99=245.00 cyc=  696 b%=  95 imc= 19.0B
+  [RETRY 1/2] part2b_mix_zipf r0 direct_peek mix zipf R=6000.0: ['poisson window_cap_hits=202']
+  [RETRY 2/2] part2b_mix_zipf r0 direct_peek mix zipf R=6000.0: ['poisson window_cap_hits=1625736']
+  [OVERLOAD KNEE REACHED] part2b_mix_zipf r0 direct_peek mix zipf R=6000.0: ['poisson window_cap_hits=1625736']
+[124] part2b_mix_zipf    r0 direct_safe mix     zipf    poisson W= 4096 R=   500 ->  0.500 Mrps (  4.3/ 0.7G) p50=  5.53 p99= 10.98 sm99=  7.43 cyc= 7761 b%=  14 imc=524.9B
+[125] part2b_mix_zipf    r0 direct_safe mix     zipf    poisson W= 4096 R=  1500 ->  1.501 Mrps ( 12.9/ 2.0G) p50=  5.96 p99= 13.34 sm99=  9.21 cyc= 2659 b%=  37 imc= 69.3B
+[126] part2b_mix_zipf    r0 direct_safe mix     zipf    poisson W= 4096 R=  2500 ->  2.498 Mrps ( 21.5/ 3.4G) p50=  6.83 p99= 17.54 sm99= 12.15 cyc= 1600 b%=  58 imc= 47.2B
+  [PHY-CRC RETRY 1/5] part2b_mix_zipf r0 direct_safe mix zipf R=3000.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[127] part2b_mix_zipf    r0 direct_safe mix     zipf    poisson W= 4096 R=  3000 ->  2.997 Mrps ( 25.8/ 4.1G) p50=  7.45 p99= 20.25 sm99= 14.04 cyc= 1334 b%=  66 imc= 38.2B
+[128] part2b_mix_zipf    r0 direct_safe mix     zipf    poisson W= 4096 R=  3500 ->  3.500 Mrps ( 30.2/ 4.7G) p50=  8.32 p99= 22.95 sm99= 16.18 cyc= 1129 b%=  74 imc= 26.5B
+[129] part2b_mix_zipf    r0 direct_safe mix     zipf    poisson W= 4096 R=  4000 ->  4.000 Mrps ( 34.4/ 5.4G) p50=  9.38 p99= 24.95 sm99= 18.34 cyc=  997 b%=  80 imc= 27.6B
+[130] part2b_mix_zipf    r0 direct_safe mix     zipf    poisson W= 4096 R=  4500 ->  4.500 Mrps ( 38.7/ 6.1G) p50= 10.63 p99= 26.95 sm99= 20.65 cyc=  889 b%=  85 imc= 25.2B
+  [RETRY 1/5] part2b_mix_zipf r0 direct_safe mix zipf R=5000.0: ['poisson window_cap_hits=499']
+[131] part2b_mix_zipf    r0 direct_safe mix     zipf    poisson W= 4096 R=  5000 ->  4.998 Mrps ( 43.0/ 6.8G) p50= 12.24 p99= 99.05 sm99= 96.85 cyc=  797 b%=  91 imc= 27.3B
+[132] part2b_mix_zipf    r0 direct_safe mix     zipf    poisson W= 4096 R=  5300 ->  5.299 Mrps ( 45.6/ 7.2G) p50= 13.28 p99= 32.75 sm99= 26.45 cyc=  753 b%=  93 imc= 15.9B
+  [RETRY 1/2] part2b_mix_zipf r0 direct_safe mix zipf R=5700.0: ['poisson window_cap_hits=94586']
+  [RETRY 2/2] part2b_mix_zipf r0 direct_safe mix zipf R=5700.0: ['poisson window_cap_hits=398']
+  [OVERLOAD KNEE REACHED] part2b_mix_zipf r0 direct_safe mix zipf R=5700.0: ['poisson window_cap_hits=398']
+[133] part2b_mix_zipf    r1 direct_peek mix     zipf    poisson W= 4096 R=   500 ->  0.501 Mrps (  4.3/ 0.7G) p50=  6.07 p99= 11.81 sm99=  8.32 cyc= 7984 b%=  14 imc=166.6B
+[134] part2b_mix_zipf    r1 direct_peek mix     zipf    poisson W= 4096 R=  1500 ->  1.500 Mrps ( 12.9/ 2.0G) p50=  6.75 p99= 14.53 sm99= 10.35 cyc= 2649 b%=  37 imc= 70.6B
+[135] part2b_mix_zipf    r1 direct_peek mix     zipf    poisson W= 4096 R=  2500 ->  2.503 Mrps ( 21.6/ 3.4G) p50=  7.92 p99= 19.41 sm99= 13.81 cyc= 1598 b%=  57 imc= 34.0B
+[136] part2b_mix_zipf    r1 direct_peek mix     zipf    poisson W= 4096 R=  3000 ->  2.999 Mrps ( 25.8/ 4.1G) p50=  8.77 p99= 33.15 sm99= 30.15 cyc= 1328 b%=  65 imc= 99.8B
+[137] part2b_mix_zipf    r1 direct_peek mix     zipf    poisson W= 4096 R=  3500 ->  3.498 Mrps ( 30.1/ 4.7G) p50=  9.79 p99= 24.75 sm99= 17.77 cyc= 1138 b%=  72 imc= 36.0B
+[138] part2b_mix_zipf    r1 direct_peek mix     zipf    poisson W= 4096 R=  4000 ->  3.997 Mrps ( 34.4/ 5.4G) p50= 11.09 p99= 27.15 sm99= 20.05 cyc=  996 b%=  78 imc= 23.2B
+[139] part2b_mix_zipf    r1 direct_peek mix     zipf    poisson W= 4096 R=  4500 ->  4.501 Mrps ( 38.7/ 6.1G) p50= 12.62 p99= 30.25 sm99= 23.05 cyc=  885 b%=  84 imc= 23.7B
+[140] part2b_mix_zipf    r1 direct_peek mix     zipf    poisson W= 4096 R=  5000 ->  5.003 Mrps ( 43.1/ 6.8G) p50= 14.40 p99= 34.25 sm99= 26.75 cyc=  797 b%=  90 imc= 28.2B
+[141] part2b_mix_zipf    r1 direct_peek mix     zipf    poisson W= 4096 R=  5300 ->  5.298 Mrps ( 45.6/ 7.2G) p50= 15.80 p99= 48.65 sm99= 44.05 cyc=  750 b%=  92 imc= 27.9B
+  [RETRY 1/2] part2b_mix_zipf r1 direct_peek mix zipf R=5700.0: ['poisson window_cap_hits=90']
+  [RETRY 2/2] part2b_mix_zipf r1 direct_peek mix zipf R=5700.0: ['poisson window_cap_hits=100']
+  [OVERLOAD KNEE REACHED] part2b_mix_zipf r1 direct_peek mix zipf R=5700.0: ['poisson window_cap_hits=100']
+[142] part2b_mix_zipf    r1 direct_safe mix     zipf    poisson W= 4096 R=   500 ->  0.500 Mrps (  4.3/ 0.7G) p50=  5.53 p99= 10.95 sm99=  7.39 cyc= 8008 b%=  13 imc=249.6B
+[143] part2b_mix_zipf    r1 direct_safe mix     zipf    poisson W= 4096 R=  1500 ->  1.499 Mrps ( 12.9/ 2.0G) p50=  5.96 p99= 13.35 sm99=  9.21 cyc= 2666 b%=  37 imc= 68.3B
+[144] part2b_mix_zipf    r1 direct_safe mix     zipf    poisson W= 4096 R=  2500 ->  2.501 Mrps ( 21.5/ 3.4G) p50=  6.83 p99= 17.52 sm99= 12.15 cyc= 1594 b%=  58 imc= 45.6B
+[145] part2b_mix_zipf    r1 direct_safe mix     zipf    poisson W= 4096 R=  3000 ->  3.002 Mrps ( 25.8/ 4.1G) p50=  7.47 p99= 20.45 sm99= 14.15 cyc= 1325 b%=  66 imc= 33.2B
+[146] part2b_mix_zipf    r1 direct_safe mix     zipf    poisson W= 4096 R=  3500 ->  3.502 Mrps ( 30.2/ 4.7G) p50=  8.32 p99= 22.95 sm99= 16.14 cyc= 1133 b%=  74 imc= 28.2B
+  [PHY-CRC RETRY 1/5] part2b_mix_zipf r1 direct_safe mix zipf R=4000.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+  [RETRY 1/5] part2b_mix_zipf r1 direct_safe mix zipf R=4000.0: ['poisson window_cap_hits=341207']
+[147] part2b_mix_zipf    r1 direct_safe mix     zipf    poisson W= 4096 R=  4000 ->  4.000 Mrps ( 34.4/ 5.4G) p50=  9.43 p99= 24.95 sm99= 18.32 cyc=  992 b%=  80 imc= 21.5B
+[148] part2b_mix_zipf    r1 direct_safe mix     zipf    poisson W= 4096 R=  4500 ->  4.503 Mrps ( 38.7/ 6.1G) p50= 10.70 p99= 27.75 sm99= 21.45 cyc=  886 b%=  86 imc= 32.2B
+[149] part2b_mix_zipf    r1 direct_safe mix     zipf    poisson W= 4096 R=  5000 ->  5.005 Mrps ( 43.0/ 6.8G) p50= 12.18 p99= 29.35 sm99= 23.15 cyc=  796 b%=  91 imc= 21.2B
+[150] part2b_mix_zipf    r1 direct_safe mix     zipf    poisson W= 4096 R=  5300 ->  5.300 Mrps ( 45.6/ 7.2G) p50= 13.44 p99= 38.85 sm99= 34.25 cyc=  749 b%=  94 imc= 19.8B
+  [PHY-CRC RETRY 1/5] part2b_mix_zipf r1 direct_safe mix zipf R=5700.0: ['client lost=1 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=886', 'merc_rx_crc_errors_phy=1']
+  [RETRY 1/2] part2b_mix_zipf r1 direct_safe mix zipf R=5700.0: ['poisson window_cap_hits=1191950']
+  [RETRY 2/2] part2b_mix_zipf r1 direct_safe mix zipf R=5700.0: ['poisson window_cap_hits=339366']
+  [OVERLOAD KNEE REACHED] part2b_mix_zipf r1 direct_safe mix zipf R=5700.0: ['poisson window_cap_hits=339366']
+[151] part2b_mix_zipf    r1 sdp_fair    mix     zipf    poisson W= 4096 R=   500 ->  0.502 Mrps (  4.3/ 0.7G) p50= 10.68 p99= 15.38 sm99= 14.31 cyc= 7974 b%=   8 imc=296.6B
+  [RETRY 1/5] part2b_mix_zipf r1 sdp_fair mix zipf R=1500.0: ['client lost=2410 bad=0 torn=0 send_err=0']
+[152] part2b_mix_zipf    r1 sdp_fair    mix     zipf    poisson W= 4096 R=  1500 ->  1.499 Mrps ( 12.9/ 2.0G) p50= 12.46 p99= 19.52 sm99= 18.70 cyc= 2642 b%=  25 imc=118.5B
+[153] part2b_mix_zipf    r1 sdp_fair    mix     zipf    poisson W= 4096 R=  2500 ->  2.497 Mrps ( 21.5/ 3.4G) p50= 14.74 p99= 25.25 sm99= 24.65 cyc= 1598 b%=  41 imc= 40.2B
+  [RETRY 1/5] part2b_mix_zipf r1 sdp_fair mix zipf R=3000.0: ['client lost=3370 bad=0 torn=0 send_err=0']
+[154] part2b_mix_zipf    r1 sdp_fair    mix     zipf    poisson W= 4096 R=  3000 ->  3.000 Mrps ( 25.8/ 4.1G) p50= 16.36 p99= 28.65 sm99= 28.05 cyc= 1328 b%=  49 imc= 56.3B
+  [PHY-CRC RETRY 1/5] part2b_mix_zipf r1 sdp_fair mix zipf R=3500.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[155] part2b_mix_zipf    r1 sdp_fair    mix     zipf    poisson W= 4096 R=  3500 ->  3.501 Mrps ( 30.1/ 4.7G) p50= 18.52 p99= 32.55 sm99= 32.05 cyc= 1136 b%=  56 imc= 37.7B
+  [RETRY 1/2] part2b_mix_zipf r1 sdp_fair mix zipf R=4000.0: ['client lost=337 bad=0 torn=0 send_err=0']
+  [RETRY 2/2] part2b_mix_zipf r1 sdp_fair mix zipf R=4000.0: ['client lost=3349 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=527672']
+  [OVERLOAD KNEE REACHED] part2b_mix_zipf r1 sdp_fair mix zipf R=4000.0: ['client lost=3349 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=527672']
+[156] part2b_mix_zipf    r2 direct_safe mix     zipf    poisson W= 4096 R=   500 ->  0.499 Mrps (  4.3/ 0.7G) p50=  5.53 p99= 10.90 sm99=  7.38 cyc= 8028 b%=  13 imc=243.3B
+[157] part2b_mix_zipf    r2 direct_safe mix     zipf    poisson W= 4096 R=  1500 ->  1.500 Mrps ( 12.9/ 2.0G) p50=  5.96 p99= 13.41 sm99=  9.23 cyc= 2637 b%=  38 imc= 89.3B
+[158] part2b_mix_zipf    r2 direct_safe mix     zipf    poisson W= 4096 R=  2500 ->  2.499 Mrps ( 21.5/ 3.4G) p50=  6.82 p99= 17.46 sm99= 12.09 cyc= 1599 b%=  58 imc=283.9B
+[159] part2b_mix_zipf    r2 direct_safe mix     zipf    poisson W= 4096 R=  3000 ->  3.001 Mrps ( 25.8/ 4.1G) p50=  7.50 p99= 30.65 sm99= 28.75 cyc= 1319 b%=  66 imc=114.3B
+[160] part2b_mix_zipf    r2 direct_safe mix     zipf    poisson W= 4096 R=  3500 ->  3.503 Mrps ( 30.2/ 4.7G) p50=  8.31 p99= 22.95 sm99= 16.11 cyc= 1134 b%=  74 imc= 29.3B
+[161] part2b_mix_zipf    r2 direct_safe mix     zipf    poisson W= 4096 R=  4000 ->  4.001 Mrps ( 34.5/ 5.4G) p50=  9.38 p99= 24.75 sm99= 18.02 cyc=  996 b%=  80 imc= 26.9B
+[162] part2b_mix_zipf    r2 direct_safe mix     zipf    poisson W= 4096 R=  4500 ->  4.498 Mrps ( 38.8/ 6.1G) p50= 10.72 p99= 27.05 sm99= 20.85 cyc=  884 b%=  86 imc= 96.9B
+[163] part2b_mix_zipf    r2 direct_safe mix     zipf    poisson W= 4096 R=  5000 ->  5.000 Mrps ( 43.0/ 6.8G) p50= 12.16 p99= 29.75 sm99= 23.45 cyc=  798 b%=  91 imc= 24.2B
+[164] part2b_mix_zipf    r2 direct_safe mix     zipf    poisson W= 4096 R=  5300 ->  5.303 Mrps ( 45.6/ 7.2G) p50= 13.29 p99= 32.95 sm99= 26.65 cyc=  751 b%=  93 imc= 19.4B
+  [RETRY 1/2] part2b_mix_zipf r2 direct_safe mix zipf R=5700.0: ['poisson window_cap_hits=49365']
+  [PHY-CRC RETRY 1/5] part2b_mix_zipf r2 direct_safe mix zipf R=5700.0: ['client lost=1 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=1150796', 'merc_rx_crc_errors_phy=1']
+[165] part2b_mix_zipf    r2 direct_safe mix     zipf    poisson W= 4096 R=  5700 ->  5.701 Mrps ( 49.1/ 7.7G) p50= 15.26 p99= 37.65 sm99= 31.55 cyc=  700 b%=  96 imc= 16.6B
+  [RETRY 1/2] part2b_mix_zipf r2 direct_safe mix zipf R=6000.0: ['poisson window_cap_hits=1343']
+  [PHY-CRC RETRY 1/5] part2b_mix_zipf r2 direct_safe mix zipf R=6000.0: ['client lost=1 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=406', 'merc_rx_crc_errors_phy=1']
+  [RETRY 2/2] part2b_mix_zipf r2 direct_safe mix zipf R=6000.0: ['poisson window_cap_hits=1883']
+  [OVERLOAD KNEE REACHED] part2b_mix_zipf r2 direct_safe mix zipf R=6000.0: ['poisson window_cap_hits=1883']
+[166] part2b_mix_zipf    r2 sdp_fair    mix     zipf    poisson W= 4096 R=   500 ->  0.500 Mrps (  4.3/ 0.7G) p50= 10.68 p99= 15.30 sm99= 14.21 cyc= 7973 b%=   8 imc=230.1B
+[167] part2b_mix_zipf    r2 sdp_fair    mix     zipf    poisson W= 4096 R=  1500 ->  1.497 Mrps ( 12.9/ 2.0G) p50= 12.46 p99= 19.36 sm99= 18.52 cyc= 2659 b%=  24 imc= 77.0B
+[168] part2b_mix_zipf    r2 sdp_fair    mix     zipf    poisson W= 4096 R=  2500 ->  2.503 Mrps ( 21.5/ 3.4G) p50= 14.74 p99= 24.85 sm99= 24.25 cyc= 1594 b%=  41 imc= 37.3B
+[169] part2b_mix_zipf    r2 sdp_fair    mix     zipf    poisson W= 4096 R=  3000 ->  3.001 Mrps ( 25.8/ 4.1G) p50= 16.38 p99= 28.25 sm99= 27.75 cyc= 1323 b%=  49 imc= 43.4B
+[170] part2b_mix_zipf    r2 sdp_fair    mix     zipf    poisson W= 4096 R=  3500 ->  3.501 Mrps ( 30.1/ 4.7G) p50= 18.48 p99= 32.35 sm99= 31.85 cyc= 1138 b%=  56 imc= 27.4B
+  [RETRY 1/2] part2b_mix_zipf r2 sdp_fair mix zipf R=4000.0: ['client lost=492 bad=0 torn=0 send_err=0']
+  [RETRY 2/2] part2b_mix_zipf r2 sdp_fair mix zipf R=4000.0: ['client lost=734 bad=0 torn=0 send_err=0']
+  [OVERLOAD KNEE REACHED] part2b_mix_zipf r2 sdp_fair mix zipf R=4000.0: ['client lost=734 bad=0 torn=0 send_err=0']
+[171] part2b_mix_zipf    r2 direct_peek mix     zipf    poisson W= 4096 R=   500 ->  0.499 Mrps (  4.3/ 0.7G) p50=  6.08 p99= 11.55 sm99=  8.18 cyc= 8015 b%=  13 imc=208.4B
+[172] part2b_mix_zipf    r2 direct_peek mix     zipf    poisson W= 4096 R=  1500 ->  1.501 Mrps ( 12.9/ 2.0G) p50=  6.75 p99= 14.54 sm99= 10.31 cyc= 2652 b%=  37 imc= 74.7B
+[173] part2b_mix_zipf    r2 direct_peek mix     zipf    poisson W= 4096 R=  2500 ->  2.500 Mrps ( 21.5/ 3.4G) p50=  7.91 p99= 18.95 sm99= 13.45 cyc= 1591 b%=  56 imc= 50.9B
+[174] part2b_mix_zipf    r2 direct_peek mix     zipf    poisson W= 4096 R=  3000 ->  2.998 Mrps ( 25.8/ 4.1G) p50=  8.71 p99= 21.95 sm99= 15.53 cyc= 1338 b%=  64 imc= 31.5B
+[175] part2b_mix_zipf    r2 direct_peek mix     zipf    poisson W= 4096 R=  3500 ->  3.501 Mrps ( 30.1/ 4.7G) p50=  9.79 p99= 24.55 sm99= 17.55 cyc= 1139 b%=  72 imc= 31.8B
+[176] part2b_mix_zipf    r2 direct_peek mix     zipf    poisson W= 4096 R=  4000 ->  4.001 Mrps ( 34.4/ 5.4G) p50= 11.09 p99= 27.05 sm99= 19.91 cyc=  996 b%=  78 imc= 21.7B
+[177] part2b_mix_zipf    r2 direct_peek mix     zipf    poisson W= 4096 R=  4500 ->  4.501 Mrps ( 38.7/ 6.1G) p50= 12.64 p99= 30.55 sm99= 23.45 cyc=  877 b%=  84 imc= 49.9B
+[178] part2b_mix_zipf    r2 direct_peek mix     zipf    poisson W= 4096 R=  5000 ->  4.998 Mrps ( 43.1/ 6.8G) p50= 14.36 p99= 33.85 sm99= 26.35 cyc=  798 b%=  89 imc= 18.8B
+[179] part2b_mix_zipf    r2 direct_peek mix     zipf    poisson W= 4096 R=  5300 ->  5.302 Mrps ( 45.6/ 7.2G) p50= 15.70 p99= 37.15 sm99= 29.15 cyc=  752 b%=  92 imc= 16.9B
+  [RETRY 1/2] part2b_mix_zipf r2 direct_peek mix zipf R=5700.0: ['poisson window_cap_hits=2623224']
+  [RETRY 2/2] part2b_mix_zipf r2 direct_peek mix zipf R=5700.0: ['poisson window_cap_hits=261']
+  [OVERLOAD KNEE REACHED] part2b_mix_zipf r2 direct_peek mix zipf R=5700.0: ['poisson window_cap_hits=261']
+  [EDAC/AER GATE mix_zipf] card_edac={'mc0_ue': 0, 'mc0_ce': 0, 'ea0_ue': 59, 'ea0_ce': 0, 'sei_total': 52} (delta ea0=0, mc0=0) host_ue=0 rp_aer={'aer_rootport_total_err_cor': 0, 'aer_rootport_total_err_nonfatal': 0, 'aer_rootport_total_err_fatal': 0}
+[180] part2b_mix_uniform r0 sdp_fair    mix     uniform poisson W= 4096 R=   500 ->  0.500 Mrps (  4.3/ 0.7G) p50= 10.64 p99= 15.29 sm99= 14.22 cyc= 8000 b%=   9 imc=219.1B
+[181] part2b_mix_uniform r0 sdp_fair    mix     uniform poisson W= 4096 R=  1500 ->  1.501 Mrps ( 12.9/ 2.0G) p50= 12.46 p99= 19.54 sm99= 18.70 cyc= 2649 b%=  27 imc= 77.1B
+[182] part2b_mix_uniform r0 sdp_fair    mix     uniform poisson W= 4096 R=  2500 ->  2.499 Mrps ( 21.5/ 3.4G) p50= 14.79 p99= 25.25 sm99= 24.65 cyc= 1601 b%=  44 imc= 52.3B
+[183] part2b_mix_uniform r0 sdp_fair    mix     uniform poisson W= 4096 R=  3000 ->  3.002 Mrps ( 25.9/ 4.1G) p50= 16.48 p99= 28.85 sm99= 28.35 cyc= 1328 b%=  52 imc= 31.3B
+[184] part2b_mix_uniform r0 sdp_fair    mix     uniform poisson W= 4096 R=  3500 ->  3.503 Mrps ( 30.2/ 4.7G) p50= 18.73 p99= 32.85 sm99= 32.35 cyc= 1132 b%=  61 imc= 32.5B
+  [RETRY 1/2] part2b_mix_uniform r0 sdp_fair mix uniform R=4000.0: ['client lost=1051 bad=0 torn=0 send_err=0']
+  [RETRY 2/2] part2b_mix_uniform r0 sdp_fair mix uniform R=4000.0: ['client lost=2013 bad=0 torn=0 send_err=0']
+  [OVERLOAD KNEE REACHED] part2b_mix_uniform r0 sdp_fair mix uniform R=4000.0: ['client lost=2013 bad=0 torn=0 send_err=0']
+[185] part2b_mix_uniform r0 direct_peek mix     uniform poisson W= 4096 R=   500 ->  0.500 Mrps (  4.3/ 0.7G) p50=  6.04 p99= 11.66 sm99=  8.13 cyc= 7954 b%=  14 imc=211.9B
+[186] part2b_mix_uniform r0 direct_peek mix     uniform poisson W= 4096 R=  1500 ->  1.497 Mrps ( 12.9/ 2.0G) p50=  6.74 p99= 14.88 sm99= 10.40 cyc= 2592 b%=  39 imc=126.8B
+[187] part2b_mix_uniform r0 direct_peek mix     uniform poisson W= 4096 R=  2500 ->  2.499 Mrps ( 21.5/ 3.4G) p50=  7.92 p99= 19.68 sm99= 13.79 cyc= 1601 b%=  59 imc= 57.5B
+[188] part2b_mix_uniform r0 direct_peek mix     uniform poisson W= 4096 R=  3000 ->  2.999 Mrps ( 25.8/ 4.1G) p50=  8.79 p99= 22.95 sm99= 16.05 cyc= 1325 b%=  67 imc= 31.3B
+  [PHY-CRC RETRY 1/5] part2b_mix_uniform r0 direct_peek mix uniform R=3500.0: ['client lost=2 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=104793', 'merc_rx_crc_errors_phy=2']
+[189] part2b_mix_uniform r0 direct_peek mix     uniform poisson W= 4096 R=  3500 ->  3.499 Mrps ( 30.1/ 4.7G) p50=  9.94 p99= 25.35 sm99= 18.12 cyc= 1138 b%=  75 imc= 46.6B
+[190] part2b_mix_uniform r0 direct_peek mix     uniform poisson W= 4096 R=  4000 ->  4.001 Mrps ( 34.4/ 5.4G) p50= 11.34 p99= 27.55 sm99= 20.45 cyc=  996 b%=  82 imc= 21.9B
+[191] part2b_mix_uniform r0 direct_peek mix     uniform poisson W= 4096 R=  4500 ->  4.500 Mrps ( 38.7/ 6.1G) p50= 12.94 p99= 30.75 sm99= 23.85 cyc=  883 b%=  88 imc= 23.0B
+[192] part2b_mix_uniform r0 direct_peek mix     uniform poisson W= 4096 R=  5000 ->  5.003 Mrps ( 43.0/ 6.8G) p50= 14.98 p99= 35.35 sm99= 28.45 cyc=  796 b%=  93 imc= 19.7B
+  [RETRY 1/2] part2b_mix_uniform r0 direct_peek mix uniform R=5400.0: ['poisson window_cap_hits=1283']
+  [PHY-CRC RETRY 1/5] part2b_mix_uniform r0 direct_peek mix uniform R=5400.0: ['client lost=1 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=567', 'merc_rx_crc_errors_phy=1']
+  [PHY-CRC RETRY 2/5] part2b_mix_uniform r0 direct_peek mix uniform R=5400.0: ['client lost=1 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=185', 'merc_rx_crc_errors_phy=1']
+  [RETRY 2/2] part2b_mix_uniform r0 direct_peek mix uniform R=5400.0: ['poisson window_cap_hits=44294']
+  [OVERLOAD KNEE REACHED] part2b_mix_uniform r0 direct_peek mix uniform R=5400.0: ['poisson window_cap_hits=44294']
+[193] part2b_mix_uniform r0 direct_safe mix     uniform poisson W= 4096 R=   500 ->  0.501 Mrps (  4.3/ 0.7G) p50=  5.49 p99= 11.19 sm99=  7.59 cyc= 8003 b%=  14 imc=179.3B
+[194] part2b_mix_uniform r0 direct_safe mix     uniform poisson W= 4096 R=  1500 ->  1.501 Mrps ( 12.9/ 2.0G) p50=  5.95 p99= 13.45 sm99=  9.16 cyc= 2655 b%=  39 imc= 64.3B
+[195] part2b_mix_uniform r0 direct_safe mix     uniform poisson W= 4096 R=  2500 ->  2.502 Mrps ( 21.5/ 3.4G) p50=  6.83 p99= 18.07 sm99= 12.38 cyc= 1594 b%=  60 imc= 42.1B
+[196] part2b_mix_uniform r0 direct_safe mix     uniform poisson W= 4096 R=  3000 ->  3.000 Mrps ( 25.8/ 4.1G) p50=  7.51 p99= 20.85 sm99= 14.38 cyc= 1328 b%=  68 imc= 32.1B
+[197] part2b_mix_uniform r0 direct_safe mix     uniform poisson W= 4096 R=  3500 ->  3.498 Mrps ( 30.0/ 4.7G) p50=  8.44 p99= 23.25 sm99= 16.39 cyc= 1144 b%=  76 imc= 28.0B
+[198] part2b_mix_uniform r0 direct_safe mix     uniform poisson W= 4096 R=  4000 ->  4.001 Mrps ( 34.4/ 5.4G) p50=  9.65 p99= 25.15 sm99= 18.68 cyc=  988 b%=  83 imc= 23.9B
+[199] part2b_mix_uniform r0 direct_safe mix     uniform poisson W= 4096 R=  4500 ->  4.500 Mrps ( 38.7/ 6.1G) p50= 11.05 p99= 27.55 sm99= 21.65 cyc=  881 b%=  89 imc= 21.4B
+  [RETRY 1/2] part2b_mix_uniform r0 direct_safe mix uniform R=5000.0: ['poisson window_cap_hits=1387155']
+[200] part2b_mix_uniform r0 direct_safe mix     uniform poisson W= 4096 R=  5000 ->  5.004 Mrps ( 43.0/ 6.8G) p50= 12.71 p99= 30.55 sm99= 24.85 cyc=  795 b%=  94 imc= 22.7B
+  [RETRY 1/2] part2b_mix_uniform r0 direct_safe mix uniform R=5400.0: ['poisson window_cap_hits=246626']
+  [RETRY 2/2] part2b_mix_uniform r0 direct_safe mix uniform R=5400.0: ['poisson window_cap_hits=1967']
+  [OVERLOAD KNEE REACHED] part2b_mix_uniform r0 direct_safe mix uniform R=5400.0: ['poisson window_cap_hits=1967']
+  [PHY-CRC RETRY 1/5] part2b_mix_uniform r1 direct_peek mix uniform R=500.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[201] part2b_mix_uniform r1 direct_peek mix     uniform poisson W= 4096 R=   500 ->  0.500 Mrps (  4.3/ 0.7G) p50=  6.04 p99= 11.59 sm99=  8.04 cyc= 7933 b%=  14 imc=474.4B
+[202] part2b_mix_uniform r1 direct_peek mix     uniform poisson W= 4096 R=  1500 ->  1.500 Mrps ( 12.9/ 2.0G) p50=  6.72 p99= 14.64 sm99= 10.29 cyc= 2660 b%=  38 imc= 68.3B
+[203] part2b_mix_uniform r1 direct_peek mix     uniform poisson W= 4096 R=  2500 ->  2.502 Mrps ( 21.5/ 3.4G) p50=  7.91 p99= 19.50 sm99= 13.68 cyc= 1600 b%=  59 imc= 43.4B
+[204] part2b_mix_uniform r1 direct_peek mix     uniform poisson W= 4096 R=  3000 ->  2.999 Mrps ( 25.8/ 4.1G) p50=  8.77 p99= 22.75 sm99= 15.96 cyc= 1327 b%=  67 imc= 31.0B
+[205] part2b_mix_uniform r1 direct_peek mix     uniform poisson W= 4096 R=  3500 ->  3.502 Mrps ( 30.1/ 4.7G) p50=  9.94 p99= 25.25 sm99= 18.07 cyc= 1135 b%=  75 imc= 22.7B
+[206] part2b_mix_uniform r1 direct_peek mix     uniform poisson W= 4096 R=  4000 ->  3.996 Mrps ( 34.4/ 5.4G) p50= 11.34 p99= 27.65 sm99= 20.55 cyc=  998 b%=  81 imc= 22.8B
+[207] part2b_mix_uniform r1 direct_peek mix     uniform poisson W= 4096 R=  4500 ->  4.496 Mrps ( 38.7/ 6.1G) p50= 12.88 p99= 30.25 sm99= 23.35 cyc=  888 b%=  87 imc= 24.8B
+[208] part2b_mix_uniform r1 direct_peek mix     uniform poisson W= 4096 R=  5000 ->  4.996 Mrps ( 43.0/ 6.8G) p50= 15.09 p99= 63.05 sm99= 60.65 cyc=  792 b%=  93 imc= 57.3B
+  [RETRY 1/2] part2b_mix_uniform r1 direct_peek mix uniform R=5400.0: ['poisson window_cap_hits=318']
+  [RETRY 2/2] part2b_mix_uniform r1 direct_peek mix uniform R=5400.0: ['poisson window_cap_hits=100']
+  [OVERLOAD KNEE REACHED] part2b_mix_uniform r1 direct_peek mix uniform R=5400.0: ['poisson window_cap_hits=100']
+[209] part2b_mix_uniform r1 direct_safe mix     uniform poisson W= 4096 R=   500 ->  0.499 Mrps (  4.3/ 0.7G) p50=  5.50 p99= 10.89 sm99=  7.33 cyc= 8025 b%=  14 imc=164.5B
+[210] part2b_mix_uniform r1 direct_safe mix     uniform poisson W= 4096 R=  1500 ->  1.500 Mrps ( 12.9/ 2.0G) p50=  5.96 p99= 13.71 sm99=  9.35 cyc= 2646 b%=  40 imc=187.8B
+[211] part2b_mix_uniform r1 direct_safe mix     uniform poisson W= 4096 R=  2500 ->  2.498 Mrps ( 21.5/ 3.4G) p50=  6.83 p99= 18.04 sm99= 12.34 cyc= 1603 b%=  60 imc= 36.0B
+[212] part2b_mix_uniform r1 direct_safe mix     uniform poisson W= 4096 R=  3000 ->  2.999 Mrps ( 25.8/ 4.1G) p50=  7.54 p99= 20.95 sm99= 14.45 cyc= 1324 b%=  69 imc= 36.1B
+[213] part2b_mix_uniform r1 direct_safe mix     uniform poisson W= 4096 R=  3500 ->  3.500 Mrps ( 30.1/ 4.7G) p50=  8.46 p99= 23.25 sm99= 16.36 cyc= 1140 b%=  76 imc= 35.5B
+[214] part2b_mix_uniform r1 direct_safe mix     uniform poisson W= 4096 R=  4000 ->  4.002 Mrps ( 34.4/ 5.4G) p50=  9.62 p99= 25.05 sm99= 18.57 cyc=  999 b%=  83 imc= 43.0B
+[215] part2b_mix_uniform r1 direct_safe mix     uniform poisson W= 4096 R=  4500 ->  4.498 Mrps ( 38.7/ 6.1G) p50= 11.12 p99= 30.85 sm99= 25.65 cyc=  880 b%=  89 imc= 20.4B
+  [RETRY 1/2] part2b_mix_uniform r1 direct_safe mix uniform R=5000.0: ['poisson window_cap_hits=374']
+  [RETRY 2/2] part2b_mix_uniform r1 direct_safe mix uniform R=5000.0: ['poisson window_cap_hits=95']
+  [OVERLOAD KNEE REACHED] part2b_mix_uniform r1 direct_safe mix uniform R=5000.0: ['poisson window_cap_hits=95']
+[216] part2b_mix_uniform r1 sdp_fair    mix     uniform poisson W= 4096 R=   500 ->  0.501 Mrps (  4.3/ 0.7G) p50= 10.64 p99= 15.36 sm99= 14.30 cyc= 7946 b%=   9 imc=219.0B
+[217] part2b_mix_uniform r1 sdp_fair    mix     uniform poisson W= 4096 R=  1500 ->  1.501 Mrps ( 12.9/ 2.0G) p50= 12.46 p99= 19.73 sm99= 18.88 cyc= 2657 b%=  26 imc= 73.0B
+  [PHY-CRC RETRY 1/5] part2b_mix_uniform r1 sdp_fair mix uniform R=2500.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[218] part2b_mix_uniform r1 sdp_fair    mix     uniform poisson W= 4096 R=  2500 ->  2.499 Mrps ( 21.5/ 3.4G) p50= 14.79 p99= 25.45 sm99= 24.75 cyc= 1595 b%=  44 imc= 39.3B
+[219] part2b_mix_uniform r1 sdp_fair    mix     uniform poisson W= 4096 R=  3000 ->  3.003 Mrps ( 25.8/ 4.1G) p50= 16.45 p99= 28.85 sm99= 28.35 cyc= 1327 b%=  52 imc= 31.2B
+[220] part2b_mix_uniform r1 sdp_fair    mix     uniform poisson W= 4096 R=  3500 ->  3.502 Mrps ( 30.1/ 4.7G) p50= 18.70 p99= 33.35 sm99= 32.85 cyc= 1134 b%=  61 imc= 35.3B
+[221] part2b_mix_uniform r1 sdp_fair    mix     uniform poisson W= 4096 R=  4000 ->  4.001 Mrps ( 34.4/ 5.4G) p50= 21.75 p99= 38.85 sm99= 38.45 cyc=  995 b%=  68 imc= 25.3B
+[222] part2b_mix_uniform r2 direct_safe mix     uniform poisson W= 4096 R=   500 ->  0.501 Mrps (  4.3/ 0.7G) p50=  5.50 p99= 10.98 sm99=  7.37 cyc= 7952 b%=  14 imc=272.1B
+[223] part2b_mix_uniform r2 direct_safe mix     uniform poisson W= 4096 R=  1500 ->  1.501 Mrps ( 12.9/ 2.0G) p50=  5.95 p99= 13.48 sm99=  9.13 cyc= 2661 b%=  39 imc= 60.5B
+  [PHY-CRC RETRY 1/5] part2b_mix_uniform r2 direct_safe mix uniform R=2500.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[224] part2b_mix_uniform r2 direct_safe mix     uniform poisson W= 4096 R=  2500 ->  2.499 Mrps ( 21.5/ 3.4G) p50=  6.84 p99= 18.04 sm99= 12.37 cyc= 1594 b%=  60 imc= 43.5B
+[225] part2b_mix_uniform r2 direct_safe mix     uniform poisson W= 4096 R=  3000 ->  3.001 Mrps ( 25.8/ 4.1G) p50=  7.54 p99= 21.15 sm99= 14.59 cyc= 1334 b%=  69 imc= 42.7B
+[226] part2b_mix_uniform r2 direct_safe mix     uniform poisson W= 4096 R=  3500 ->  3.498 Mrps ( 30.1/ 4.7G) p50=  8.46 p99= 23.25 sm99= 16.32 cyc= 1137 b%=  76 imc= 29.5B
+[227] part2b_mix_uniform r2 direct_safe mix     uniform poisson W= 4096 R=  4000 ->  4.003 Mrps ( 34.4/ 5.4G) p50=  9.71 p99= 25.25 sm99= 18.73 cyc=  992 b%=  83 imc= 26.0B
+[228] part2b_mix_uniform r2 direct_safe mix     uniform poisson W= 4096 R=  4500 ->  4.498 Mrps ( 38.7/ 6.1G) p50= 11.04 p99= 27.15 sm99= 21.15 cyc=  887 b%=  89 imc= 23.0B
+  [RETRY 1/2] part2b_mix_uniform r2 direct_safe mix uniform R=5000.0: ['poisson window_cap_hits=1856']
+[229] part2b_mix_uniform r2 direct_safe mix     uniform poisson W= 4096 R=  5000 ->  5.002 Mrps ( 43.0/ 6.8G) p50= 12.81 p99= 30.65 sm99= 25.35 cyc=  797 b%=  94 imc= 23.0B
+  [RETRY 1/2] part2b_mix_uniform r2 direct_safe mix uniform R=5400.0: ['poisson window_cap_hits=4586']
+  [RETRY 2/2] part2b_mix_uniform r2 direct_safe mix uniform R=5400.0: ['poisson window_cap_hits=2159']
+  [OVERLOAD KNEE REACHED] part2b_mix_uniform r2 direct_safe mix uniform R=5400.0: ['poisson window_cap_hits=2159']
+[230] part2b_mix_uniform r2 sdp_fair    mix     uniform poisson W= 4096 R=   500 ->  0.501 Mrps (  4.3/ 0.7G) p50= 10.65 p99= 15.31 sm99= 14.28 cyc= 7998 b%=   9 imc=219.2B
+[231] part2b_mix_uniform r2 sdp_fair    mix     uniform poisson W= 4096 R=  1500 ->  1.501 Mrps ( 12.9/ 2.0G) p50= 12.46 p99= 19.43 sm99= 18.59 cyc= 2652 b%=  27 imc=158.2B
+  [PHY-CRC RETRY 1/5] part2b_mix_uniform r2 sdp_fair mix uniform R=2500.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[232] part2b_mix_uniform r2 sdp_fair    mix     uniform poisson W= 4096 R=  2500 ->  2.500 Mrps ( 21.5/ 3.4G) p50= 14.79 p99= 25.35 sm99= 24.75 cyc= 1586 b%=  44 imc= 47.2B
+[233] part2b_mix_uniform r2 sdp_fair    mix     uniform poisson W= 4096 R=  3000 ->  3.000 Mrps ( 25.8/ 4.1G) p50= 16.45 p99= 29.05 sm99= 28.55 cyc= 1329 b%=  52 imc= 33.4B
+  [PHY-CRC RETRY 1/5] part2b_mix_uniform r2 sdp_fair mix uniform R=3500.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+  [RETRY 1/2] part2b_mix_uniform r2 sdp_fair mix uniform R=3500.0: ['client lost=222 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+  [PHY-CRC RETRY 2/5] part2b_mix_uniform r2 sdp_fair mix uniform R=3500.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[234] part2b_mix_uniform r2 sdp_fair    mix     uniform poisson W= 4096 R=  3500 ->  3.496 Mrps ( 30.1/ 4.7G) p50= 18.68 p99= 32.75 sm99= 32.25 cyc= 1136 b%=  61 imc= 31.5B
+[235] part2b_mix_uniform r2 sdp_fair    mix     uniform poisson W= 4096 R=  4000 ->  3.998 Mrps ( 34.4/ 5.4G) p50= 21.85 p99= 38.55 sm99= 38.15 cyc=  996 b%=  69 imc= 27.8B
+[236] part2b_mix_uniform r2 direct_peek mix     uniform poisson W= 4096 R=   500 ->  0.501 Mrps (  4.3/ 0.7G) p50=  6.04 p99= 11.56 sm99=  8.05 cyc= 7971 b%=  14 imc=169.9B
+[237] part2b_mix_uniform r2 direct_peek mix     uniform poisson W= 4096 R=  1500 ->  1.500 Mrps ( 12.9/ 2.0G) p50=  6.72 p99= 14.66 sm99= 10.28 cyc= 2657 b%=  38 imc= 61.9B
+[238] part2b_mix_uniform r2 direct_peek mix     uniform poisson W= 4096 R=  2500 ->  2.501 Mrps ( 21.6/ 3.4G) p50=  7.95 p99= 19.64 sm99= 13.82 cyc= 1590 b%=  59 imc= 41.1B
+[239] part2b_mix_uniform r2 direct_peek mix     uniform poisson W= 4096 R=  3000 ->  3.003 Mrps ( 25.9/ 4.1G) p50=  8.79 p99= 22.65 sm99= 15.88 cyc= 1326 b%=  67 imc= 45.5B
+[240] part2b_mix_uniform r2 direct_peek mix     uniform poisson W= 4096 R=  3500 ->  3.503 Mrps ( 30.2/ 4.7G) p50=  9.95 p99= 25.25 sm99= 18.05 cyc= 1137 b%=  75 imc= 27.2B
+[241] part2b_mix_uniform r2 direct_peek mix     uniform poisson W= 4096 R=  4000 ->  3.999 Mrps ( 34.4/ 5.4G) p50= 11.30 p99= 27.45 sm99= 20.35 cyc=  997 b%=  81 imc= 22.4B
+  [PHY-CRC RETRY 1/5] part2b_mix_uniform r2 direct_peek mix uniform R=4500.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[242] part2b_mix_uniform r2 direct_peek mix     uniform poisson W= 4096 R=  4500 ->  4.502 Mrps ( 38.8/ 6.1G) p50= 12.97 p99= 30.95 sm99= 23.95 cyc=  879 b%=  88 imc= 22.0B
+[243] part2b_mix_uniform r2 direct_peek mix     uniform poisson W= 4096 R=  5000 ->  5.002 Mrps ( 43.1/ 6.8G) p50= 14.91 p99= 34.35 sm99= 27.35 cyc=  798 b%=  93 imc= 19.1B
+  [PHY-CRC RETRY 1/5] part2b_mix_uniform r2 direct_peek mix uniform R=5400.0: ['client lost=1 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=365499', 'merc_rx_crc_errors_phy=1']
+  [RETRY 1/2] part2b_mix_uniform r2 direct_peek mix uniform R=5400.0: ['poisson window_cap_hits=1176']
+  [RETRY 2/2] part2b_mix_uniform r2 direct_peek mix uniform R=5400.0: ['poisson window_cap_hits=595']
+  [OVERLOAD KNEE REACHED] part2b_mix_uniform r2 direct_peek mix uniform R=5400.0: ['poisson window_cap_hits=595']
+  [EDAC/AER GATE mix_uniform] card_edac={'mc0_ue': 0, 'mc0_ce': 0, 'ea0_ue': 59, 'ea0_ce': 0, 'sei_total': 52} (delta ea0=0, mc0=0) host_ue=0 rp_aer={'aer_rootport_total_err_cor': 0, 'aer_rootport_total_err_nonfatal': 0, 'aer_rootport_total_err_fatal': 0}
+[244] part2b_get64_zipf  r0 sdp_fair    get64   zipf    poisson W= 4096 R=  1000 ->  0.999 Mrps (  1.2/ 1.2G) p50= 10.28 p99= 12.51 sm99= 12.51 cyc= 3980 b%=   3 imc= 70.8B
+[245] part2b_get64_zipf  r0 sdp_fair    get64   zipf    poisson W= 4096 R=  3000 ->  2.998 Mrps (  3.7/ 3.7G) p50= 11.54 p99= 15.18 sm99= 15.18 cyc= 1330 b%=   9 imc= 27.4B
+[246] part2b_get64_zipf  r0 sdp_fair    get64   zipf    poisson W= 4096 R=  6000 ->  6.000 Mrps (  7.4/ 7.4G) p50= 14.13 p99= 20.25 sm99= 20.25 cyc=  667 b%=  16 imc= 11.9B
+  [RETRY 1/5] part2b_get64_zipf r0 sdp_fair get64 zipf R=7500.0: ['client lost=293 bad=0 torn=0 send_err=0']
+  [RETRY 2/5] part2b_get64_zipf r0 sdp_fair get64 zipf R=7500.0: ['client lost=297 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=132']
+[247] part2b_get64_zipf  r0 sdp_fair    get64   zipf    poisson W= 4096 R=  7500 ->  7.496 Mrps (  9.2/ 9.2G) p50= 16.18 p99= 24.35 sm99= 24.35 cyc=  536 b%=  20 imc= 10.9B
+  [RETRY 1/2] part2b_get64_zipf r0 sdp_fair get64 zipf R=9000.0: ['client lost=509 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=1113']
+  [RETRY 2/2] part2b_get64_zipf r0 sdp_fair get64 zipf R=9000.0: ['client lost=543 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=1756']
+  [OVERLOAD KNEE REACHED] part2b_get64_zipf r0 sdp_fair get64 zipf R=9000.0: ['client lost=543 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=1756']
+[248] part2b_get64_zipf  r0 direct_peek get64   zipf    poisson W= 4096 R=  1000 ->  0.999 Mrps (  1.2/ 1.2G) p50=  5.71 p99=  6.99 sm99=  6.99 cyc= 3988 b%=  13 imc= 82.9B
+[249] part2b_get64_zipf  r0 direct_peek get64   zipf    poisson W= 4096 R=  3000 ->  2.998 Mrps (  3.7/ 3.7G) p50=  6.25 p99=  8.27 sm99=  8.27 cyc= 1318 b%=  33 imc= 24.6B
+[250] part2b_get64_zipf  r0 direct_peek get64   zipf    poisson W= 4096 R=  6000 ->  5.999 Mrps (  7.4/ 7.4G) p50=  7.32 p99= 10.29 sm99= 10.29 cyc=  665 b%=  55 imc= 13.6B
+[251] part2b_get64_zipf  r0 direct_peek get64   zipf    poisson W= 4096 R=  7500 ->  7.498 Mrps (  9.2/ 9.2G) p50=  7.96 p99= 11.46 sm99= 11.46 cyc=  532 b%=  62 imc= 12.0B
+[252] part2b_get64_zipf  r0 direct_peek get64   zipf    poisson W= 4096 R=  9000 ->  9.001 Mrps ( 11.1/11.1G) p50=  8.74 p99= 12.88 sm99= 12.88 cyc=  441 b%=  69 imc= 11.2B
+[253] part2b_get64_zipf  r0 direct_peek get64   zipf    poisson W= 4096 R= 10500 -> 10.507 Mrps ( 12.9/12.9G) p50=  9.61 p99= 14.47 sm99= 14.47 cyc=  380 b%=  74 imc=  7.5B
+  [RETRY 1/2] part2b_get64_zipf r0 direct_peek get64 zipf R=12000.0: ['poisson window_cap_hits=306']
+  [RETRY 2/2] part2b_get64_zipf r0 direct_peek get64 zipf R=12000.0: ['poisson window_cap_hits=23']
+  [OVERLOAD KNEE REACHED] part2b_get64_zipf r0 direct_peek get64 zipf R=12000.0: ['poisson window_cap_hits=23']
+[254] part2b_get64_zipf  r0 direct_safe get64   zipf    poisson W= 4096 R=  1000 ->  1.000 Mrps (  1.2/ 1.2G) p50=  5.17 p99=  6.08 sm99=  6.08 cyc= 3998 b%=  13 imc= 77.8B
+[255] part2b_get64_zipf  r0 direct_safe get64   zipf    poisson W= 4096 R=  3000 ->  2.999 Mrps (  3.7/ 3.7G) p50=  5.37 p99=  6.92 sm99=  6.92 cyc= 1329 b%=  35 imc= 22.5B
+[256] part2b_get64_zipf  r0 direct_safe get64   zipf    poisson W= 4096 R=  6000 ->  5.994 Mrps (  7.4/ 7.4G) p50=  5.83 p99=  8.16 sm99=  8.16 cyc=  666 b%=  60 imc= 15.4B
+[257] part2b_get64_zipf  r0 direct_safe get64   zipf    poisson W= 4096 R=  7500 ->  7.503 Mrps (  9.2/ 9.2G) p50=  6.17 p99=  8.88 sm99=  8.88 cyc=  528 b%=  69 imc=  9.7B
+  [PHY-CRC RETRY 1/5] part2b_get64_zipf r0 direct_safe get64 zipf R=9000.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[258] part2b_get64_zipf  r0 direct_safe get64   zipf    poisson W= 4096 R=  9000 ->  9.002 Mrps ( 11.1/11.1G) p50=  6.55 p99=  9.94 sm99=  9.94 cyc=  442 b%=  76 imc= 10.3B
+[259] part2b_get64_zipf  r0 direct_safe get64   zipf    poisson W= 4096 R= 10500 -> 10.502 Mrps ( 12.9/12.9G) p50=  7.04 p99= 11.47 sm99= 11.47 cyc=  378 b%=  81 imc=  8.9B
+  [PHY-CRC RETRY 1/5] part2b_get64_zipf r0 direct_safe get64 zipf R=12000.0: ['client lost=1 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=22592', 'merc_rx_crc_errors_phy=1']
+  [PHY-CRC RETRY 2/5] part2b_get64_zipf r0 direct_safe get64 zipf R=12000.0: ['client lost=1 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=8160', 'merc_rx_crc_errors_phy=1']
+  [RETRY 1/2] part2b_get64_zipf r0 direct_safe get64 zipf R=12000.0: ['poisson window_cap_hits=346']
+  [RETRY 2/2] part2b_get64_zipf r0 direct_safe get64 zipf R=12000.0: ['poisson window_cap_hits=46']
+  [OVERLOAD KNEE REACHED] part2b_get64_zipf r0 direct_safe get64 zipf R=12000.0: ['poisson window_cap_hits=46']
+[260] part2b_get64_zipf  r1 direct_peek get64   zipf    poisson W= 4096 R=  1000 ->  1.000 Mrps (  1.2/ 1.2G) p50=  5.71 p99=  6.97 sm99=  6.97 cyc= 4002 b%=  13 imc= 84.9B
+[261] part2b_get64_zipf  r1 direct_peek get64   zipf    poisson W= 4096 R=  3000 ->  2.999 Mrps (  3.7/ 3.7G) p50=  6.25 p99=  8.26 sm99=  8.26 cyc= 1324 b%=  33 imc= 31.6B
+[262] part2b_get64_zipf  r1 direct_peek get64   zipf    poisson W= 4096 R=  6000 ->  6.004 Mrps (  7.4/ 7.4G) p50=  7.32 p99= 10.31 sm99= 10.31 cyc=  664 b%=  55 imc= 13.6B
+[263] part2b_get64_zipf  r1 direct_peek get64   zipf    poisson W= 4096 R=  7500 ->  7.499 Mrps (  9.2/ 9.2G) p50=  7.97 p99= 11.43 sm99= 11.43 cyc=  530 b%=  62 imc= 14.8B
+[264] part2b_get64_zipf  r1 direct_peek get64   zipf    poisson W= 4096 R=  9000 ->  9.004 Mrps ( 11.1/11.1G) p50=  8.73 p99= 12.86 sm99= 12.86 cyc=  442 b%=  69 imc= 13.6B
+  [RETRY 1/5] part2b_get64_zipf r1 direct_peek get64 zipf R=10500.0: ['poisson window_cap_hits=11']
+  [RETRY 2/5] part2b_get64_zipf r1 direct_peek get64 zipf R=10500.0: ['poisson window_cap_hits=23']
+[265] part2b_get64_zipf  r1 direct_peek get64   zipf    poisson W= 4096 R= 10500 -> 10.499 Mrps ( 12.9/12.9G) p50=  9.61 p99= 14.63 sm99= 14.63 cyc=  379 b%=  74 imc=  8.3B
+  [RETRY 1/2] part2b_get64_zipf r1 direct_peek get64 zipf R=12000.0: ['poisson window_cap_hits=31']
+  [PHY-CRC RETRY 1/5] part2b_get64_zipf r1 direct_peek get64 zipf R=12000.0: ['client lost=1 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=333', 'merc_rx_crc_errors_phy=1']
+  [RETRY 2/2] part2b_get64_zipf r1 direct_peek get64 zipf R=12000.0: ['poisson window_cap_hits=196']
+  [OVERLOAD KNEE REACHED] part2b_get64_zipf r1 direct_peek get64 zipf R=12000.0: ['poisson window_cap_hits=196']
+[266] part2b_get64_zipf  r1 direct_safe get64   zipf    poisson W= 4096 R=  1000 ->  1.000 Mrps (  1.2/ 1.2G) p50=  5.17 p99=  6.03 sm99=  6.03 cyc= 3963 b%=  13 imc= 80.0B
+[267] part2b_get64_zipf  r1 direct_safe get64   zipf    poisson W= 4096 R=  3000 ->  3.000 Mrps (  3.7/ 3.7G) p50=  5.36 p99=  6.89 sm99=  6.89 cyc= 1326 b%=  35 imc= 27.9B
+[268] part2b_get64_zipf  r1 direct_safe get64   zipf    poisson W= 4096 R=  6000 ->  5.997 Mrps (  7.4/ 7.4G) p50=  5.83 p99=  8.10 sm99=  8.10 cyc=  664 b%=  60 imc= 16.0B
+[269] part2b_get64_zipf  r1 direct_safe get64   zipf    poisson W= 4096 R=  7500 ->  7.497 Mrps (  9.2/ 9.2G) p50=  6.16 p99=  8.89 sm99=  8.89 cyc=  532 b%=  69 imc= 13.7B
+[270] part2b_get64_zipf  r1 direct_safe get64   zipf    poisson W= 4096 R=  9000 ->  8.996 Mrps ( 11.1/11.1G) p50=  6.54 p99=  9.88 sm99=  9.88 cyc=  443 b%=  76 imc=  9.0B
+[271] part2b_get64_zipf  r1 direct_safe get64   zipf    poisson W= 4096 R= 10500 -> 10.498 Mrps ( 12.9/12.9G) p50=  7.04 p99= 11.34 sm99= 11.34 cyc=  379 b%=  81 imc=  9.6B
+  [RETRY 1/2] part2b_get64_zipf r1 direct_safe get64 zipf R=12000.0: ['poisson window_cap_hits=1971']
+  [RETRY 2/2] part2b_get64_zipf r1 direct_safe get64 zipf R=12000.0: ['poisson window_cap_hits=20']
+  [OVERLOAD KNEE REACHED] part2b_get64_zipf r1 direct_safe get64 zipf R=12000.0: ['poisson window_cap_hits=20']
+[272] part2b_get64_zipf  r1 sdp_fair    get64   zipf    poisson W= 4096 R=  1000 ->  1.000 Mrps (  1.2/ 1.2G) p50= 10.27 p99= 12.51 sm99= 12.51 cyc= 4001 b%=   3 imc= 83.8B
+[273] part2b_get64_zipf  r1 sdp_fair    get64   zipf    poisson W= 4096 R=  3000 ->  2.997 Mrps (  3.7/ 3.7G) p50= 11.54 p99= 15.12 sm99= 15.12 cyc= 1338 b%=   9 imc= 27.9B
+[274] part2b_get64_zipf  r1 sdp_fair    get64   zipf    poisson W= 4096 R=  6000 ->  5.996 Mrps (  7.4/ 7.4G) p50= 14.11 p99= 20.35 sm99= 20.35 cyc=  665 b%=  16 imc= 13.3B
+[275] part2b_get64_zipf  r1 sdp_fair    get64   zipf    poisson W= 4096 R=  7500 ->  7.500 Mrps (  9.2/ 9.2G) p50= 16.16 p99= 24.35 sm99= 24.35 cyc=  531 b%=  20 imc= 18.3B
+  [RETRY 1/2] part2b_get64_zipf r1 sdp_fair get64 zipf R=9000.0: ['poisson window_cap_hits=261']
+  [RETRY 2/2] part2b_get64_zipf r1 sdp_fair get64 zipf R=9000.0: ['poisson window_cap_hits=1114']
+  [OVERLOAD KNEE REACHED] part2b_get64_zipf r1 sdp_fair get64 zipf R=9000.0: ['poisson window_cap_hits=1114']
+[276] part2b_get64_zipf  r2 direct_safe get64   zipf    poisson W= 4096 R=  1000 ->  0.999 Mrps (  1.2/ 1.2G) p50=  5.17 p99=  6.05 sm99=  6.05 cyc= 3992 b%=  13 imc= 70.7B
+[277] part2b_get64_zipf  r2 direct_safe get64   zipf    poisson W= 4096 R=  3000 ->  2.999 Mrps (  3.7/ 3.7G) p50=  5.36 p99=  6.89 sm99=  6.89 cyc= 1329 b%=  35 imc= 25.0B
+[278] part2b_get64_zipf  r2 direct_safe get64   zipf    poisson W= 4096 R=  6000 ->  5.999 Mrps (  7.4/ 7.4G) p50=  5.83 p99=  8.11 sm99=  8.11 cyc=  661 b%=  60 imc= 14.0B
+  [RETRY 1/5] part2b_get64_zipf r2 direct_safe get64 zipf R=7500.0: ['poisson window_cap_hits=370808']
+[279] part2b_get64_zipf  r2 direct_safe get64   zipf    poisson W= 4096 R=  7500 ->  7.502 Mrps (  9.2/ 9.2G) p50=  6.17 p99=  9.04 sm99=  9.04 cyc=  531 b%=  69 imc=  9.9B
+[280] part2b_get64_zipf  r2 direct_safe get64   zipf    poisson W= 4096 R=  9000 ->  8.999 Mrps ( 11.1/11.1G) p50=  6.55 p99= 10.01 sm99= 10.01 cyc=  441 b%=  76 imc=  8.0B
+[281] part2b_get64_zipf  r2 direct_safe get64   zipf    poisson W= 4096 R= 10500 -> 10.500 Mrps ( 12.9/12.9G) p50=  7.05 p99= 11.56 sm99= 11.56 cyc=  381 b%=  81 imc=  7.7B
+  [RETRY 1/2] part2b_get64_zipf r2 direct_safe get64 zipf R=12000.0: ['poisson window_cap_hits=2358']
+  [RETRY 2/2] part2b_get64_zipf r2 direct_safe get64 zipf R=12000.0: ['poisson window_cap_hits=343']
+  [OVERLOAD KNEE REACHED] part2b_get64_zipf r2 direct_safe get64 zipf R=12000.0: ['poisson window_cap_hits=343']
+  [RETRY 1/5] part2b_get64_zipf r2 sdp_fair get64 zipf R=1000.0: ['client lost=1678 bad=0 torn=0 send_err=0']
+[282] part2b_get64_zipf  r2 sdp_fair    get64   zipf    poisson W= 4096 R=  1000 ->  1.000 Mrps (  1.2/ 1.2G) p50= 10.27 p99= 12.51 sm99= 12.51 cyc= 3973 b%=   3 imc= 95.2B
+[283] part2b_get64_zipf  r2 sdp_fair    get64   zipf    poisson W= 4096 R=  3000 ->  2.999 Mrps (  3.7/ 3.7G) p50= 11.55 p99= 15.16 sm99= 15.16 cyc= 1325 b%=   9 imc= 29.1B
+  [RETRY 1/5] part2b_get64_zipf r2 sdp_fair get64 zipf R=6000.0: ['client lost=3264 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=461062']
+  [RETRY 2/5] part2b_get64_zipf r2 sdp_fair get64 zipf R=6000.0: ['client lost=205 bad=0 torn=0 send_err=0']
+  [RETRY 3/5] part2b_get64_zipf r2 sdp_fair get64 zipf R=6000.0: ['client lost=301 bad=0 torn=0 send_err=0']
+[284] part2b_get64_zipf  r2 sdp_fair    get64   zipf    poisson W= 4096 R=  6000 ->  6.003 Mrps (  7.4/ 7.4G) p50= 14.14 p99= 20.25 sm99= 20.25 cyc=  664 b%=  16 imc= 14.4B
+  [RETRY 1/5] part2b_get64_zipf r2 sdp_fair get64 zipf R=7500.0: ['client lost=363 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=111']
+  [RETRY 2/5] part2b_get64_zipf r2 sdp_fair get64 zipf R=7500.0: ['client lost=385 bad=0 torn=0 send_err=0']
+  [RETRY 3/5] part2b_get64_zipf r2 sdp_fair get64 zipf R=7500.0: ['client lost=293 bad=0 torn=0 send_err=0']
+[285] part2b_get64_zipf  r2 sdp_fair    get64   zipf    poisson W= 4096 R=  7500 ->  7.499 Mrps (  9.2/ 9.2G) p50= 16.18 p99= 24.25 sm99= 24.25 cyc=  529 b%=  20 imc=  9.8B
+  [RETRY 1/2] part2b_get64_zipf r2 sdp_fair get64 zipf R=9000.0: ['client lost=543 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=1813']
+  [RETRY 2/2] part2b_get64_zipf r2 sdp_fair get64 zipf R=9000.0: ['client lost=503 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=972']
+  [OVERLOAD KNEE REACHED] part2b_get64_zipf r2 sdp_fair get64 zipf R=9000.0: ['client lost=503 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=972']
+[286] part2b_get64_zipf  r2 direct_peek get64   zipf    poisson W= 4096 R=  1000 ->  1.000 Mrps (  1.2/ 1.2G) p50=  5.71 p99=  6.97 sm99=  6.97 cyc= 4010 b%=  13 imc=127.8B
+[287] part2b_get64_zipf  r2 direct_peek get64   zipf    poisson W= 4096 R=  3000 ->  2.997 Mrps (  3.7/ 3.7G) p50=  6.25 p99=  8.26 sm99=  8.26 cyc= 1325 b%=  33 imc= 29.1B
+[288] part2b_get64_zipf  r2 direct_peek get64   zipf    poisson W= 4096 R=  6000 ->  6.003 Mrps (  7.4/ 7.4G) p50=  7.33 p99= 10.32 sm99= 10.32 cyc=  663 b%=  55 imc= 13.4B
+[289] part2b_get64_zipf  r2 direct_peek get64   zipf    poisson W= 4096 R=  7500 ->  7.497 Mrps (  9.2/ 9.2G) p50=  7.96 p99= 11.46 sm99= 11.46 cyc=  529 b%=  62 imc= 11.2B
+  [RETRY 1/5] part2b_get64_zipf r2 direct_peek get64 zipf R=9000.0: ['poisson window_cap_hits=588044']
+[290] part2b_get64_zipf  r2 direct_peek get64   zipf    poisson W= 4096 R=  9000 ->  9.000 Mrps ( 11.1/11.1G) p50=  8.72 p99= 12.84 sm99= 12.84 cyc=  442 b%=  69 imc= 11.7B
+[291] part2b_get64_zipf  r2 direct_peek get64   zipf    poisson W= 4096 R= 10500 -> 10.504 Mrps ( 12.9/12.9G) p50=  9.62 p99= 14.43 sm99= 14.43 cyc=  379 b%=  74 imc=  9.7B
+  [RETRY 1/2] part2b_get64_zipf r2 direct_peek get64 zipf R=12000.0: ['poisson window_cap_hits=2827']
+  [RETRY 2/2] part2b_get64_zipf r2 direct_peek get64 zipf R=12000.0: ['poisson window_cap_hits=276']
+  [OVERLOAD KNEE REACHED] part2b_get64_zipf r2 direct_peek get64 zipf R=12000.0: ['poisson window_cap_hits=276']
+  [EDAC/AER GATE get64_zipf] card_edac={'mc0_ue': 0, 'mc0_ce': 0, 'ea0_ue': 59, 'ea0_ce': 0, 'sei_total': 52} (delta ea0=0, mc0=0) host_ue=0 rp_aer={'aer_rootport_total_err_cor': 0, 'aer_rootport_total_err_nonfatal': 0, 'aer_rootport_total_err_fatal': 0}
+
+=== PART 3A: MATCHED-RATE --app-work SPARE-CPU & PAIRED aw=0 IMC LEDGER (n=3 interleaved) ===
+[292] part3a_appwork     r0 sdp_fair    get64   zipf    poisson W= 4096 R=  6000 ->  5.998 Mrps (  7.4/ 7.4G) p50= 14.18 p99= 20.65 sm99= 20.65 cyc=  664 b%=  16 aw_cyc=  426 imc= 15.4B
+  [RETRY 1/5] part3a_appwork r0 sdp_fair get256 zipf R=6000.0: ['client lost=3262 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=507954']
+  [PHY-CRC RETRY 1/5] part3a_appwork r0 sdp_fair get256 zipf R=6000.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[293] part3a_appwork     r0 sdp_fair    get256  zipf    poisson W= 4096 R=  6000 ->  6.001 Mrps ( 16.6/ 7.4G) p50= 15.49 p99= 23.05 sm99= 23.05 cyc=  663 b%=  34 aw_cyc=  492 imc= 22.9B
+  [RETRY 1/5] part3a_appwork r0 sdp_fair get1024 zipf R=3000.0: ['client lost=3331 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=472204']
+[294] part3a_appwork     r0 sdp_fair    get1024 zipf    poisson W= 4096 R=  3000 ->  3.001 Mrps ( 26.7/ 3.7G) p50= 15.44 p99= 23.95 sm99=  0.00 cyc= 1327 b%=  50 aw_cyc= 1041 imc= 50.5B
+  [PHY-CRC RETRY 1/5] part3a_appwork r0 sdp_fair get4096 zipf R=1000.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+  [RETRY 1/5] part3a_appwork r0 sdp_fair get4096 zipf R=1000.0: ['client lost=1304 bad=0 torn=0 send_err=0']
+[295] part3a_appwork     r0 sdp_fair    get4096 zipf    poisson W= 4096 R=  1000 ->  1.001 Mrps ( 35.7/ 1.2G) p50= 17.34 p99= 29.65 sm99=  0.00 cyc= 3967 b%=  58 aw_cyc= 2967 imc=112.6B
+[296] part3a_appwork     r0 sdp_fair    mix     zipf    poisson W= 4096 R=  3000 ->  2.998 Mrps ( 25.8/ 4.1G) p50= 16.41 p99= 28.45 sm99= 27.85 cyc= 1325 b%=  49 aw_cyc= 1013 imc= 56.3B
+[297] part3a_appwork     r0 sdp_fair    mix     uniform poisson W= 4096 R=  3000 ->  2.999 Mrps ( 25.8/ 4.1G) p50= 16.50 p99= 28.65 sm99= 28.15 cyc= 1329 b%=  52 aw_cyc= 1048 imc= 31.0B
+[298] part3a_appwork     r0 direct_peek get64   zipf    poisson W= 4096 R=  6000 ->  5.997 Mrps (  7.4/ 7.4G) p50=  7.33 p99= 10.34 sm99= 10.34 cyc=  666 b%=  43 aw_cyc=  270 imc= 14.1B
+[299] part3a_appwork     r0 direct_peek get256  zipf    poisson W= 4096 R=  6000 ->  6.003 Mrps ( 16.6/ 7.4G) p50=  8.16 p99= 12.41 sm99= 12.41 cyc=  650 b%=  54 aw_cyc=  330 imc= 42.3B
+[300] part3a_appwork     r0 direct_peek get1024 zipf    poisson W= 4096 R=  3000 ->  3.002 Mrps ( 26.7/ 3.7G) p50= 11.29 p99= 18.57 sm99=  0.00 cyc= 1328 b%=  61 aw_cyc=  752 imc= 38.4B
+[301] part3a_appwork     r0 direct_peek get4096 zipf    poisson W= 4096 R=  1000 ->  0.999 Mrps ( 35.6/ 1.2G) p50= 15.27 p99= 37.85 sm99=  0.00 cyc= 3992 b%=  62 aw_cyc= 2310 imc=106.2B
+[302] part3a_appwork     r0 direct_peek mix     zipf    poisson W= 4096 R=  3000 ->  2.999 Mrps ( 25.8/ 4.1G) p50=  8.78 p99= 22.15 sm99= 15.60 cyc= 1320 b%=  59 aw_cyc=  738 imc= 35.0B
+  [PHY-CRC RETRY 1/5] part3a_appwork r0 direct_peek mix uniform R=3000.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[303] part3a_appwork     r0 direct_peek mix     uniform poisson W= 4096 R=  3000 ->  2.998 Mrps ( 25.8/ 4.1G) p50=  8.82 p99= 22.75 sm99= 15.87 cyc= 1330 b%=  62 aw_cyc=  778 imc= 27.4B
+[304] part3a_appwork     r0 direct_safe get64   zipf    poisson W= 4096 R=  6000 ->  5.997 Mrps (  7.4/ 7.4G) p50=  5.89 p99=  8.21 sm99=  8.21 cyc=  666 b%=  44 aw_cyc=  270 imc= 15.6B
+[305] part3a_appwork     r0 direct_safe get256  zipf    poisson W= 4096 R=  6000 ->  5.998 Mrps ( 16.6/ 7.4G) p50=  6.67 p99= 51.75 sm99= 51.75 cyc=  663 b%=  56 aw_cyc=  341 imc= 13.4B
+[306] part3a_appwork     r0 direct_safe get1024 zipf    poisson W= 4096 R=  3000 ->  3.000 Mrps ( 26.7/ 3.7G) p50=  9.55 p99= 16.68 sm99=  0.00 cyc= 1333 b%=  63 aw_cyc=  763 imc= 71.0B
+[307] part3a_appwork     r0 direct_safe get4096 zipf    poisson W= 4096 R=  1000 ->  0.999 Mrps ( 35.6/ 1.2G) p50= 14.15 p99= 35.65 sm99=  0.00 cyc= 3986 b%=  62 aw_cyc= 2323 imc=166.5B
+[308] part3a_appwork     r0 direct_safe mix     zipf    poisson W= 4096 R=  3000 ->  2.997 Mrps ( 25.8/ 4.1G) p50=  7.53 p99= 20.55 sm99= 14.20 cyc= 1316 b%=  60 aw_cyc=  748 imc= 43.0B
+[309] part3a_appwork     r0 direct_safe mix     uniform poisson W= 4096 R=  3000 ->  3.002 Mrps ( 25.9/ 4.1G) p50=  7.59 p99= 21.15 sm99= 14.57 cyc= 1332 b%=  63 aw_cyc=  788 imc= 33.1B
+[310] part3a_appwork     r1 direct_peek get64   zipf    poisson W= 4096 R=  6000 ->  6.003 Mrps (  7.4/ 7.4G) p50=  7.33 p99= 10.34 sm99= 10.34 cyc=  661 b%=  44 aw_cyc=  271 imc= 15.3B
+[311] part3a_appwork     r1 direct_peek get256  zipf    poisson W= 4096 R=  6000 ->  5.999 Mrps ( 16.6/ 7.4G) p50=  8.18 p99= 12.48 sm99= 12.48 cyc=  665 b%=  54 aw_cyc=  329 imc= 14.1B
+[312] part3a_appwork     r1 direct_peek get1024 zipf    poisson W= 4096 R=  3000 ->  3.000 Mrps ( 26.7/ 3.7G) p50= 11.63 p99= 19.57 sm99=  0.00 cyc= 1333 b%=  65 aw_cyc=  798 imc= 44.2B
+  [PHY-CRC RETRY 1/5] part3a_appwork r1 direct_peek get4096 zipf R=1000.0: ['client lost=2 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=2']
+[313] part3a_appwork     r1 direct_peek get4096 zipf    poisson W= 4096 R=  1000 ->  1.001 Mrps ( 35.7/ 1.2G) p50= 15.13 p99= 37.15 sm99=  0.00 cyc= 3984 b%=  62 aw_cyc= 2299 imc= 96.7B
+  [PHY-CRC RETRY 1/5] part3a_appwork r1 direct_peek mix zipf R=3000.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[314] part3a_appwork     r1 direct_peek mix     zipf    poisson W= 4096 R=  3000 ->  3.000 Mrps ( 25.8/ 4.1G) p50=  8.80 p99= 22.45 sm99= 15.90 cyc= 1303 b%=  60 aw_cyc=  743 imc= 66.7B
+  [RETRY 1/5] part3a_appwork r1 direct_peek mix uniform R=3000.0: ['poisson window_cap_hits=385682']
+  [PHY-CRC RETRY 1/5] part3a_appwork r1 direct_peek mix uniform R=3000.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[315] part3a_appwork     r1 direct_peek mix     uniform poisson W= 4096 R=  3000 ->  2.999 Mrps ( 25.8/ 4.1G) p50=  8.79 p99= 22.65 sm99= 15.84 cyc= 1331 b%=  62 aw_cyc=  778 imc= 33.1B
+[316] part3a_appwork     r1 direct_safe get64   zipf    poisson W= 4096 R=  6000 ->  6.004 Mrps (  7.4/ 7.4G) p50=  5.88 p99=  8.11 sm99=  8.11 cyc=  665 b%=  45 aw_cyc=  270 imc= 13.3B
+[317] part3a_appwork     r1 direct_safe get256  zipf    poisson W= 4096 R=  6000 ->  6.001 Mrps ( 16.6/ 7.4G) p50=  6.70 p99= 52.15 sm99= 52.15 cyc=  666 b%=  56 aw_cyc=  340 imc= 15.6B
+[318] part3a_appwork     r1 direct_safe get1024 zipf    poisson W= 4096 R=  3000 ->  2.999 Mrps ( 26.7/ 3.7G) p50=  9.57 p99= 16.68 sm99=  0.00 cyc= 1328 b%=  63 aw_cyc=  768 imc= 42.1B
+[319] part3a_appwork     r1 direct_safe get4096 zipf    poisson W= 4096 R=  1000 ->  1.001 Mrps ( 35.7/ 1.2G) p50= 14.29 p99= 39.55 sm99=  0.00 cyc= 3970 b%=  63 aw_cyc= 2336 imc=138.4B
+[320] part3a_appwork     r1 direct_safe mix     zipf    poisson W= 4096 R=  3000 ->  3.003 Mrps ( 25.8/ 4.1G) p50=  7.51 p99= 20.25 sm99= 14.04 cyc= 1324 b%=  60 aw_cyc=  745 imc= 31.8B
+[321] part3a_appwork     r1 direct_safe mix     uniform poisson W= 4096 R=  3000 ->  3.001 Mrps ( 25.8/ 4.1G) p50=  7.58 p99= 21.15 sm99= 14.54 cyc= 1330 b%=  63 aw_cyc=  791 imc= 31.9B
+[322] part3a_appwork     r1 sdp_fair    get64   zipf    poisson W= 4096 R=  6000 ->  5.998 Mrps (  7.4/ 7.4G) p50= 14.16 p99= 20.15 sm99= 20.15 cyc=  665 b%=  16 aw_cyc=  424 imc= 12.2B
+  [PHY-CRC RETRY 1/5] part3a_appwork r1 sdp_fair get256 zipf R=6000.0: ['client lost=2 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[323] part3a_appwork     r1 sdp_fair    get256  zipf    poisson W= 4096 R=  6000 ->  5.999 Mrps ( 16.6/ 7.4G) p50= 15.44 p99= 22.65 sm99= 22.65 cyc=  664 b%=  34 aw_cyc=  494 imc= 16.6B
+[324] part3a_appwork     r1 sdp_fair    get1024 zipf    poisson W= 4096 R=  3000 ->  2.999 Mrps ( 26.7/ 3.7G) p50= 15.44 p99= 23.65 sm99=  0.00 cyc= 1330 b%=  50 aw_cyc= 1043 imc= 29.2B
+[325] part3a_appwork     r1 sdp_fair    get4096 zipf    poisson W= 4096 R=  1000 ->  1.001 Mrps ( 35.7/ 1.2G) p50= 17.27 p99= 29.45 sm99=  0.00 cyc= 3965 b%=  59 aw_cyc= 2960 imc=168.1B
+[326] part3a_appwork     r1 sdp_fair    mix     zipf    poisson W= 4096 R=  3000 ->  3.000 Mrps ( 25.8/ 4.1G) p50= 16.38 p99= 28.35 sm99= 27.75 cyc= 1330 b%=  49 aw_cyc= 1013 imc= 48.2B
+[327] part3a_appwork     r1 sdp_fair    mix     uniform poisson W= 4096 R=  3000 ->  2.996 Mrps ( 25.8/ 4.1G) p50= 16.52 p99= 28.95 sm99= 28.45 cyc= 1321 b%=  53 aw_cyc= 1048 imc=185.9B
+[328] part3a_appwork     r2 direct_safe get64   zipf    poisson W= 4096 R=  6000 ->  5.998 Mrps (  7.4/ 7.4G) p50=  5.88 p99=  8.13 sm99=  8.13 cyc=  645 b%=  45 aw_cyc=  274 imc= 30.4B
+[329] part3a_appwork     r2 direct_safe get256  zipf    poisson W= 4096 R=  6000 ->  5.999 Mrps ( 16.6/ 7.4G) p50=  6.68 p99= 51.65 sm99= 51.65 cyc=  664 b%=  56 aw_cyc=  342 imc= 18.6B
+  [RETRY 1/5] part3a_appwork r2 direct_safe get1024 zipf R=3000.0: ['poisson window_cap_hits=175896']
+  [PHY-CRC RETRY 1/5] part3a_appwork r2 direct_safe get1024 zipf R=3000.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[330] part3a_appwork     r2 direct_safe get1024 zipf    poisson W= 4096 R=  3000 ->  2.999 Mrps ( 26.7/ 3.7G) p50=  9.57 p99= 16.70 sm99=  0.00 cyc= 1329 b%=  63 aw_cyc=  768 imc= 35.4B
+  [PHY-CRC RETRY 1/5] part3a_appwork r2 direct_safe get4096 zipf R=1000.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[331] part3a_appwork     r2 direct_safe get4096 zipf    poisson W= 4096 R=  1000 ->  0.999 Mrps ( 35.6/ 1.2G) p50= 14.11 p99= 35.35 sm99=  0.00 cyc= 3995 b%=  62 aw_cyc= 2324 imc=204.8B
+[332] part3a_appwork     r2 direct_safe mix     zipf    poisson W= 4096 R=  3000 ->  3.000 Mrps ( 25.8/ 4.1G) p50=  7.51 p99= 20.35 sm99= 14.04 cyc= 1337 b%=  60 aw_cyc=  740 imc= 37.3B
+  [PHY-CRC RETRY 1/5] part3a_appwork r2 direct_safe mix uniform R=3000.0: ['client lost=1 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=384328', 'merc_rx_crc_errors_phy=1']
+[333] part3a_appwork     r2 direct_safe mix     uniform poisson W= 4096 R=  3000 ->  2.996 Mrps ( 25.8/ 4.1G) p50=  7.62 p99= 21.35 sm99= 14.76 cyc= 1325 b%=  63 aw_cyc=  793 imc=126.2B
+  [RETRY 1/5] part3a_appwork r2 sdp_fair get64 zipf R=6000.0: ['client lost=3320 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=511597']
+  [RETRY 2/5] part3a_appwork r2 sdp_fair get64 zipf R=6000.0: ['client lost=135 bad=0 torn=0 send_err=0']
+[334] part3a_appwork     r2 sdp_fair    get64   zipf    poisson W= 4096 R=  6000 ->  5.999 Mrps (  7.4/ 7.4G) p50= 14.14 p99= 20.35 sm99= 20.35 cyc=  664 b%=  16 aw_cyc=  426 imc= 14.3B
+  [RETRY 1/5] part3a_appwork r2 sdp_fair get256 zipf R=6000.0: ['client lost=82 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+  [RETRY 2/5] part3a_appwork r2 sdp_fair get256 zipf R=6000.0: ['client lost=260 bad=0 torn=0 send_err=0']
+  [RETRY 3/5] part3a_appwork r2 sdp_fair get256 zipf R=6000.0: ['client lost=118 bad=0 torn=0 send_err=0']
+  [RETRY 4/5] part3a_appwork r2 sdp_fair get256 zipf R=6000.0: ['client lost=93 bad=0 torn=0 send_err=0']
+  [PHY-CRC RETRY 1/5] part3a_appwork r2 sdp_fair get256 zipf R=6000.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+  [RETRY 5/5] part3a_appwork r2 sdp_fair get256 zipf R=6000.0: ['client lost=3321 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=4101']
+
+=== FINALLY: RESTORING BASELINE AFTER INTERRUPT/ERROR ===
+Traceback (most recent call last):
+  File "/home/hongtao/dev/marvell-mrv195/logs/mrv195-2026-11-25/run_mrv195.py", line 934, in <module>
+    main()
+    ~~~~^^
+  File "/home/hongtao/dev/marvell-mrv195/logs/mrv195-2026-11-25/run_mrv195.py", line 923, in main
+    run_campaign(stack, do_restore=args.restore, resume_from_2b=args.resume_from_2b)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongtao/dev/marvell-mrv195/logs/mrv195-2026-11-25/run_mrv195.py", line 818, in run_campaign
+    exec_case("part3a_appwork", rep, pol, wl, kd, "poisson", win, rk, 8, 500, 1000, app_work=True)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongtao/dev/marvell-mrv195/logs/mrv195-2026-11-25/run_mrv195.py", line 731, in exec_case
+    raise RuntimeError(f"Failed after {ov_limit} attempts: {part} r{rep} {pol} {wl} {kd} R={rk} errs={last_errs}")
+RuntimeError: Failed after 5 attempts: part3a_appwork r2 sdp_fair get256 zipf R=6000.0 errs=['client lost=3321 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=4101']

@@ -166,19 +166,25 @@ class Stack:
         self.card_key = None
 
     def ensure_stack(self, policy: str, app_work: bool = False, tx_pool_slots: int = 1024):
-        """Policies: 'card_echo', 'sdp_fair', 'direct_peek', 'direct_safe'."""
+        """Policies: 'card_echo', 'sdp_fair', 'sdp_notail', 'sdp_1q', 'direct_peek', 'direct_safe'."""
         if policy == "card_echo":
-            c_key = ("card-echo", "cqe-peek")
+            c_key = ("card-echo", "cqe-peek", 4)
             h_key = None
         elif policy == "sdp_fair":
-            c_key = ("sdp", "cqe-peek")
-            h_key = ("sdp", app_work, tx_pool_slots)
+            c_key = ("sdp", "cqe-peek", 4)
+            h_key = ("sdp", 4, 48, app_work, tx_pool_slots)
+        elif policy == "sdp_notail":
+            c_key = ("sdp", "cqe-peek", 4)
+            h_key = ("sdp", 4, 0, app_work, tx_pool_slots)
+        elif policy == "sdp_1q":
+            c_key = ("sdp", "cqe-peek", 1)
+            h_key = ("sdp", 1, 48, app_work, tx_pool_slots)
         elif policy == "direct_peek":
-            c_key = ("direct", "cqe-peek")
-            h_key = ("direct", app_work, tx_pool_slots)
+            c_key = ("direct", "cqe-peek", 4)
+            h_key = ("direct", 4, 0, app_work, tx_pool_slots)
         elif policy == "direct_safe":
-            c_key = ("direct", "cqe-direct-safe")
-            h_key = ("direct", app_work, tx_pool_slots)
+            c_key = ("direct", "cqe-direct-safe", 4)
+            h_key = ("direct", 4, 0, app_work, tx_pool_slots)
         else:
             raise ValueError(f"Unknown policy: {policy}")
 
@@ -194,23 +200,25 @@ class Stack:
                 'if [ "$drv2" != "vfio-pci" ]; then sh /root/bench/dpdk_up.sh 0002:01:00.2; fi; '
                 "lsmod | grep -q '^pem_wc ' || insmod /root/bench/pem_wc.ko"
             )
-            cmode, rxmode = c_key
+            cmode, rxmode, ncores = c_key
+            lcores = "3-6" if ncores == 4 else "3"
             if cmode == "card-echo":
                 ready_tok = "card_echo ready"
                 cmd = (
-                    f"{CARD_BIN} -l 3-6 -a {ETH_DEV} --file-prefix=m195 -- "
+                    f"{CARD_BIN} -l {lcores} -a {ETH_DEV} --file-prefix=m195 -- "
                     f"--mode card-echo --rx-mode {rxmode}"
                 )
             elif cmode == "sdp":
                 ready_tok = "sdp ready"
+                rss_flag = " --no-sdp-rss" if ncores == 1 else ""
                 cmd = (
-                    f"{CARD_BIN} -l 3-6 -a {ETH_DEV} -a 0002:01:00.2 --file-prefix=m195 -- "
-                    f"--mode sdp --rx-mode {rxmode}"
+                    f"{CARD_BIN} -l {lcores} -a {ETH_DEV} -a 0002:01:00.2 --file-prefix=m195 -- "
+                    f"--mode sdp --rx-mode {rxmode}{rss_flag}"
                 )
             else:
                 ready_tok = "direct ready"
                 cmd = (
-                    f"{CARD_BIN} -l 3-6 -a {ETH_DEV} "
+                    f"{CARD_BIN} -l {lcores} -a {ETH_DEV} "
                     f"-a 0000:06:00.1 -a 0000:06:00.2 -a 0000:06:00.3 -a 0000:06:00.4 "
                     f"--file-prefix=m195 -- --mode direct --rx-mode {rxmode} --dma-threshold 1024"
                 )
@@ -228,13 +236,17 @@ class Stack:
 
         if self.host_key != h_key or self.host_proc is None or self.host_proc.poll() is not None:
             self.stop_host()
-            hmode, aw, tps = h_key
+            hmode, nq, tail_off, aw, tps = h_key
             if hmode == "sdp":
-                devarg = "0000:99:02.0,rx_poll_mem=1,rx_poll_tail_off=48,ism_enable=1,allow_small_oq=1,max_rings=4"
+                rx_desc = 256 if nq == 4 else 1024
+                devarg = (
+                    f"0000:99:02.0,rx_poll_mem=1,rx_poll_tail_off={tail_off},"
+                    f"ism_enable=1,allow_small_oq=1,max_rings={nq}"
+                )
                 extra = [
                     "--mode", "sdp",
-                    "--sdp-queues", "4",
-                    "--sdp-rx-desc", "256",
+                    "--sdp-queues", str(nq),
+                    "--sdp-rx-desc", str(rx_desc),
                     "--sdp-tx-desc", "2048",
                     "--sdp-compact-pool", "true",
                     "--sdp-zero-copy", "true",
@@ -303,6 +315,7 @@ def run_client_synced(
     duration_ms: int,
     seed: int,
     timeout: int = 60,
+    card_queues: int = 4,
 ):
     prof = profile_for_workload(workload)
     if policy != "card_echo":
@@ -311,7 +324,7 @@ def run_client_synced(
     merc_eth_before = read_merc_ethtool()
 
     mcmd = (
-        f"{MERC_BIN} --dev mlx5_2 --sgid 3 --cpu 0 --threads {threads} --card-queues 4 "
+        f"{MERC_BIN} --dev mlx5_2 --sgid 3 --cpu 4 --threads {threads} --card-queues {card_queues} "
         f"--mode {drive_mode} --workload {workload} --key-dist {key_dist} "
         f"--window {window} --rate-krps {rate_krps:.3f} "
         f"--warmup-ms {warmup_ms} --duration-ms {duration_ms} --seed {seed} --sync-reset"
@@ -480,40 +493,78 @@ def run_smoke(stack: Stack):
         sys.exit(1)
 
 
+def run_smoke_controls(stack: Stack):
+    print("=== MRV-195 SDP CONTROLS SMOKE (sdp_notail + sdp_1q) ===", flush=True)
+    cases = [
+        ("sdp_notail", "get64", "zipf", "closed", 512, 0.0, 8, 4, False),
+        ("sdp_notail", "get64", "zipf", "poisson", 8192, 8000.0, 8, 4, True),
+        ("sdp_1q", "get64", "zipf", "closed", 512, 0.0, 8, 1, False),
+        ("sdp_1q", "get64", "zipf", "closed", 1, 0.0, 1, 1, False),
+        ("sdp_1q", "get4096", "zipf", "closed", 512, 0.0, 8, 1, False),
+        ("sdp_1q", "mix", "zipf", "closed", 512, 0.0, 8, 1, False),
+    ]
+    all_ok = True
+    for idx, (pol, wl, kd, dm, win, rk, thr, cq, aw) in enumerate(cases, 1):
+        stack.ensure_stack(pol, app_work=aw)
+        c, h, k, _tad = run_client_synced(
+            pol, wl, kd, dm, win, rk, thr, warmup_ms=300, duration_ms=1000,
+            seed=19550 + idx, card_queues=cq
+        )
+        errs = verify_run(pol, dm, c, h, k)
+        pmu = (h or {}).get("pmu") or {}
+        status = "OK" if not errs else f"FAIL({'; '.join(errs)})"
+        if errs:
+            all_ok = False
+        print(
+            f"[{idx:02d}/{len(cases)}] {pol:11s} {wl:7s} {dm:7s} W={win:4d} R={rk:5.0f} aw={int(aw)} -> "
+            f"{c['achieved_mrps']:6.3f} Mrps ({c['wire_rx_gbps']:5.1f}G) "
+            f"p50={c['tot_p50_us']:6.2f} p99={c['tot_p99_us']:6.2f} "
+            f"cyc={pmu.get('cycles_per_req',0):5.0f} imc={pmu.get('imc_bytes_per_req',0):5.1f}B | {status}",
+            flush=True,
+        )
+    if not all_ok:
+        sys.exit(1)
+
+
 def append_jsonl(path: pathlib.Path, obj: dict):
     with open(path, "a") as f:
         f.write(json.dumps(obj, separators=(",", ":")) + "\n")
 
 
-def run_campaign(stack: Stack, do_restore: bool):
+def run_campaign(stack: Stack, do_restore: bool, resume_from_2b: bool = False, resume_from_3a: bool = False):
     runs_path = LOG_DIR / "runs.jsonl"
     att_path = LOG_DIR / "attempts.jsonl"
     env_path = LOG_DIR / "env.json"
 
-    # Fresh archive files for the formal n=3 campaign
-    for p in (runs_path, att_path):
-        if p.exists():
-            p.unlink()
-
+    keep_parts = {"part0_idle_cal", "part1_sat", "part2a_w1"}
+    if resume_from_3a:
+        keep_parts |= {"part2b_mix_zipf", "part2b_mix_uniform", "part2b_get64_zipf"}
     env_before = read_clocks_edac()
     ea0_start = env_before["card_edac"]["ea0_ue"]
     mc0_start = env_before["card_edac"]["mc0_ue"]
-    print(f"=== MRV-195 FORMAL n=3 INTERLEAVED CAMPAIGN START ===", flush=True)
+    host_ue_start = env_before["saturn_edac_ue_sum"]
+    print(f"=== MRV-195 FORMAL n=3 INTERLEAVED CAMPAIGN START (resume_2b={resume_from_2b}, resume_3a={resume_from_3a}) ===", flush=True)
     print(f"PRE-ENV: cpu40={env_before['saturn_cpu40_khz']}kHz({env_before['saturn_cpu40_gov']}) "
-          f"uncore={env_before['saturn_uncore_khz']} host_ue={env_before['saturn_edac_ue_sum']} "
+          f"uncore={env_before['saturn_uncore_khz']} host_ue={host_ue_start} "
           f"rp_aer={env_before['saturn_rp_aer']} card_edac={env_before['card_edac']}", flush=True)
 
-    # Part 0: Host cpu40 idle calibration for app_work spare-CPU accounting (n=3)
-    idle_cals = []
-    for rep in range(3):
-        out = sh([HOST_BIN, "--", "--idle-cal-ms", "1000"]).stdout.strip().splitlines()[-1]
-        cal = json.loads(out)
-        rec = {"ts": utc_now(), "part": "part0_idle_cal", "rep": rep, "cal": cal, "verified": True}
-        append_jsonl(runs_path, rec)
-        append_jsonl(att_path, rec)
-        idle_cals.append(cal["app_work_kps"])
-    idle_kps_med = sorted(idle_cals)[1]
-    print(f"[PART 0] cpu40 idle_cal kops/s = {[round(x, 1) for x in idle_cals]} (med={idle_kps_med:.1f})", flush=True)
+    def check_edac_gate(tag: str):
+        snap = read_clocks_edac()
+        ed = snap["card_edac"]
+        aer = snap["saturn_rp_aer"]
+        aer_sum = sum(v for v in aer.values() if v > 0)
+        print(
+            f"  [EDAC/AER GATE {tag}] card_edac={ed} (delta ea0={ed['ea0_ue']-ea0_start}, mc0={ed['mc0_ue']-mc0_start}) "
+            f"host_ue={snap['saturn_edac_ue_sum']} rp_aer={aer}",
+            flush=True,
+        )
+        if (
+            ed["ea0_ue"] != ea0_start
+            or ed["mc0_ue"] != mc0_start
+            or snap["saturn_edac_ue_sum"] != host_ue_start
+            or aer_sum != 0
+        ):
+            raise RuntimeError(f"EDAC/AER error at {tag}: {snap}")
 
     pol_orders = [
         ["sdp_fair", "direct_peek", "direct_safe"],
@@ -524,6 +575,53 @@ def run_campaign(stack: Stack, do_restore: bool):
     run_seq = 0
     total_verified = 0
     total_retries = 0
+    idle_cals = []
+
+    if resume_from_2b or resume_from_3a:
+        kept_runs = []
+        for ln in runs_path.read_text().splitlines():
+            if not ln.strip():
+                continue
+            obj = json.loads(ln)
+            if obj.get("part") in keep_parts:
+                kept_runs.append(obj)
+                if obj["part"] == "part0_idle_cal":
+                    idle_cals.append(obj["cal"]["app_work_kps"])
+                else:
+                    total_verified += 1
+        kept_atts = []
+        for ln in att_path.read_text().splitlines():
+            if not ln.strip():
+                continue
+            obj = json.loads(ln)
+            if obj.get("part") in keep_parts:
+                kept_atts.append(obj)
+                if not obj.get("verified"):
+                    total_retries += 1
+        assert len(idle_cals) == 3, f"expected 3 idle_cal rows, got {len(idle_cals)}"
+        assert total_verified >= 108, f"expected >=108 verified rows, got {total_verified}"
+        runs_path.write_text("".join(json.dumps(x, separators=(",", ":")) + "\n" for x in kept_runs))
+        att_path.write_text("".join(json.dumps(x, separators=(",", ":")) + "\n" for x in kept_atts))
+        run_seq = len(kept_atts)
+        idle_kps_med = sorted(idle_cals)[1]
+        print(
+            f"[RESUMED] kept {len(kept_runs)} verified rows (runs={total_verified}, idle_cal=3), "
+            f"idle_kps_med={idle_kps_med:.1f}",
+            flush=True,
+        )
+    else:
+        for p in (runs_path, att_path):
+            if p.exists():
+                p.unlink()
+        for rep in range(3):
+            out = sh([HOST_BIN, "--", "--idle-cal-ms", "1000"]).stdout.strip().splitlines()[-1]
+            cal = json.loads(out)
+            rec = {"ts": utc_now(), "part": "part0_idle_cal", "rep": rep, "cal": cal, "verified": True}
+            append_jsonl(runs_path, rec)
+            append_jsonl(att_path, rec)
+            idle_cals.append(cal["app_work_kps"])
+        idle_kps_med = sorted(idle_cals)[1]
+        print(f"[PART 0] cpu40 idle_cal kops/s = {[round(x, 1) for x in idle_cals]} (med={idle_kps_med:.1f})", flush=True)
 
     def exec_case(
         part: str,
@@ -539,17 +637,35 @@ def run_campaign(stack: Stack, do_restore: bool):
         duration_ms: int,
         app_work: bool = False,
         tx_pool_slots: int = 1024,
-        max_retries: int = 3,
+        max_retries: int = 5,
+        card_queues: int = 4,
+        stop_on_overload: bool = False,
     ):
         nonlocal run_seq, total_verified, total_retries
-        for attempt in range(max_retries):
+        last_errs = []
+        ov_count = 0
+        phy_count = 0
+        ov_limit = 2 if stop_on_overload else max_retries
+        attempt = 0
+        while True:
             run_seq += 1
             seed = 195000 + rep * 10000 + run_seq * 17 + attempt
             stack.ensure_stack(pol, app_work=app_work, tx_pool_slots=tx_pool_slots)
             c, h, k, tad = run_client_synced(
-                pol, wl, kd, dm, win, rk, thr, warmup_ms=warmup_ms, duration_ms=duration_ms, seed=seed
+                pol, wl, kd, dm, win, rk, thr,
+                warmup_ms=warmup_ms, duration_ms=duration_ms, seed=seed,
+                card_queues=card_queues,
             )
             errs = verify_run(pol, dm, c, h, k)
+            last_errs = errs
+            is_phy_crc = any("merc_rx_crc_errors_phy" in e for e in errs) and c["lost"] <= 3
+            is_overload = (
+                stop_on_overload
+                and not is_phy_crc
+                and len(errs) > 0
+                and all(("window_cap_hits" in e or "client lost=" in e or "merc_rx_crc_errors_phy" in e) for e in errs)
+                and c["bad"] == 0 and c["torn"] == 0 and c["send_err"] == 0
+            )
             pmu = (h or {}).get("pmu") or {}
             aw_cpu_frac = (1.0 - h["app_work_kps"] / idle_kps_med) if (app_work and h) else None
             aw_cyc_per_req = (
@@ -569,6 +685,7 @@ def run_campaign(stack: Stack, do_restore: bool):
                 "window": win,
                 "rate_krps": rk,
                 "threads": thr,
+                "card_queues": card_queues,
                 "warmup_ms": warmup_ms,
                 "duration_ms": duration_ms,
                 "app_work": app_work,
@@ -578,6 +695,7 @@ def run_campaign(stack: Stack, do_restore: bool):
                 "aw_cyc_per_req": aw_cyc_per_req,
                 "seed": seed,
                 "verified": len(errs) == 0,
+                "overload": is_overload,
                 "verify_errors": errs,
                 "client": c,
                 "host": h,
@@ -591,119 +709,168 @@ def run_campaign(stack: Stack, do_restore: bool):
                 busy_pct = (h["busy_ns_per_req"] * c["achieved_mrps"] * 0.1) if h else 0.0
                 aw_str = f" aw_cyc={aw_cyc_per_req:5.0f}" if aw_cyc_per_req is not None else ""
                 print(
-                    f"[{total_verified:03d}] {part:14s} r{rep} {pol:11s} {wl:7s} {kd:7s} {dm:7s} "
-                    f"W={win:4d} R={rk:6.0f} -> {c['achieved_mrps']:6.3f} Mrps ({c['wire_rx_gbps']:5.1f}/{c['wire_tx_gbps']:4.1f}G) "
+                    f"[{total_verified:03d}] {part:18s} r{rep} {pol:11s} {wl:7s} {kd:7s} {dm:7s} "
+                    f"W={win:5d} R={rk:6.0f} -> {c['achieved_mrps']:6.3f} Mrps ({c['wire_rx_gbps']:5.1f}/{c['wire_tx_gbps']:4.1f}G) "
                     f"p50={c['tot_p50_us']:6.2f} p99={c['tot_p99_us']:6.2f} sm99={c['small_p99_us']:6.2f} "
                     f"cyc={pmu.get('cycles_per_req',0):5.0f} b%={busy_pct:4.0f}{aw_str} imc={pmu.get('imc_bytes_per_req',0):5.1f}B",
                     flush=True,
                 )
                 return rec
             total_retries += 1
-            print(f"  [RETRY {attempt+1}/{max_retries}] {part} r{rep} {pol} {wl} {kd} R={rk}: {errs}", flush=True)
-        raise RuntimeError(f"Failed after {max_retries} attempts: {part} r{rep} {pol} {wl} {kd} R={rk} errs={errs}")
-
-    # -------------------------------------------------------------------------
-    # PART 1: Single-core saturation throughput, CPU cycles/req, IMC ledger (n=3 interleaved)
-    # -------------------------------------------------------------------------
-    print("\n=== PART 1: SINGLE-CORE SATURATION MATRIX (W=512, T=8, n=3 interleaved) ===", flush=True)
-    sat_workloads = [
-        ("get64", "zipf"),
-        ("put64", "zipf"),
-        ("get256", "zipf"),
-        ("get1024", "zipf"),
-        ("get4096", "zipf"),
-        ("put4096", "zipf"),
-        ("mix", "zipf"),
-        ("mix", "uniform"),
-    ]
-    for rep in range(3):
-        for pol in pol_orders[rep]:
-            for wl, kd in sat_workloads:
-                exec_case("part1_sat", rep, pol, wl, kd, "closed", 512, 0.0, 8, 300, 1200)
-        ed = read_clocks_edac()["card_edac"]
-        print(f"  [EDAC CHECK after part1 rep {rep}] card_edac={ed} (delta ea0={ed['ea0_ue']-ea0_start})", flush=True)
-        if ed["ea0_ue"] != ea0_start or ed["mc0_ue"] != mc0_start:
-            raise RuntimeError(f"EDAC error during part1 rep {rep}: {ed}")
-
-    # -------------------------------------------------------------------------
-    # PART 2A: W=1 unloaded end-to-end latency baseline (n=3 interleaved)
-    # -------------------------------------------------------------------------
-    print("\n=== PART 2A: W=1 UNLOADED END-TO-END LATENCY (n=3 interleaved) ===", flush=True)
-    w1_workloads = [("get64", "zipf"), ("get256", "zipf"), ("get1024", "zipf"), ("get4096", "zipf")]
-    for rep in range(3):
-        for pol in pol_orders[rep]:
-            for wl, kd in w1_workloads:
-                exec_case("part2a_w1", rep, pol, wl, kd, "closed", 1, 0.0, 1, 150, 500)
-
-    # -------------------------------------------------------------------------
-    # PART 2B: Open-loop Poisson load-p99 knee curves (n=3 interleaved, zero CO)
-    # -------------------------------------------------------------------------
-    print("\n=== PART 2B: OPEN-LOOP POISSON LOAD-p99 KNEE CURVES (n=3 interleaved) ===", flush=True)
-    poisson_plan = {
-        "mix_zipf": {
-            "wl": "mix", "kd": "zipf", "win": 4096, "thr": 8,
-            "rates": {
-                "sdp_fair":    [500, 1500, 2500, 3500, 4500, 5000, 5300],
-                "direct_peek": [500, 1500, 2500, 3500, 4500, 5000, 5300, 5700, 6000],
-                "direct_safe": [500, 1500, 2500, 3500, 4500, 5000, 5300, 5700, 6000],
-            },
-        },
-        "mix_uniform": {
-            "wl": "mix", "kd": "uniform", "win": 4096, "thr": 8,
-            "rates": {
-                "sdp_fair":    [500, 1500, 2500, 3500, 4500, 4900],
-                "direct_peek": [500, 1500, 2500, 3500, 4500, 4900, 5400],
-                "direct_safe": [500, 1500, 2500, 3500, 4500, 4900, 5400],
-            },
-        },
-        "get64_zipf": {
-            "wl": "get64", "kd": "zipf", "win": 8192, "thr": 8,
-            "rates": {
-                "sdp_fair":    [1000, 3000, 6000, 9000, 10500, 11300],
-                "direct_peek": [1000, 3000, 6000, 9000, 10500, 11300, 13000, 14500],
-                "direct_safe": [1000, 3000, 6000, 9000, 10500, 11300, 13000, 14500, 16000],
-            },
-        },
-    }
-    for curve_name, spec in poisson_plan.items():
+            attempt += 1
+            if is_phy_crc:
+                phy_count += 1
+                print(f"  [PHY-CRC RETRY {phy_count}/5] {part} r{rep} {pol} {wl} {kd} R={rk}: {errs}", flush=True)
+                if phy_count >= 5:
+                    raise RuntimeError(f"Too many physical CRC errors: {part} r{rep} {pol} {wl} {kd} R={rk} errs={last_errs}")
+                continue
+            ov_count += 1
+            print(f"  [RETRY {ov_count}/{ov_limit}] {part} r{rep} {pol} {wl} {kd} R={rk}: {errs}", flush=True)
+            if ov_count >= ov_limit:
+                if is_overload:
+                    print(f"  [OVERLOAD KNEE REACHED] {part} r{rep} {pol} {wl} {kd} R={rk}: {last_errs}", flush=True)
+                    return None
+                raise RuntimeError(f"Failed after {ov_limit} attempts: {part} r{rep} {pol} {wl} {kd} R={rk} errs={last_errs}")
+    if not resume_from_2b and not resume_from_3a:
+        print("\n=== PART 1: SINGLE-CORE SATURATION MATRIX (W=512, T=8, n=3 interleaved) ===", flush=True)
+        sat_workloads = [
+            ("get64", "zipf"),
+            ("put64", "zipf"),
+            ("get256", "zipf"),
+            ("get1024", "zipf"),
+            ("get4096", "zipf"),
+            ("put4096", "zipf"),
+            ("mix", "zipf"),
+            ("mix", "uniform"),
+        ]
         for rep in range(3):
             for pol in pol_orders[rep]:
-                for rk in spec["rates"][pol]:
-                    exec_case(
-                        f"part2b_{curve_name}",
-                        rep, pol, spec["wl"], spec["kd"], "poisson",
-                        spec["win"], float(rk), spec["thr"], 300, 1000,
-                    )
-        ed = read_clocks_edac()["card_edac"]
-        print(f"  [EDAC CHECK after {curve_name}] card_edac={ed} (delta ea0={ed['ea0_ue']-ea0_start})", flush=True)
-        if ed["ea0_ue"] != ea0_start or ed["mc0_ue"] != mc0_start:
-            raise RuntimeError(f"EDAC error during {curve_name}: {ed}")
+                for wl, kd in sat_workloads:
+                    exec_case("part1_sat", rep, pol, wl, kd, "closed", 512, 0.0, 8, 300, 1200)
+            check_edac_gate(f"part1 rep {rep}")
+
+        print("\n=== PART 2A: W=1 UNLOADED END-TO-END LATENCY (n=3 interleaved) ===", flush=True)
+        w1_workloads = [("get64", "zipf"), ("get256", "zipf"), ("get1024", "zipf"), ("get4096", "zipf")]
+        for rep in range(3):
+            for pol in pol_orders[rep]:
+                for wl, kd in w1_workloads:
+                    exec_case("part2a_w1", rep, pol, wl, kd, "closed", 1, 0.0, 1, 150, 500)
 
     # -------------------------------------------------------------------------
-    # PART 3: Matched-rate --app-work spare-CPU cross-check + 128 MiB TX pool control
+    # PART 2B: Open-loop Poisson load-p99 knee curves (T=8, W=4096, n=3 interleaved)
+    #   W=4096 (512/thread -> 1024/card_core) matches DirectPush RX_SUBRING_SLOTS.
+    #   Rates above an arm's lossless knee are logged with overload=True and stop climbing.
     # -------------------------------------------------------------------------
-    print("\n=== PART 3A: MATCHED-RATE --app-work SPARE-CPU LEDGER (n=3 interleaved) ===", flush=True)
+    if not resume_from_3a:
+        print("\n=== PART 2B: OPEN-LOOP POISSON LOAD-p99 KNEE CURVES (T=8, W=4096, n=3 interleaved) ===", flush=True)
+        poisson_plan = {
+            "mix_zipf": {
+                "wl": "mix", "kd": "zipf", "win": 4096, "thr": 8,
+                "rates": {
+                    "sdp_fair":    [(500, False), (1500, False), (2500, False), (3000, False), (3500, True), (4000, True), (4500, True)],
+                    "direct_peek": [(500, False), (1500, False), (2500, False), (3000, False), (3500, False), (4000, False), (4500, False), (5000, False), (5300, True), (5700, True), (6000, True)],
+                    "direct_safe": [(500, False), (1500, False), (2500, False), (3000, False), (3500, False), (4000, False), (4500, False), (5000, False), (5300, True), (5700, True), (6000, True)],
+                },
+            },
+            "mix_uniform": {
+                "wl": "mix", "kd": "uniform", "win": 4096, "thr": 8,
+                "rates": {
+                    "sdp_fair":    [(500, False), (1500, False), (2500, False), (3000, False), (3500, True), (4000, True)],
+                    "direct_peek": [(500, False), (1500, False), (2500, False), (3000, False), (3500, False), (4000, False), (4500, False), (5000, True), (5400, True)],
+                    "direct_safe": [(500, False), (1500, False), (2500, False), (3000, False), (3500, False), (4000, False), (4500, False), (5000, True), (5400, True)],
+                },
+            },
+            "get64_zipf": {
+                "wl": "get64", "kd": "zipf", "win": 4096, "thr": 8,
+                "rates": {
+                    "sdp_fair":    [(1000, False), (3000, False), (6000, False), (7500, False), (9000, True), (10000, True), (10800, True)],
+                    "direct_peek": [(1000, False), (3000, False), (6000, False), (7500, False), (9000, False), (10500, False), (12000, True), (13500, True), (15000, True)],
+                    "direct_safe": [(1000, False), (3000, False), (6000, False), (7500, False), (9000, False), (10500, False), (12000, True), (13500, True), (15000, True), (16000, True)],
+                },
+            },
+        }
+        for curve_name, spec in poisson_plan.items():
+            for rep in range(3):
+                for pol in pol_orders[rep]:
+                    for rk, stop_ov in spec["rates"][pol]:
+                        res = exec_case(
+                            f"part2b_{curve_name}",
+                            rep, pol, spec["wl"], spec["kd"], "poisson",
+                            spec["win"], float(rk), spec["thr"], 500, 1000,
+                            stop_on_overload=stop_ov,
+                        )
+                        if res is None:
+                            break
+            check_edac_gate(curve_name)
+    # -------------------------------------------------------------------------
+    # PART 3A: Matched-rate --app-work spare-CPU + paired aw=0 IMC/latency (n=3 interleaved)
+    # -------------------------------------------------------------------------
+    print("\n=== PART 3A: MATCHED-RATE --app-work SPARE-CPU & PAIRED aw=0 IMC LEDGER (n=3 interleaved) ===", flush=True)
     aw_cases = [
-        ("get64",   "zipf", 8000.0, 4096),
-        ("get256",  "zipf", 8000.0, 4096),
-        ("mix",     "zipf", 4000.0, 4096),
-        ("get4096", "zipf", 1200.0, 2048),
+        ("get64",   "zipf",    4500.0, 4096),
+        ("get256",  "zipf",    4500.0, 4096),
+        ("get1024", "zipf",    2500.0, 4096),
+        ("get4096", "zipf",    1000.0, 4096),
+        ("mix",     "zipf",    2500.0, 4096),
+        ("mix",     "uniform", 2500.0, 4096),
     ]
     for rep in range(3):
         for pol in pol_orders[rep]:
             for wl, kd, rk, win in aw_cases:
-                exec_case("part3a_appwork", rep, pol, wl, kd, "poisson", win, rk, 8, 300, 1000, app_work=True)
+                exec_case("part3a_appwork", rep, pol, wl, kd, "poisson", win, rk, 8, 500, 1000, app_work=True)
+    check_edac_gate("part3a_appwork")
 
+    for rep in range(3):
+        for pol in pol_orders[rep]:
+            for wl, kd, rk, win in aw_cases:
+                exec_case("part3a_matched_aw0", rep, pol, wl, kd, "poisson", win, rk, 8, 500, 1000, app_work=False)
+    check_edac_gate("part3a_matched_aw0")
+
+    # -------------------------------------------------------------------------
+    # PART 3B: 128 MiB retained TX pool sensitivity (direct_safe, n=3)
+    # -------------------------------------------------------------------------
     print("\n=== PART 3B: 128 MiB RETAINED TX POOL SENSITIVITY (direct_safe, n=3) ===", flush=True)
     for rep in range(3):
         for wl, kd in [("get1024", "zipf"), ("get4096", "zipf"), ("mix", "zipf")]:
             exec_case("part3b_pool128m", rep, "direct_safe", wl, kd, "closed", 512, 0.0, 8, 300, 1000, tx_pool_slots=32768)
+    check_edac_gate("part3b_pool128m")
+
+    # -------------------------------------------------------------------------
+    # PART 3C: Deployed-binary SDP fair-full controls (n=3 interleaved)
+    #   (1) rx_poll_tail_off=48 (`sdp_fair`) vs 0 (`sdp_notail`) on 64 B
+    #   (2) 1-queue SDP (`sdp_1q`, 1Q x 1024 desc, 1 card core) vs 4Q (`sdp_fair`, 4Q x 256)
+    # -------------------------------------------------------------------------
+    print("\n=== PART 3C: SDP CONTROLS (rx_poll_tail_off=48 vs 0 on 64B + 1Q vs 4Q, n=3) ===", flush=True)
+    notail_orders = [
+        ["sdp_fair", "sdp_notail"],
+        ["sdp_notail", "sdp_fair"],
+        ["sdp_fair", "sdp_notail"],
+    ]
+    for rep in range(3):
+        for pol in notail_orders[rep]:
+            exec_case("part3c_sdp_tail", rep, pol, "get64", "zipf", "closed", 512, 0.0, 8, 300, 1000, app_work=False)
+            exec_case("part3c_sdp_tail", rep, pol, "get64", "zipf", "closed", 1, 0.0, 1, 150, 500, app_work=False)
+            exec_case("part3c_sdp_tail", rep, pol, "get64", "zipf", "poisson", 4096, 4500.0, 8, 500, 1000, app_work=False)
+            exec_case("part3c_sdp_tail_aw", rep, pol, "get64", "zipf", "poisson", 4096, 4500.0, 8, 500, 1000, app_work=True)
+
+    sdp1q_wls = [
+        ("get64", "zipf", "closed", 512, 0.0, 8),
+        ("get256", "zipf", "closed", 512, 0.0, 8),
+        ("get1024", "zipf", "closed", 512, 0.0, 8),
+        ("get4096", "zipf", "closed", 512, 0.0, 8),
+        ("mix", "zipf", "closed", 512, 0.0, 8),
+        ("get64", "zipf", "closed", 1, 0.0, 1),
+    ]
+    for rep in range(3):
+        for wl, kd, dm, win, rk, thr in sdp1q_wls:
+            exec_case("part3c_sdp_1q", rep, "sdp_1q", wl, kd, dm, win, rk, thr, 300, 1000, card_queues=1)
+    check_edac_gate("part3c_sdp_controls")
 
     env_after_runs = read_clocks_edac()
     restore_info = None
     env_post_restore = None
     if do_restore:
-        print("\n=== RESTORING CARD & MERCURY BASELINE + 20s EDAC/AER SETTLE ===", flush=True)
+        print("\n=== RESTORING CARD & MERCURY BASELINE + 21s EDAC/AER SETTLE ===", flush=True)
         restore_info = stack.restore_baseline()
         print(restore_info["restore_stdout"], flush=True)
         time.sleep(21)
@@ -724,6 +891,9 @@ def run_campaign(stack: Stack, do_restore: bool):
         "ea0_ue_before_campaign": ea0_start,
         "ea0_ue_after_campaign": env_after_runs["card_edac"]["ea0_ue"],
         "ea0_ue_campaign_delta": env_after_runs["card_edac"]["ea0_ue"] - ea0_start,
+        "ea0_ue_post_restore_delta": (
+            env_post_restore["card_edac"]["ea0_ue"] - ea0_start if env_post_restore else None
+        ),
         "env_before": env_before,
         "env_after_runs": env_after_runs,
         "restore_info": restore_info,
@@ -737,21 +907,29 @@ def run_campaign(stack: Stack, do_restore: bool):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--smoke", action="store_true")
+    ap.add_argument("--smoke-controls", action="store_true")
     ap.add_argument("--campaign", action="store_true")
+    ap.add_argument("--resume-from-2b", action="store_true")
+    ap.add_argument("--resume-from-3a", action="store_true")
     ap.add_argument("--restore", action="store_true")
     args = ap.parse_args()
 
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     stack = Stack()
+    restored = False
     try:
         if args.smoke:
             run_smoke(stack)
+        if args.smoke_controls:
+            run_smoke_controls(stack)
         if args.campaign:
-            run_campaign(stack, do_restore=args.restore)
+            run_campaign(stack, do_restore=args.restore, resume_from_2b=args.resume_from_2b, resume_from_3a=args.resume_from_3a)
+            restored = args.restore
     finally:
-        if args.restore and not args.campaign:
+        if args.restore and not restored:
+            print("\n=== FINALLY: RESTORING BASELINE AFTER INTERRUPT/ERROR ===", flush=True)
             stack.restore_baseline()
-        elif not args.campaign:
+        elif not restored:
             stack.stop_card()
 
 

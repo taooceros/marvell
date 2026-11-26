@@ -1,0 +1,203 @@
+=== MRV-195 FORMAL n=3 INTERLEAVED CAMPAIGN START (resume_2b=False, resume_3a=True) ===
+PRE-ENV: cpu40=3900000kHz(performance) uncore={'package_00_die_00': 2200000, 'package_01_die_01': 2200000} host_ue=0 rp_aer={'aer_rootport_total_err_cor': 0, 'aer_rootport_total_err_nonfatal': 0, 'aer_rootport_total_err_fatal': 0} card_edac={'mc0_ue': 0, 'mc0_ce': 0, 'ea0_ue': 59, 'ea0_ce': 0, 'sei_total': 51}
+[RESUMED] kept 294 verified rows (runs=291, idle_cal=3), idle_kps_med=3819.0
+
+=== PART 3A: MATCHED-RATE --app-work SPARE-CPU & PAIRED aw=0 IMC LEDGER (n=3 interleaved) ===
+  [RETRY 1/5] part3a_appwork r0 sdp_fair get64 zipf R=4500.0: ['client lost=4 bad=0 torn=0 send_err=0']
+  [PHY-CRC RETRY 1/5] part3a_appwork r0 sdp_fair get64 zipf R=4500.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[292] part3a_appwork     r0 sdp_fair    get64   zipf    poisson W= 4096 R=  4500 ->  4.498 Mrps (  5.5/ 5.5G) p50= 12.68 p99= 17.36 sm99= 17.36 cyc=  878 b%=  13 aw_cyc=  544 imc= 50.0B
+[293] part3a_appwork     r0 sdp_fair    get256  zipf    poisson W= 4096 R=  4500 ->  4.499 Mrps ( 12.5/ 5.5G) p50= 13.54 p99= 19.14 sm99= 19.14 cyc=  887 b%=  26 aw_cyc=  616 imc= 19.5B
+[294] part3a_appwork     r0 sdp_fair    get1024 zipf    poisson W= 4096 R=  2500 ->  2.498 Mrps ( 22.3/ 3.1G) p50= 14.14 p99= 21.05 sm99=  0.00 cyc= 1600 b%=  41 aw_cyc= 1156 imc= 45.6B
+[295] part3a_appwork     r0 sdp_fair    get4096 zipf    poisson W= 4096 R=  1000 ->  1.000 Mrps ( 35.7/ 1.2G) p50= 17.34 p99= 29.75 sm99=  0.00 cyc= 3980 b%=  58 aw_cyc= 2973 imc=369.6B
+[296] part3a_appwork     r0 sdp_fair    mix     zipf    poisson W= 4096 R=  2500 ->  2.498 Mrps ( 21.5/ 3.4G) p50= 14.80 p99= 25.45 sm99= 24.85 cyc= 1592 b%=  41 aw_cyc= 1133 imc= 50.1B
+[297] part3a_appwork     r0 sdp_fair    mix     uniform poisson W= 4096 R=  2500 ->  2.502 Mrps ( 21.5/ 3.4G) p50= 14.86 p99= 25.45 sm99= 24.85 cyc= 1586 b%=  44 aw_cyc= 1168 imc= 52.2B
+[298] part3a_appwork     r0 direct_peek get64   zipf    poisson W= 4096 R=  4500 ->  4.499 Mrps (  5.5/ 5.5G) p50=  6.79 p99=  9.38 sm99=  9.38 cyc=  885 b%=  34 aw_cyc=  278 imc= 19.1B
+[299] part3a_appwork     r0 direct_peek get256  zipf    poisson W= 4096 R=  4500 ->  4.500 Mrps ( 12.5/ 5.5G) p50=  7.38 p99= 10.72 sm99= 10.72 cyc=  886 b%=  43 aw_cyc=  339 imc= 18.5B
+[300] part3a_appwork     r0 direct_peek get1024 zipf    poisson W= 4096 R=  2500 ->  2.499 Mrps ( 22.3/ 3.1G) p50= 10.14 p99= 15.85 sm99=  0.00 cyc= 1596 b%=  52 aw_cyc=  768 imc= 44.2B
+[301] part3a_appwork     r0 direct_peek get4096 zipf    poisson W= 4096 R=  1000 ->  1.002 Mrps ( 35.7/ 1.2G) p50= 15.46 p99= 38.15 sm99=  0.00 cyc= 3946 b%=  63 aw_cyc= 2348 imc=210.3B
+[302] part3a_appwork     r0 direct_peek mix     zipf    poisson W= 4096 R=  2500 ->  2.498 Mrps ( 21.5/ 3.4G) p50=  7.96 p99= 19.25 sm99= 13.64 cyc= 1594 b%=  51 aw_cyc=  749 imc= 36.7B
+[303] part3a_appwork     r0 direct_peek mix     uniform poisson W= 4096 R=  2500 ->  2.501 Mrps ( 21.5/ 3.4G) p50=  7.97 p99= 19.89 sm99= 13.89 cyc= 1590 b%=  53 aw_cyc=  798 imc= 36.6B
+[304] part3a_appwork     r0 direct_safe get64   zipf    poisson W= 4096 R=  4500 ->  4.497 Mrps (  5.5/ 5.5G) p50=  5.63 p99=  7.50 sm99=  7.50 cyc=  882 b%=  35 aw_cyc=  278 imc= 20.0B
+[305] part3a_appwork     r0 direct_safe get256  zipf    poisson W= 4096 R=  4500 ->  4.498 Mrps ( 12.5/ 5.5G) p50=  6.13 p99= 42.15 sm99= 42.15 cyc=  885 b%=  44 aw_cyc=  348 imc= 17.0B
+[306] part3a_appwork     r0 direct_safe get1024 zipf    poisson W= 4096 R=  2500 ->  2.499 Mrps ( 22.3/ 3.1G) p50=  8.71 p99= 14.01 sm99=  0.00 cyc= 1596 b%=  53 aw_cyc=  778 imc= 51.7B
+[307] part3a_appwork     r0 direct_safe get4096 zipf    poisson W= 4096 R=  1000 ->  1.001 Mrps ( 35.7/ 1.2G) p50= 14.21 p99= 35.55 sm99=  0.00 cyc= 3973 b%=  62 aw_cyc= 2330 imc=114.8B
+  [PHY-CRC RETRY 1/5] part3a_appwork r0 direct_safe mix zipf R=2500.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[308] part3a_appwork     r0 direct_safe mix     zipf    poisson W= 4096 R=  2500 ->  2.501 Mrps ( 21.5/ 3.4G) p50=  6.88 p99= 17.59 sm99= 12.20 cyc= 1589 b%=  51 aw_cyc=  756 imc= 35.5B
+[309] part3a_appwork     r0 direct_safe mix     uniform poisson W= 4096 R=  2500 ->  2.501 Mrps ( 21.5/ 3.4G) p50=  6.89 p99= 18.16 sm99= 12.45 cyc= 1601 b%=  54 aw_cyc=  804 imc= 34.0B
+[310] part3a_appwork     r1 direct_peek get64   zipf    poisson W= 4096 R=  4500 ->  4.502 Mrps (  5.5/ 5.5G) p50=  6.79 p99=  9.29 sm99=  9.29 cyc=  883 b%=  34 aw_cyc=  279 imc= 19.4B
+[311] part3a_appwork     r1 direct_peek get256  zipf    poisson W= 4096 R=  4500 ->  4.497 Mrps ( 12.4/ 5.5G) p50=  7.38 p99= 10.61 sm99= 10.61 cyc=  878 b%=  42 aw_cyc=  346 imc= 28.9B
+  [PHY-CRC RETRY 1/5] part3a_appwork r1 direct_peek get1024 zipf R=2500.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[312] part3a_appwork     r1 direct_peek get1024 zipf    poisson W= 4096 R=  2500 ->  2.502 Mrps ( 22.3/ 3.1G) p50= 10.27 p99= 16.48 sm99=  0.00 cyc= 1595 b%=  55 aw_cyc=  799 imc= 47.1B
+[313] part3a_appwork     r1 direct_peek get4096 zipf    poisson W= 4096 R=  1000 ->  0.999 Mrps ( 35.6/ 1.2G) p50= 15.29 p99= 37.25 sm99=  0.00 cyc= 3986 b%=  62 aw_cyc= 2335 imc=103.8B
+[314] part3a_appwork     r1 direct_peek mix     zipf    poisson W= 4096 R=  2500 ->  2.501 Mrps ( 21.5/ 3.4G) p50=  7.96 p99= 19.23 sm99= 13.59 cyc= 1588 b%=  50 aw_cyc=  757 imc= 42.4B
+[315] part3a_appwork     r1 direct_peek mix     uniform poisson W= 4096 R=  2500 ->  2.501 Mrps ( 21.5/ 3.4G) p50=  7.96 p99= 19.73 sm99= 13.85 cyc= 1595 b%=  53 aw_cyc=  799 imc= 51.0B
+[316] part3a_appwork     r1 direct_safe get64   zipf    poisson W= 4096 R=  4500 ->  4.501 Mrps (  5.5/ 5.5G) p50=  5.62 p99=  7.53 sm99=  7.53 cyc=  889 b%=  34 aw_cyc=  277 imc= 28.9B
+[317] part3a_appwork     r1 direct_safe get256  zipf    poisson W= 4096 R=  4500 ->  4.500 Mrps ( 12.5/ 5.5G) p50=  6.14 p99= 42.55 sm99= 42.55 cyc=  884 b%=  44 aw_cyc=  347 imc= 21.0B
+[318] part3a_appwork     r1 direct_safe get1024 zipf    poisson W= 4096 R=  2500 ->  2.498 Mrps ( 22.3/ 3.1G) p50=  8.93 p99= 15.29 sm99=  0.00 cyc= 1591 b%=  57 aw_cyc=  837 imc= 42.5B
+[319] part3a_appwork     r1 direct_safe get4096 zipf    poisson W= 4096 R=  1000 ->  1.001 Mrps ( 35.7/ 1.2G) p50= 14.19 p99= 35.55 sm99=  0.00 cyc= 3973 b%=  62 aw_cyc= 2343 imc=119.2B
+[320] part3a_appwork     r1 direct_safe mix     zipf    poisson W= 4096 R=  2500 ->  2.498 Mrps ( 21.5/ 3.4G) p50=  6.88 p99= 17.66 sm99= 12.19 cyc= 1591 b%=  51 aw_cyc=  758 imc= 45.9B
+[321] part3a_appwork     r1 direct_safe mix     uniform poisson W= 4096 R=  2500 ->  2.501 Mrps ( 21.5/ 3.4G) p50=  6.89 p99= 18.16 sm99= 12.43 cyc= 1595 b%=  54 aw_cyc=  806 imc= 54.5B
+[322] part3a_appwork     r1 sdp_fair    get64   zipf    poisson W= 4096 R=  4500 ->  4.503 Mrps (  5.5/ 5.5G) p50= 12.69 p99= 17.36 sm99= 17.36 cyc=  891 b%=  13 aw_cyc=  542 imc= 26.2B
+[323] part3a_appwork     r1 sdp_fair    get256  zipf    poisson W= 4096 R=  4500 ->  4.499 Mrps ( 12.5/ 5.5G) p50= 13.54 p99= 19.02 sm99= 19.02 cyc=  886 b%=  26 aw_cyc=  615 imc= 20.9B
+[324] part3a_appwork     r1 sdp_fair    get1024 zipf    poisson W= 4096 R=  2500 ->  2.500 Mrps ( 22.3/ 3.1G) p50= 14.15 p99= 21.05 sm99=  0.00 cyc= 1599 b%=  41 aw_cyc= 1153 imc= 44.2B
+[325] part3a_appwork     r1 sdp_fair    get4096 zipf    poisson W= 4096 R=  1000 ->  1.001 Mrps ( 35.7/ 1.2G) p50= 17.25 p99= 29.35 sm99=  0.00 cyc= 3986 b%=  58 aw_cyc= 2965 imc=137.3B
+  [PHY-CRC RETRY 1/5] part3a_appwork r1 sdp_fair mix zipf R=2500.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[326] part3a_appwork     r1 sdp_fair    mix     zipf    poisson W= 4096 R=  2500 ->  2.502 Mrps ( 21.6/ 3.4G) p50= 14.85 p99= 25.35 sm99= 24.75 cyc= 1580 b%=  41 aw_cyc= 1130 imc= 41.0B
+[327] part3a_appwork     r1 sdp_fair    mix     uniform poisson W= 4096 R=  2500 ->  2.503 Mrps ( 21.5/ 3.4G) p50= 14.88 p99= 25.45 sm99= 24.85 cyc= 1592 b%=  44 aw_cyc= 1164 imc= 42.3B
+[328] part3a_appwork     r2 direct_safe get64   zipf    poisson W= 4096 R=  4500 ->  4.501 Mrps (  5.5/ 5.5G) p50=  5.62 p99=  7.58 sm99=  7.58 cyc=  891 b%=  35 aw_cyc=  273 imc= 21.2B
+  [PHY-CRC RETRY 1/5] part3a_appwork r2 direct_safe get256 zipf R=4500.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[329] part3a_appwork     r2 direct_safe get256  zipf    poisson W= 4096 R=  4500 ->  4.504 Mrps ( 12.5/ 5.5G) p50=  6.14 p99= 43.55 sm99= 43.55 cyc=  885 b%=  44 aw_cyc=  348 imc= 21.8B
+  [PHY-CRC RETRY 1/5] part3a_appwork r2 direct_safe get1024 zipf R=2500.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[330] part3a_appwork     r2 direct_safe get1024 zipf    poisson W= 4096 R=  2500 ->  2.501 Mrps ( 22.3/ 3.1G) p50=  8.71 p99= 14.06 sm99=  0.00 cyc= 1591 b%=  54 aw_cyc=  781 imc= 34.5B
+[331] part3a_appwork     r2 direct_safe get4096 zipf    poisson W= 4096 R=  1000 ->  0.999 Mrps ( 35.6/ 1.2G) p50= 14.21 p99= 35.85 sm99=  0.00 cyc= 3965 b%=  63 aw_cyc= 2318 imc=133.9B
+[332] part3a_appwork     r2 direct_safe mix     zipf    poisson W= 4096 R=  2500 ->  2.499 Mrps ( 21.5/ 3.4G) p50=  6.88 p99= 17.52 sm99= 12.10 cyc= 1591 b%=  51 aw_cyc=  756 imc= 34.6B
+[333] part3a_appwork     r2 direct_safe mix     uniform poisson W= 4096 R=  2500 ->  2.501 Mrps ( 21.6/ 3.4G) p50=  6.92 p99= 18.39 sm99= 12.56 cyc= 1590 b%=  54 aw_cyc=  810 imc= 55.4B
+[334] part3a_appwork     r2 sdp_fair    get64   zipf    poisson W= 4096 R=  4500 ->  4.502 Mrps (  5.5/ 5.5G) p50= 12.69 p99= 17.41 sm99= 17.41 cyc=  885 b%=  13 aw_cyc=  542 imc= 26.3B
+[335] part3a_appwork     r2 sdp_fair    get256  zipf    poisson W= 4096 R=  4500 ->  4.501 Mrps ( 12.5/ 5.5G) p50= 13.54 p99= 19.07 sm99= 19.07 cyc=  886 b%=  26 aw_cyc=  615 imc= 23.9B
+  [PHY-CRC RETRY 1/5] part3a_appwork r2 sdp_fair get1024 zipf R=2500.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[336] part3a_appwork     r2 sdp_fair    get1024 zipf    poisson W= 4096 R=  2500 ->  2.498 Mrps ( 22.3/ 3.1G) p50= 14.16 p99= 21.15 sm99=  0.00 cyc= 1594 b%=  42 aw_cyc= 1164 imc= 45.2B
+[337] part3a_appwork     r2 sdp_fair    get4096 zipf    poisson W= 4096 R=  1000 ->  1.000 Mrps ( 35.6/ 1.2G) p50= 17.30 p99= 29.55 sm99=  0.00 cyc= 3964 b%=  58 aw_cyc= 2964 imc=139.4B
+[338] part3a_appwork     r2 sdp_fair    mix     zipf    poisson W= 4096 R=  2500 ->  2.499 Mrps ( 21.5/ 3.4G) p50= 14.81 p99= 25.25 sm99= 24.65 cyc= 1590 b%=  41 aw_cyc= 1133 imc= 42.4B
+[339] part3a_appwork     r2 sdp_fair    mix     uniform poisson W= 4096 R=  2500 ->  2.501 Mrps ( 21.5/ 3.4G) p50= 14.87 p99= 25.45 sm99= 24.85 cyc= 1593 b%=  44 aw_cyc= 1172 imc=128.5B
+[340] part3a_appwork     r2 direct_peek get64   zipf    poisson W= 4096 R=  4500 ->  4.502 Mrps (  5.5/ 5.5G) p50=  6.79 p99=  9.32 sm99=  9.32 cyc=  878 b%=  34 aw_cyc=  280 imc= 23.1B
+[341] part3a_appwork     r2 direct_peek get256  zipf    poisson W= 4096 R=  4500 ->  4.503 Mrps ( 12.5/ 5.5G) p50=  7.38 p99= 10.59 sm99= 10.59 cyc=  856 b%=  43 aw_cyc=  349 imc= 42.6B
+[342] part3a_appwork     r2 direct_peek get1024 zipf    poisson W= 4096 R=  2500 ->  2.499 Mrps ( 22.3/ 3.1G) p50= 10.35 p99= 16.86 sm99=  0.00 cyc= 1593 b%=  56 aw_cyc=  820 imc= 47.3B
+[343] part3a_appwork     r2 direct_peek get4096 zipf    poisson W= 4096 R=  1000 ->  0.999 Mrps ( 35.6/ 1.2G) p50= 15.31 p99= 37.65 sm99=  0.00 cyc= 3989 b%=  62 aw_cyc= 2328 imc=145.8B
+[344] part3a_appwork     r2 direct_peek mix     zipf    poisson W= 4096 R=  2500 ->  2.500 Mrps ( 21.5/ 3.4G) p50=  7.96 p99= 19.16 sm99= 13.57 cyc= 1596 b%=  50 aw_cyc=  749 imc= 41.9B
+[345] part3a_appwork     r2 direct_peek mix     uniform poisson W= 4096 R=  2500 ->  2.500 Mrps ( 21.5/ 3.4G) p50=  7.96 p99= 19.86 sm99= 13.89 cyc= 1594 b%=  53 aw_cyc=  798 imc= 37.4B
+  [EDAC/AER GATE part3a_appwork] card_edac={'mc0_ue': 0, 'mc0_ce': 0, 'ea0_ue': 59, 'ea0_ce': 0, 'sei_total': 51} (delta ea0=0, mc0=0) host_ue=0 rp_aer={'aer_rootport_total_err_cor': 0, 'aer_rootport_total_err_nonfatal': 0, 'aer_rootport_total_err_fatal': 0}
+[346] part3a_matched_aw0 r0 sdp_fair    get64   zipf    poisson W= 4096 R=  4500 ->  4.501 Mrps (  5.5/ 5.5G) p50= 12.63 p99= 17.39 sm99= 17.39 cyc=  887 b%=  13 imc= 19.6B
+[347] part3a_matched_aw0 r0 sdp_fair    get256  zipf    poisson W= 4096 R=  4500 ->  4.498 Mrps ( 12.5/ 5.5G) p50= 13.48 p99= 19.11 sm99= 19.11 cyc=  885 b%=  26 imc= 22.7B
+[348] part3a_matched_aw0 r0 sdp_fair    get1024 zipf    poisson W= 4096 R=  2500 ->  2.499 Mrps ( 22.3/ 3.1G) p50= 14.11 p99= 20.95 sm99=  0.00 cyc= 1603 b%=  41 imc= 53.6B
+[349] part3a_matched_aw0 r0 sdp_fair    get4096 zipf    poisson W= 4096 R=  1000 ->  0.999 Mrps ( 35.6/ 1.2G) p50= 17.18 p99= 29.25 sm99=  0.00 cyc= 3993 b%=  58 imc=150.2B
+[350] part3a_matched_aw0 r0 sdp_fair    mix     zipf    poisson W= 4096 R=  2500 ->  2.501 Mrps ( 21.5/ 3.4G) p50= 14.79 p99= 25.45 sm99= 24.85 cyc= 1580 b%=  41 imc=174.3B
+[351] part3a_matched_aw0 r0 sdp_fair    mix     uniform poisson W= 4096 R=  2500 ->  2.499 Mrps ( 21.5/ 3.4G) p50= 14.79 p99= 25.45 sm99= 24.75 cyc= 1592 b%=  44 imc= 46.6B
+[352] part3a_matched_aw0 r0 direct_peek get64   zipf    poisson W= 4096 R=  4500 ->  4.502 Mrps (  5.5/ 5.5G) p50=  6.75 p99=  9.28 sm99=  9.28 cyc=  886 b%=  45 imc= 22.7B
+[353] part3a_matched_aw0 r0 direct_peek get256  zipf    poisson W= 4096 R=  4500 ->  4.501 Mrps ( 12.5/ 5.5G) p50=  7.36 p99= 10.63 sm99= 10.63 cyc=  882 b%=  52 imc= 22.9B
+[354] part3a_matched_aw0 r0 direct_peek get1024 zipf    poisson W= 4096 R=  2500 ->  2.500 Mrps ( 22.3/ 3.1G) p50= 10.21 p99= 16.70 sm99=  0.00 cyc= 1596 b%=  61 imc= 42.7B
+[355] part3a_matched_aw0 r0 direct_peek get4096 zipf    poisson W= 4096 R=  1000 ->  0.998 Mrps ( 35.6/ 1.2G) p50= 15.06 p99= 40.65 sm99=  0.00 cyc= 3990 b%=  65 imc=119.7B
+[356] part3a_matched_aw0 r0 direct_peek mix     zipf    poisson W= 4096 R=  2500 ->  2.499 Mrps ( 21.5/ 3.4G) p50=  7.91 p99= 19.11 sm99= 13.54 cyc= 1589 b%=  56 imc= 52.8B
+[357] part3a_matched_aw0 r0 direct_peek mix     uniform poisson W= 4096 R=  2500 ->  2.499 Mrps ( 21.5/ 3.4G) p50=  7.91 p99= 19.68 sm99= 13.78 cyc= 1593 b%=  59 imc= 36.0B
+[358] part3a_matched_aw0 r0 direct_safe get64   zipf    poisson W= 4096 R=  4500 ->  4.498 Mrps (  5.5/ 5.5G) p50=  5.57 p99=  7.50 sm99=  7.50 cyc=  889 b%=  49 imc= 26.5B
+[359] part3a_matched_aw0 r0 direct_safe get256  zipf    poisson W= 4096 R=  4500 ->  4.501 Mrps ( 12.5/ 5.5G) p50=  6.08 p99= 41.95 sm99= 41.95 cyc=  857 b%=  57 imc= 54.2B
+[360] part3a_matched_aw0 r0 direct_safe get1024 zipf    poisson W= 4096 R=  2500 ->  2.499 Mrps ( 22.3/ 3.1G) p50=  8.62 p99= 14.21 sm99=  0.00 cyc= 1598 b%=  61 imc= 41.1B
+[361] part3a_matched_aw0 r0 direct_safe get4096 zipf    poisson W= 4096 R=  1000 ->  0.998 Mrps ( 35.6/ 1.2G) p50= 13.59 p99= 38.05 sm99=  0.00 cyc= 3984 b%=  63 imc=123.1B
+[362] part3a_matched_aw0 r0 direct_safe mix     zipf    poisson W= 4096 R=  2500 ->  2.497 Mrps ( 21.5/ 3.4G) p50=  6.79 p99= 17.25 sm99= 11.97 cyc= 1587 b%=  57 imc= 33.9B
+[363] part3a_matched_aw0 r0 direct_safe mix     uniform poisson W= 4096 R=  2500 ->  2.496 Mrps ( 21.5/ 3.4G) p50=  6.80 p99= 17.82 sm99= 12.21 cyc= 1594 b%=  59 imc= 65.0B
+[364] part3a_matched_aw0 r1 direct_peek get64   zipf    poisson W= 4096 R=  4500 ->  4.502 Mrps (  5.5/ 5.5G) p50=  6.76 p99=  9.34 sm99=  9.34 cyc=  883 b%=  45 imc= 24.8B
+[365] part3a_matched_aw0 r1 direct_peek get256  zipf    poisson W= 4096 R=  4500 ->  4.501 Mrps ( 12.5/ 5.5G) p50=  7.36 p99= 10.56 sm99= 10.56 cyc=  882 b%=  52 imc= 19.2B
+[366] part3a_matched_aw0 r1 direct_peek get1024 zipf    poisson W= 4096 R=  2500 ->  2.500 Mrps ( 22.3/ 3.1G) p50= 10.03 p99= 15.79 sm99=  0.00 cyc= 1602 b%=  58 imc= 49.1B
+[367] part3a_matched_aw0 r1 direct_peek get4096 zipf    poisson W= 4096 R=  1000 ->  0.999 Mrps ( 35.6/ 1.2G) p50= 14.97 p99= 36.85 sm99=  0.00 cyc= 3995 b%=  64 imc=121.8B
+[368] part3a_matched_aw0 r1 direct_peek mix     zipf    poisson W= 4096 R=  2500 ->  2.499 Mrps ( 21.5/ 3.4G) p50=  7.92 p99= 19.29 sm99= 13.69 cyc= 1585 b%=  57 imc= 50.2B
+[369] part3a_matched_aw0 r1 direct_peek mix     uniform poisson W= 4096 R=  2500 ->  2.501 Mrps ( 21.5/ 3.4G) p50=  7.92 p99= 19.73 sm99= 13.82 cyc= 1598 b%=  59 imc= 36.8B
+  [PHY-CRC RETRY 1/5] part3a_matched_aw0 r1 direct_safe get64 zipf R=4500.0: ['client lost=1 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=364698', 'merc_rx_crc_errors_phy=1']
+[370] part3a_matched_aw0 r1 direct_safe get64   zipf    poisson W= 4096 R=  4500 ->  4.494 Mrps (  5.5/ 5.5G) p50=  5.58 p99=  7.54 sm99=  7.54 cyc=  882 b%=  49 imc= 19.2B
+[371] part3a_matched_aw0 r1 direct_safe get256  zipf    poisson W= 4096 R=  4500 ->  4.501 Mrps ( 12.5/ 5.5G) p50=  6.08 p99= 41.85 sm99= 41.85 cyc=  887 b%=  56 imc= 21.2B
+[372] part3a_matched_aw0 r1 direct_safe get1024 zipf    poisson W= 4096 R=  2500 ->  2.503 Mrps ( 22.3/ 3.1G) p50=  8.79 p99= 15.04 sm99=  0.00 cyc= 1594 b%=  63 imc= 43.5B
+[373] part3a_matched_aw0 r1 direct_safe get4096 zipf    poisson W= 4096 R=  1000 ->  1.001 Mrps ( 35.7/ 1.2G) p50= 13.96 p99= 35.15 sm99=  0.00 cyc= 3980 b%=  64 imc=160.8B
+[374] part3a_matched_aw0 r1 direct_safe mix     zipf    poisson W= 4096 R=  2500 ->  2.500 Mrps ( 21.5/ 3.4G) p50=  6.82 p99= 17.48 sm99= 12.07 cyc= 1590 b%=  58 imc= 40.7B
+[375] part3a_matched_aw0 r1 direct_safe mix     uniform poisson W= 4096 R=  2500 ->  2.499 Mrps ( 21.5/ 3.4G) p50=  6.84 p99= 18.27 sm99= 12.49 cyc= 1594 b%=  60 imc= 38.8B
+[376] part3a_matched_aw0 r1 sdp_fair    get64   zipf    poisson W= 4096 R=  4500 ->  4.501 Mrps (  5.5/ 5.5G) p50= 12.62 p99= 17.27 sm99= 17.27 cyc=  890 b%=  13 imc= 18.4B
+[377] part3a_matched_aw0 r1 sdp_fair    get256  zipf    poisson W= 4096 R=  4500 ->  4.499 Mrps ( 12.5/ 5.5G) p50= 13.49 p99= 19.14 sm99= 19.14 cyc=  883 b%=  26 imc= 21.7B
+[378] part3a_matched_aw0 r1 sdp_fair    get1024 zipf    poisson W= 4096 R=  2500 ->  2.500 Mrps ( 22.3/ 3.1G) p50= 14.11 p99= 21.15 sm99=  0.00 cyc= 1604 b%=  41 imc= 48.0B
+[379] part3a_matched_aw0 r1 sdp_fair    get4096 zipf    poisson W= 4096 R=  1000 ->  1.000 Mrps ( 35.6/ 1.2G) p50= 17.16 p99= 29.25 sm99=  0.00 cyc= 3987 b%=  58 imc=127.9B
+[380] part3a_matched_aw0 r1 sdp_fair    mix     zipf    poisson W= 4096 R=  2500 ->  2.498 Mrps ( 21.5/ 3.4G) p50= 14.76 p99= 25.35 sm99= 24.75 cyc= 1583 b%=  41 imc= 42.6B
+[381] part3a_matched_aw0 r1 sdp_fair    mix     uniform poisson W= 4096 R=  2500 ->  2.501 Mrps ( 21.5/ 3.4G) p50= 14.79 p99= 25.45 sm99= 24.85 cyc= 1596 b%=  44 imc= 62.9B
+[382] part3a_matched_aw0 r2 direct_safe get64   zipf    poisson W= 4096 R=  4500 ->  4.500 Mrps (  5.5/ 5.5G) p50=  5.57 p99=  7.46 sm99=  7.46 cyc=  884 b%=  49 imc= 24.7B
+[383] part3a_matched_aw0 r2 direct_safe get256  zipf    poisson W= 4096 R=  4500 ->  4.501 Mrps ( 12.5/ 5.5G) p50=  6.08 p99= 42.65 sm99= 42.65 cyc=  883 b%=  56 imc= 21.8B
+[384] part3a_matched_aw0 r2 direct_safe get1024 zipf    poisson W= 4096 R=  2500 ->  2.499 Mrps ( 22.3/ 3.1G) p50=  8.78 p99= 14.88 sm99=  0.00 cyc= 1596 b%=  63 imc= 58.1B
+[385] part3a_matched_aw0 r2 direct_safe get4096 zipf    poisson W= 4096 R=  1000 ->  1.000 Mrps ( 35.7/ 1.2G) p50= 13.87 p99= 34.65 sm99=  0.00 cyc= 4007 b%=  64 imc=135.7B
+[386] part3a_matched_aw0 r2 direct_safe mix     zipf    poisson W= 4096 R=  2500 ->  2.500 Mrps ( 21.6/ 3.4G) p50=  6.83 p99= 17.54 sm99= 12.10 cyc= 1593 b%=  58 imc= 50.1B
+[387] part3a_matched_aw0 r2 direct_safe mix     uniform poisson W= 4096 R=  2500 ->  2.502 Mrps ( 21.6/ 3.4G) p50=  6.84 p99= 17.93 sm99= 12.29 cyc= 1592 b%=  60 imc= 45.6B
+[388] part3a_matched_aw0 r2 sdp_fair    get64   zipf    poisson W= 4096 R=  4500 ->  4.500 Mrps (  5.5/ 5.5G) p50= 12.62 p99= 17.32 sm99= 17.32 cyc=  891 b%=  13 imc= 28.0B
+[389] part3a_matched_aw0 r2 sdp_fair    get256  zipf    poisson W= 4096 R=  4500 ->  4.500 Mrps ( 12.5/ 5.5G) p50= 13.48 p99= 19.00 sm99= 19.00 cyc=  881 b%=  26 imc= 22.4B
+[390] part3a_matched_aw0 r2 sdp_fair    get1024 zipf    poisson W= 4096 R=  2500 ->  2.500 Mrps ( 22.3/ 3.1G) p50= 14.10 p99= 20.85 sm99=  0.00 cyc= 1596 b%=  41 imc= 48.9B
+[391] part3a_matched_aw0 r2 sdp_fair    get4096 zipf    poisson W= 4096 R=  1000 ->  0.999 Mrps ( 35.6/ 1.2G) p50= 17.18 p99= 29.35 sm99=  0.00 cyc= 3992 b%=  58 imc=130.5B
+[392] part3a_matched_aw0 r2 sdp_fair    mix     zipf    poisson W= 4096 R=  2500 ->  2.501 Mrps ( 21.5/ 3.4G) p50= 14.81 p99= 29.05 sm99= 28.45 cyc= 1581 b%=  41 imc=114.2B
+[393] part3a_matched_aw0 r2 sdp_fair    mix     uniform poisson W= 4096 R=  2500 ->  2.500 Mrps ( 21.5/ 3.4G) p50= 14.79 p99= 25.35 sm99= 24.75 cyc= 1592 b%=  44 imc= 45.3B
+[394] part3a_matched_aw0 r2 direct_peek get64   zipf    poisson W= 4096 R=  4500 ->  4.499 Mrps (  5.5/ 5.5G) p50=  6.75 p99=  9.26 sm99=  9.26 cyc=  887 b%=  45 imc= 18.6B
+[395] part3a_matched_aw0 r2 direct_peek get256  zipf    poisson W= 4096 R=  4500 ->  4.500 Mrps ( 12.5/ 5.5G) p50=  7.37 p99= 10.64 sm99= 10.64 cyc=  882 b%=  53 imc= 21.5B
+[396] part3a_matched_aw0 r2 direct_peek get1024 zipf    poisson W= 4096 R=  2500 ->  2.498 Mrps ( 22.3/ 3.1G) p50= 10.04 p99= 15.78 sm99=  0.00 cyc= 1601 b%=  58 imc=124.0B
+[397] part3a_matched_aw0 r2 direct_peek get4096 zipf    poisson W= 4096 R=  1000 ->  1.002 Mrps ( 35.7/ 1.2G) p50= 15.13 p99= 37.05 sm99=  0.00 cyc= 3981 b%=  65 imc=109.7B
+[398] part3a_matched_aw0 r2 direct_peek mix     zipf    poisson W= 4096 R=  2500 ->  2.500 Mrps ( 21.5/ 3.4G) p50=  7.92 p99= 19.18 sm99= 13.56 cyc= 1592 b%=  57 imc= 36.2B
+[399] part3a_matched_aw0 r2 direct_peek mix     uniform poisson W= 4096 R=  2500 ->  2.500 Mrps ( 21.5/ 3.4G) p50=  7.92 p99= 19.62 sm99= 13.79 cyc= 1594 b%=  59 imc= 31.9B
+  [EDAC/AER GATE part3a_matched_aw0] card_edac={'mc0_ue': 0, 'mc0_ce': 0, 'ea0_ue': 59, 'ea0_ce': 0, 'sei_total': 51} (delta ea0=0, mc0=0) host_ue=0 rp_aer={'aer_rootport_total_err_cor': 0, 'aer_rootport_total_err_nonfatal': 0, 'aer_rootport_total_err_fatal': 0}
+
+=== PART 3B: 128 MiB RETAINED TX POOL SENSITIVITY (direct_safe, n=3) ===
+[400] part3b_pool128m    r0 direct_safe get1024 zipf    closed  W=  512 R=     0 ->  3.914 Mrps ( 34.9/ 4.8G) p50=129.95 p99=140.35 sm99=  0.00 cyc= 1016 b%= 100 imc=3246.9B
+[401] part3b_pool128m    r0 direct_safe get4096 zipf    closed  W=  512 R=     0 ->  1.424 Mrps ( 50.8/ 1.8G) p50=355.00 p99=385.00 sm99=  0.00 cyc= 2788 b%= 100 imc=8840.0B
+[402] part3b_pool128m    r0 direct_safe mix     zipf    closed  W=  512 R=     0 ->  5.538 Mrps ( 47.7/ 7.5G) p50= 91.65 p99=111.65 sm99=107.55 cyc=  720 b%= 100 imc=1711.1B
+[403] part3b_pool128m    r1 direct_safe get1024 zipf    closed  W=  512 R=     0 ->  3.808 Mrps ( 33.9/ 4.7G) p50=133.55 p99=144.25 sm99=  0.00 cyc= 1046 b%= 100 imc=3250.7B
+  [PHY-CRC RETRY 1/5] part3b_pool128m r1 direct_safe get4096 zipf R=0.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+  [PHY-CRC RETRY 2/5] part3b_pool128m r1 direct_safe get4096 zipf R=0.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[404] part3b_pool128m    r1 direct_safe get4096 zipf    closed  W=  512 R=     0 ->  1.431 Mrps ( 51.0/ 1.8G) p50=355.00 p99=375.00 sm99=  0.00 cyc= 2782 b%= 100 imc=8866.1B
+  [PHY-CRC RETRY 1/5] part3b_pool128m r1 direct_safe mix zipf R=0.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[405] part3b_pool128m    r1 direct_safe mix     zipf    closed  W=  512 R=     0 ->  5.552 Mrps ( 47.8/ 7.5G) p50= 91.35 p99=111.55 sm99=107.35 cyc=  717 b%= 100 imc=1704.3B
+[406] part3b_pool128m    r2 direct_safe get1024 zipf    closed  W=  512 R=     0 ->  3.734 Mrps ( 33.3/ 4.6G) p50=137.95 p99=148.55 sm99=  0.00 cyc= 1062 b%= 100 imc=3255.4B
+[407] part3b_pool128m    r2 direct_safe get4096 zipf    closed  W=  512 R=     0 ->  1.422 Mrps ( 50.7/ 1.8G) p50=355.00 p99=385.00 sm99=  0.00 cyc= 2809 b%= 100 imc=8994.0B
+[408] part3b_pool128m    r2 direct_safe mix     zipf    closed  W=  512 R=     0 ->  5.542 Mrps ( 47.7/ 7.5G) p50= 91.55 p99=112.05 sm99=108.15 cyc=  721 b%= 100 imc=1703.5B
+  [EDAC/AER GATE part3b_pool128m] card_edac={'mc0_ue': 0, 'mc0_ce': 0, 'ea0_ue': 59, 'ea0_ce': 0, 'sei_total': 51} (delta ea0=0, mc0=0) host_ue=0 rp_aer={'aer_rootport_total_err_cor': 0, 'aer_rootport_total_err_nonfatal': 0, 'aer_rootport_total_err_fatal': 0}
+
+=== PART 3C: SDP CONTROLS (rx_poll_tail_off=48 vs 0 on 64B + 1Q vs 4Q, n=3) ===
+[409] part3c_sdp_tail    r0 sdp_fair    get64   zipf    closed  W=  512 R=     0 -> 12.031 Mrps ( 14.8/14.8G) p50= 42.05 p99= 50.85 sm99= 50.85 cyc=  330 b%=  29 imc= 16.1B
+[410] part3c_sdp_tail    r0 sdp_fair    get64   zipf    closed  W=    1 R=     0 ->  0.099 Mrps (  0.1/ 0.1G) p50=  9.95 p99= 11.57 sm99= 11.57 cyc=40941 b%=   1 imc=683.5B
+[411] part3c_sdp_tail    r0 sdp_fair    get64   zipf    poisson W= 4096 R=  4500 ->  4.500 Mrps (  5.5/ 5.5G) p50= 12.62 p99= 17.32 sm99= 17.32 cyc=  886 b%=  13 imc= 27.0B
+[412] part3c_sdp_tail_aw r0 sdp_fair    get64   zipf    poisson W= 4096 R=  4500 ->  4.506 Mrps (  5.6/ 5.6G) p50= 12.69 p99= 17.54 sm99= 17.54 cyc=  880 b%=  13 aw_cyc=  544 imc= 17.3B
+[413] part3c_sdp_tail    r0 sdp_notail  get64   zipf    closed  W=  512 R=     0 -> 12.066 Mrps ( 14.9/14.9G) p50= 41.85 p99= 50.75 sm99= 50.75 cyc=  328 b%=  39 imc=  7.6B
+[414] part3c_sdp_tail    r0 sdp_notail  get64   zipf    closed  W=    1 R=     0 ->  0.099 Mrps (  0.1/ 0.1G) p50=  9.95 p99= 11.59 sm99= 11.59 cyc=41200 b%=   1 imc=1030.2B
+[415] part3c_sdp_tail    r0 sdp_notail  get64   zipf    poisson W= 4096 R=  4500 ->  4.498 Mrps (  5.5/ 5.5G) p50= 12.68 p99= 17.52 sm99= 17.52 cyc=  883 b%=  18 imc= 19.9B
+  [RETRY 1/5] part3c_sdp_tail_aw r0 sdp_notail get64 zipf R=4500.0: ['client lost=3270 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=459258']
+[416] part3c_sdp_tail_aw r0 sdp_notail  get64   zipf    poisson W= 4096 R=  4500 ->  4.500 Mrps (  5.5/ 5.5G) p50= 12.71 p99= 17.57 sm99= 17.57 cyc=  879 b%=  18 aw_cyc=  558 imc= 21.0B
+[417] part3c_sdp_tail    r1 sdp_notail  get64   zipf    closed  W=  512 R=     0 -> 12.091 Mrps ( 14.9/14.9G) p50= 41.75 p99= 50.55 sm99= 50.55 cyc=  329 b%=  40 imc=  7.3B
+[418] part3c_sdp_tail    r1 sdp_notail  get64   zipf    closed  W=    1 R=     0 ->  0.099 Mrps (  0.1/ 0.1G) p50=  9.95 p99= 11.55 sm99= 11.55 cyc=41076 b%=   1 imc=961.0B
+  [RETRY 1/5] part3c_sdp_tail r1 sdp_notail get64 zipf R=4500.0: ['client lost=19 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+  [RETRY 2/5] part3c_sdp_tail r1 sdp_notail get64 zipf R=4500.0: ['client lost=5 bad=0 torn=0 send_err=0']
+[419] part3c_sdp_tail    r1 sdp_notail  get64   zipf    poisson W= 4096 R=  4500 ->  4.500 Mrps (  5.5/ 5.5G) p50= 12.66 p99= 17.50 sm99= 17.50 cyc=  882 b%=  18 imc= 16.0B
+[420] part3c_sdp_tail_aw r1 sdp_notail  get64   zipf    poisson W= 4096 R=  4500 ->  4.501 Mrps (  5.5/ 5.5G) p50= 12.71 p99= 17.52 sm99= 17.52 cyc=  886 b%=  18 aw_cyc=  560 imc= 26.6B
+[421] part3c_sdp_tail    r1 sdp_fair    get64   zipf    closed  W=  512 R=     0 -> 12.108 Mrps ( 14.9/14.9G) p50= 41.65 p99= 50.55 sm99= 50.55 cyc=  329 b%=  29 imc=  7.1B
+[422] part3c_sdp_tail    r1 sdp_fair    get64   zipf    closed  W=    1 R=     0 ->  0.099 Mrps (  0.1/ 0.1G) p50=  9.96 p99= 11.54 sm99= 11.54 cyc=41066 b%=   1 imc=1163.9B
+  [RETRY 1/5] part3c_sdp_tail r1 sdp_fair get64 zipf R=4500.0: ['client lost=3300 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=7027']
+[423] part3c_sdp_tail    r1 sdp_fair    get64   zipf    poisson W= 4096 R=  4500 ->  4.497 Mrps (  5.5/ 5.5G) p50= 12.62 p99= 17.36 sm99= 17.36 cyc=  884 b%=  13 imc= 25.2B
+[424] part3c_sdp_tail_aw r1 sdp_fair    get64   zipf    poisson W= 4096 R=  4500 ->  4.504 Mrps (  5.5/ 5.5G) p50= 12.68 p99= 17.45 sm99= 17.45 cyc=  881 b%=  13 aw_cyc=  545 imc= 23.1B
+[425] part3c_sdp_tail    r2 sdp_fair    get64   zipf    closed  W=  512 R=     0 -> 12.084 Mrps ( 14.9/14.9G) p50= 41.75 p99= 50.65 sm99= 50.65 cyc=  329 b%=  29 imc=  7.7B
+[426] part3c_sdp_tail    r2 sdp_fair    get64   zipf    closed  W=    1 R=     0 ->  0.099 Mrps (  0.1/ 0.1G) p50=  9.96 p99= 11.56 sm99= 11.56 cyc=41056 b%=   1 imc=870.0B
+[427] part3c_sdp_tail    r2 sdp_fair    get64   zipf    poisson W= 4096 R=  4500 ->  4.496 Mrps (  5.5/ 5.5G) p50= 12.62 p99= 17.43 sm99= 17.43 cyc=  883 b%=  13 imc= 17.5B
+  [RETRY 1/5] part3c_sdp_tail_aw r2 sdp_fair get64 zipf R=4500.0: ['client lost=3248 bad=0 torn=0 send_err=0']
+  [RETRY 2/5] part3c_sdp_tail_aw r2 sdp_fair get64 zipf R=4500.0: ['client lost=2 bad=0 torn=0 send_err=0']
+  [RETRY 3/5] part3c_sdp_tail_aw r2 sdp_fair get64 zipf R=4500.0: ['client lost=3204 bad=0 torn=0 send_err=0', 'poisson window_cap_hits=337121']
+[428] part3c_sdp_tail_aw r2 sdp_fair    get64   zipf    poisson W= 4096 R=  4500 ->  4.499 Mrps (  5.5/ 5.5G) p50= 12.66 p99= 17.41 sm99= 17.41 cyc=  882 b%=  13 aw_cyc=  544 imc= 22.9B
+[429] part3c_sdp_tail    r2 sdp_notail  get64   zipf    closed  W=  512 R=     0 -> 12.080 Mrps ( 14.9/14.9G) p50= 41.75 p99= 50.65 sm99= 50.65 cyc=  330 b%=  39 imc=  7.3B
+[430] part3c_sdp_tail    r2 sdp_notail  get64   zipf    closed  W=    1 R=     0 ->  0.099 Mrps (  0.1/ 0.1G) p50=  9.95 p99= 11.49 sm99= 11.49 cyc=41156 b%=   1 imc=1002.5B
+[431] part3c_sdp_tail    r2 sdp_notail  get64   zipf    poisson W= 4096 R=  4500 ->  4.497 Mrps (  5.5/ 5.5G) p50= 12.65 p99= 17.46 sm99= 17.46 cyc=  886 b%=  18 imc= 16.8B
+[432] part3c_sdp_tail_aw r2 sdp_notail  get64   zipf    poisson W= 4096 R=  4500 ->  4.500 Mrps (  5.5/ 5.5G) p50= 12.73 p99= 17.55 sm99= 17.55 cyc=  885 b%=  18 aw_cyc=  557 imc= 19.5B
+[433] part3c_sdp_1q      r0 sdp_1q      get64   zipf    closed  W=  512 R=     0 ->  3.901 Mrps (  4.8/ 4.8G) p50=129.75 p99=144.15 sm99=144.15 cyc= 1025 b%=   9 imc= 20.7B
+[434] part3c_sdp_1q      r0 sdp_1q      get256  zipf    closed  W=  512 R=     0 ->  3.359 Mrps (  9.3/ 4.1G) p50=150.25 p99=166.75 sm99=166.75 cyc= 1186 b%=  17 imc= 23.3B
+[435] part3c_sdp_1q      r0 sdp_1q      get1024 zipf    closed  W=  512 R=     0 ->  2.309 Mrps ( 20.6/ 2.8G) p50=215.00 p99=235.00 sm99=  0.00 cyc= 1722 b%=  36 imc= 70.4B
+[436] part3c_sdp_1q      r0 sdp_1q      get4096 zipf    closed  W=  512 R=     0 ->  0.869 Mrps ( 31.0/ 1.1G) p50=585.00 p99=605.00 sm99=  0.00 cyc= 4593 b%=  50 imc=132.7B
+[437] part3c_sdp_1q      r0 sdp_1q      mix     zipf    closed  W=  512 R=     0 ->  2.079 Mrps ( 17.9/ 2.8G) p50=245.00 p99=275.00 sm99=275.00 cyc= 1915 b%=  32 imc= 57.0B
+[438] part3c_sdp_1q      r0 sdp_1q      get64   zipf    closed  W=    1 R=     0 ->  0.104 Mrps (  0.1/ 0.1G) p50=  9.44 p99=  9.90 sm99=  9.90 cyc=37877 b%=   1 imc=2494.0B
+[439] part3c_sdp_1q      r1 sdp_1q      get64   zipf    closed  W=  512 R=     0 ->  3.870 Mrps (  4.8/ 4.8G) p50=129.45 p99=150.55 sm99=150.55 cyc= 1006 b%=   9 imc= 75.6B
+[440] part3c_sdp_1q      r1 sdp_1q      get256  zipf    closed  W=  512 R=     0 ->  3.346 Mrps (  9.3/ 4.1G) p50=151.05 p99=166.75 sm99=166.75 cyc= 1190 b%=  17 imc= 40.9B
+  [PHY-CRC RETRY 1/5] part3c_sdp_1q r1 sdp_1q get1024 zipf R=0.0: ['client lost=1 bad=0 torn=0 send_err=0', 'merc_rx_crc_errors_phy=1']
+[441] part3c_sdp_1q      r1 sdp_1q      get1024 zipf    closed  W=  512 R=     0 ->  2.305 Mrps ( 20.5/ 2.8G) p50=215.00 p99=235.00 sm99=  0.00 cyc= 1721 b%=  36 imc= 58.8B
+[442] part3c_sdp_1q      r1 sdp_1q      get4096 zipf    closed  W=  512 R=     0 ->  0.865 Mrps ( 30.8/ 1.1G) p50=595.00 p99=615.00 sm99=  0.00 cyc= 4618 b%=  50 imc=131.8B
+[443] part3c_sdp_1q      r1 sdp_1q      mix     zipf    closed  W=  512 R=     0 ->  2.039 Mrps ( 17.6/ 2.8G) p50=245.00 p99=275.00 sm99=275.00 cyc= 1955 b%=  31 imc= 49.0B
+[444] part3c_sdp_1q      r1 sdp_1q      get64   zipf    closed  W=    1 R=     0 ->  0.104 Mrps (  0.1/ 0.1G) p50=  9.45 p99=  9.93 sm99=  9.93 cyc=38083 b%=   0 imc=772.2B
+[445] part3c_sdp_1q      r2 sdp_1q      get64   zipf    closed  W=  512 R=     0 ->  3.899 Mrps (  4.8/ 4.8G) p50=129.25 p99=145.05 sm99=145.05 cyc= 1022 b%=   9 imc= 26.7B
+[446] part3c_sdp_1q      r2 sdp_1q      get256  zipf    closed  W=  512 R=     0 ->  3.354 Mrps (  9.3/ 4.1G) p50=150.75 p99=164.85 sm99=164.85 cyc= 1186 b%=  17 imc= 34.7B
+[447] part3c_sdp_1q      r2 sdp_1q      get1024 zipf    closed  W=  512 R=     0 ->  2.316 Mrps ( 20.6/ 2.9G) p50=215.00 p99=235.00 sm99=  0.00 cyc= 1721 b%=  36 imc= 44.6B
+[448] part3c_sdp_1q      r2 sdp_1q      get4096 zipf    closed  W=  512 R=     0 ->  0.868 Mrps ( 30.9/ 1.1G) p50=585.00 p99=605.00 sm99=  0.00 cyc= 4593 b%=  50 imc=140.8B
+[449] part3c_sdp_1q      r2 sdp_1q      mix     zipf    closed  W=  512 R=     0 ->  2.035 Mrps ( 17.5/ 2.8G) p50=255.00 p99=275.00 sm99=275.00 cyc= 1950 b%=  31 imc= 56.2B
+[450] part3c_sdp_1q      r2 sdp_1q      get64   zipf    closed  W=    1 R=     0 ->  0.104 Mrps (  0.1/ 0.1G) p50=  9.45 p99=  9.94 sm99=  9.94 cyc=38169 b%=   0 imc=952.9B
+  [EDAC/AER GATE part3c_sdp_controls] card_edac={'mc0_ue': 0, 'mc0_ce': 0, 'ea0_ue': 59, 'ea0_ce': 0, 'sei_total': 51} (delta ea0=0, mc0=0) host_ue=0 rp_aer={'aer_rootport_total_err_cor': 0, 'aer_rootport_total_err_nonfatal': 0, 'aer_rootport_total_err_fatal': 0}
+
+=== RESTORING CARD & MERCURY BASELINE + 21s EDAC/AER SETTLE ===
+Speed: 100000Mb/s
+	Link detected: yes
+2 packets transmitted, 2 received, 0% packet loss, time 1017ms
+rtt min/avg/max/mdev = 0.190/0.340/0.491/0.150 ms
+refl: 1 windows (created Wed Nov 25 17:57:49 2026)
+pem_wc unloaded
+POST-RESTORE (21s): cpu40=3900000kHz uncore={'package_00_die_00': 2200000, 'package_01_die_01': 2200000} host_ue=0 rp_aer={'aer_rootport_total_err_cor': 0, 'aer_rootport_total_err_nonfatal': 0, 'aer_rootport_total_err_fatal': 0} card_edac={'mc0_ue': 0, 'mc0_ce': 0, 'ea0_ue': 59, 'ea0_ce': 0, 'sei_total': 51}
+
+=== CAMPAIGN COMPLETE: 450 verified runs, 121 retries, ea0_delta=0 ===
