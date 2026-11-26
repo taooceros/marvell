@@ -1,5 +1,38 @@
 \begin{abstract}
-High-speed network receive paths face an acute tension between burst absorption and host last-level cache (LLC) efficiency. Direct cache injection (DDIO) keeps inbound packets in the LLC only while receive buffers stay within a few cache ways; traffic bursts that exceed that budget trigger Leaky DMA, evicting both packets and co-located application state to host DRAM. Existing solutions each leave a costly gap. Reactive rate control (HostCC) responds after cache misses begin. Host-capped rings (ShRing, rxBisect) remain bound by host memory conservation, dropping bursts or throttling transport rates. Recent dual-path on-NIC buffering (CEIO) absorbs bursts in NIC DRAM, yet splitting fast and slow paths requires per-flow steering rewrites, phase-exclusivity pauses, a two-producer software merge ring, and a host DMA-pull API.
+At 100--800\,Gbps, NIC receive rings face an architectural dilemma: active
+receive buffers must remain small enough to fit inside the CPU's direct cache
+access (DDIO) budget, yet large enough to absorb microbursts, incast, and
+multi-millisecond core stalls without dropping packets. Host-only ring
+redesigns such as ShRing and rxBisect reduce average working sets or remove
+cross-core locks, but cannot escape host-memory conservation: queued bursts
+must still reside in host RAM, eventually overflowing delivery rings or
+evicting co-located applications from the last-level cache (LLC). Off-path
+SmartNIC caching (\ceio{}) moves bursts to NIC DRAM, yet grafting a reactive
+slow path onto passive host DMA introduces per-flow rule rewriting,
+slow-to-fast draining pauses, a software merge ring, and custom receive APIs
+that add fixed CPU overhead and degrade under flow churn.
 
-We present \sys{}, a unified credit-gated receive architecture that collapses burst absorption and fast-path delivery onto a single FIFO push path. The host exposes only a strictly L3-pinned 256~KiB hot receive ring (4,096 cache-line cells), while an active NIC absorbs bursts in its own 48~MiB L3 and 6-channel DDR5 by default and pushes packets in order strictly against batched host credit returns. Built in Rust on an unmodified PCIe Gen5 server with a Marvell OCTEON~10 CN106 100GbE SmartNIC and verified across 1,089 zero-error hardware runs, \sys{} adds only 6~ns at zero backlog, maintains a flat 0.905~$\mu$s steady credit-refill hop across 128~MiB bursts, reduces host DRAM traffic by 98.9\% (100.0\% DDIO), and preserves co-located 32~MiB KV $p99$ latency at 41--42~ns (versus 153--259~ns for a 128~MiB host ring and 75.0--99.8\% drops for a passive 256~KiB ring). Integrated into a complete push/DMA datapath (DirectPush) over 100GbE, it saturates 100GbE RX on a single host core and improves dual-host RPC/KV throughput by up to 55\% while cutting open-loop $p99$ latency by 50--64\% over a tuned asynchronous descriptor-ring baseline.
+We present \sys{}, a receive-path architecture that collapses burst absorption
+and cache-resident delivery into a single unified data path on on-path
+SmartNICs while leaving standard NIC DMA rings and host application APIs
+untouched. \sys{} keeps a compact, DDIO-locked receive ring and buffer pool on
+each host core, buffers excess traffic inline in SmartNIC L3 and DDR5 memory,
+and gates standard DMA delivery with an $O(1)$ per-queue credit counter. Host
+cores return batched credits via a single \emph{unfenced} 64-byte posted MMIO
+write per receive burst, avoiding store-buffer fence stalls while remaining
+25--350$\times$ below the PCIe/mesh interference cliff.
+
+Implemented over unmodified DPDK DMA rings on a Marvell OCTEON~10 CN106
+SmartNIC and evaluated across 1,723 verified 100GbE runs, \sys{} adds only
++0.20 host cycles/packet for signaling (67$\times$ cheaper than fenced MMIO)
+with $\le$0.35\% neighbor impact. Across 64\,B--1500\,B bursts up to 128\,MiB, \sys{}
+sustains 0.00\% loss, 98--100\% DDIO hits, 61--160$\times$ lower host DRAM
+traffic, idle 41--43\,ns $p99$ for a co-located 32\,MiB key-value store (vs.\
+179--263\,ns for large rings), and full 100GbE net PCIe draining (95.7--103.3\,Gbps
+on 1500\,B). Under 8-core 1--10\,ms core stalls, \sys{} eliminates both ShRing
+head-of-line drops (up to 50.9\%) and rxBisect overflows (up to 1.24M packets).
+Head-to-head against \ceio{}, \sys{} removes 74.5 cycles/packet of fixed merge
+tax, beats \ceio{} by 20.8--33.0\% across 64--16,384 churning flows, and cuts
+unmodified Memcached~1.6.45 microburst $p99$ by 50--54\% versus large rings and
+20--25\% versus \ceio{}-style dual paths.
 \end{abstract}

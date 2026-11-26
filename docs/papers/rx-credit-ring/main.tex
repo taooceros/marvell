@@ -5,8 +5,8 @@
 
 \date{}
 
-\title{\Large \bf CreditRing: A Unified Credit-Gated Push Ring for\\
-Cache-Efficient NIC-to-CPU Receive Paths}
+\title{\Large \bf CreditRing: Cache-Efficient NIC-to-CPU Receive Paths via\\
+On-Path Elastic Buffering and Unfenced MMIO Credits}
 
 \author{}
 
@@ -22,9 +22,10 @@ Cache-Efficient NIC-to-CPU Receive Paths}
 \input{related}
 \input{conclusion}
 
-{\footnotesize
+{\footnotesize\linespread{0.95}\selectfont
+\let\oldthebibliography\thebibliography
+\renewcommand{\thebibliography}[1]{\oldthebibliography{#1}\setlength{\itemsep}{0.5pt plus 0.2pt}\setlength{\parsep}{0pt}\setlength{\parskip}{0pt}}
 \bibliographystyle{plain}
 \bibliography{refs}
 }
-
 \end{document}

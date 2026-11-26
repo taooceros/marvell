@@ -1,12 +1,61 @@
-\section{Related Work}\label{sec:related}
+\section{Discussion and Related Work}
+\label{sec:related}
 
-\sys{} builds on three lines of research spanning direct cache access, receive-ring and congestion management, and modern NIC-CPU interfaces.
+\subsection{Discussion and Deployment Boundaries}
+\label{sec:discussion}
 
-\paragraph{Direct cache access and DDIO optimization.}
-Direct Cache Access~\cite{huggahalli2005dca} and Intel DDIO~\cite{intelddio} steer inbound DMA into host LLC, yet Farshin et al.~\cite{farshin2019llc,farshin2020ddio} and ResQ~\cite{tootoonchian2018resq} demonstrated that oversized receive rings cause Leaky DMA and severe tail-latency degradation for co-located tenants. Wang et al.~\cite{wang2022ddio,wang2026sumeru} model cache-optimal inbound I/O, Yuan et al.~\cite{yuan2021ioalloc} redesign hardware LLC way allocation for I/O, PacketMill~\cite{farshin2021packetmill} pairs cache reservation with software metadata optimization, Shenango~\cite{ousterhout2019shenango} prefetches packet lines, and Sepia~\cite{song2026sepia} uses page coloring to eliminate DDIO set-conflict misses. These host-side techniques are complementary to \sys{}, but cannot absorb 16--128~MiB bursts larger than the host LLC without spilling to host DRAM or dropping packets.
+\paragraph{2-channel vs.\ 8-channel DDR5 hosts.}
+Because our testbed Socket~1 runs 2 DDR5 channels ($\sim$50--60\,GB/s) rather
+than 8 ($\sim$240--300\,GB/s), we separate LLC physics from controller queuing:
+DDIO hit rates, the 60\,MiB LLC cliff, 61--160$\times$ (E2) and 55--83\% (E5)
+DRAM traffic offload, the 1.07\% KV LLC-miss step (+55\,ns in E4), and the
+linear KV mean-latency law ($R^2=0.9996$ in E2) are channel-independent. On
+8-channel hosts, extreme 128\,MiB queuing tails attenuate (reducing large-ring
+KV $p99$ inflation from 4.4--6.4$\times$ to an estimated 2.7--3.5$\times$) and
+the 171.8\,Gbps cliff consumes $\sim$9\% rather than $\sim$36\% of memory
+bandwidth, while cache-eviction degradation persists.
 
-\paragraph{Receive-ring sizing, host congestion control, and on-NIC buffering.}
-ShRing~\cite{pismenny2023shring} shares one LLC-sized receive ring across cores (at the cost of locking or skew fallbacks), and rxBisect~\cite{pismenny2025rxbisect} removes locking by splitting allocation from delivery rings; both remain constrained by host memory conservation under bursts. HostCC~\cite{agarwal2023hostcc}, HostNet~\cite{vuppalapati2024hostnet}, Hostping~\cite{liu2023hostping}, and RHCC~\cite{wan2025rhcc} diagnose and reactively throttle intra-host I/O congestion via end-to-end CCA signals after host queues build. \ceio{}~\cite{liu2025ceio} introduced proactive NIC-side credit control and on-NIC elastic buffering on BlueField-3, achieving strong gains over HostCC and ShRing. \sys{} shares \ceio{}'s goal of proactive NIC-side burst absorption, but eliminates \ceio{}'s dual-path fast/slow split, per-flow RMT rule rewriting, phase-exclusivity pauses, 2P1C software merge ring, host DMA pull API, and $>$1K-flow churn cliff by unifying all traffic onto one credit-gated push FIFO.
+\paragraph{Hardware offload and kernel/RDMA applicability.}
+Because \sys{}'s credit gate tracks only 16\,B per queue and executes a single
+counter comparison (\texttt{submitted - taken\_cached < R\_eff}), lowering it
+into a NIC's fixed-function DMA scheduler eliminates ARM core overhead at
+400--800\,Gbps. Enabling CN106 hardware backpressure
+(\texttt{SDPX\_OUT\_BP\_ENX\_W1S = 1}) would still lack fine packet/byte caps
+and HoL-free multi-queue isolation, whereas \sys{}'s 64\,B credit write extends
+directly to kernel NAPI rings and RDMA completion queues.
 
-\paragraph{Coherent, MMIO, streaming, and SmartNIC datapaths.}
-CC-NIC~\cite{schuh2024ccnic} and CXL-NIC~\cite{cxlnic2025} explore cache-coherent NICs over UPI and CXL, while nanoPU~\cite{ibanez2021nanopu} and Dagger~\cite{lazarev2021dagger} tightly integrate packet queues into CPU registers or coherent FPGAs. Ens\={o}~\cite{sadok2023enso} replaces descriptors with contiguous streaming pipes on a custom FPGA, and recent work~\cite{liew2025hotos,liew2026asplos} studies non-coherent MMIO push for transmit. Wei et al.~\cite{wei2023smartnic} and Liu et al.~\cite{liu2026smartnic} characterize internal contention on SoC SmartNICs, and classic SPSC queue studies~\cite{lamport1983specifying,maffione2019spsc} optimize cache-aware producer-consumer rings. \sys{} applies cache-pinned, credit-gated one-way push directly to the receive path on unmodified non-coherent PCIe Gen5 silicon with full hardware IOMMU protection.
+\subsection{Related Work}
+\label{sec:related-work}
+
+\paragraph{Receive-ring redesigns.}
+ShRing~\cite{pismenny2023shring} shrinks host footprints via shared rings at
+the cost of cross-core locks and HoL blocking; rxBisect~\cite{pismenny2025rxbisect}
+removes locks by bisecting allocation ($A_x$) and delivery ($B_x$) but remains
+trapped in host RAM and requires NIC ASIC edits. Ens\={o}~\cite{sadok2023enso},
+PacketMill~\cite{farshin2021packetmill}, and nanoPU~\cite{ibanez2021nanopu}
+redesign host-NIC buffer metadata, whereas \sys{} keeps standard DPDK DMA rings
+and unmodified servers intact.
+
+\paragraph{DDIO tuning and host congestion control.}
+Prior studies analyze DDIO's leaky-DMA cliff~\cite{farshin2020ddio,farshin2019llc,
+wang2022ddio,neugebauer2018pcie,cai2021hoststack,vuppalapati2024hostnet} and
+propose LLC way partitioning (ResQ~\cite{tootoonchian2018resq},
+IOAlloc~\cite{yuan2021ioalloc}), cache-aware DMA steering
+(Sumeru~\cite{wang2026sumeru}), or page coloring (Sepia~\cite{song2026sepia}).
+Host congestion control (HostCC~\cite{agarwal2023hostcc},
+RHCC~\cite{wan2025rhcc}, Hostping~\cite{liu2023hostping}) throttles remote
+senders over network RTTs; \sys{} complements transport CC by absorbing
+sub-millisecond to 10\,ms bursts locally on the SmartNIC before LLC eviction.
+
+\paragraph{SmartNICs and MMIO/coherent interconnects.}
+\ceio{}~\cite{liu2025ceio} pioneered off-path SmartNIC burst buffering on
+BlueField-3; our head-to-head study (\S\ref{sec:eval-e3}, \S\ref{sec:eval-e5})
+quantifies how an on-path unified path eliminates dual-path switching lag,
+flow-churn loss, fast-pool LLC read contention, and the fixed +74.5\,cyc/pkt
+merge tax. SmartNIC characterizations~\cite{wei2023smartnic,liu2026smartnic}
+and offloads~\cite{kim2021linefs,lazarev2021dagger} highlight card memory and
+compute bounds echoed in E2/E4/E6. Coherent NICs~\cite{schuh2024ccnic,cxlnic2025}
+and MMIO ordering work~\cite{liew2025hotos,liew2026asplos,kalia2016rdma,
+kalia2019erpc,maffione2019spsc} motivate low-latency host-NIC signaling; \sys{}
+shows that unfenced 64\,B posted MMIO already works safely on commodity PCIe
+Gen5 when restricted strictly to low-rate monotonic credits.

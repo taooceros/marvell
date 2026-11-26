@@ -1,49 +1,63 @@
-\section{Implementation and Testbed}\label{sec:impl}
+\section{Implementation}
+\label{sec:implementation}
 
-We implement \sys{} in Rust on unmodified PCIe Gen5 server hardware paired with a commercial 100GbE programmable SmartNIC and a second physical 100GbE traffic peer.
+We prototype \sys{} and all comparative baselines in Rust and C atop unmodified
+DPDK~26.10.1 (\texttt{octeon\_ep} host VF PMD and \texttt{cnxk} SmartNIC PMD),
+with zero Linux kernel or SmartNIC firmware changes.
 
-\paragraph{Hardware platform.}
-Table~\ref{tab:testbed} summarizes our two-server testbed. The receiver host is an Intel Xeon Gold 6438M (Sapphire Rapids) running Linux 6.17 with full hardware IOMMU enabled in scalable mode, a 60~MiB 15-way shared L3 cache (default 2-way DDIO = 8~MiB), 2~MiB hugepages pinned on NUMA node~1, and two populated DDR5 channels ($\sim$60~GB/s). We pin the host receive core at 3.90~GHz (performance governor) and Socket-1 uncore/mesh at 2.20~GHz to eliminate dynamic frequency noise. The active NIC is a Marvell OCTEON~10 CN106 100GbE SmartNIC attached over PCIe Gen5 $\times$4, featuring 24 ARM Neoverse-N2 cores at 2.00~GHz, a 48~MiB shared on-NIC L3 cache (128~B lines), 48~GB of 6-channel on-NIC DDR5, and four native DMA virtual functions (DPI VFs). A second physical server carrying an NVIDIA ConnectX-5 100GbE NIC connects directly to the CN106 over a 3~m passive copper DAC (no-FEC).
+\paragraph{Testbed.}
+A passive 100GbE copper link (Ethernet PAUSE disabled and verified zero)
+connects three hosts:
+\begin{itemize}
+\item \textbf{Host (\texttt{saturn}):} Dual-socket Intel Xeon Gold~6438M
+  (Sapphire Rapids), evaluated on NUMA Socket~1 (32 physical cores, 60\,MiB
+  L3, $\sim$8\,MiB 2-way DDIO; cores pinned at 3.90\,GHz single-core and
+  3.60--3.90\,GHz across 8 cores; uncore/mesh pinned at 2.20\,GHz). Socket~1
+  has 2 active DDR5 channels ($2\times 32$\,GiB, $\sim$50--60\,GB/s);
+  \S\ref{sec:eval} explicitly separates channel-independent LLC-miss invariants
+  from 2-channel DRAM queuing amplification.
+\item \textbf{SmartNIC (Marvell OCTEON~10 CN106):} \texttt{crb106-pcie} on
+  Socket~1 PCIe Gen5~$\times 4$ (126.03\,Gbps physical payload ceiling after
+  128b/130b), with 24 Neoverse-N2 cores (2.00\,GHz), 48\,MiB shared L3 (TAD),
+  48\,GB 6-channel DDR5, and a 100GbE \texttt{NIX0} MAC inline with the
+  \texttt{SDP} DMA engine.
+\item \textbf{Generator (\texttt{mercury}):} ConnectX-5 100GbE running
+  user-space multi-threaded drivers for 64\,B (RoCEv2 UC), 254--1400\,B
+  (RoCEv2 UD), and 1500\,B (UDP GSO) frames across Poisson, microburst, incast,
+  and flow-churn profiles.
+\end{itemize}
 
-\begin{table}[t]
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\renewcommand{\arraystretch}{1.12}
-\begin{tabularx}{\columnwidth}{l Y}
-\toprule
-\textbf{Component} & \textbf{Configuration} \\
-\midrule
-Host CPU / LLC & Intel Xeon Gold 6438M (3.90~GHz pinned, 2.20~GHz uncore); 60~MiB 15-way L3 (2-way DDIO = 8~MiB) \\
-Host RAM / OS & 2-ch DDR5 ($\sim$60~GB/s), 2~MiB hugepages; Linux 6.17, full hardware IOMMU (scalable mode) \\
-Active NIC & Marvell OCTEON~10 CN106 (PCIe Gen5 $\times$4, 100GbE); 24 ARM Neoverse-N2 @ 2.00~GHz, 48~MiB L3, 6-ch DDR5, 4 DPI DMA VFs \\
-100GbE Peer & Physical server with NVIDIA ConnectX-5 100GbE NIC, 3~m passive copper DAC (8 client threads) \\
-\midrule
-\multicolumn{2}{l}{\textbf{Verified Hardware Evaluation Inventory (1,089 runs total, 0 errors)}} \\
-\midrule
-Burst \& Duality (\S\ref{sec:eval-burst}) & 108 runs ($n{=}3$ interleaved): zero-backlog + 64~KiB--128~MiB bursts + refill hop \\
-Co-located KV (\S\ref{sec:eval-kv}) & 228 runs (204 primary + 24 confirm): 32/16~MiB KV 4-arm + 1/2/4-core refill \\
-SDP Ablation (\S\ref{sec:impl}) & 126 runs: 6-step single-variable descriptor-ring cleanup (64~B--4~KiB) \\
-100GbE RX (\S\ref{sec:eval-rx}) & 174 runs: Stage-0 wire, Stage-1 PCIe, Stage-2 1-core 100GbE RX (64~B--4~KiB) \\
-100GbE RPC/KV (\S\ref{sec:eval-rpc}) & 453 runs: 32.5~MiB KV server (sat., $W{=}1$, Poisson knees, CPU, 4 vs 128~MiB TX pool) \\
-\bottomrule
-\end{tabularx}
-\caption{Hardware testbed and verified measurement inventory. All 1,089 runs enforce end-to-end sequence checks (0 lost/bad/torn packets), zero page faults, zero EDAC/AER hardware errors, and 100\% non-multiplexed host and NIC hardware PMU counters.}
-\label{tab:testbed}
-\end{table}
+\paragraph{Standard DPDK DMA, BAR4 lease, and ISM trade-off.}
+The host uses standard AVX2 \texttt{octeon\_ep} receive rings with
+\texttt{allow\_small\_oq=1} ($D=256$--$512$, $W_{\text{mark}}=\min(256,D/4)$).
+During 8-core bring-up (\S\ref{sec:eval-e4}), enabling in-memory status updates
+(\texttt{ism\_enable=1}) caused 8 polling cores to emit $\sim$50\,Mops/s of
+empty-poll uncached MMIO writes that saturated CN106's MMIO path (capping
+254\,B at 31.7\,Gbps); disabling ISM (\texttt{ism\_enable=0}) reduced MMIO
+writes 75$\times$ and unlocked 99--100\,Gbps across 8 cores, at the cost of
+synchronous register reads capping 8-core 254\,B at $\sim$45\,Mpps and raising
+control RTT from 2.53 to 7.6--8.4\,$\mu$s. We therefore use standard
+\texttt{ism\_enable=1} for single-core low-latency suites (E1, E2, E3, E5; with
+\texttt{rx\_poll\_mem=1} in E3/E5) and \texttt{ism\_enable=0} uniformly across
+all baselines for multi-core and sensitivity suites (E4, E6). Credit updates
+write to BAR4 Window~15 protected by a TCP nonce lease protocol so the host
+never accesses BAR4 unless the SmartNIC data plane is bound; Window~15 is
+restored to firmware defaults on exit.
 
-\paragraph{Datapath implementation details.}
-On the NIC, \sys{} maps the host's IOMMU-translated 256~KiB hot ring through an outbound write-combining PCIe window (with per-cell write ordering enabled so every 64~B cell exits as an ordered 64~B TLP without cross-cell merging). For large 326--4096~B unidirectional receive frames (\S\ref{sec:eval-rx}), the NIC issues asynchronous posted DMA writes via four native DPI VFs into compact per-lane host receive rings ($\le$2~MiB aggregate across four lanes), paced by batched credits. Host-to-NIC credit updates (\texttt{TAKEN}) and small outbound RPC replies ride over a leased PCIe BAR4 MMIO window using 64-byte atomic writes (\texttt{MOVDIR64B}) on the host and explicit startup/teardown lease handshakes so the host never touches unmapped device memory. For large 1--4~KiB KV \texttt{GET} replies in \S\ref{sec:eval-rpc}, the host places reply values in a compact retained TX buffer pool (default 1,024 $\times$ 4~KiB slots = 4~MiB, versus 32,768 slots = 128~MiB in our cache-spill sensitivity control) read by the NIC via native DPI DMA. We also evaluate a hardened NIC-side Ethernet RX variant (\texttt{direct\_safe}) that eliminates cross-core atomic descriptor refills on the CN106 wire ingress while preserving full error-drop validation.
-
-\paragraph{Engineering an ultra-fair descriptor-ring baseline.}
-Comparing a new receive interface against a poorly configured stock DPDK driver can exaggerate software savings. Using the exact same CN106 hardware and host core, we first ran a 126-run single-variable ablation on the vendor's PCIe descriptor-ring driver (SDP) at 4~KiB and 1.0~M~reqs/s to strip out every avoidable driver artifact:
-\begin{enumerate}
-  \item Stock SDP consumes \textbf{3,860~cycles/pkt} (99.0\% of one 3.90~GHz core).
-  \item Replacing MMIO doorbell reads with in-memory completion polling cuts cost to \textbf{2,348~cycles}; enabling zero-copy in-place buffer reuse lowers it to \textbf{1,489~cycles}, but exposes synchronous packet-tail spinning on 54.8\% of packets.
-  \item Converting tail verification to non-blocking asynchronous polling eliminates all late-tail stalls (54.8\% $\to$ 0.0\%) and saves 459~cycles, dropping cost to \textbf{1,030~cycles}.
-  \item Enabling in-memory ring-index updates (ISM), shrinking the host receive ring to fit inside DDIO (512 descriptors), and separating TX/RX pools raises DDIO hit rate from \textbf{45.2\% to 100.0\%} and cuts host DRAM writes by \textbf{76$\times$} (35.6 $\to$ 0.47~lines/pkt; 61$\times$ to 0.58~lines/pkt on full \texttt{SDP fair-full}), yielding our final \texttt{SDP fair-full} baseline at \textbf{1,010~cycles/pkt} (857~cycles at batch $B{=}8$), compared to \textbf{508~cycles/pkt} (461 at $B{=}8$) for the full DirectPush datapath incorporating \sys{} on RX.
-\end{enumerate}
-On the same card at 64~B ($W{=}1$), DirectPush+\sys{} lowers unloaded round-trip latency from 4.635~$\mu$s on tuned SDP to 0.885~$\mu$s (5.24$\times$). All dual-host 100GbE evaluations in \S\ref{sec:eval-rx}--\S\ref{sec:eval-rpc} compare against this tuned asynchronous SDP baseline rather than stock SDP.
-
-\paragraph{Verification discipline and boundaries.}
-Every run across all 1,089 archived experiments enforces end-to-end sequence and trailer checks (zero lost, corrupted, or torn messages), zero host page faults, pinned clocks verified per run, zero EDAC/AER hardware errors, and 100\% non-multiplexed hardware performance counters (Intel host L3 offcore, CHA DDIO hit/miss, IIO inbound/outbound PCIe bytes, and IMC DDR5 CAS counters; ARM CN106 core, L3 TAD, and 6-channel DDR5 counters). Throughout \S\ref{sec:eval}, we report medians across interleaved $n{=}3$ (or pooled $n{=}6$) trials and explicitly separate channel-independent on-die invariants from platform-specific memory-channel effects.
+\paragraph{Unmodified applications and faithful baselines.}
+We link upstream \textbf{Memcached~1.6.45} (\texttt{git diff = 0} lines
+modified) via a thin C adapter handing DPDK \texttt{mbuf}s directly to
+Memcached's binary protocol parser and slab allocator, alongside a 5-tuple
+stateful NFV pipeline (NAT and Maglev LB~\cite{eisenbud2016maglev}). All
+baselines run on identical CN106 + standard SDP rings: \texttt{privRing} /
+\texttt{Large SDP} (2048--8192 descriptors, 32--180\,MiB FIFO or LIFO pools,
+using a software host backlog in E2 so 128\,MiB bursts exceed CN106's 8192/Q
+hardware cap without dropping); static \texttt{ShRing*} (1024-slot shared ring,
+TTAS spinlock, no fallback to \texttt{privRing}); \texttt{rxBisect} (lock-free
+\texttt{lf\_stack} $A_x$ + per-core $B_x = 8192$ host rings); and strengthened
+\texttt{CEIO} (equal 1,024-packet host budget, dedicated 5th SmartNIC control
+core, 20\,$\mu$s + per-pull credit flushes, strict FIFO phase-hold guaranteeing
+0 out-of-order packets, 2048-slot fast pools, slow-path DMA rings, and 2P1C
+\texttt{SwMergeRing}; in E5, \texttt{CEIO-style} parameterizes 25\,$\mu$s
+switch lag and 15\,$\mu$s phase pauses while sharing \sys{}'s 5,119-\texttt{mbuf}
+pool and $O(1)$ flow array).

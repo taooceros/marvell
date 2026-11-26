@@ -1,31 +1,101 @@
-\section{Introduction}\label{sec:intro}
+\section{Introduction}
+\label{sec:intro}
 
-As datacenter links scale to 100--400~Gbps, the receive path between the network interface card (NIC) and the host CPU has become a primary determinant of server efficiency and tail latency~\cite{cai2021hoststack,vuppalapati2024hostnet}. To avoid slow DRAM round trips on every arriving packet, modern server processors use direct cache injection such as Intel Data Direct I/O (DDIO)~\cite{intelddio,huggahalli2005dca}, steering inbound PCIe writes straight into the host last-level cache (LLC). In principle, DDIO lets host cores consume packets at L3 speed without touching main memory.
+Datacenter network links have scaled to 100--800\,Gbps far faster than CPU
+last-level cache (LLC) capacity or per-core DRAM bandwidth. To keep inbound
+packet processing out of main memory, servers depend on direct cache access
+such as Intel Data Direct I/O (DDIO)~\cite{huggahalli2005dca,intelddio,farshin2020ddio},
+which steers inbound PCIe DMA writes into a restricted slice of LLC ways
+(roughly 8\,MiB of 2-way DDIO on our 60\,MiB Xeon Sapphire Rapids socket). When
+active receive buffers stay within that budget, arriving packets hit in LLC and
+host memory controllers remain free for application state.
 
-In practice, DDIO allocates only a small slice of the shared LLC to I/O, typically two cache ways~\cite{farshin2020ddio} (8~MiB out of 60~MiB on our Xeon server). Whenever an incast burst or brief host scheduling pause pushes more packets into host memory than that slice can hold, incoming DMA overwrites unread buffers and forces premature writebacks to DRAM---a pathology known as \emph{Leaky DMA}~\cite{tootoonchian2018resq,farshin2020ddio}. On our testbed, absorbing a 128~MiB receive burst in a conventional host ring drops DDIO hit rate to 16.3\%, raises host LLC read misses to 91.2\%, generates 1.90 host DRAM lines per packet, and inflates the $p99$ lookup latency of a co-located 32~MiB in-memory key-value (KV) store by 3.7--6.3$\times$ (from 41~ns to 153--259~ns; $p999$ reaches 289--315~ns). Even replacing the monotonic host ring with an ideal LIFO buffer pool saves only bursts up to 4~MiB; at 16--128~MiB, co-located KV $p99$ still climbs to 97--205~ns ($p999$ 287--293~ns).
+Maintaining cache residency in production has proved difficult because NIC
+receive rings play two opposing roles~\cite{pismenny2025rxbisect,liu2025ceio}:
+they are both the \emph{hot delivery interface} between PCIe DMA and CPU cores
+and the \emph{elastic burst buffer} absorbing microbursts, incast, RSS skew,
+and multi-millisecond CPU stalls. At 100\,Gbps, a single 10\,ms stall or burst
+delivers 125\,MiB---an order of magnitude larger than DDIO and twice a socket's
+entire LLC.
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=0.95\columnwidth]{figures/fig1_design_space.png}
-  \caption{Design space of cache-efficient NIC-to-CPU receive paths. \sys{} reaches the upper-right regime by unifying credit-gated push onto a single L3-pinned host FIFO.}
-  \label{fig:design-space}
-\end{figure}
+Three generations of receive-ring designs have tackled this conflict, each
+exposing a deeper structural wall. Traditional per-core private rings
+(\texttt{privRing}) avoid locks, but sizing 1024--2048 MTU descriptors per core
+across many cores quickly exceeds DDIO and triggers ``leaky
+DMA''~\cite{tootoonchian2018resq,farshin2020ddio,yuan2021ioalloc}.
+\textbf{ShRing}~\cite{pismenny2023shring} (OSDI'23) shares a single compact
+ring across cores to shrink aggregate I/O memory, but pays cross-core
+synchronization cost and suffers head-of-line (HoL) blocking whenever one core
+stalls, forcing dynamic fallback back to \texttt{privRing}.
+\textbf{rxBisect}~\cite{pismenny2025rxbisect} (OSDI'25) removes locks by
+splitting shared allocation ($A_x$) from per-core delivery ($B_x$), yet
+requires custom NIC ASIC changes and remains trapped inside the
+\emph{host-memory conservation wall}: every queued packet must still live in
+host RAM, so sustained bursts or 5--10\,ms stalls either overflow $B_x$ or
+bloat host LLC working sets.
 
-Prior systems navigate this tension along three axes, summarized in Figure~\ref{fig:design-space}. \emph{Reactive intra-host congestion control} (HostCC~\cite{agarwal2023hostcc}, RHCC~\cite{wan2025rhcc}) detects IIO or LLC pressure and signals network congestion control, but reacts only after cache misses have started. \emph{Host-capped receive rings} (ShRing~\cite{pismenny2023shring}, rxBisect~\cite{pismenny2025rxbisect}) shrink the receive footprint to stay inside the LLC, yet remain constrained by host memory conservation: once a burst exceeds the small host ring, a passive NIC must either drop packets (75.0--99.8\% loss on a passive 256~KiB ring under 1--128~MiB bursts) or throttle upstream senders. Most recently, \ceio{}~\cite{liu2025ceio} demonstrated that placing proactive credit control and elastic burst buffering on a SmartNIC avoids both misses and drops.
+\textbf{\ceio{}}~\cite{liu2025ceio} (SIGCOMM'25) broke host-memory conservation
+by buffering overflow traffic in an off-path SmartNIC's DRAM. Because off-path
+SmartNICs (e.g., BlueField-3) separate fast-path ASIC bypass from sidecar ARM
+cores, \ceio{} must graft a reactive slow path onto passive host DMA. This
+dual-path design brings five layers of complexity: per-flow match-table (RMT)
+rule rewriting, phase-exclusivity pauses that halt fast-path DMA while draining
+the slow path to preserve order, a host-side 2P1C software merge ring paired
+with a modified \texttt{async\_recv()} API, throughput degradation under
+high-churn short flows, and enlarged fast-ring buffer pools whose rotating read
+footprints still contend with co-located tenants for shared LLC capacity.
 
-However, \ceio{} preserves the legacy passive DMA ring as a ``fast path'' and grafts on-NIC DRAM buffering onto it as a separate ``slow path.'' That dual-path split introduces five tightly coupled mechanisms: per-flow match-action (RMT) steering rules dynamically rewritten between host LLC and NIC DRAM; a separate slow-path ring in NIC memory; \emph{phase exclusivity} that pauses fast-path DMA while draining slow-path packets so delivery stays ordered without sorting; a two-producer software merge ring (\texttt{SW ring}) in the host driver uniting both hardware rings; and an asynchronous host-initiated DMA pull API (\texttt{async\_recv()}) to fetch buffered packets back across PCIe. Under rapid flow churn (100--500~$\mu$s slots beyond 1,000 flows), per-flow rule management saturates and forces traffic onto the slow path, while even fast-path control adds 10--48\% latency overhead~\cite{liu2025ceio}.
+\paragraph{Key insight and \sys{}.}
+We ask whether a receive path can break the host-memory conservation wall
+\emph{without} dual-path switching, custom receive APIs, or bespoke host-NIC
+data transports. Our key observation is that \textbf{on-path SmartNICs}
+(Marvell OCTEON~10, AMD Pensando, Intel IPU) already sit inline between the
+Ethernet MAC and PCIe DMA engine. By placing a per-queue elastic FIFO directly
+inline in SmartNIC L3 and DDR5 while keeping the host's \textbf{normal,
+unmodified NIC DMA receive path}, fast delivery and burst buffering collapse
+into a \textbf{single unified FIFO} gated by an $O(1)$ per-queue credit window.
 
-We ask a simpler architectural question: \emph{if the NIC already manages credits and on-NIC burst memory, why maintain two receive paths at all?}
+Keeping a compact 128--256-slot host ring saturated at 100\,Gbps demands
+ultra-low-cost credit return. Standard hardware watermarks are coarse and
+vendor-dependent; card-initiated PCIe reads of host memory add $>1\,\mu\text{s}$
+latency; and fenced or uncached MMIO writes stall host store buffers for
+$>$400 cycles per batch. We show that because per-queue consumption progress
+(\texttt{taken}) is a single monotonic counter stored in an exclusive 64-byte
+per-core BAR4 cache line, host cores can publish batched credits ($B=32$--$64$)
+using a single \textbf{unfenced \texttt{MOVDIR64B} posted MMIO write} per
+receive burst---with no \texttt{SFENCE}. At 100\,Gbps, batched credit traffic
+stays within 0.5--7.0\,Mpps, remaining 25--350$\times$ below the PCIe ingress
+saturation cliff where high-rate unfenced MMIO interferes with co-located cores.
 
-We answer this question with \sys{}, a unified credit-gated receive architecture built around an active NIC. Instead of switching flows between a host fast path and a NIC slow path, \sys{} exposes only a single tiny, strictly L3-pinned receive ring in host memory---\textbf{256~KiB} (4,096 cache-line cells)---for the core credit-gated receive path, and extends the same compact credit discipline to native NIC DMA receive rings ($\le$2~MiB total across four lanes) for large 1--4~KiB Ethernet frames. Every arriving packet enters the same FIFO queue on the NIC. When credits are available, the NIC pushes the packet immediately across PCIe into the host hot ring; when credits are exhausted, the packet waits in the NIC's own memory hierarchy (\textbf{48~MiB on-NIC L3} backed by \textbf{6-channel on-NIC DDR5}) and is pushed through the exact same host ring as the host returns batched \texttt{TAKEN} credits via a single posted MMIO write.
-
-This single architectural unification eliminates path switching, RMT flow-table rewrites, phase-exclusivity pauses, dual-ring software merges, host-initiated DMA pulls, and per-flow scaling cliffs by construction. Credit enforcement reduces to an $O(1)$ integer comparison on a NIC-local cached counter per host receive ring, completely independent of the number of active network flows.
-
-We implement \sys{} in Rust on an unmodified PCIe Gen5 Intel Xeon server (with full hardware IOMMU enabled) paired with a Marvell OCTEON~10 CN106 100GbE SmartNIC and a second physical 100GbE peer. Rather than evaluating against an untuned stock driver, we also engineer a heavily optimized asynchronous descriptor-ring baseline (\texttt{SDP fair-full}) via single-variable ablation (eliminating synchronous tail waits and fitting its receive ring inside DDIO to reach 100.0\% DDIO and 76$\times$ fewer host DRAM writes than the non-DDIO-sized ring). Across 1,089 verified zero-error hardware runs with 100\% non-multiplexed host and NIC performance counters, we make four contributions:
-
-\begin{enumerate}
-  \item \textbf{Unified push-only credit ring (\S\ref{sec:overview}--\S\ref{sec:design}):} We formulate \sys{}'s single-FIFO credit protocol over a 256~KiB L3-pinned host ring, prove its overflow-free, ordered, and deadlock-free invariants, and extend the same compact credit discipline to $\le$2~MiB DMA receive rings for 1--4~KiB frames.
-  \item \textbf{Zero-backlog overhead and DRAM offload duality (\S\ref{sec:eval-burst}):} Credit checks add \textbf{+6~ns} to $W{=}1$ RTT (0.887 $\to$ 0.893~$\mu$s) with zero $W{=}32$ throughput loss. Across 64~KiB--128~MiB bursts, \sys{} locks DDIO at \textbf{100.0\%} and LLC misses at \textbf{0.01\%}, cuts host DRAM traffic by \textbf{98.9\%} (971.5 $\to$ 10.7~MiB), eliminates system-wide DRAM for bursts $\le$32~MiB inside NIC L3, offloads $>$48~MiB bursts onto NIC DDR5, and holds a flat \textbf{0.905~$\mu$s} ($p99$ 0.945~$\mu$s) refill hop.
-  \item \textbf{Co-located KV isolation and refill wire wall (\S\ref{sec:eval-kv}):} Across 1--128~MiB bursts, \sys{} is the only scheme achieving \textbf{0.0\% drops} and untouched 32~MiB KV tail latency (\textbf{41--42~ns} $p99$, 43--47~ns $p999$), versus 3.7--6.3$\times$ $p99$ degradation on monotonic rings, up to 5.0$\times$ on LIFO pools, and 75.0--99.8\% drops on passive 256~KiB rings. We also show that 1, 2, and 4 NIC refill cores converge at \textbf{177.2--177.3~M/s} (\textbf{99.1\%} of the 179.0~M/s PCIe Gen5 $\times$4 64~B TLP wall), fixing the drain crossover at 32--48~MiB (+12.6\% faster at 64~MiB).
-  \item \textbf{Single-core 100GbE RX and end-to-end DirectPush RPC/KV (\S\ref{sec:eval-rx}--\S\ref{sec:eval-rpc}):} Integrated into our end-to-end push/DMA datapath (\emph{DirectPush}, combining \sys{} on RX with \texttt{MOVDIR64B} host-to-NIC TX, native \texttt{DPI DMA} for $\ge$1~KiB payloads, and zero-atomic NIC ingress), one 3.90~GHz host core saturates 100GbE RX at 110~B (96.2~Mpps), 134~B (80.9~Mpps), 1094~B, and 4096~B with zero C2H drops and 22.5$\times$ less host DRAM than 2048-descriptor SDP. On a dual-host 100GbE 32.5~MiB KV server against tuned 4-queue async SDP, this integrated datapath raises saturation throughput up to \textbf{+55\%} (64~B) and \textbf{+16\%} (mixed), cuts open-loop $p99$ by \textbf{63.5\%} (64~B) and \textbf{49.7\%} (mixed small), and saves \textbf{15.2--42.4\%} net CPU and \textbf{17.2--62.5\%} bidirectional PCIe bytes. A companion TX check confirms expanding the host's retained reply pool from 4~MiB to 128~MiB causes a \textbf{92--98$\times$ DRAM surge} and 14--38\% throughput loss.
-\end{enumerate}
+\paragraph{Contributions and headline findings.}
+We implement \sys{} over unmodified DPDK \texttt{octeon\_ep} SDP DMA rings on a
+Marvell OCTEON~10 CN106 SmartNIC and evaluate it across \textbf{1,723
+hardware-verified runs} (zero corruption, zero page faults, 100\%
+non-multiplexed PMUs, zero EDAC/AER increments) on a dual-host 100GbE testbed:
+\begin{itemize}
+\item \textbf{Architecture and unfenced signaling (\S\ref{sec:overview}--\S\ref{sec:design},
+  \S\ref{sec:eval-e1}):} We unify on-path elastic buffering with normal NIC DMA
+  and prove why unfenced 64-byte posted MMIO credits are race-free for both
+  static and dynamic \texttt{mbuf} rings. Unfenced credit return adds just
+  \textbf{+0.20 host cycles/pkt} (67.3$\times$ cheaper than fenced MMIO), cuts
+  control-loop RTT by 1.10--1.19\,$\mu$s over card DMA reads, causes
+  $\le$0.35\% neighbor impact across 1--8 cores, and eliminates 410K--1.34M
+  silent passive-ring pause drops.
+\item \textbf{Burst isolation and multi-core scaling (\S\ref{sec:eval-e2}--\S\ref{sec:eval-e4}):}
+  Across 64\,B--1500\,B bursts up to 128\,MiB, \sys{} achieves 0.00\% loss,
+  98--100\% DDIO, 61--160$\times$ lower host DRAM traffic, 41--43\,ns idle KV
+  $p99$ (vs.\ 179--263\,ns for large rings, including ideal LIFO pools defeated
+  by pre-posted hardware rings), and \textbf{95.7--103.3\,Gbps} net PCIe SDP
+  draining on 1500\,B. Across 1--8 cores and 1--10\,ms slow-core stalls, \sys{}
+  delivers 0.00\% loss and zero healthy-queue drops, avoiding both ShRing HoL
+  drops (up to 50.9\%) and rxBisect $B_x$ overflows (up to 1.24M packets).
+\item \textbf{Head-to-head vs.\ \ceio{}, real apps, and guidelines (\S\ref{sec:eval-e3}--\S\ref{sec:eval-e6}):}
+  On identical hardware, \sys{} eliminates +74.5\,cyc/pkt (68\%) of fixed
+  \ceio{} merge/polling tax, beats \ceio{} by +20.8--33.0\% across 64--16,384
+  churning flows, and removes fast-pool LLC read contention. Running unmodified
+  upstream \textbf{Memcached~1.6.45} (\texttt{git diff = 0}) and stateful NFV,
+  \sys{} cuts microburst $p99$ by 50--54\% vs.\ large rings and 20--25\% vs.\
+  \ceio{}-style, offloads 55--83\% host DRAM bandwidth, and provides +10.4\%
+  / +36.8\% more real idle host CPU headroom at 1.4M RPS. Finally, 265
+  sensitivity runs lock down concrete sizing and SmartNIC core guidelines.
+\end{itemize}

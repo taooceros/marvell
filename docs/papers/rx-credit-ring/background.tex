@@ -1,65 +1,114 @@
-\section{Background and Motivation}\label{sec:background}
+\section{Background and Motivation}
+\label{sec:background}
 
-We review why modern direct-cache receive paths break down under bursts, dissect the structural limitations of existing host-side and dual-path mitigations, and frame the requirements for a simpler cache-efficient receive interface.
+We examine why existing host-only and off-path receive architectures fall short
+at 100--800\,Gbps, highlighting two hardware realities---the pre-posted DMA
+ring lower bound and coarse hardware backpressure---that shape \sys{}.
 
-\subsection{The Receive-Path Cache Dilemma}\label{sec:bg-dilemma}
+\subsection{DDIO and the Pre-Posted Ring Lower Bound}
+\label{sec:bg-ddio}
 
-In a conventional PCIe receive path, the host pre-allocates a ring of receive descriptors pointing to packet buffers in host memory. When packets arrive from the wire, the NIC fetches descriptors over PCIe, DMAs packet payloads into the host buffers, and posts completions. With Intel DDIO enabled~\cite{intelddio}, PCIe write transactions allocate directly into a restricted subset of the host LLC---by default two cache ways~\cite{farshin2020ddio} (8~MiB of the 60~MiB 15-way L3 on our Intel Xeon Gold 6438M server).
-
-DDIO succeeds only when two invariants hold simultaneously: (1) every newly written packet lands in the LLC without evicting another unread packet, and (2) the host CPU consumes each packet before subsequent arrivals displace it to DRAM. Under steady, lightly queued traffic where the active receive footprint stays below 8~MiB, DDIO delivers nearly 100\% cache hits and avoids host DRAM altogether.
-
-Datacenter workloads routinely violate both invariants~\cite{tootoonchian2018resq,farshin2020ddio,liu2025ceio}. Microbursts from partition-aggregate fan-in, multi-queue RSS skew, or brief host scheduling pauses allow incoming packets to accumulate faster than a host core drains them. To prevent ring overflow and costly transport retransmissions (RTOs), operators provision large receive rings and packet buffer pools spanning tens to hundreds of megabytes in host DRAM. Once accumulated receive data exceeds the 2-way DDIO allocation, two compounding penalties strike:
-
-\begin{itemize}
-  \item \textbf{Two-fold DRAM amplification on the network stream:} New PCIe writes evict dirty, unread cache lines from the DDIO ways to host DRAM ($\approx$1 DRAM write per packet). Moments later, when the host CPU reads those packets, it suffers an LLC miss and pulls them back from DRAM ($\approx$1 DRAM read per packet). In our controlled measurements (\S\ref{sec:eval-burst}), a 128~MiB receive burst into a 128~MiB host ring drives host LLC read misses to 91.2\%, collapses DDIO hits to 16.3\%, and consumes 1.90 host DRAM lines per packet (971.5~MiB of host memory traffic for 512~MiB of payload).
-  \item \textbf{Collateral tail-latency collapse for co-located services:} Because the LLC and memory controllers are shared across all cores on a socket, Leaky DMA evictions and host DRAM queueing spill directly onto co-located latency-sensitive applications. When a 32~MiB random-lookup KV store shares the same Xeon socket with a 128~MiB host receive ring, its solo $p99$ latency of 41~ns jumps 3.7--6.3$\times$ to 153--259~ns ($p999$ 289--315~ns), even when the KV store runs on its own dedicated physical core (\S\ref{sec:eval-kv}).
-\end{itemize}
-
-\subsection{Why Existing Approaches Fall Short}\label{sec:bg-limits}
-
-Prior efforts address Leaky DMA through four distinct strategies, each exposing a structural limitation (Table~\ref{tab:taxonomy}).
-
-\paragraph{Host-side buffer recycling (ideal LIFO pools).}
-A natural software defense is to replace monotonically advancing receive rings with LIFO buffer recycling so recently freed, LLC-hot buffers are immediately re-posted to the NIC~\cite{farshin2021packetmill}. LIFO recycling indeed eliminates stale cross-burst writebacks when an individual burst fits well within the LLC ($\le$4~MiB on our server). However, LIFO cannot break \emph{host memory conservation}: any single burst of 16--128~MiB still requires 16--128~MiB of live unread host memory. Once a burst exceeds the LLC capacity, LIFO fails identically to a monotonic ring, driving co-located 32~MiB KV $p99$ to 97--205~ns and $p999$ to 287--293~ns (\S\ref{sec:eval-kv}).
-
-\paragraph{Host-capped fixed rings (ShRing, rxBisect).}
-ShRing~\cite{pismenny2023shring} aggregates per-core receive rings into one shared ring sized inside the LLC, eliminating per-core buffer over-provisioning at the cost of lock contention or fallback paths under load skew. rxBisect~\cite{pismenny2025rxbisect} removes locking by separating allocation rings from delivery rings. Because both keep all buffering on the host, shrinking the host ring to guarantee 100\% DDIO leaves no headroom for bursts. As \ceio{}~\cite{liu2025ceio} demonstrates on ShRing and our passive 256~KiB control confirms (\S\ref{sec:eval-kv}), bursts exceeding the fixed host budget force either severe packet loss (75.0--99.8\% dropped across 1--128~MiB bursts) or frequent transport congestion control cutbacks that depress link utilization.
-
-\paragraph{Reactive intra-host rate control (HostCC, RHCC).}
-HostCC~\cite{agarwal2023hostcc} and RHCC~\cite{wan2025rhcc} monitor PCIe IIO occupancy or memory contention signals on the host and trigger end-to-end congestion notifications (e.g., DCTCP~\cite{alizadeh2010dctcp}) to slow senders. Because these mechanisms react only \emph{after} host buffers and caches saturate, their control loop spans multiple network round trips; during sudden bursts or shifting flow mixes, transient LLC misses remain unavoidable~\cite{liu2025ceio}.
+On modern servers, Intel DDIO~\cite{intelddio,farshin2020ddio} places inbound
+NIC DMA writes directly into a small subset of LLC ways (typically 2 ways, or
+$\sim$8\,MiB out of 60\,MiB on our Xeon Sapphire Rapids socket) when target
+lines miss, or updates them in place when already cached. As long as active
+receive buffers remain inside this budget, packets are consumed at LLC speed
+with minimal DRAM traffic. Once active buffers outgrow DDIO, new DMA writes
+evict unread packets to DRAM (``leaky DMA'')~\cite{tootoonchian2018resq,farshin2020ddio},
+amplifying host memory traffic and inflating tail latency for co-located
+tenants.
 
 \begin{table*}[t]
 \centering
 \footnotesize
-\setlength{\tabcolsep}{4.5pt}
-\renewcommand{\arraystretch}{1.15}
-\begin{tabularx}{\textwidth}{l l l Y Y l}
+\setlength{\tabcolsep}{4.0pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabularx}{\textwidth}{l c c c c c Y}
 \toprule
-\textbf{Architecture} & \textbf{Burst Buffer} & \textbf{RX Path Model} & \textbf{Burst Behavior (1--128~MiB)} & \textbf{Control \& Path Overhead} & \textbf{Flow Scaling} \\
+\textbf{Architecture} &
+\textbf{Burst Buffer} &
+\textbf{Lock-Free?} &
+\textbf{Slow-Core} &
+\textbf{Host API / DMA} &
+\textbf{Flow State} &
+\textbf{Structural Limitation Addressed by \sys{}} \\
 \midrule
-Large Host Ring & Host DRAM & Single passive DMA & 0\% drop; 91\% LLC miss, KV $p99$ 3.7--6.3$\times$ & Minimal (single ring) & $O(1)$/ring \\
-Ideal LIFO Pool & Host DRAM & Single passive DMA & Saves $\le$4~MiB; fails $\ge$16~MiB (KV $p99$ 5.0$\times$) & Pool recycling logic & $O(1)$/ring \\
-ShRing / rxBisect~\cite{pismenny2023shring,pismenny2025rxbisect} & Fixed host LLC & Shared/split host ring & Drops 75--99.8\% or triggers frequent CCA & Shared lock / split alloc-deliver & $O(1)$/ring \\
-HostCC / RHCC~\cite{agarwal2023hostcc,wan2025rhcc} & Host DRAM + CCA & Reactive rate-limited & Transient LLC misses during control lag & IIO polling + ECN/CCA feedback & Per-flow CCA \\
-\ceio{}~\cite{liu2025ceio} & NIC DRAM (slow) & Dual path (fast+slow) & 0\% drop; slow drain pauses fast path & RMT rewrites, phase pause, 2P1C SW merge, \texttt{async\_recv()} & Cliffs $>$1K flows \\
-\textbf{\sys{} (Ours)} & \textbf{NIC L3 + DDR5} & \textbf{Single unified push} & \textbf{0\% drop; 100\% DDIO, KV $p99$ 41--42~ns} & \textbf{$O(1)$ local credit check (+6~ns); single FIFO} & \textbf{$O(1)$/ring} \\
+\texttt{privRing} & Host RAM & Yes & Per-queue & Standard & None &
+$N \times D \times \text{MTU}$ blows DDIO; leaky DMA degrades co-located tenants. \\
+\textbf{ShRing}~\cite{pismenny2023shring} & Host RAM & No & HoL / fallback & Standard & None &
+Lock contention; stalled core blocks peers or forces fallback to \texttt{privRing}. \\
+\textbf{rxBisect}~\cite{pismenny2025rxbisect} & Host RAM ($B_x$) & Yes & Bounded ($B_x$) & Custom ASIC & None &
+Host-memory conservation wall: large bursts/stalls overflow $B_x$ or bloat host LLC. \\
+\textbf{\ceio{}}~\cite{liu2025ceio} & Off-path NIC & Yes & Slow path & Modified (\texttt{async}) & $O(F)$ RMT &
+Dual-path tax: RMT lag, phase pause, 2P1C SW merge, fast-pool LLC read contention, churn drop. \\
+\midrule
+\textbf{\sys{}} & \textbf{On-path NIC} & \textbf{Yes} & \textbf{Full (NIC)} & \textbf{Standard DMA} & \textbf{$O(1)$/Q} &
+Single unified path; normal DPDK DMA + compact pool + unfenced 64\,B MMIO credits. \\
 \bottomrule
 \end{tabularx}
-\caption{Comparison of cache-efficient receive architectures. \sys{} retains on-NIC elastic buffering and proactive credit pacing while eliminating \ceio{}'s dual-path split, flow-table rewrites, phase pauses, and host software merge ring.}
-\label{tab:taxonomy}
+\caption{Evolution of cache-efficient NIC receive-ring architectures from private rings to \sys{}.}
+\label{tab:design-space}
 \end{table*}
 
-\paragraph{Dual-path on-NIC buffering (\ceio{}).}
-\ceio{}~\cite{liu2025ceio} makes the crucial leap of moving proactive credit pacing and elastic burst storage onto the NIC itself. Yet because \ceio{} bolts its mechanism onto legacy passive host DMA rings, it must split every connection across two physically distinct data paths:
-\begin{enumerate}
-  \item \emph{Per-flow RMT rule rewriting:} Each active flow installs a hardware match-action steering rule directing packets to a host fast-path ring. When a flow exhausts its per-flow credit quota, a NIC core dynamically updates the steering rule to divert subsequent packets into an on-NIC DRAM slow-path ring.
-  \item \emph{Phase exclusivity and pause-and-drain stalls:} Because packets for the same flow can reside simultaneously in host LLC and NIC DRAM, \ceio{} enforces phase exclusivity: once diverted to the slow path, fast-path DMA is paused until the slow-path ring drains completely, keeping delivery ordered by construction at the cost of path-transition pauses.
-  \item \emph{Two-producer software merge ring and host pull API:} The host driver unifies the fast-path and slow-path hardware rings through a two-producer, one-consumer software merge ring (\texttt{SW ring}) and exposes a new \texttt{async\_recv()} call so host cores issue asynchronous DMA reads to pull buffered packets out of NIC DRAM.
-  \item \emph{Per-flow accounting and churn cliffs:} Because credits are allocated, owed, and reclaimed per flow across active/inactive timers, rapid flow turnover (100--500~$\mu$s time slots above 1,000 flows) overwhelms round-robin reactivation and drops flows to the slow path~\cite{liu2025ceio}. Moreover, even in the uncontended fast path, \ceio{} incurs 10--48\% latency overhead (1.46 $\to$ 1.72~$\mu$s at 64~B; 2.54 $\to$ 3.32~$\mu$s at 4~KiB)~\cite{liu2025ceio}.
-\end{enumerate}
+Replacing a host FIFO buffer pool with an ideal LIFO stack (\texttt{LargeLifo})
+while keeping large hardware rings cannot fix leaky DMA. Because a standard DMA
+NIC consumes pre-posted descriptors strictly in FIFO order, any cache-hot
+\texttt{mbuf} returned to a software LIFO stack is re-posted to the \emph{tail}
+of a $D$-entry hardware ring and is not overwritten until $N_q \cdot D$
+intervening packets rotate through all $N_q$ rings. The effective DMA working
+set therefore obeys a strict lower bound:
+\begin{equation}
+  W_{\text{eff}} = \max\!\bigl(N_q \cdot D,\; N_{\text{burst}}\bigr) \cdot \text{sizeof}(\text{mbuf}).
+  \label{eq:fifo-lower-bound}
+\end{equation}
+With four 8192-descriptor rings and 2304\,B \texttt{mbuf}s (1500\,B frames),
+pre-posted rings alone span $32{,}768 \times 2304\,\text{B} = 72.0$\,MiB---exceeding
+the entire 60\,MiB LLC so even a 375\,KiB burst collapses DDIO to 2.0\%
+(\S\ref{sec:eval-e2}). Achieving DDIO residency therefore requires shrinking
+\emph{both} the hardware descriptor ring $D$ and the backing buffer pool.
 
-\subsection{The Architectural Opportunity}\label{sec:bg-opportunity}
+\subsection{Limits of Host-Only and Dual-Path Designs}
+\label{sec:bg-evolution}
 
-These observations point to a cleaner principle: \emph{make the NIC an active, credit-paced memory producer pushing into a single L3-pinned host ring.} Rather than treating on-NIC memory as a secondary slow path accessed via host DMA reads and RMT redirection, the NIC holds \emph{all} receive queues natively in its own memory hierarchy (on-NIC L3 backed by on-NIC DDR5) and streams packets over PCIe into one fixed-size host hot ring only as host credits permit.
+Table~\ref{tab:design-space} contrasts four architectural generations.
+\textbf{ShRing}~\cite{pismenny2023shring} shares one compact ring across cores
+without NIC changes, but adds cross-core synchronization and allows a single
+stalled core to pin the ring head, starving healthy cores until ShRing falls
+back to \texttt{privRing} and forfeits cache isolation.
+\textbf{rxBisect}~\cite{pismenny2025rxbisect} removes locks by pairing a small
+lock-free shared allocation ring ($A_x$) with large per-core delivery rings
+($B_x$), yet still buffers all backlog inside host RAM: under 5--10\,ms stalls
+at 100\,Gbps (10K--45K packets), bounded $B_x$ overflows and drops packets,
+while enlarging $B_x$ evicts co-located workloads from LLC---in addition to
+requiring custom NIC ASIC modifications.
 
-Because every packet---idle, lightly loaded, or recovering from a 128~MiB microburst---traverses the exact same FIFO push channel, path switching disappears, phase pauses disappear, host software polls a single ring with no pull API or dual-ring merge, and credit state scales strictly with host cores ($O(1)$ per ring) rather than with thousands of concurrent flows.
+\textbf{\ceio{}}~\cite{liu2025ceio} moves burst buffering to off-path SmartNIC
+DRAM (Figure~\ref{fig:arch}(a)), but bypassing sidecar ARM cores on the fast
+path forces reactive dual-path switching. As we quantify head-to-head in
+\S\ref{sec:eval-e3}, this introduces four persistent penalties: (1)~polling
+separate fast/slow rings and merging via a 2P1C software ring adds
+$+74.5$\,cycles/packet even at 0\% slow-path traffic; (2)~per-flow credit
+accounting and RMT table limits degrade throughput under thousands of churning
+flows; (3)~oversized fast-path pools (2048 slots/queue) needed to absorb
+switching overshoot still contend with co-located tenants for shared LLC read
+capacity despite $>$99.5\% DDIO; and (4)~applications must adopt a new
+\texttt{async\_recv()} pull interface.
+
+\subsection{Why Native NIC Hardware Backpressure Falls Short}
+\label{sec:bg-backpressure}
+
+Shrinking a standard DMA ring and relying solely on native NIC hardware
+backpressure is also insufficient. First, hardware descriptor watermarks are
+coarse (on CN106 \texttt{octeon\_ep}, $D \ge 256$, $W_{\text{mark}} \ge 64$,
+refill stride 64) and cannot enforce fine packet caps (e.g., $R_{\text{eff}}=64$)
+or byte-level LLC budgets (64--96\,KiB). Second, hardware backpressure risks
+multi-queue HoL stalling in shared NIC egress pipelines. Third, on CN106,
+enabling SDP-to-NIX channel backpressure requires setting
+\texttt{SDPX\_OUT\_BP\_ENX\_W1S}, which the Linux
+kernel driver sets but the default user-space endpoint agent
+(\texttt{octep\_cp\_agent}) leaves cleared; consequently, default 256--512-slot
+rings silently drop 410K--1.34M packets under host pauses without engaging
+SmartNIC memory (\S\ref{sec:eval-e1}). While silent non-accounting
+(\texttt{imissed=0}) is specific to CN106's user-space stack, passive small
+rings overflow universally, making explicit software-visible credits essential
+for portable, exact, per-queue isolation.
