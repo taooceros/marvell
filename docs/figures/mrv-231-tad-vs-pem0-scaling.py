@@ -53,7 +53,7 @@ def med_mm(vals):
 def main():
     g = load_groups()
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12.6, 5.2))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13.2, 5.4))
 
     # -------------------------------------------------------------------------
     # Panel A: Control 1 — Pure on-chip ARM <-> ARM TAD total snoop rate
@@ -110,7 +110,11 @@ def main():
     ax1.set_xticklabels([f"K={k}\n({2*k} 核)" for k in ks])
     ax1.set_ylabel("卡侧 TAD 总嗅探速率（M 次/秒）")
     ax1.set_ylim(0, 880)
-    ax1.set_title("对照 1：片上 ARM⇄ARM 实测 TAD 总嗅探（零 PCIe）\nK=1→8 线性升至 ≥731 M/s（未触顶），排除 TAD 嗅探瓶颈", fontsize=10.0, pad=8)
+    ax1.set_title(
+        f"对照 1：片上 ARM⇄ARM 实测 TAD 总嗅探（零 PCIe）\n"
+        f"K=1→8 线性升至 ≥{ring_snp[-1]:.0f} M/s（未触顶），排除 TAD 嗅探瓶颈",
+        fontsize=10.0, pad=8,
+    )
     ax1.legend(loc="upper left", fontsize=8.2, frameon=True)
 
     # -------------------------------------------------------------------------
@@ -136,6 +140,13 @@ def main():
 
     nopoll_1h = statistics.median(r["mops"] for r in g[("ctrl2_bar4_scale", "nopoll_K1_1h")])
     nopoll_4h = statistics.median(r["mops"] for r in g[("ctrl2_bar4_scale", "nopoll_K4_4h")])
+    cha_ref = statistics.median(
+        r["host_pmu"]["cha_inflight"] for r in g[("ctrl2_bar4_scale", "cl_K1_2c")]
+    )
+    tad_ref = statistics.median(
+        r["card_pmu"]["tad"]["tad_req_occ"]["val"] / (r["card_pmu"]["elapsed_ns"] / 1e9 * 2.0e9)
+        for r in g[("ctrl2_bar4_scale", "cl_K1_2c")]
+    )
 
     x2 = np.arange(len(c2_specs))
     ax2.plot([0, 1, 2], [c2_tot[0], c2_tot[0] * 2, c2_tot[0] * 4], ":o", color="#94a3b8", lw=2.0, ms=5,
@@ -159,9 +170,9 @@ def main():
     ax2.text(
         0.03, 0.97,
         f"同槽卡不轮询直推基线：\n"
-        f"• 1 主机核：{nopoll_1h:.1f} M/s（12.1×）\n"
-        f"• 4 主机核：{nopoll_4h:.1f} M/s（13.1×）\n"
-        f"串行态：CHA=1.38 条，TAD 在途=0.02 条",
+        f"• 1 主机核：{nopoll_1h:.1f} M/s（{nopoll_1h/c2_tot[0]:.1f}×）\n"
+        f"• 4 主机核：{nopoll_4h:.1f} M/s（{nopoll_4h/c2_tot[0]:.1f}×）\n"
+        f"串行时：CHA={cha_ref:.2f} 条，TAD 在途={tad_ref:.2f} 条",
         transform=ax2.transAxes, ha="left", va="top", fontsize=8.2,
         bbox=dict(boxstyle="round,pad=0.35", fc="#f8fafc", ec="#475569", lw=1.0),
     )
@@ -170,12 +181,16 @@ def main():
     ax2.set_xticklabels([lbl for _, lbl, _ in c2_specs], fontsize=8.6)
     ax2.set_ylabel("BAR4 总吞吐（M 消息/秒，64 B）")
     ax2.set_ylim(0, 72)
-    ax2.set_title("对照 2：BAR4 槽 15 内 K=1/2/4 独立子环（距 960 KiB）\n总吞吐死锁 13.4 M/s（精确 13.4/K）→ 全局共享串行点 [推断: PEM0/IOBN]", fontsize=9.8, pad=8)
+    ax2.set_title(
+        "对照 2：BAR4 槽 15 内 K=1/2/4 独立子环（距 960 KiB，跨 TAD 分片）\n"
+        "总吞吐死锁 13.4 M/s（精确 13.4/K）→ 槽 15 内共享串行点 [推断: PEM0/IOBN]",
+        fontsize=9.6, pad=8,
+    )
     ax2.legend(loc="upper right", fontsize=7.9, frameon=True)
 
     fig.suptitle(
-        "MRV-231：不是片上 TAD 嗅探上限（≥731 M/s），而是 ≥2 卡核追前沿触发的全局共享串行点 [推断: PEM0/IOBN]",
-        fontsize=11.0, fontweight="bold", y=0.98
+        f"MRV-231：非片上 TAD 嗅探上限（≥{ring_snp[-1]:.0f} M/s），而是槽 15 内跨子环/跨 TAD 分片共享串行点 [推断: PEM0/IOBN]（跨 BAR4_INDEX 槽未测）",
+        fontsize=10.3, fontweight="bold", y=0.985,
     )
     out = mrvplot.save(fig, "mrv-231-tad-vs-pem0-scaling")
     print(f"Saved {out}")
