@@ -22,7 +22,7 @@ import mrvplot
 
 REPO = Path(__file__).resolve().parents[2]
 RUNS_PATH = REPO / "logs" / "mrv228-2026-11-27" / "runs.jsonl"
-
+NOMINAL_A_PKTS = (200_000.0 + 48e9 / (1114.0 * 8.0)) * 1.2  # 6,703,196 nominal offered pkts in 1.2 s
 ARMS = [
     ("per_flow_cr", "逐流信用环（本方案）", "#0072B2", "o", "-", 2.8, 7.5, 6),
     ("bp1_stop", "BP=1 停抽（护缓存）", "#D55E00", "s", "-", 2.2, 6.5, 5),
@@ -81,7 +81,7 @@ def load_verified():
             if r["arm"] != "large_sdp":
                 assert r["client"]["lost"] == 0
         by_key[(r["part"], r["tag"], r["arm"])].append(r)
-    assert total == 168, f"Expected 168 verified runs, got {total}"
+    assert total == 171, f"Expected 171 verified runs, got {total}"
     return by_key
 
 
@@ -142,12 +142,9 @@ def main():
     ce_1024 = med([r["client"]["rpc_p99_us"] for r in by[("A1_FLOWS", "A1_F1024_s4ms", "ceio")]])
     ls_losses = [med([r["client_loss_pct"] for r in by[("A1_FLOWS", f"A1_F{f}_s4ms", "large_sdp")]]) for f in flows]
     ls_load_pcts = [
-        100.0
-        * med([r["client"]["sent"] for r in by[("A1_FLOWS", f"A1_F{f}_s4ms", "large_sdp")]])
-        / med([r["client"]["sent"] for r in by[("A1_FLOWS", f"A1_F{f}_s4ms", "per_flow_cr")]])
+        100.0 * med([r["client"]["sent"] for r in by[("A1_FLOWS", f"A1_F{f}_s4ms", "large_sdp")]]) / NOMINAL_A_PKTS
         for f in flows
     ]
-
     ax1.annotate(
         f"本方案全程 {pf_1024:.0f} µs\n比 BP=1 停抽快 {bp_1024/pf_1024:.0f}×（0 丢包）",
         xy=(1.0, pf_1024), xytext=(0.15, 200),
@@ -225,14 +222,23 @@ def main():
 
     bp_1 = med([r["client"]["rpc_p99_us"] for r in by[("A2_STALL", "A2_F256_s1ms", "bp1_stop")]])
     bp_10 = med([r["client"]["rpc_p99_us"] for r in by[("A2_STALL", "A2_F256_s10ms", "bp1_stop")]])
+    bd_1 = med([r["client"]["rpc_p99_us"] for r in by[("A2_STALL", "A2_F256_s1ms", "bp1_drain")]])
     pf_1 = med([r["client"]["rpc_p99_us"] for r in by[("A2_STALL", "A2_F256_s1ms", "per_flow_cr")]])
     pf_10 = med([r["client"]["rpc_p99_us"] for r in by[("A2_STALL", "A2_F256_s10ms", "per_flow_cr")]])
 
     ax2.annotate(
+        f"BP=1 抽干：1 ms 即击穿 DDIO\n跌入 DRAM 失速撑满池 → {bd_1/1000:.1f} ms",
+        xy=(0.05, bd_1 * 1.05), xytext=(0.15, 34000),
+        fontsize=8.2, fontweight="bold", color="#B45309",
+        bbox=dict(boxstyle="round,pad=0.24", facecolor="#FFFBEB", edgecolor="#E69F00", lw=0.9),
+        arrowprops=dict(arrowstyle="->", color="#E69F00", lw=1.0, connectionstyle="arc3,rad=0.14"),
+        zorder=8,
+    )
+    ax2.annotate(
         f"BP=1 停抽随卡顿线性飙升\n{bp_1/1000:.2f} → {bp_10/1000:.2f} ms（慢 {bp_10/pf_10:.0f}×）",
-        xy=(1.95, bp_10 * 0.88), xytext=(0.12, 340),
-        fontsize=8.8, fontweight="bold", color="#C2410C",
-        bbox=dict(boxstyle="round,pad=0.26", facecolor="#FFF7ED", edgecolor="#D55E00", lw=0.9),
+        xy=(1.95, bp_10 * 0.88), xytext=(0.12, 310),
+        fontsize=8.6, fontweight="bold", color="#C2410C",
+        bbox=dict(boxstyle="round,pad=0.24", facecolor="#FFF7ED", edgecolor="#D55E00", lw=0.9),
         arrowprops=dict(arrowstyle="->", color="#D55E00", lw=1.1, connectionstyle="arc3,rad=0.18"),
         zorder=8,
     )
@@ -241,7 +247,6 @@ def main():
         f"本方案稳守 {pf_1:.0f}–{pf_10:.0f} µs（卡顿期 200 krps 零掉速）",
         fontsize=8.8, fontweight="bold", color="#005B8E", ha="center",
     )
-
     # ------------------------------------------------------------------
     # Panel C: Co-located 32 MiB KV p99 & host DRAM BW (F = 256, 4 ms)
     # ------------------------------------------------------------------
@@ -249,7 +254,6 @@ def main():
     color_map = {a[0]: a[2] for a in ARMS}
     xc = np.arange(len(c_order))
 
-    ref_sent_256 = med([r["client"]["sent"] for r in by[("A1_FLOWS", "A1_F256_s4ms", "per_flow_cr")]])
     kv_meds, kv_lo, kv_hi, imc_meds, loss_meds, load_pcts = [], [], [], [], [], []
     for arm in c_order:
         rs = by[("A1_FLOWS", "A1_F256_s4ms", arm)]
@@ -259,8 +263,7 @@ def main():
         kv_hi.append(e_hi)
         imc_meds.append(med([r["host"]["pmu"]["imc_total_gbps"] for r in rs]))
         loss_meds.append(med([r["client_loss_pct"] for r in rs]))
-        load_pcts.append(100.0 * med([r["client"]["sent"] for r in rs]) / ref_sent_256)
-
+        load_pcts.append(100.0 * med([r["client"]["sent"] for r in rs]) / NOMINAL_A_PKTS)
     ax3.bar(
         xc, kv_meds, width=0.56,
         color=[color_map[a] for a in c_order],
@@ -313,8 +316,8 @@ def main():
     )
     fig.text(
         0.5, 0.918,
-        "4 条标准 SDP 队列共享 16–1,024 条并发流（每队列 1 条 48 Gbps 慢流周期卡顿 + 其余 200 krps 健康短 RPC，n = 3 中位数及极差）",
-        ha="center", va="center", fontsize=10.2, color="#475569",
+        "4 条标准 SDP 队列共享 16–1,024 流（每队列 1 条 48 Gbps 慢流周期卡顿 + 200 krps 短 RPC，n = 3；实发按标称总包量归一化，纯 100% 等载隔离见图 2）",
+        ha="center", va="center", fontsize=9.8, color="#475569",
     )
     fig.legend(
         legend_handles, legend_labels,

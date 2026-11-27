@@ -95,7 +95,7 @@ def load_verified():
             if r["arm"] != "large_sdp":
                 assert r["client"]["lost"] == 0
         by_key[(r["part"], r["tag"], r["arm"])].append(r)
-    assert total == 168
+    assert total == 171, f"Expected 171 verified runs, got {total}"
     return by_key
 
 
@@ -144,31 +144,50 @@ def main():
     ax1.grid(False, which="minor")
 
     pf_b = [med([r["client"]["rpc_p99_us"] for r in by[("B1_FLOWS", f"B1_F{f}_b64m", "per_flow_cr")]]) for f in flows]
-    ce_256 = med([r["client"]["rpc_p99_us"] for r in by[("B1_FLOWS", "B1_F256_b64m", "ceio")]])
     ce_1024 = med([r["client"]["rpc_p99_us"] for r in by[("B1_FLOWS", "B1_F1024_b64m", "ceio")]])
     bp_1024 = med([r["client"]["rpc_p99_us"] for r in by[("B1_FLOWS", "B1_F1024_b64m", "bp1_stop")]])
-    ce_debt_256 = med([r["card"]["ceio_ctrl"]["debt_events"] for r in by[("B1_FLOWS", "B1_F256_b64m", "ceio")]])
+    ce_tbl1024_rs = by[("B1_CEIO_TBL1024", "B1_F1024_b64m_tbl1024", "ceio_tbl1024")]
+    ce_tbl_p99, ce_tbl_lo, ce_tbl_hi = med_err([r["client"]["rpc_p99_us"] for r in ce_tbl1024_rs])
+    ce_tbl_f2s = med([r["card"]["ceio_ctrl"]["rmt_fast_to_slow"] for r in ce_tbl1024_rs])
+    ce_256_f2s = med([r["card"]["ceio_ctrl"]["rmt_fast_to_slow"] for r in by[("B1_FLOWS", "B1_F256_b64m", "ceio")]])
+    ce_tbl_rw_kps = (ce_tbl_f2s * 2.0) / 1.2 / 1000.0
 
-    # Place purple box strictly in LEFT open space (x = -0.22..1.35, y = 1800..8500)
+    # Plot measured expanded-table CEIO (max_fast_flows=1,024, strict C_total/F=1) at F=1,024
+    ax1.errorbar(
+        [3.0], [ce_tbl_p99], yerr=[[ce_tbl_lo], [ce_tbl_hi]],
+        color="#7E57C2", marker="*", markersize=11.5, markerfacecolor="#F3E8FF",
+        markeredgecolor="#6D28D9", markeredgewidth=1.3, capsize=3.0, zorder=9,
+    )
+
+    # Purple box 1: CEIO 256-entry fast-table capacity wall at F=1,024
     ax1.annotate(
-        f"CEIO 全局信用摊薄\n({ce_debt_256:.0f} 次债务) → {ce_256/1000:.1f} ms\nF=1,024 飙 {ce_1024/1000:.1f} ms",
-        xy=(1.95, ce_256 * 0.94), xytext=(-0.22, 2200),
-        fontsize=8.4, fontweight="bold", color="#6D28D9",
-        bbox=dict(boxstyle="round,pad=0.26", facecolor="#F3E8FF", edgecolor="#7E57C2", lw=0.9),
+        f"CEIO (256 快表)：F=1,024\n768 流溢出慢道 → {ce_1024/1000:.1f} ms",
+        xy=(2.94, ce_1024 * 0.92), xytext=(0.45, 5800),
+        fontsize=8.2, fontweight="bold", color="#6D28D9",
+        bbox=dict(boxstyle="round,pad=0.24", facecolor="#F3E8FF", edgecolor="#7E57C2", lw=0.9),
         arrowprops=dict(arrowstyle="->", color="#7E57C2", lw=1.1, connectionstyle="arc3,rad=-0.12"),
         zorder=8,
     )
-    # Place blue 4 KiB BAR4 box strictly in RIGHT open space (x = 1.48..3.3, y = 320..1200)
+    # Purple box 2: CEIO expanded 1,024-entry table (C_flow=1) measured p99 and RMT rewrite cost
     ax1.annotate(
-        f"64 B 行打包 16 流\n1,024 流仅占 4 KiB BAR4\n稳守 {min(pf_b):.0f}–{max(pf_b):.0f} µs（快 {bp_1024/pf_b[-1]:.0f}×）",
-        xy=(2.45, pf_b[2] * 1.12), xytext=(1.55, 420),
-        fontsize=8.4, fontweight="bold", color="#005B8E",
-        bbox=dict(boxstyle="round,pad=0.26", facecolor="#E0F2FE", edgecolor="#0072B2", lw=0.9),
+        f"★ 扩表至 1,024 (C_flow=1)：\n实测 {ce_tbl_p99:.0f} µs / 0 丢包，但代价约 {ce_tbl_f2s:,.0f} 次切道\n({ce_tbl_rw_kps:.0f}K 次/s 软模拟 RMT 改写，8 队/5 核)",
+        xy=(2.93, ce_tbl_p99 * 0.98), xytext=(0.30, 1150),
+        fontsize=7.7, fontweight="bold", color="#5B21B6",
+        bbox=dict(boxstyle="round,pad=0.24", facecolor="#FAF5FF", edgecolor="#A78BFA", lw=0.9, ls="--"),
+        arrowprops=dict(arrowstyle="->", color="#7E57C2", lw=1.0, ls="--", connectionstyle="arc3,rad=-0.06"),
+        zorder=8,
+    )
+    # Blue box: 4 KiB BAR4 constant memory & 0 RMT rewrites
+    ax1.annotate(
+        f"64 B 行打包 16 流，1,024 流仅占 4 KiB\n0 次流表改写，稳守 {min(pf_b):.0f}–{max(pf_b):.0f} µs（快 {bp_1024/pf_b[-1]:.0f}×）",
+        xy=(1.0, pf_b[1] * 1.15), xytext=(-0.22, 310),
+        fontsize=8.0, fontweight="bold", color="#005B8E",
+        bbox=dict(boxstyle="round,pad=0.24", facecolor="#E0F2FE", edgecolor="#0072B2", lw=0.9),
         arrowprops=dict(arrowstyle="->", color="#0072B2", lw=1.1, connectionstyle="arc3,rad=0.14"),
         zorder=8,
     )
     ax1.text(
-        1.5, bp_1024 * 1.42,
+        1.45, bp_1024 * 1.44,
         f"BP=1 停抽：全程 {bp_1024/1000:.1f} ms",
         fontsize=8.9, fontweight="bold", color="#C2410C", ha="center",
     )
@@ -251,9 +270,9 @@ def main():
     ax3.set_xlim(0, 5.28)
     ax3.set_ylim(0, 6.2)
     ax3.axis("off")
-    ax3.set_title("C. 5 档实测架构权衡总览（F = 1,024 综合判定）", fontsize=11.8, fontweight="bold", pad=10)
+    ax3.set_title("C. 默认 5 档实测架构权衡（F = 1,024，含硬件开销）", fontsize=11.5, fontweight="bold", pad=10)
 
-    cols = ["1,024 流 RPC\n(场景 A / B)", "全量丢包率\n(168 轮最差)", "共置 KV 保护\n(场景 A / B)", "主机暂存峰值\n(64 MiB 突发)", "硬件资源\n(队列 / 卡核)"]
+    cols = ["1,024 流 RPC\n(场景 A / B)", "全量丢包率\n(171 轮最差)", "共置 KV 保护\n(场景 A / B)", "主机暂存峰值\n(64 MiB 突发)", "硬件资源\n(队列 / 卡核)"]
     col_x = [1.05, 1.93, 2.75, 3.63, 4.46]
     col_w = [0.84, 0.78, 0.84, 0.80, 0.80]
 
@@ -331,8 +350,8 @@ def main():
     )
     fig.text(
         0.5, 0.918,
-        "左：64 MiB 大象突发 F = 16 → 1,024 扩展曲线；中：主/卡非复用硬件计数器内存账本；右：168 轮实测综合判定（仅本方案全绿）",
-        ha="center", va="center", fontsize=10.2, color="#475569",
+        "左：64 MiB 突发 F = 16 → 1,024 扩展与 CEIO 扩表改写代价；中：主/卡非复用 PMU 内存账本；右：默认 5 档含硬件资源综合判定",
+        ha="center", va="center", fontsize=10.0, color="#475569",
     )
     fig.legend(
         legend_handles, legend_labels,

@@ -88,7 +88,7 @@ def load_verified():
             if r["arm"] != "large_sdp":
                 assert r["client"]["lost"] == 0
         by_key[(r["part"], r["tag"], r["arm"])].append(r)
-    assert total == 168
+    assert total == 171, f"Expected 171 verified runs, got {total}"
     return by_key
 
 
@@ -101,11 +101,10 @@ def main():
     scen_b_losses = [
         r["client_loss_pct"]
         for (part, _, _), rs in by.items()
-        if part in ("B1_FLOWS", "B2_BURST16")
+        if part in ("B1_FLOWS", "B2_BURST16", "B1_CEIO_TBL1024")
         for r in rs
     ]
     max_b_loss = max(scen_b_losses)
-
     fig, (ax1, ax2, ax3) = plt.subplots(
         1, 3, figsize=(16.4, 5.8), gridspec_kw={"width_ratios": [1.15, 1.05, 1.12]}
     )
@@ -150,16 +149,13 @@ def main():
         legend_handles.append(sc)
         legend_labels.append(label)
 
-    # CEIO trajectory F=64 -> F=256 -> F=1024
-    ce_64_x = med([r["client"]["rpc_p99_us"] for r in by[("B1_FLOWS", "B1_F64_b64m", "ceio")]])
-    ce_64_y = med([r["host"]["coloc_kv"]["p99_ns"] for r in by[("B1_FLOWS", "B1_F64_b64m", "ceio")]])
+    # CEIO trajectory F=256 (within 256-entry fast table) -> F=1,024 (fast-table capacity overflow)
     ce_1024_x = med([r["client"]["rpc_p99_us"] for r in by[("B1_FLOWS", "B1_F1024_b64m", "ceio")]])
     ce_1024_y = med([r["host"]["coloc_kv"]["p99_ns"] for r in by[("B1_FLOWS", "B1_F1024_b64m", "ceio")]])
-    ax1.scatter([ce_64_x], [ce_64_y], s=75, facecolors="white", edgecolors="#7E57C2", marker="P", linewidths=1.5, zorder=4)
-    ax1.scatter([ce_1024_x], [ce_1024_y], s=90, facecolors="#E9D5FF", edgecolors="#7E57C2", marker="P", linewidths=1.4, zorder=4)
+    ax1.scatter([ce_1024_x], [ce_1024_y], s=105, facecolors="#E9D5FF", edgecolors="#7E57C2", marker="P", linewidths=1.5, zorder=5)
     ax1.annotate(
-        "", xy=(pts_256["ceio"][0] * 0.76, pts_256["ceio"][1] + 4), xytext=(ce_64_x * 1.25, ce_64_y + 10),
-        arrowprops=dict(arrowstyle="->", color="#7E57C2", lw=1.3, ls="--", connectionstyle="arc3,rad=-0.16"),
+        "", xy=(ce_1024_x * 0.78, ce_1024_y + 4), xytext=(pts_256["ceio"][0] * 1.15, pts_256["ceio"][1] + 9),
+        arrowprops=dict(arrowstyle="->", color="#7E57C2", lw=1.3, ls="--", connectionstyle="arc3,rad=-0.18"),
     )
 
     ax1.set_xscale("log")
@@ -169,7 +165,7 @@ def main():
     ax1.set_ylim(0, 300)
     ax1.set_xlabel("健康短 RPC 尾延迟 p99（对数轴，越左越好）", fontsize=10.8, labelpad=6)
     ax1.set_ylabel("共置 32 MiB KV 尾延迟 p99（ns，越低越好）", fontsize=10.8)
-    ax1.set_title("A. 帕累托总决战（64 MiB 突发，F = 256）", fontsize=12.0, fontweight="bold", pad=10)
+    ax1.set_title("A. 帕累托总决战（64 MiB 突发，F = 256 & 1,024）", fontsize=11.8, fontweight="bold", pad=10)
     ax1.tick_params(axis="both", labelsize=9.8)
     ax1.grid(True, which="major", alpha=0.28)
     ax1.grid(False, which="minor")
@@ -181,37 +177,37 @@ def main():
     ce_x, ce_y = pts_256["ceio"]
 
     ax1.annotate(
-        f"逐流信用环（本方案）\n{pf_x:.0f} µs / {pf_y:.0f} ns（F=16–1,024 全稳）",
-        xy=(pf_x * 1.05, pf_y + 5), xytext=(220, 145),
-        fontsize=8.9, fontweight="bold", color="#005B8E",
-        bbox=dict(boxstyle="round,pad=0.28", facecolor="#E0F2FE", edgecolor="#0072B2", lw=1.0),
+        f"逐流信用环（本方案：4 队/4 核）\n{pf_x:.0f} µs / {pf_y:.0f} ns（F=16–1,024 全稳）",
+        xy=(pf_x * 1.04, pf_y + 6), xytext=(220, 145),
+        fontsize=8.6, fontweight="bold", color="#005B8E",
+        bbox=dict(boxstyle="round,pad=0.26", facecolor="#E0F2FE", edgecolor="#0072B2", lw=1.0),
         arrowprops=dict(arrowstyle="->", color="#0072B2", lw=1.2, connectionstyle="arc3,rad=0.14"),
         zorder=9,
     )
     ax1.annotate(
         f"BP=1 抽干 / 大环直通\n{bd_x:.0f} µs，但 KV 炸至 {ls_y:.0f}–{bd_y:.0f} ns ({bd_y/kv_solo_p99:.1f}×)",
         xy=(bd_x * 1.12, bd_y), xytext=(360, 245),
-        fontsize=8.8, fontweight="bold", color="#B45309",
+        fontsize=8.7, fontweight="bold", color="#B45309",
         bbox=dict(boxstyle="round,pad=0.26", facecolor="#FFFBEB", edgecolor="#E69F00", lw=0.9),
         arrowprops=dict(arrowstyle="->", color="#E69F00", lw=1.1),
         zorder=9,
     )
     ax1.annotate(
         f"BP=1 停抽：KV 保 {bp_y:.0f} ns\nRPC 堵至 {bp_x/1000:.1f} ms ({bp_x/pf_x:.0f}×)",
-        xy=(bp_x, bp_y + 6), xytext=(2200, 186),
-        fontsize=8.7, fontweight="bold", color="#C2410C",
+        xy=(bp_x, bp_y + 6), xytext=(2200, 188),
+        fontsize=8.6, fontweight="bold", color="#C2410C",
         bbox=dict(boxstyle="round,pad=0.26", facecolor="#FFF7ED", edgecolor="#D55E00", lw=0.9),
         arrowprops=dict(arrowstyle="->", color="#D55E00", lw=1.1, connectionstyle="arc3,rad=-0.12"),
         zorder=9,
     )
-    ax1.text(
-        2100, 92,
-        f"CEIO：F≤64 仅 {ce_64_x:.0f} µs\nF=256 飙 {ce_x/1000:.1f} ms / F=1024 飙 {ce_1024_x/1000:.1f} ms",
-        fontsize=8.3, fontweight="bold", color="#6D28D9", ha="center",
-        bbox=dict(boxstyle="round,pad=0.22", facecolor="#FAF5FF", edgecolor="#C4B5FD", lw=0.8),
+    ax1.annotate(
+        f"CEIO (8 队/5 核)：F≤256 达 {ce_x:.0f} µs\nF=1,024 溢出慢道 → {ce_1024_x/1000:.1f} ms",
+        xy=(ce_1024_x * 0.88, ce_1024_y + 10), xytext=(550, 82),
+        fontsize=8.2, fontweight="bold", color="#6D28D9",
+        bbox=dict(boxstyle="round,pad=0.24", facecolor="#FAF5FF", edgecolor="#7E57C2", lw=0.85),
+        arrowprops=dict(arrowstyle="->", color="#7E57C2", lw=1.0, connectionstyle="arc3,rad=-0.10"),
         zorder=8,
     )
-
     # ------------------------------------------------------------------
     # Panel B: 16 MiB vs 64 MiB burst Healthy RPC p99 (F = 256)
     # ------------------------------------------------------------------
@@ -258,13 +254,17 @@ def main():
     p16 = patches.Patch(facecolor="#94A3B8", alpha=0.45, hatch="///", edgecolor="#1E293B", label="16 MiB 突发")
     p64 = patches.Patch(facecolor="#475569", alpha=0.95, edgecolor="#1E293B", label="64 MiB 突发")
     ax2.legend(handles=[p16, p64], loc="upper left", fontsize=8.8, frameon=True, facecolor="white", edgecolor="#CBD5E1")
-    # Place 0.00% loss badge in the wide open empty pocket over bars 1 & 2 (x = 0.44, y = 0.96)
+    # Place 0.00% loss & equal-load badge in the wide open empty pocket over bars 1..3
     ax2.text(
-        0.53, 0.96, f"场景 B 丢包率\n5 档均 {max_b_loss:.2f}%",
-        transform=ax2.transAxes, ha="center", va="top", fontsize=8.8, fontweight="bold", color="#15803D",
+        0.54, 0.96, f"场景 B 全 78 轮严格 100% 等载\n5 档丢包率均 {max_b_loss:.2f}%",
+        transform=ax2.transAxes, ha="center", va="top", fontsize=8.5, fontweight="bold", color="#15803D",
         bbox=dict(boxstyle="round,pad=0.26", facecolor="#DCFCE7", edgecolor="#16A34A", lw=0.9),
     )
-
+    ax2.text(
+        0.44, 0.72, "本方案共享 4 队 (≤32 大包)\np99 较 8 队 CEIO 高 ~20 µs\n但 p50 / p95 均更低",
+        transform=ax2.transAxes, ha="center", va="top", fontsize=7.9, color="#005B8E", fontweight="bold",
+        bbox=dict(boxstyle="round,pad=0.24", facecolor="#F0F9FF", edgecolor="#93C5FD", lw=0.8),
+    )
     for i, (v16, h16, v64, h64, arm) in enumerate(zip(b16_m, b16_hi, b64_m, b64_hi, b_order)):
         if v16 < 200 and v64 < 200:
             # Stagger tiny 100us labels cleanly so left/right bars never collide
@@ -347,13 +347,13 @@ def main():
         )
 
     fig.suptitle(
-        "图 2 · 场景 B（大象突发）：5 档同台对比健康 RPC、丢包率、DDIO 与共置 KV，唯有逐流信用环进双赢区",
-        fontsize=14.0, fontweight="bold", y=0.975, color="#0F172A",
+        "图 2 · 场景 B（大象突发）：5 档严格 100% 等载同台对决，本方案仅用 4 队/4 核稳居双赢区",
+        fontsize=13.8, fontweight="bold", y=0.975, color="#0F172A",
     )
     fig.text(
         0.5, 0.918,
-        "4 条硬件队列遭遇 16–64 MiB 线速大象突发（主机 16 Gbps 消费）+ 200 krps 健康短 RPC + 同 Socket 32 MiB KV（n = 3 中位数及极差）",
-        ha="center", va="center", fontsize=10.2, color="#475569",
+        "4 条硬件队列遭遇 16–64 MiB 线速大象突发（主机 16 Gbps 消费）+ 200 krps 健康短 RPC + 同 Socket 32 MiB KV（n = 3 中位数及极差，0.00% 丢包）",
+        ha="center", va="center", fontsize=10.0, color="#475569",
     )
     fig.legend(
         legend_handles, legend_labels,

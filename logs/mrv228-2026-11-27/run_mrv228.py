@@ -372,6 +372,7 @@ class RunSpec:
     warmup_ms: int = 250
     duration_ms: int = 1200
     tag: str = ""
+    ceio_max_fast_flows: int = 256
 
     def bp_mask(self) -> int:
         return 0xFF00 if self.arm in ("bp1_stop", "bp1_drain") else 0x0000
@@ -381,7 +382,7 @@ class RunSpec:
             return "native-bp"
         if self.arm == "large_sdp":
             return "large-sdp"
-        if self.arm == "ceio":
+        if self.arm in ("ceio", "ceio_tbl1024"):
             return "ceio"
         if self.arm == "per_flow_cr":
             return "per-flow-cr"
@@ -394,11 +395,12 @@ class RunSpec:
             "bp1_drain": "bp1-drain",
             "large_sdp": "large-sdp",
             "ceio": "ceio",
+            "ceio_tbl1024": "ceio",
             "per_flow_cr": "per-flow-cr",
         }[self.arm]
 
     def ceio_inactive_us(self) -> int:
-        if self.arm != "ceio":
+        if self.arm not in ("ceio", "ceio_tbl1024"):
             return 0
         healthy = max(1, self.total_flows - 4)
         mean_gap_us = (healthy / max(1.0, self.rpc_rate_krps)) * 1000.0
@@ -407,9 +409,9 @@ class RunSpec:
     def card_key(self) -> tuple[Any, ...]:
         if self.arm == "kv_solo":
             return ("none",)
-        sdp_tx_desc = 2048 if self.arm in ("large_sdp", "ceio") else 256
-        return (self.card_mode(), sdp_tx_desc, self.ceio_inactive_us())
-
+        sdp_tx_desc = 2048 if self.arm in ("large_sdp", "ceio", "ceio_tbl1024") else 256
+        max_ff = self.ceio_max_fast_flows if self.arm in ("ceio", "ceio_tbl1024") else 0
+        return (self.card_mode(), sdp_tx_desc, self.ceio_inactive_us(), max_ff)
     def host_key(self) -> tuple[Any, ...]:
         if self.arm == "kv_solo":
             return ("kv-solo",)
@@ -610,9 +612,13 @@ class Harness:
             return verify_sdp1_1_tm_topo(expected_tl4)
 
         self.stop_card()
-        mode, sdp_tx_desc, ceio_inact_us = ck
+        mode, sdp_tx_desc, ceio_inact_us, ceio_max_ff = ck
         lcores = "3-7" if mode == "ceio" else "3-6"
-        extra_card = f" --ceio-inactive-us {ceio_inact_us}" if mode == "ceio" else ""
+        extra_card = (
+            f" --ceio-inactive-us {ceio_inact_us} --ceio-max-fast-flows {ceio_max_ff}"
+            if mode == "ceio"
+            else ""
+        )
         log(f"Starting mrv228_card mode={mode} lcores={lcores} sdp_tx_desc={sdp_tx_desc}{extra_card}...")
         ssh_card(
             "tmux send-keys -t refl C-c 2>/dev/null || true; sleep 0.25; "
@@ -646,7 +652,7 @@ class Harness:
         # Host is stopped -> safe to configure BP CSR (with VFIO FLR if clearing!)
         gbl, bp0 = csr_set_bp(spec.bp_mask())
 
-        small_oq = spec.arm in ("bp1_stop", "bp1_drain", "per_flow_cr", "ceio")
+        small_oq = spec.arm in ("bp1_stop", "bp1_drain", "per_flow_cr", "ceio", "ceio_tbl1024")
         dev_arg = f"{SDP_HOST_BDF},rx_poll_mem=1,rx_poll_tail_off=48,ism_enable=1"
         if small_oq:
             dev_arg += ",allow_small_oq=1"
@@ -903,6 +909,7 @@ class Harness:
                 "attempt": attempt,
                 "bp_mask": f"{spec.bp_mask():#06x}",
                 "ceio_inactive_us": spec.ceio_inactive_us(),
+                "ceio_max_fast_flows": spec.ceio_max_fast_flows if spec.arm in ("ceio", "ceio_tbl1024") else 0,
                 "csr_pre": {"gbl": f"{pre_gbl:#018x}", "bp0": f"{pre_bp0:#018x}"},
                 "csr_post": {"gbl": f"{post_gbl:#018x}", "bp0": f"{post_bp0:#018x}"},
                 "tm_tl4_vals": tl4,
@@ -1046,10 +1053,30 @@ def maybe_gzip_large(path: pathlib.Path) -> None:
         log(f"Compressed {path.name} -> {gz.name} ({gz.stat().st_size / (1024*1024):.2f} MiB)")
 
 
+def build_ceio_bugfix_specs() -> list[RunSpec]:
+    """Build ONLY the 11 standard CEIO specs (max_fast_flows=256) + 1 B1_F1024_b64m (max_fast_flows=1024)."""
+    specs = [s for s in build_specs(smoke=False) if s.arm == "ceio"]
+    specs.append(
+        RunSpec(
+            part="B1_CEIO_TBL1024",
+            arm="ceio_tbl1024",
+            scenario="burst",
+            total_flows=1024,
+            bulk_rate_gbps=16.0,
+            burst_mib=64,
+            burst_period_ms=60,
+            tag="B1_F1024_b64m_tbl1024",
+            ceio_max_fast_flows=1024,
+        )
+    )
+    return specs
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--deploy", action="store_true")
     ap.add_argument("--smoke", action="store_true")
+    ap.add_argument("--ceio-bugfix-rerun", action="store_true", help="Surgical rerun of ONLY 33 ceio + 3 B1_F1024 tbl1024 runs")
     ap.add_argument("--reps", type=int, default=3)
     ap.add_argument("--resume", action="store_true")
     ap.add_argument("--no-restore", action="store_true", help="Skip 21s restore (only when chaining immediately)")
@@ -1058,6 +1085,7 @@ def main() -> None:
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     numactl = resolve_numactl()
 
+    prior_env_doc = json.loads(ENV_PATH.read_text()) if (args.ceio_bugfix_rerun and ENV_PATH.exists()) else None
     pre_env = read_env_snapshot()
     orig_csrs = pre_env["cn106"]["csrs"]
     log(f"Pre-run 6 safe SDP CSRs: {json.dumps(orig_csrs)}")
@@ -1065,9 +1093,17 @@ def main() -> None:
         raise RuntimeError(f"Unexpected pre-run CSR state: {orig_csrs}")
 
     h = Harness(numactl)
-    out_path = SMOKE_PATH if args.smoke else RUNS_PATH
-    specs = build_specs(smoke=args.smoke)
-    reps = 1 if args.smoke else args.reps
+    ceio_staging = LOG_DIR / "ceio_bugfix_staging.jsonl"
+    if args.ceio_bugfix_rerun:
+        out_path = ceio_staging
+        if not args.resume and ceio_staging.exists():
+            ceio_staging.unlink()
+        specs = build_ceio_bugfix_specs()
+        reps = args.reps
+    else:
+        out_path = SMOKE_PATH if args.smoke else RUNS_PATH
+        specs = build_specs(smoke=args.smoke)
+        reps = 1 if args.smoke else args.reps
 
     done_keys: set[tuple[int, str, str]] = set()
     if args.resume and out_path.exists():
@@ -1078,29 +1114,32 @@ def main() -> None:
             done_keys.add((r["rep"], r["tag"], r["arm"]))
         log(f"Resume mode: {len(done_keys)} completed runs found in {out_path.name}")
 
+    rerun_completed = False
     try:
         if args.deploy:
             h.deploy()
 
         # Interleaved by rep (rep 0 -> rep 1 -> rep 2), rotating arm order per rep to eliminate order bias
         arm_orders = [
-            ("kv_solo", "bp1_stop", "bp1_drain", "large_sdp", "ceio", "per_flow_cr"),
-            ("kv_solo", "per_flow_cr", "ceio", "large_sdp", "bp1_drain", "bp1_stop"),
-            ("kv_solo", "ceio", "per_flow_cr", "bp1_stop", "bp1_drain", "large_sdp"),
+            ("kv_solo", "bp1_stop", "bp1_drain", "large_sdp", "ceio", "ceio_tbl1024", "per_flow_cr"),
+            ("kv_solo", "per_flow_cr", "ceio_tbl1024", "ceio", "large_sdp", "bp1_drain", "bp1_stop"),
+            ("kv_solo", "ceio", "ceio_tbl1024", "per_flow_cr", "bp1_stop", "bp1_drain", "large_sdp"),
         ]
 
         total_planned = len(specs) * reps
-        log(f"Starting {'SMOKE' if args.smoke else 'CAMPAIGN'}: {len(specs)} specs x {reps} reps = {total_planned} runs")
+        mode_label = "CEIO_BUGFIX_RERUN" if args.ceio_bugfix_rerun else ("SMOKE" if args.smoke else "CAMPAIGN")
+        log(f"Starting {mode_label}: {len(specs)} specs x {reps} reps = {total_planned} runs")
         for rep in range(reps):
             order = arm_orders[rep % len(arm_orders)]
             order_idx = {a: i for i, a in enumerate(order)}
-            # Group by arm within each rep so card/host only restart once per arm per rep!
+            # Group by arm/card_key within each rep so card/host only restart when needed!
             ordered = sorted(specs, key=lambda s: (order_idx[s.arm], s.card_key(), s.host_key(), s.total_flows, s.tag))
             for sp in ordered:
                 if (rep, sp.tag, sp.arm) in done_keys:
                     continue
-                keep_ts = (rep == 0 and sp.tag in ("A1_F256_s4ms", "B1_F256_b64m"))
+                keep_ts = (rep == 0 and sp.tag in ("A1_F256_s4ms", "B1_F256_b64m", "B1_F1024_b64m_tbl1024"))
                 h.run_one(sp, rep, out_path, keep_ts=keep_ts)
+        rerun_completed = True
     finally:
         if not args.no_restore:
             rest = h.restore_baseline(orig_csrs)
@@ -1137,9 +1176,9 @@ def main() -> None:
                 and post_env["cn106"]["HP_M228"] == 0
             )
             saturn_hp_clean_ok = post_env["saturn"]["hugepages_m228_leftover"] == 0
-            env_doc = {
+            env_doc: dict[str, Any] = {
                 "issue": "MRV-228",
-                "mode": "smoke" if args.smoke else "full",
+                "mode": "ceio_bugfix_rerun_33_plus_3" if args.ceio_bugfix_rerun else ("smoke" if args.smoke else "full"),
                 "baseline_restored_ok": bool(
                     rest["csrs_restored_exact"]
                     and edac_ok
@@ -1159,16 +1198,43 @@ def main() -> None:
                 "pre_run": pre_env,
                 "post_restore_21s": post_env,
             }
+            if prior_env_doc is not None:
+                prior_keep = {k: v for k, v in prior_env_doc.items() if k != "initial_168_run_audit"}
+                env_doc["initial_168_run_audit"] = prior_keep
             ENV_PATH.write_text(json.dumps(env_doc, indent=2) + "\n")
             log(
                 f"Restore audit written to {ENV_PATH}: baseline_restored_ok={env_doc['baseline_restored_ok']} "
                 f"csrs_exact={rest['csrs_restored_exact']} edac_zero_delta={edac_ok} "
                 f"uncore_2200={uncore_2200_ok} cpu40_3900={cpu40_3900_ok} merc_clean={mercury_clean_ok}"
             )
+            if args.ceio_bugfix_rerun and rerun_completed and ceio_staging.exists():
+                # Merge untouched 135 non-ceio lines + 36 refreshed ceio lines transparently!
+                orig_lines = [l for l in RUNS_PATH.read_text().splitlines() if l.strip()]
+                untouched_lines = []
+                superseded_ceio = []
+                for l in orig_lines:
+                    r = json.loads(l)
+                    if r["arm"] in ("ceio", "ceio_tbl1024"):
+                        superseded_ceio.append(l)
+                    else:
+                        untouched_lines.append(l)
+                refreshed_lines = [l for l in ceio_staging.read_text().splitlines() if l.strip()]
+                if len(untouched_lines) != 135 or len(refreshed_lines) != 36:
+                    raise RuntimeError(
+                        f"Unexpected merge counts: untouched={len(untouched_lines)} (want 135), refreshed={len(refreshed_lines)} (want 36)"
+                    )
+                sup_path = LOG_DIR / "ceio_pre_fix_superseded.jsonl"
+                if superseded_ceio and not sup_path.exists():
+                    sup_path.write_text("\n".join(superseded_ceio) + "\n")
+                RUNS_PATH.write_text("\n".join(untouched_lines + refreshed_lines) + "\n")
+                ceio_staging.unlink()
+                log(
+                    f"Merged runs.jsonl transparently: {len(untouched_lines)} untouched non-ceio + "
+                    f"{len(refreshed_lines)} refreshed ceio (33+3) = {len(untouched_lines) + len(refreshed_lines)} runs; "
+                    f"archived {len(superseded_ceio)} pre-fix ceio lines to {sup_path.name}"
+                )
             if not args.smoke:
                 maybe_gzip_large(RUNS_PATH)
                 maybe_gzip_large(ATTEMPTS_PATH)
-
-
 if __name__ == "__main__":
     main()

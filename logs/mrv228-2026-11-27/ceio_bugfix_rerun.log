@@ -1,0 +1,95 @@
+[2026-11-27T03:55:15Z] Pre-run 6 safe SDP CSRs: {"SDPX_EPFX_RINFO(0)": "0x0008000800000008", "SDPX_MACX_PF_RING_CTL(0)": "0x0000000000080001", "SDPX_LINK_CFG": "0x0000000000070080", "SDPX_GBL_CONTROL": "0x0000000000000004", "SDPX_OUT_BP_ENX_W1S(0)": "0x0000000000000000", "SDPX_OUT_BP_ENX_W1S(1)": "0x0000000000000000"}
+[2026-11-27T03:55:15Z] Deploying mrv228_card to CN106 and building mrv228_client on mercury...
+[2026-11-27T03:55:18Z] Deploy complete.
+[2026-11-27T03:55:18Z] Starting CEIO_BUGFIX_RERUN: 12 specs x 3 reps = 36 runs
+[2026-11-27T03:55:18Z] Starting mrv228_card mode=ceio lcores=3-7 sdp_tx_desc=2048 --ceio-inactive-us 10000 --ceio-max-fast-flows 256...
+[2026-11-27T03:55:21Z] Starting mrv228_host mode=ceio bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T03:55:24Z]   [PASS] B1_F16_b64m        ceio        rep=0 | RPC p50/p99=  13.5/   78.8us (SLO100= 99.4%, gap=   346us) | DDIO= 99.5% IMC=0.12GB/s KV_p99= 53.0ns | bp_stalls=0 h_stage_pk=588 pf_q_pk=0 slow=83.8%
+[2026-11-27T03:55:28Z]   [PASS] B1_F64_b64m        ceio        rep=0 | RPC p50/p99=  13.2/   77.7us (SLO100= 99.4%, gap=   769us) | DDIO= 99.8% IMC=0.11GB/s KV_p99= 33.0ns | bp_stalls=0 h_stage_pk=547 pf_q_pk=0 slow=84.2%
+[2026-11-27T03:55:28Z] Starting mrv228_host mode=ceio bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T03:55:32Z]   [RETRY] A1_F16_s4ms ceio rep=0 attempt=1: ['pf cpu40=26 kv=0']
+[2026-11-27T03:55:35Z]   [PASS] A1_F16_s4ms        ceio        rep=0 | RPC p50/p99=  39.1/   65.7us (SLO100= 99.8%, gap=   235us) | DDIO=100.0% IMC=0.14GB/s KV_p99= 69.0ns | bp_stalls=0 h_stage_pk=512 pf_q_pk=0 slow=96.3%
+[2026-11-27T03:55:38Z]   [PASS] A1_F64_s4ms        ceio        rep=0 | RPC p50/p99=  39.4/   66.3us (SLO100= 99.8%, gap=   305us) | DDIO= 99.9% IMC=0.16GB/s KV_p99= 93.0ns | bp_stalls=0 h_stage_pk=512 pf_q_pk=0 slow=96.3%
+[2026-11-27T03:55:39Z] Starting mrv228_card mode=ceio lcores=3-7 sdp_tx_desc=2048 --ceio-inactive-us 10080 --ceio-max-fast-flows 256...
+[2026-11-27T03:55:41Z] Starting mrv228_host mode=ceio bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T03:55:45Z]   [PASS] B1_F256_b64m       ceio        rep=0 | RPC p50/p99=  13.2/   77.0us (SLO100= 99.4%, gap=   772us) | DDIO= 99.9% IMC=0.10GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=483 pf_q_pk=0 slow=84.3%
+[2026-11-27T03:55:48Z]   [PASS] B2_F256_b16m       ceio        rep=0 | RPC p50/p99=  12.6/   84.0us (SLO100= 99.4%, gap=   793us) | DDIO= 99.5% IMC=0.11GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=527 pf_q_pk=0 slow=75.9%
+[2026-11-27T03:55:48Z] Starting mrv228_host mode=ceio bp=0x0000 stall=1/20 bulk_rate=0.0
+[2026-11-27T03:55:52Z]   [RETRY] A2_F256_s1ms ceio rep=0 attempt=1: ['pf cpu40=4 kv=0']
+[2026-11-27T03:55:55Z]   [PASS] A2_F256_s1ms       ceio        rep=0 | RPC p50/p99=  38.4/   67.7us (SLO100= 99.8%, gap=   774us) | DDIO=100.0% IMC=0.11GB/s KV_p99= 63.0ns | bp_stalls=0 h_stage_pk=512 pf_q_pk=0 slow=96.3%
+[2026-11-27T03:55:56Z] Starting mrv228_host mode=ceio bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T03:55:59Z]   [RETRY] A1_F256_s4ms ceio rep=0 attempt=1: ['pf cpu40=11 kv=0']
+[2026-11-27T03:56:02Z]   [PASS] A1_F256_s4ms       ceio        rep=0 | RPC p50/p99=  39.0/   65.2us (SLO100= 99.8%, gap=   271us) | DDIO=100.0% IMC=0.13GB/s KV_p99= 63.0ns | bp_stalls=0 h_stage_pk=512 pf_q_pk=0 slow=96.3%
+[2026-11-27T03:56:03Z] Starting mrv228_host mode=ceio bp=0x0000 stall=10/60 bulk_rate=0.0
+[2026-11-27T03:56:06Z]   [RETRY] A2_F256_s10ms ceio rep=0 attempt=1: ['pf cpu40=32 kv=0']
+[2026-11-27T03:56:09Z]   [PASS] A2_F256_s10ms      ceio        rep=0 | RPC p50/p99=  40.9/   68.5us (SLO100= 99.8%, gap=   774us) | DDIO=100.0% IMC=0.10GB/s KV_p99= 59.0ns | bp_stalls=0 h_stage_pk=512 pf_q_pk=0 slow=96.4%
+[2026-11-27T03:56:10Z] Starting mrv228_card mode=ceio lcores=3-7 sdp_tx_desc=2048 --ceio-inactive-us 40800 --ceio-max-fast-flows 256...
+[2026-11-27T03:56:12Z] Starting mrv228_host mode=ceio bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T03:56:16Z]   [PASS] B1_F1024_b64m      ceio        rep=0 | RPC p50/p99=  22.6/24500.0us (SLO100= 53.7%, gap=  3534us) | DDIO= 99.9% IMC=0.15GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=472 pf_q_pk=0 slow=96.1%
+[2026-11-27T03:56:17Z] Starting mrv228_host mode=ceio bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T03:56:20Z]   [PASS] A1_F1024_s4ms      ceio        rep=0 | RPC p50/p99=  44.5/ 3935.0us (SLO100= 61.5%, gap=  4008us) | DDIO=100.0% IMC=0.11GB/s KV_p99= 59.0ns | bp_stalls=0 h_stage_pk=511 pf_q_pk=0 slow=99.0%
+[2026-11-27T03:56:21Z] Starting mrv228_card mode=ceio lcores=3-7 sdp_tx_desc=2048 --ceio-inactive-us 40800 --ceio-max-fast-flows 1024...
+[2026-11-27T03:56:23Z] Starting mrv228_host mode=ceio bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T03:56:27Z]   [PASS] B1_F1024_b64m_tbl1024 ceio_tbl1024 rep=0 | RPC p50/p99=  13.2/   76.8us (SLO100= 99.4%, gap=   309us) | DDIO= 99.9% IMC=0.11GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=479 pf_q_pk=0 slow=84.3%
+[2026-11-27T03:56:30Z]   [PASS] B1_F1024_b64m_tbl1024 ceio_tbl1024 rep=1 | RPC p50/p99=  13.3/   77.5us (SLO100= 99.4%, gap=   761us) | DDIO= 99.9% IMC=0.11GB/s KV_p99= 43.0ns | bp_stalls=0 h_stage_pk=479 pf_q_pk=0 slow=84.3%
+[2026-11-27T03:56:31Z] Starting mrv228_card mode=ceio lcores=3-7 sdp_tx_desc=2048 --ceio-inactive-us 10000 --ceio-max-fast-flows 256...
+[2026-11-27T03:56:32Z] Starting mrv228_host mode=ceio bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T03:56:36Z]   [PASS] B1_F16_b64m        ceio        rep=1 | RPC p50/p99=  13.2/   76.5us (SLO100= 99.4%, gap=   758us) | DDIO= 99.4% IMC=0.15GB/s KV_p99= 45.0ns | bp_stalls=0 h_stage_pk=638 pf_q_pk=0 slow=83.8%
+[2026-11-27T03:56:39Z]   [PASS] B1_F64_b64m        ceio        rep=1 | RPC p50/p99=  13.2/   77.7us (SLO100= 99.4%, gap=   744us) | DDIO= 99.8% IMC=0.14GB/s KV_p99= 43.0ns | bp_stalls=0 h_stage_pk=490 pf_q_pk=0 slow=84.1%
+[2026-11-27T03:56:40Z] Starting mrv228_host mode=ceio bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T03:56:43Z]   [PASS] A1_F16_s4ms        ceio        rep=1 | RPC p50/p99=  38.9/   64.7us (SLO100= 99.8%, gap=   269us) | DDIO= 99.9% IMC=0.15GB/s KV_p99= 91.0ns | bp_stalls=0 h_stage_pk=609 pf_q_pk=0 slow=95.6%
+[2026-11-27T03:56:47Z]   [PASS] A1_F64_s4ms        ceio        rep=1 | RPC p50/p99=  38.9/   65.0us (SLO100= 99.8%, gap=   732us) | DDIO=100.0% IMC=0.14GB/s KV_p99= 65.0ns | bp_stalls=0 h_stage_pk=512 pf_q_pk=0 slow=96.3%
+[2026-11-27T03:56:47Z] Starting mrv228_card mode=ceio lcores=3-7 sdp_tx_desc=2048 --ceio-inactive-us 10080 --ceio-max-fast-flows 256...
+[2026-11-27T03:56:49Z] Starting mrv228_host mode=ceio bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T03:56:53Z]   [PASS] B1_F256_b64m       ceio        rep=1 | RPC p50/p99=  13.3/   79.0us (SLO100= 99.4%, gap=   256us) | DDIO= 99.9% IMC=0.11GB/s KV_p99= 43.0ns | bp_stalls=0 h_stage_pk=475 pf_q_pk=0 slow=84.3%
+[2026-11-27T03:56:56Z]   [RETRY] B2_F256_b16m ceio rep=1 attempt=1: ['pf cpu40=1 kv=0']
+[2026-11-27T03:56:59Z]   [PASS] B2_F256_b16m       ceio        rep=1 | RPC p50/p99=  12.6/   85.5us (SLO100= 99.3%, gap=   767us) | DDIO= 99.6% IMC=0.12GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=484 pf_q_pk=0 slow=75.8%
+[2026-11-27T03:57:00Z] Starting mrv228_host mode=ceio bp=0x0000 stall=1/20 bulk_rate=0.0
+[2026-11-27T03:57:03Z]   [RETRY] A2_F256_s1ms ceio rep=1 attempt=1: ['pf cpu40=4 kv=0']
+[2026-11-27T03:57:07Z]   [PASS] A2_F256_s1ms       ceio        rep=1 | RPC p50/p99=  38.5/   68.2us (SLO100= 99.8%, gap=   763us) | DDIO=100.0% IMC=0.13GB/s KV_p99= 65.0ns | bp_stalls=0 h_stage_pk=915 pf_q_pk=0 slow=96.3%
+[2026-11-27T03:57:07Z] Starting mrv228_host mode=ceio bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T03:57:11Z]   [RETRY] A1_F256_s4ms ceio rep=1 attempt=1: ['pf cpu40=27 kv=0']
+[2026-11-27T03:57:14Z]   [PASS] A1_F256_s4ms       ceio        rep=1 | RPC p50/p99=  39.2/   65.8us (SLO100= 99.8%, gap=   751us) | DDIO=100.0% IMC=0.12GB/s KV_p99= 69.0ns | bp_stalls=0 h_stage_pk=512 pf_q_pk=0 slow=96.3%
+[2026-11-27T03:57:14Z] Starting mrv228_host mode=ceio bp=0x0000 stall=10/60 bulk_rate=0.0
+[2026-11-27T03:57:18Z]   [RETRY] A2_F256_s10ms ceio rep=1 attempt=1: ['pf cpu40=32 kv=0']
+[2026-11-27T03:57:22Z]   [PASS] A2_F256_s10ms      ceio        rep=1 | RPC p50/p99=  40.9/   68.5us (SLO100= 99.7%, gap=   249us) | DDIO=100.0% IMC=0.11GB/s KV_p99= 61.0ns | bp_stalls=0 h_stage_pk=512 pf_q_pk=0 slow=96.4%
+[2026-11-27T03:57:22Z] Starting mrv228_card mode=ceio lcores=3-7 sdp_tx_desc=2048 --ceio-inactive-us 40800 --ceio-max-fast-flows 256...
+[2026-11-27T03:57:24Z] Starting mrv228_host mode=ceio bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T03:57:28Z]   [PASS] B1_F1024_b64m      ceio        rep=1 | RPC p50/p99=  22.9/24500.0us (SLO100= 53.3%, gap=  3757us) | DDIO= 99.8% IMC=0.22GB/s KV_p99= 99.0ns | bp_stalls=0 h_stage_pk=473 pf_q_pk=0 slow=96.1%
+[2026-11-27T03:57:28Z] Starting mrv228_host mode=ceio bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T03:57:32Z]   [PASS] A1_F1024_s4ms      ceio        rep=1 | RPC p50/p99=  44.0/ 3925.0us (SLO100= 62.1%, gap=  4019us) | DDIO= 99.9% IMC=0.12GB/s KV_p99= 61.0ns | bp_stalls=0 h_stage_pk=511 pf_q_pk=0 slow=99.0%
+[2026-11-27T03:57:33Z] Starting mrv228_card mode=ceio lcores=3-7 sdp_tx_desc=2048 --ceio-inactive-us 10000 --ceio-max-fast-flows 256...
+[2026-11-27T03:57:35Z] Starting mrv228_host mode=ceio bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T03:57:38Z]   [PASS] B1_F16_b64m        ceio        rep=2 | RPC p50/p99=  13.3/   78.0us (SLO100= 99.4%, gap=   732us) | DDIO= 99.4% IMC=0.19GB/s KV_p99= 93.0ns | bp_stalls=0 h_stage_pk=681 pf_q_pk=0 slow=83.8%
+[2026-11-27T03:57:41Z]   [PASS] B1_F64_b64m        ceio        rep=2 | RPC p50/p99=  13.2/   79.0us (SLO100= 99.4%, gap=   737us) | DDIO= 99.8% IMC=0.13GB/s KV_p99= 43.0ns | bp_stalls=0 h_stage_pk=471 pf_q_pk=0 slow=84.2%
+[2026-11-27T03:57:42Z] Starting mrv228_host mode=ceio bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T03:57:46Z]   [RETRY] A1_F16_s4ms ceio rep=2 attempt=1: ['pf cpu40=27 kv=0']
+[2026-11-27T03:57:49Z]   [PASS] A1_F16_s4ms        ceio        rep=2 | RPC p50/p99=  38.9/   65.2us (SLO100= 99.8%, gap=   248us) | DDIO= 99.9% IMC=0.13GB/s KV_p99= 95.0ns | bp_stalls=0 h_stage_pk=610 pf_q_pk=0 slow=95.4%
+[2026-11-27T03:57:52Z]   [PASS] A1_F64_s4ms        ceio        rep=2 | RPC p50/p99=  38.9/   64.7us (SLO100= 99.8%, gap=   293us) | DDIO= 99.9% IMC=0.13GB/s KV_p99= 65.0ns | bp_stalls=0 h_stage_pk=512 pf_q_pk=0 slow=96.3%
+[2026-11-27T03:57:53Z] Starting mrv228_card mode=ceio lcores=3-7 sdp_tx_desc=2048 --ceio-inactive-us 10080 --ceio-max-fast-flows 256...
+[2026-11-27T03:57:54Z] Starting mrv228_host mode=ceio bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T03:57:58Z]   [PASS] B1_F256_b64m       ceio        rep=2 | RPC p50/p99=  13.3/   77.3us (SLO100= 99.4%, gap=   254us) | DDIO= 99.9% IMC=0.12GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=522 pf_q_pk=0 slow=84.3%
+[2026-11-27T03:58:01Z]   [RETRY] B2_F256_b16m ceio rep=2 attempt=1: ['cpu_ghz=3.846']
+[2026-11-27T03:58:04Z]   [PASS] B2_F256_b16m       ceio        rep=2 | RPC p50/p99=  12.6/   84.0us (SLO100= 99.4%, gap=   758us) | DDIO= 99.5% IMC=0.10GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=474 pf_q_pk=0 slow=75.9%
+[2026-11-27T03:58:05Z] Starting mrv228_host mode=ceio bp=0x0000 stall=1/20 bulk_rate=0.0
+[2026-11-27T03:58:08Z]   [RETRY] A2_F256_s1ms ceio rep=2 attempt=1: ['pf cpu40=8 kv=0']
+[2026-11-27T03:58:12Z]   [PASS] A2_F256_s1ms       ceio        rep=2 | RPC p50/p99=  39.0/   68.5us (SLO100= 99.8%, gap=   741us) | DDIO= 99.9% IMC=0.13GB/s KV_p99= 73.0ns | bp_stalls=0 h_stage_pk=512 pf_q_pk=0 slow=96.3%
+[2026-11-27T03:58:12Z] Starting mrv228_host mode=ceio bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T03:58:16Z]   [RETRY] A1_F256_s4ms ceio rep=2 attempt=1: ['pf cpu40=25 kv=0']
+[2026-11-27T03:58:19Z]   [PASS] A1_F256_s4ms       ceio        rep=2 | RPC p50/p99=  39.4/   65.8us (SLO100= 99.8%, gap=   758us) | DDIO=100.0% IMC=0.11GB/s KV_p99= 63.0ns | bp_stalls=0 h_stage_pk=512 pf_q_pk=0 slow=96.3%
+[2026-11-27T03:58:20Z] Starting mrv228_host mode=ceio bp=0x0000 stall=10/60 bulk_rate=0.0
+[2026-11-27T03:58:23Z]   [RETRY] A2_F256_s10ms ceio rep=2 attempt=1: ['pf cpu40=28 kv=0']
+[2026-11-27T03:58:26Z]   [PASS] A2_F256_s10ms      ceio        rep=2 | RPC p50/p99=  41.2/   68.8us (SLO100= 99.7%, gap=   269us) | DDIO=100.0% IMC=0.13GB/s KV_p99= 63.0ns | bp_stalls=0 h_stage_pk=630 pf_q_pk=0 slow=96.4%
+[2026-11-27T03:58:27Z] Starting mrv228_card mode=ceio lcores=3-7 sdp_tx_desc=2048 --ceio-inactive-us 40800 --ceio-max-fast-flows 256...
+[2026-11-27T03:58:29Z] Starting mrv228_host mode=ceio bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T03:58:33Z]   [PASS] B1_F1024_b64m      ceio        rep=2 | RPC p50/p99=  22.6/24500.0us (SLO100= 53.5%, gap=  3980us) | DDIO= 99.9% IMC=0.12GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=474 pf_q_pk=0 slow=96.1%
+[2026-11-27T03:58:33Z] Starting mrv228_host mode=ceio bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T03:58:37Z]   [RETRY] A1_F1024_s4ms ceio rep=2 attempt=1: ['pf cpu40=2 kv=0']
+[2026-11-27T03:58:40Z]   [PASS] A1_F1024_s4ms      ceio        rep=2 | RPC p50/p99=  44.6/ 3935.0us (SLO100= 61.8%, gap=  4013us) | DDIO= 99.9% IMC=0.12GB/s KV_p99= 65.0ns | bp_stalls=0 h_stage_pk=510 pf_q_pk=0 slow=99.0%
+[2026-11-27T03:58:41Z] Starting mrv228_card mode=ceio lcores=3-7 sdp_tx_desc=2048 --ceio-inactive-us 40800 --ceio-max-fast-flows 1024...
+[2026-11-27T03:58:43Z] Starting mrv228_host mode=ceio bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T03:58:46Z]   [PASS] B1_F1024_b64m_tbl1024 ceio_tbl1024 rep=2 | RPC p50/p99=  13.2/   76.0us (SLO100= 99.4%, gap=   762us) | DDIO= 99.9% IMC=0.11GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=479 pf_q_pk=0 slow=84.3%
+[2026-11-27T03:58:46Z] Restoring all 3 nodes to exact clean baseline...
+[2026-11-27T03:58:51Z] Waiting 21 s for post-restore EDAC / PCIe AER audit...
+[2026-11-27T03:59:13Z] Restore audit written to /home/hongtao/dev/marvell-mrv228/logs/mrv228-2026-11-27/env.json: baseline_restored_ok=True csrs_exact=True edac_zero_delta=True uncore_2200=True cpu40_3900=True merc_clean=True
+[2026-11-27T03:59:13Z] Merged runs.jsonl transparently: 135 untouched non-ceio + 36 refreshed ceio (33+3) = 171 runs; archived 33 pre-fix ceio lines to ceio_pre_fix_superseded.jsonl
