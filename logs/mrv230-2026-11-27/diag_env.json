@@ -1,0 +1,181 @@
+{
+  "issue": "MRV-230-diag",
+  "code_commit": "vkmlrxsmqwtr 3db24dea09bd MRV-230 (Intel DSA portal backpressure): add pure-host Socket-1 mrv230_host benchmark and mrv230_dsa helper with non-multiplexed CHA/IMC/M2PCIe0/IRP0/IIO0/DSA2 PMU",
+  "duration_ms": 1000,
+  "warmup_ms": 400,
+  "reps": 3,
+  "unique_arms": 15,
+  "planned_runs": 45,
+  "completed_runs": 45,
+  "elapsed_s": 110.48,
+  "settle_s": 21,
+  "pre_host": {
+    "utc": "2026-11-27T07:26:20Z",
+    "cpu40_gov": "performance",
+    "cpu40_cur_khz": "3900000",
+    "cpu40_max_khz": "3900000",
+    "uncore_khz": {
+      "package_00_die_00": {
+        "cur": "2200000",
+        "min": "2200000",
+        "max": "2200000"
+      },
+      "package_01_die_01": {
+        "cur": "2200000",
+        "min": "2200000",
+        "max": "2200000"
+      }
+    },
+    "perf_event_paranoid": "0",
+    "node1_free_hugepages_2m": "2047",
+    "host_edac_ce": {
+      "mc0": 0,
+      "mc1": 0,
+      "mc2": 0,
+      "mc3": 0,
+      "mc4": 0,
+      "mc5": 0,
+      "mc6": 0,
+      "mc7": 0
+    },
+    "host_edac_ue": {
+      "mc0": 0,
+      "mc1": 0,
+      "mc2": 0,
+      "mc3": 0,
+      "mc4": 0,
+      "mc5": 0,
+      "mc6": 0,
+      "mc7": 0
+    },
+    "dsa2_aer": {
+      "aer_dev_correctable": {
+        "TOTAL_ERR_COR": 0
+      },
+      "aer_dev_nonfatal": {
+        "TOTAL_ERR_NONFATAL": 0
+      },
+      "aer_dev_fatal": {
+        "TOTAL_ERR_FATAL": 0
+      }
+    },
+    "dsa2": {
+      "state": "enabled",
+      "errors": "00000000,00000000,00000000,00000000,00000000,00000000,00000003,00005308",
+      "wq2_0_mode": "dedicated",
+      "wq2_0_size": "128",
+      "wq2_0_group": "0",
+      "wq2_0_bof": "0",
+      "engine_groups": {
+        "engine2.0": "0",
+        "engine2.1": "-1",
+        "engine2.2": "-1",
+        "engine2.3": "-1"
+      }
+    },
+    "host_bin_sha256": "554c6ec2cb8b5538e52868cb5b227153a25f0d503fa85763408a18919c16abfb"
+  },
+  "post_host": {
+    "utc": "2026-11-27T07:28:11Z",
+    "cpu40_gov": "performance",
+    "cpu40_cur_khz": "3900000",
+    "cpu40_max_khz": "3900000",
+    "uncore_khz": {
+      "package_00_die_00": {
+        "cur": "2200000",
+        "min": "2200000",
+        "max": "2200000"
+      },
+      "package_01_die_01": {
+        "cur": "2200000",
+        "min": "2200000",
+        "max": "2200000"
+      }
+    },
+    "perf_event_paranoid": "0",
+    "node1_free_hugepages_2m": "2047",
+    "host_edac_ce": {
+      "mc0": 0,
+      "mc1": 0,
+      "mc2": 0,
+      "mc3": 0,
+      "mc4": 0,
+      "mc5": 0,
+      "mc6": 0,
+      "mc7": 0
+    },
+    "host_edac_ue": {
+      "mc0": 0,
+      "mc1": 0,
+      "mc2": 0,
+      "mc3": 0,
+      "mc4": 0,
+      "mc5": 0,
+      "mc6": 0,
+      "mc7": 0
+    },
+    "dsa2_aer": {
+      "aer_dev_correctable": {
+        "TOTAL_ERR_COR": 0
+      },
+      "aer_dev_nonfatal": {
+        "TOTAL_ERR_NONFATAL": 0
+      },
+      "aer_dev_fatal": {
+        "TOTAL_ERR_FATAL": 0
+      }
+    },
+    "dsa2": {
+      "state": "enabled",
+      "errors": "00000000,00000000,00000000,00000000,00000000,00000000,00000003,00005308",
+      "wq2_0_mode": "dedicated",
+      "wq2_0_size": "128",
+      "wq2_0_group": "0",
+      "wq2_0_bof": "0",
+      "engine_groups": {
+        "engine2.0": "0",
+        "engine2.1": "-1",
+        "engine2.2": "-1",
+        "engine2.3": "-1"
+      }
+    },
+    "host_bin_sha256": "554c6ec2cb8b5538e52868cb5b227153a25f0d503fa85763408a18919c16abfb"
+  },
+  "audit": {
+    "audit_pass": true,
+    "reasons": [],
+    "edac_ce_delta": {
+      "mc0": 0,
+      "mc1": 0,
+      "mc2": 0,
+      "mc3": 0,
+      "mc4": 0,
+      "mc5": 0,
+      "mc6": 0,
+      "mc7": 0
+    },
+    "edac_ue_delta": {
+      "mc0": 0,
+      "mc1": 0,
+      "mc2": 0,
+      "mc3": 0,
+      "mc4": 0,
+      "mc5": 0,
+      "mc6": 0,
+      "mc7": 0
+    },
+    "dsa2_aer_delta": {
+      "aer_dev_correctable": {
+        "TOTAL_ERR_COR": 0
+      },
+      "aer_dev_nonfatal": {
+        "TOTAL_ERR_NONFATAL": 0
+      },
+      "aer_dev_fatal": {
+        "TOTAL_ERR_FATAL": 0
+      }
+    },
+    "uncore_pkg1_ok": true,
+    "cpu40_ok": true
+  }
+}
