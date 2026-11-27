@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" width="960" height="460">
+  <defs>
+    <marker id="arr-grey" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#4B5563"/>
+    </marker>
+    <marker id="arr-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#DC2626"/>
+    </marker>
+    <style>
+      text { font-family: "DejaVu Sans", "Droid Sans Fallback", sans-serif; }
+      .title { font-size: 17px; font-weight: 700; fill: #111827; }
+      .sec { font-size: 13px; font-weight: 700; fill: #374151; }
+      .sec-red { font-size: 13px; font-weight: 700; fill: #B91C1C; }
+      .box-lbl { font-size: 12.5px; font-weight: 600; fill: #1F2937; }
+      .sub { font-size: 11px; fill: #4B5563; }
+      .sub-red { font-size: 11px; font-weight: 600; fill: #B91C1C; }
+      .bignum-ok { font-size: 26px; font-weight: 800; fill: #1F2937; }
+      .bignum-red { font-size: 26px; font-weight: 800; fill: #DC2626; }
+      .tag { font-size: 11px; font-weight: 700; fill: #374151; }
+      .tag-red { font-size: 11px; font-weight: 700; fill: #DC2626; }
+    </style>
+  </defs>
+
+  <rect width="960" height="460" fill="#FFFFFF"/>
+
+  <!-- Top lane: B1 / S1 (unheld frontier) -->
+  <rect x="24" y="22" width="912" height="190" rx="10" fill="#F9FAFB" stroke="#D1D5DB" stroke-width="1.2"/>
+  <text x="44" y="50" class="sec">1. 写落地前沿未被另一核守住（B1 单核 / S1 影子守私有行）</text>
+
+  <!-- Host -->
+  <rect x="44" y="76" width="128" height="72" rx="7" fill="#FFFFFF" stroke="#6B7280" stroke-width="1.4"/>
+  <text x="108" y="106" text-anchor="middle" class="box-lbl">主机 cpu40</text>
+  <text x="108" y="126" text-anchor="middle" class="sub">MOVDIR64B (W=64)</text>
+
+  <!-- PEM0/IOBN -->
+  <rect x="228" y="76" width="144" height="72" rx="7" fill="#FFFFFF" stroke="#6B7280" stroke-width="1.4"/>
+  <text x="300" y="106" text-anchor="middle" class="box-lbl">PEM0 / IOBN</text>
+  <text x="300" y="126" text-anchor="middle" class="sub">入向写顺畅流水</text>
+
+  <!-- TAD -->
+  <rect x="428" y="76" width="144" height="72" rx="7" fill="#FFFFFF" stroke="#6B7280" stroke-width="1.4"/>
+  <text x="500" y="106" text-anchor="middle" class="box-lbl">L3 TAD / 环内存</text>
+  <text x="500" y="126" text-anchor="middle" class="sub">TAD 在途 1.05 条</text>
+
+  <!-- Ring core -->
+  <rect x="630" y="68" width="136" height="46" rx="7" fill="#F3F4F6" stroke="#6B7280" stroke-width="1.3"/>
+  <text x="698" y="88" text-anchor="middle" class="box-lbl">环核 3（批量滞后）</text>
+  <text x="698" y="104" text-anchor="middle" class="sub">f = 0.9%</text>
+
+  <!-- Shadow private -->
+  <rect x="630" y="124" width="136" height="44" rx="7" fill="#F3F4F6" stroke="#9CA3AF" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="698" y="143" text-anchor="middle" class="sub">S1 影子核 4</text>
+  <text x="698" y="158" text-anchor="middle" class="sub">私有行 (作废 0.05)</text>
+
+  <!-- Arrows top -->
+  <line x1="172" y1="112" x2="222" y2="112" stroke="#4B5563" stroke-width="2" marker-end="url(#arr-grey)"/>
+  <line x1="372" y1="112" x2="422" y2="112" stroke="#4B5563" stroke-width="2" marker-end="url(#arr-grey)"/>
+  <line x1="572" y1="92" x2="624" y2="92" stroke="#4B5563" stroke-width="1.6" marker-end="url(#arr-grey)"/>
+
+  <!-- Key number top -->
+  <text x="854" y="110" text-anchor="middle" class="bignum-ok">35.1 M/s</text>
+  <text x="854" y="133" text-anchor="middle" class="tag">S1: 35.3 M/s</text>
+  <text x="854" y="152" text-anchor="middle" class="sub">嗅探 1.1 次/条</text>
+
+  <!-- Bottom lane: Held frontier (B/A1/A2/A3/A4/S2/S3) -->
+  <rect x="24" y="232" width="912" height="206" rx="10" fill="#FEF2F2" stroke="#FCA5A5" stroke-width="1.4"/>
+  <text x="44" y="260" class="sec-red">2. 任意核在写落地前把前沿格拉入私有缓存（WC2 B/A1–A4 · S2 front+0 · S3 front+4）</text>
+
+  <!-- Host -->
+  <rect x="44" y="286" width="128" height="76" rx="7" fill="#FFFFFF" stroke="#6B7280" stroke-width="1.4"/>
+  <text x="108" y="317" text-anchor="middle" class="box-lbl">主机 cpu40</text>
+  <text x="108" y="337" text-anchor="middle" class="sub">CHA 1.3 条（空闲）</text>
+
+  <!-- PEM0/IOBN blocked -->
+  <rect x="228" y="282" width="152" height="84" rx="7" fill="#FEE2E2" stroke="#DC2626" stroke-width="2.2"/>
+  <text x="304" y="308" text-anchor="middle" class="sec-red">PEM0 / IOBN 串行</text>
+  <text x="304" y="328" text-anchor="middle" class="sub-red">按序排队 ~76–80 ns/条</text>
+  <text x="304" y="348" text-anchor="middle" class="sub">h2c = 3.7–3.8 µs</text>
+
+  <!-- TAD snooping -->
+  <rect x="434" y="286" width="138" height="76" rx="7" fill="#FFFFFF" stroke="#DC2626" stroke-width="1.6"/>
+  <text x="503" y="315" text-anchor="middle" class="box-lbl">L3 TAD 目录</text>
+  <text x="503" y="335" text-anchor="middle" class="sub-red">TAD 在途 0.11–0.27</text>
+  <text x="503" y="352" text-anchor="middle" class="sub">嗅探 2.7–4.2 次/条</text>
+
+  <!-- Cache-holding core -->
+  <rect x="630" y="282" width="138" height="84" rx="7" fill="#FFFFFF" stroke="#DC2626" stroke-width="2.0"/>
+  <text x="699" y="306" text-anchor="middle" class="sec-red">持行卡核 L1D/L2</text>
+  <text x="699" y="326" text-anchor="middle" class="sub">ldar / ldr / ldaxr+wfe</text>
+  <text x="699" y="344" text-anchor="middle" class="sub-red">L2 作废 1.7–3.1 次/条</text>
+  <text x="699" y="359" text-anchor="middle" class="sub">S2/S3 影子占 1.3–1.4</text>
+
+  <!-- Arrows bottom -->
+  <line x1="172" y1="324" x2="222" y2="324" stroke="#4B5563" stroke-width="2" marker-end="url(#arr-grey)"/>
+  <line x1="380" y1="324" x2="428" y2="324" stroke="#DC2626" stroke-width="2.2" marker-end="url(#arr-red)"/>
+  <!-- Snoop <-> Ack loop -->
+  <line x1="572" y1="310" x2="624" y2="310" stroke="#DC2626" stroke-width="2" marker-end="url(#arr-red)"/>
+  <text x="598" y="302" text-anchor="middle" class="tag-red">嗅探</text>
+  <line x1="624" y1="338" x2="578" y2="338" stroke="#DC2626" stroke-width="2" marker-end="url(#arr-red)"/>
+  <text x="598" y="354" text-anchor="middle" class="tag-red">作废回执</text>
+
+  <!-- Key number bottom -->
+  <text x="854" y="316" text-anchor="middle" class="bignum-red">12.5–13.1</text>
+  <text x="854" y="336" text-anchor="middle" class="tag-red">M/s（−64%）</text>
+  <text x="854" y="357" text-anchor="middle" class="sub">A1 13.1 · A3 12.4</text>
+  <text x="854" y="373" text-anchor="middle" class="sub">A4 11.5 · S2 12.7</text>
+
+  <!-- Minimal bottom comparison strip -->
+  <!-- Compact MRV-46 result pills (no sentences) -->
+  <rect x="44" y="384" width="112" height="34" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+  <text x="100" y="405" text-anchor="middle" class="tag">A1 去next · 13.1</text>
+  <rect x="166" y="384" width="112" height="34" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+  <text x="222" y="405" text-anchor="middle" class="tag">A2 ldr · 13.1</text>
+  <rect x="288" y="384" width="112" height="34" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+  <text x="344" y="405" text-anchor="middle" class="tag">A3 WFE · 12.4</text>
+  <rect x="410" y="384" width="116" height="34" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+  <text x="468" y="405" text-anchor="middle" class="tag">A4 CIVAC · 11.5</text>
+  <rect x="536" y="384" width="110" height="34" rx="6" fill="#FEE2E2" stroke="#FCA5A5" stroke-width="1.1"/>
+  <text x="591" y="405" text-anchor="middle" class="tag-red">S2 front · 12.7</text>
+  <rect x="656" y="384" width="112" height="34" rx="6" fill="#FEE2E2" stroke="#FCA5A5" stroke-width="1.1"/>
+  <text x="712" y="405" text-anchor="middle" class="tag-red">S3 +4格 · 12.5</text>
+</svg>
