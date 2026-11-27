@@ -1,0 +1,296 @@
+[2026-11-27T02:17:19Z] Pre-run 6 safe SDP CSRs: {"SDPX_EPFX_RINFO(0)": "0x0008000800000008", "SDPX_MACX_PF_RING_CTL(0)": "0x0000000000080001", "SDPX_LINK_CFG": "0x0000000000070080", "SDPX_GBL_CONTROL": "0x0000000000000004", "SDPX_OUT_BP_ENX_W1S(0)": "0x0000000000000000", "SDPX_OUT_BP_ENX_W1S(1)": "0x0000000000000000"}
+[2026-11-27T02:17:19Z] Deploying mrv228_card to CN106 and building mrv228_client on mercury...
+[2026-11-27T02:17:21Z] Deploy complete.
+[2026-11-27T02:17:21Z] Starting CAMPAIGN: 56 specs x 3 reps = 168 runs
+[2026-11-27T02:17:23Z]   [PASS] kv_solo rep=0: KV p50=23.0 p99=47.0 p999=91.0 ns IMC=0.11 GB/s
+[2026-11-27T02:17:24Z] Starting mrv228_card mode=native-bp lcores=3-6 sdp_tx_desc=256...
+[2026-11-27T02:17:28Z] Starting mrv228_host mode=bp1-stop bp=0xff00 stall=0/40 bulk_rate=16.0
+[2026-11-27T02:17:31Z]   [PASS] B1_F16_b64m        bp1_stop    rep=0 | RPC p50/p99=9015.0/29500.0us (SLO100= 28.4%, gap=  2563us) | DDIO=100.0% IMC=0.16GB/s KV_p99= 31.0ns | bp_stalls=2089634 h_stage_pk=248 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:17:35Z]   [PASS] B1_F64_b64m        bp1_stop    rep=0 | RPC p50/p99=8925.0/29500.0us (SLO100= 28.6%, gap=  1120us) | DDIO=100.0% IMC=0.16GB/s KV_p99= 31.0ns | bp_stalls=2084517 h_stage_pk=247 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:17:38Z]   [PASS] B1_F256_b64m       bp1_stop    rep=0 | RPC p50/p99=9005.0/29500.0us (SLO100= 28.4%, gap=  1100us) | DDIO=100.0% IMC=0.15GB/s KV_p99= 31.0ns | bp_stalls=2086642 h_stage_pk=247 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:17:41Z]   [PASS] B2_F256_b16m       bp1_stop    rep=0 | RPC p50/p99=  11.9/ 7245.0us (SLO100= 57.7%, gap=   729us) | DDIO=100.0% IMC=0.11GB/s KV_p99= 31.0ns | bp_stalls=933518 h_stage_pk=248 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:17:45Z]   [PASS] B1_F1024_b64m      bp1_stop    rep=0 | RPC p50/p99=8955.0/29500.0us (SLO100= 28.6%, gap=  1105us) | DDIO=100.0% IMC=0.13GB/s KV_p99= 31.0ns | bp_stalls=2082876 h_stage_pk=249 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:17:45Z] Starting mrv228_host mode=bp1-stop bp=0xff00 stall=1/20 bulk_rate=0.0
+[2026-11-27T02:17:49Z]   [PASS] A2_F256_s1ms       bp1_stop    rep=0 | RPC p50/p99=  22.2/ 1035.0us (SLO100= 82.4%, gap=  1217us) | DDIO=100.0% IMC=0.11GB/s KV_p99= 55.0ns | bp_stalls=70493 h_stage_pk=139 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:17:49Z] Starting mrv228_host mode=bp1-stop bp=0xff00 stall=4/40 bulk_rate=0.0
+[2026-11-27T02:17:53Z]   [PASS] A1_F16_s4ms        bp1_stop    rep=0 | RPC p50/p99=  23.6/ 3955.0us (SLO100= 64.7%, gap=  4195us) | DDIO=100.0% IMC=0.12GB/s KV_p99= 49.0ns | bp_stalls=401802 h_stage_pk=217 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:17:56Z]   [PASS] A1_F64_s4ms        bp1_stop    rep=0 | RPC p50/p99=  23.6/ 3935.0us (SLO100= 64.9%, gap=  4166us) | DDIO=100.0% IMC=0.11GB/s KV_p99= 49.0ns | bp_stalls=400719 h_stage_pk=244 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:17:59Z]   [PASS] A1_F256_s4ms       bp1_stop    rep=0 | RPC p50/p99=  23.4/ 3925.0us (SLO100= 65.8%, gap=  4328us) | DDIO=100.0% IMC=0.12GB/s KV_p99= 47.0ns | bp_stalls=389168 h_stage_pk=211 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:18:03Z]   [PASS] A1_F1024_s4ms      bp1_stop    rep=0 | RPC p50/p99=  23.6/ 3945.0us (SLO100= 64.9%, gap=  4157us) | DDIO=100.0% IMC=0.11GB/s KV_p99= 49.0ns | bp_stalls=400165 h_stage_pk=215 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:18:03Z] Starting mrv228_host mode=bp1-stop bp=0xff00 stall=10/60 bulk_rate=0.0
+[2026-11-27T02:18:07Z]   [PASS] A2_F256_s10ms      bp1_stop    rep=0 | RPC p50/p99=1525.0/ 9895.0us (SLO100= 41.9%, gap= 10176us) | DDIO=100.0% IMC=0.11GB/s KV_p99= 51.0ns | bp_stalls=657808 h_stage_pk=145 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:18:07Z] Starting mrv228_host mode=bp1-drain bp=0xff00 stall=0/40 bulk_rate=16.0
+[2026-11-27T02:18:11Z]   [PASS] B1_F16_b64m        bp1_drain   rep=0 | RPC p50/p99=  11.8/   95.3us (SLO100= 99.1%, gap=   304us) | DDIO= 63.1% IMC=2.45GB/s KV_p99=233.0ns | bp_stalls=0 h_stage_pk=43878 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:18:14Z]   [PASS] B1_F64_b64m        bp1_drain   rep=0 | RPC p50/p99=  11.8/   95.5us (SLO100= 99.1%, gap=   311us) | DDIO= 63.1% IMC=2.50GB/s KV_p99=235.0ns | bp_stalls=0 h_stage_pk=43776 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:18:17Z]   [PASS] B1_F256_b64m       bp1_drain   rep=0 | RPC p50/p99=  11.8/   95.2us (SLO100= 99.2%, gap=   795us) | DDIO= 63.3% IMC=2.54GB/s KV_p99=235.0ns | bp_stalls=0 h_stage_pk=43845 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:18:21Z]   [PASS] B2_F256_b16m       bp1_drain   rep=0 | RPC p50/p99=  11.2/  102.5us (SLO100= 98.9%, gap=   335us) | DDIO= 98.7% IMC=0.33GB/s KV_p99=131.0ns | bp_stalls=0 h_stage_pk=10992 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:18:24Z]   [PASS] B1_F1024_b64m      bp1_drain   rep=0 | RPC p50/p99=  11.8/   95.8us (SLO100= 99.1%, gap=   303us) | DDIO= 63.1% IMC=2.49GB/s KV_p99=235.0ns | bp_stalls=0 h_stage_pk=43845 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:18:25Z] Starting mrv228_host mode=bp1-drain bp=0xff00 stall=1/20 bulk_rate=0.0
+[2026-11-27T02:18:28Z]   [PASS] A2_F256_s1ms       bp1_drain   rep=0 | RPC p50/p99=1085.0/25500.0us (SLO100=  3.2%, gap=  1178us) | DDIO= 90.6% IMC=8.28GB/s KV_p99=265.0ns | bp_stalls=786169 h_stage_pk=130729 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:18:29Z] Starting mrv228_host mode=bp1-drain bp=0xff00 stall=4/40 bulk_rate=0.0
+[2026-11-27T02:18:33Z]   [PASS] A1_F16_s4ms        bp1_drain   rep=0 | RPC p50/p99=1675.0/13835.0us (SLO100=  6.7%, gap=  3713us) | DDIO= 89.6% IMC=8.19GB/s KV_p99=261.0ns | bp_stalls=1476723 h_stage_pk=130666 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:18:36Z]   [PASS] A1_F64_s4ms        bp1_drain   rep=0 | RPC p50/p99=1755.0/16335.0us (SLO100=  5.7%, gap=  3719us) | DDIO= 88.8% IMC=7.96GB/s KV_p99=259.0ns | bp_stalls=1521151 h_stage_pk=130796 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:18:40Z]   [RETRY] A1_F256_s4ms bp1_drain rep=0 attempt=1: ['pf cpu40=1 kv=1']
+[2026-11-27T02:18:43Z]   [PASS] A1_F256_s4ms       bp1_drain   rep=0 | RPC p50/p99=1715.0/16715.0us (SLO100=  6.8%, gap=  3793us) | DDIO= 88.6% IMC=7.94GB/s KV_p99=259.0ns | bp_stalls=1488156 h_stage_pk=130744 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:18:46Z]   [PASS] A1_F1024_s4ms      bp1_drain   rep=0 | RPC p50/p99=1725.0/16255.0us (SLO100=  6.2%, gap=  3751us) | DDIO= 89.0% IMC=7.93GB/s KV_p99=259.0ns | bp_stalls=1506367 h_stage_pk=130789 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:18:47Z] Starting mrv228_host mode=bp1-drain bp=0xff00 stall=10/60 bulk_rate=0.0
+[2026-11-27T02:18:50Z]   [PASS] A2_F256_s10ms      bp1_drain   rep=0 | RPC p50/p99=2315.0/18405.0us (SLO100=  9.9%, gap=  9405us) | DDIO= 88.8% IMC=7.54GB/s KV_p99=259.0ns | bp_stalls=1771884 h_stage_pk=130721 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:18:51Z] Starting mrv228_card mode=large-sdp lcores=3-6 sdp_tx_desc=2048...
+[2026-11-27T02:18:54Z] Starting mrv228_host mode=large-sdp bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T02:18:58Z]   [PASS] B1_F16_b64m        large_sdp   rep=0 | RPC p50/p99=  11.9/   96.0us (SLO100= 99.1%, gap=   748us) | DDIO=  9.8% IMC=3.98GB/s KV_p99=231.0ns | bp_stalls=0 h_stage_pk=43810 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:19:01Z]   [RETRY] B1_F64_b64m large_sdp rep=0 attempt=1: ['cpu_ghz=3.813']
+[2026-11-27T02:19:04Z]   [PASS] B1_F64_b64m        large_sdp   rep=0 | RPC p50/p99=  11.8/   98.0us (SLO100= 99.1%, gap=   261us) | DDIO=  9.8% IMC=4.00GB/s KV_p99=231.0ns | bp_stalls=0 h_stage_pk=43762 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:19:08Z]   [PASS] B1_F256_b64m       large_sdp   rep=0 | RPC p50/p99=  11.8/   96.0us (SLO100= 99.1%, gap=   738us) | DDIO=  9.8% IMC=4.01GB/s KV_p99=231.0ns | bp_stalls=0 h_stage_pk=43842 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:19:11Z]   [PASS] B2_F256_b16m       large_sdp   rep=0 | RPC p50/p99=  11.4/  104.2us (SLO100= 98.8%, gap=   755us) | DDIO=  6.6% IMC=2.42GB/s KV_p99=219.0ns | bp_stalls=0 h_stage_pk=11049 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:19:14Z]   [PASS] B1_F1024_b64m      large_sdp   rep=0 | RPC p50/p99=  11.8/   96.3us (SLO100= 99.1%, gap=   779us) | DDIO=  9.7% IMC=4.16GB/s KV_p99=231.0ns | bp_stalls=0 h_stage_pk=43886 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:19:15Z] Starting mrv228_host mode=large-sdp bp=0x0000 stall=1/20 bulk_rate=0.0
+[2026-11-27T02:19:19Z]   [PASS] A2_F256_s1ms       large_sdp   rep=0 | RPC p50/p99=  11.1/ 2215.0us (SLO100= 95.5%, gap=   723us) | DDIO= 11.2% IMC=0.51GB/s KV_p99=103.0ns | bp_stalls=0 h_stage_pk=15465 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:19:20Z] Starting mrv228_host mode=large-sdp bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T02:19:25Z]   [PASS] A1_F16_s4ms        large_sdp   rep=0 | RPC p50/p99=  11.1/ 2415.0us (SLO100= 94.8%, gap=   754us) | DDIO= 14.7% IMC=0.59GB/s KV_p99=105.0ns | bp_stalls=0 h_stage_pk=23181 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:19:29Z]   [PASS] A1_F64_s4ms        large_sdp   rep=0 | RPC p50/p99=  11.1/ 2055.0us (SLO100= 94.8%, gap=   730us) | DDIO= 11.8% IMC=0.60GB/s KV_p99=105.0ns | bp_stalls=0 h_stage_pk=28599 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:19:33Z]   [PASS] A1_F256_s4ms       large_sdp   rep=0 | RPC p50/p99=  11.1/ 2735.0us (SLO100= 95.6%, gap=   749us) | DDIO= 12.7% IMC=0.61GB/s KV_p99=105.0ns | bp_stalls=0 h_stage_pk=22283 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:19:37Z]   [PASS] A1_F1024_s4ms      large_sdp   rep=0 | RPC p50/p99=  11.1/ 1905.0us (SLO100= 95.2%, gap=   724us) | DDIO= 11.1% IMC=0.51GB/s KV_p99=103.0ns | bp_stalls=0 h_stage_pk=28614 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:19:38Z] Starting mrv228_host mode=large-sdp bp=0x0000 stall=10/60 bulk_rate=0.0
+[2026-11-27T02:19:42Z]   [PASS] A2_F256_s10ms      large_sdp   rep=0 | RPC p50/p99=  11.1/ 2435.0us (SLO100= 96.2%, gap=   307us) | DDIO= 18.5% IMC=0.81GB/s KV_p99=109.0ns | bp_stalls=0 h_stage_pk=53907 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:19:43Z] Starting mrv228_card mode=ceio lcores=3-7 sdp_tx_desc=2048 --ceio-inactive-us 10000...
+[2026-11-27T02:19:45Z] Starting mrv228_host mode=ceio bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T02:19:48Z]   [PASS] B1_F16_b64m        ceio        rep=0 | RPC p50/p99=  13.2/   76.3us (SLO100= 99.4%, gap=   857us) | DDIO= 99.5% IMC=0.14GB/s KV_p99= 43.0ns | bp_stalls=0 h_stage_pk=728 pf_q_pk=0 slow=83.8%
+[2026-11-27T02:19:52Z]   [PASS] B1_F64_b64m        ceio        rep=0 | RPC p50/p99=  13.3/   81.2us (SLO100= 99.3%, gap=   763us) | DDIO= 99.5% IMC=0.41GB/s KV_p99=103.0ns | bp_stalls=0 h_stage_pk=478 pf_q_pk=0 slow=84.2%
+[2026-11-27T02:19:52Z] Starting mrv228_host mode=ceio bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T02:19:56Z]   [RETRY] A1_F16_s4ms ceio rep=0 attempt=1: ['pf cpu40=27 kv=0']
+[2026-11-27T02:19:59Z]   [PASS] A1_F16_s4ms        ceio        rep=0 | RPC p50/p99=  38.9/   65.2us (SLO100= 99.8%, gap=   735us) | DDIO= 99.9% IMC=0.14GB/s KV_p99= 95.0ns | bp_stalls=0 h_stage_pk=512 pf_q_pk=0 slow=95.2%
+[2026-11-27T02:20:02Z]   [PASS] A1_F64_s4ms        ceio        rep=0 | RPC p50/p99=  39.0/   65.5us (SLO100= 99.8%, gap=   757us) | DDIO=100.0% IMC=0.17GB/s KV_p99= 67.0ns | bp_stalls=0 h_stage_pk=512 pf_q_pk=0 slow=96.3%
+[2026-11-27T02:20:03Z] Starting mrv228_card mode=ceio lcores=3-7 sdp_tx_desc=2048 --ceio-inactive-us 10080...
+[2026-11-27T02:20:05Z] Starting mrv228_host mode=ceio bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T02:20:08Z]   [PASS] B1_F256_b64m       ceio        rep=0 | RPC p50/p99=  13.3/15245.0us (SLO100= 96.8%, gap=   805us) | DDIO= 99.9% IMC=0.16GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=477 pf_q_pk=0 slow=85.0%
+[2026-11-27T02:20:12Z]   [PASS] B2_F256_b16m       ceio        rep=0 | RPC p50/p99=  12.6/ 2045.0us (SLO100= 98.0%, gap=   733us) | DDIO= 99.5% IMC=0.19GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=522 pf_q_pk=0 slow=76.8%
+[2026-11-27T02:20:12Z] Starting mrv228_host mode=ceio bp=0x0000 stall=1/20 bulk_rate=0.0
+[2026-11-27T02:20:16Z]   [RETRY] A2_F256_s1ms ceio rep=0 attempt=1: ['pf cpu40=8 kv=0']
+[2026-11-27T02:20:19Z]   [PASS] A2_F256_s1ms       ceio        rep=0 | RPC p50/p99=  38.4/   67.8us (SLO100= 99.8%, gap=   760us) | DDIO= 99.9% IMC=0.31GB/s KV_p99= 63.0ns | bp_stalls=0 h_stage_pk=512 pf_q_pk=0 slow=96.2%
+[2026-11-27T02:20:20Z] Starting mrv228_host mode=ceio bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T02:20:24Z]   [RETRY] A1_F256_s4ms ceio rep=0 attempt=1: ['pf cpu40=27 kv=0']
+[2026-11-27T02:20:27Z]   [PASS] A1_F256_s4ms       ceio        rep=0 | RPC p50/p99=  38.9/   65.5us (SLO100= 99.8%, gap=   256us) | DDIO= 99.9% IMC=0.38GB/s KV_p99=103.0ns | bp_stalls=0 h_stage_pk=512 pf_q_pk=0 slow=96.3%
+[2026-11-27T02:20:27Z] Starting mrv228_host mode=ceio bp=0x0000 stall=10/60 bulk_rate=0.0
+[2026-11-27T02:20:31Z]   [RETRY] A2_F256_s10ms ceio rep=0 attempt=1: ['pf cpu40=32 kv=0']
+[2026-11-27T02:20:34Z]   [PASS] A2_F256_s10ms      ceio        rep=0 | RPC p50/p99=  40.8/   68.0us (SLO100= 99.8%, gap=   817us) | DDIO=100.0% IMC=0.28GB/s KV_p99= 61.0ns | bp_stalls=0 h_stage_pk=512 pf_q_pk=0 slow=96.4%
+[2026-11-27T02:20:35Z] Starting mrv228_card mode=ceio lcores=3-7 sdp_tx_desc=2048 --ceio-inactive-us 40800...
+[2026-11-27T02:20:37Z] Starting mrv228_host mode=ceio bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T02:20:40Z]   [PASS] B1_F1024_b64m      ceio        rep=0 | RPC p50/p99=  35.0/24500.0us (SLO100= 51.2%, gap=  4245us) | DDIO= 99.9% IMC=0.26GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=473 pf_q_pk=0 slow=96.8%
+[2026-11-27T02:20:41Z] Starting mrv228_host mode=ceio bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T02:20:45Z]   [RETRY] A1_F1024_s4ms ceio rep=0 attempt=1: ['phy_crc_loss lost=1 crc=1 ierr=0', 'pf cpu40=2 kv=0']
+[2026-11-27T02:20:48Z]   [PASS] A1_F1024_s4ms      ceio        rep=0 | RPC p50/p99=  44.5/ 3935.0us (SLO100= 61.6%, gap=  4015us) | DDIO= 99.9% IMC=0.14GB/s KV_p99= 59.0ns | bp_stalls=0 h_stage_pk=509 pf_q_pk=0 slow=99.0%
+[2026-11-27T02:20:49Z] Starting mrv228_card mode=per-flow-cr lcores=3-6 sdp_tx_desc=256...
+[2026-11-27T02:20:51Z] Starting mrv228_host mode=per-flow-cr bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T02:20:54Z]   [PASS] B1_F16_b64m        per_flow_cr rep=0 | RPC p50/p99=  12.1/   98.0us (SLO100= 99.1%, gap=   303us) | DDIO=100.0% IMC=0.31GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=11024 slow=0.0%
+[2026-11-27T02:20:57Z]   [PASS] B1_F64_b64m        per_flow_cr rep=0 | RPC p50/p99=  12.1/   98.2us (SLO100= 99.1%, gap=   305us) | DDIO=100.0% IMC=0.24GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=11017 slow=0.0%
+[2026-11-27T02:21:01Z]   [RETRY] B1_F256_b64m per_flow_cr rep=0 attempt=1: ['cpu_ghz=3.780']
+[2026-11-27T02:21:04Z]   [PASS] B1_F256_b64m       per_flow_cr rep=0 | RPC p50/p99=  12.1/   97.7us (SLO100= 99.1%, gap=   287us) | DDIO=100.0% IMC=0.17GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=11016 slow=0.0%
+[2026-11-27T02:21:07Z]   [PASS] B2_F256_b16m       per_flow_cr rep=0 | RPC p50/p99=  11.4/  101.3us (SLO100= 98.9%, gap=   374us) | DDIO=100.0% IMC=0.14GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=2741 slow=0.0%
+[2026-11-27T02:21:10Z]   [PASS] B1_F1024_b64m      per_flow_cr rep=0 | RPC p50/p99=  12.1/   98.2us (SLO100= 99.1%, gap=   721us) | DDIO=100.0% IMC=0.14GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=11020 slow=0.0%
+[2026-11-27T02:21:11Z] Starting mrv228_host mode=per-flow-cr bp=0x0000 stall=1/20 bulk_rate=0.0
+[2026-11-27T02:21:15Z]   [PASS] A2_F256_s1ms       per_flow_cr rep=0 | RPC p50/p99=  23.6/   48.9us (SLO100= 99.7%, gap=   312us) | DDIO=100.0% IMC=0.11GB/s KV_p99= 53.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=1782 slow=0.0%
+[2026-11-27T02:21:15Z] Starting mrv228_host mode=per-flow-cr bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T02:21:19Z]   [PASS] A1_F16_s4ms        per_flow_cr rep=0 | RPC p50/p99=  25.4/   52.0us (SLO100= 99.7%, gap=   726us) | DDIO=100.0% IMC=0.13GB/s KV_p99= 57.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=6809 slow=0.0%
+[2026-11-27T02:21:22Z]   [PASS] A1_F64_s4ms        per_flow_cr rep=0 | RPC p50/p99=  25.4/   51.9us (SLO100= 99.7%, gap=   743us) | DDIO=100.0% IMC=0.09GB/s KV_p99= 55.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=7093 slow=0.0%
+[2026-11-27T02:21:25Z]   [PASS] A1_F256_s4ms       per_flow_cr rep=0 | RPC p50/p99=  25.4/   52.0us (SLO100= 99.7%, gap=   307us) | DDIO=100.0% IMC=0.17GB/s KV_p99= 59.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=7046 slow=0.0%
+[2026-11-27T02:21:29Z]   [PASS] A1_F1024_s4ms      per_flow_cr rep=0 | RPC p50/p99=  25.4/   52.0us (SLO100= 99.7%, gap=   737us) | DDIO=100.0% IMC=0.10GB/s KV_p99= 55.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=6504 slow=0.0%
+[2026-11-27T02:21:29Z] Starting mrv228_host mode=per-flow-cr bp=0x0000 stall=10/60 bulk_rate=0.0
+[2026-11-27T02:21:33Z]   [PASS] A2_F256_s10ms      per_flow_cr rep=0 | RPC p50/p99=  29.6/   58.6us (SLO100= 99.7%, gap=   306us) | DDIO=100.0% IMC=0.16GB/s KV_p99= 55.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=32685 slow=0.0%
+[2026-11-27T02:21:35Z]   [PASS] kv_solo rep=1: KV p50=31.0 p99=41.0 p999=91.0 ns IMC=0.14 GB/s
+[2026-11-27T02:21:35Z] Starting mrv228_host mode=per-flow-cr bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T02:21:39Z]   [PASS] B1_F16_b64m        per_flow_cr rep=1 | RPC p50/p99=  12.1/   98.3us (SLO100= 99.1%, gap=   748us) | DDIO=100.0% IMC=0.13GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=11018 slow=0.0%
+[2026-11-27T02:21:42Z]   [PASS] B1_F64_b64m        per_flow_cr rep=1 | RPC p50/p99=  12.1/   98.8us (SLO100= 99.0%, gap=   269us) | DDIO=100.0% IMC=0.20GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=11026 slow=0.0%
+[2026-11-27T02:21:46Z]   [PASS] B1_F256_b64m       per_flow_cr rep=1 | RPC p50/p99=  12.1/   98.0us (SLO100= 99.1%, gap=   749us) | DDIO=100.0% IMC=0.16GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=11018 slow=0.0%
+[2026-11-27T02:21:49Z]   [PASS] B2_F256_b16m       per_flow_cr rep=1 | RPC p50/p99=  11.4/  100.8us (SLO100= 99.0%, gap=   773us) | DDIO=100.0% IMC=0.16GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=2741 slow=0.0%
+[2026-11-27T02:21:52Z]   [PASS] B1_F1024_b64m      per_flow_cr rep=1 | RPC p50/p99=  12.1/   98.5us (SLO100= 99.1%, gap=   758us) | DDIO=100.0% IMC=0.14GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=11019 slow=0.0%
+[2026-11-27T02:21:53Z] Starting mrv228_host mode=per-flow-cr bp=0x0000 stall=1/20 bulk_rate=0.0
+[2026-11-27T02:21:56Z]   [PASS] A2_F256_s1ms       per_flow_cr rep=1 | RPC p50/p99=  23.8/   49.9us (SLO100= 99.7%, gap=   765us) | DDIO=100.0% IMC=0.37GB/s KV_p99= 71.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=2247 slow=0.0%
+[2026-11-27T02:21:57Z] Starting mrv228_host mode=per-flow-cr bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T02:22:00Z]   [RETRY] A1_F16_s4ms per_flow_cr rep=1 attempt=1: ['cpu_ghz=3.781']
+[2026-11-27T02:22:04Z]   [PASS] A1_F16_s4ms        per_flow_cr rep=1 | RPC p50/p99=  25.4/   51.9us (SLO100= 99.7%, gap=   785us) | DDIO=100.0% IMC=0.17GB/s KV_p99= 55.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=6501 slow=0.0%
+[2026-11-27T02:22:07Z]   [PASS] A1_F64_s4ms        per_flow_cr rep=1 | RPC p50/p99=  25.4/   51.5us (SLO100= 99.8%, gap=   863us) | DDIO=100.0% IMC=0.12GB/s KV_p99= 55.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=6547 slow=0.0%
+[2026-11-27T02:22:10Z]   [PASS] A1_F256_s4ms       per_flow_cr rep=1 | RPC p50/p99=  25.4/   51.6us (SLO100= 99.7%, gap=   814us) | DDIO=100.0% IMC=0.12GB/s KV_p99= 53.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=6618 slow=0.0%
+[2026-11-27T02:22:13Z]   [PASS] A1_F1024_s4ms      per_flow_cr rep=1 | RPC p50/p99=  25.4/   52.1us (SLO100= 99.7%, gap=   776us) | DDIO=100.0% IMC=0.12GB/s KV_p99= 53.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=7012 slow=0.0%
+[2026-11-27T02:22:14Z] Starting mrv228_host mode=per-flow-cr bp=0x0000 stall=10/60 bulk_rate=0.0
+[2026-11-27T02:22:17Z]   [PASS] A2_F256_s10ms      per_flow_cr rep=1 | RPC p50/p99=  29.4/   57.8us (SLO100= 99.7%, gap=   273us) | DDIO=100.0% IMC=0.20GB/s KV_p99= 55.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=32685 slow=0.0%
+[2026-11-27T02:22:18Z] Starting mrv228_card mode=ceio lcores=3-7 sdp_tx_desc=2048 --ceio-inactive-us 10000...
+[2026-11-27T02:22:20Z] Starting mrv228_host mode=ceio bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T02:22:24Z]   [PASS] B1_F16_b64m        ceio        rep=1 | RPC p50/p99=  13.2/   79.0us (SLO100= 99.4%, gap=   255us) | DDIO= 99.5% IMC=0.16GB/s KV_p99= 47.0ns | bp_stalls=0 h_stage_pk=616 pf_q_pk=0 slow=83.8%
+[2026-11-27T02:22:28Z]   [PASS] B1_F64_b64m        ceio        rep=1 | RPC p50/p99=  13.2/   76.2us (SLO100= 99.4%, gap=   744us) | DDIO= 99.8% IMC=0.13GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=480 pf_q_pk=0 slow=84.2%
+[2026-11-27T02:22:28Z] Starting mrv228_host mode=ceio bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T02:22:32Z] Restoring all 3 nodes to exact clean baseline...
+[2026-11-27T02:22:37Z] Waiting 21 s for post-restore EDAC / PCIe AER audit...
+[2026-11-27T02:22:59Z] Restore audit written to /home/hongtao/dev/marvell-mrv228/logs/mrv228-2026-11-27/env.json: baseline_restored_ok=True csrs_exact=True edac_zero_delta=True uncore_2200=True cpu40_3900=True merc_clean=True
+[2026-11-27T02:24:16Z] Pre-run 6 safe SDP CSRs: {"SDPX_EPFX_RINFO(0)": "0x0008000800000008", "SDPX_MACX_PF_RING_CTL(0)": "0x0000000000080001", "SDPX_LINK_CFG": "0x0000000000070080", "SDPX_GBL_CONTROL": "0x0000000000000004", "SDPX_OUT_BP_ENX_W1S(0)": "0x0000000000000000", "SDPX_OUT_BP_ENX_W1S(1)": "0x0000000000000000"}
+[2026-11-27T02:24:16Z] Resume mode: 70 completed runs found in runs.jsonl
+[2026-11-27T02:24:16Z] Deploying mrv228_card to CN106 and building mrv228_client on mercury...
+[2026-11-27T02:24:19Z] Deploy complete.
+[2026-11-27T02:24:19Z] Starting CAMPAIGN: 56 specs x 3 reps = 168 runs
+[2026-11-27T02:24:20Z] Starting mrv228_card mode=ceio lcores=3-7 sdp_tx_desc=2048 --ceio-inactive-us 10000...
+[2026-11-27T02:24:22Z] Starting mrv228_host mode=ceio bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T02:24:26Z]   [RETRY] A1_F16_s4ms ceio rep=1 attempt=1: ['pf cpu40=26 kv=0']
+[2026-11-27T02:24:29Z]   [PASS] A1_F16_s4ms        ceio        rep=1 | RPC p50/p99=  38.9/   65.2us (SLO100= 99.8%, gap=   289us) | DDIO= 99.9% IMC=0.16GB/s KV_p99= 89.0ns | bp_stalls=0 h_stage_pk=605 pf_q_pk=0 slow=94.8%
+[2026-11-27T02:24:32Z]   [PASS] A1_F64_s4ms        ceio        rep=1 | RPC p50/p99=  38.9/   65.5us (SLO100= 99.8%, gap=   289us) | DDIO=100.0% IMC=0.13GB/s KV_p99= 55.0ns | bp_stalls=0 h_stage_pk=512 pf_q_pk=0 slow=96.3%
+[2026-11-27T02:24:33Z] Starting mrv228_card mode=ceio lcores=3-7 sdp_tx_desc=2048 --ceio-inactive-us 10080...
+[2026-11-27T02:24:35Z] Starting mrv228_host mode=ceio bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T02:24:38Z]   [PASS] B1_F256_b64m       ceio        rep=1 | RPC p50/p99=  13.3/15145.0us (SLO100= 96.9%, gap=   660us) | DDIO= 99.9% IMC=0.16GB/s KV_p99= 43.0ns | bp_stalls=0 h_stage_pk=472 pf_q_pk=0 slow=84.9%
+[2026-11-27T02:24:41Z]   [PASS] B2_F256_b16m       ceio        rep=1 | RPC p50/p99=  12.6/ 1965.0us (SLO100= 97.9%, gap=   710us) | DDIO= 99.5% IMC=0.14GB/s KV_p99= 43.0ns | bp_stalls=0 h_stage_pk=507 pf_q_pk=0 slow=76.8%
+[2026-11-27T02:24:42Z] Starting mrv228_host mode=ceio bp=0x0000 stall=1/20 bulk_rate=0.0
+[2026-11-27T02:24:45Z]   [RETRY] A2_F256_s1ms ceio rep=1 attempt=1: ['pf cpu40=7 kv=0']
+[2026-11-27T02:24:49Z]   [PASS] A2_F256_s1ms       ceio        rep=1 | RPC p50/p99=  38.6/   68.0us (SLO100= 99.8%, gap=   785us) | DDIO=100.0% IMC=0.41GB/s KV_p99= 65.0ns | bp_stalls=0 h_stage_pk=568 pf_q_pk=0 slow=96.2%
+[2026-11-27T02:24:49Z] Starting mrv228_host mode=ceio bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T02:24:53Z]   [RETRY] A1_F256_s4ms ceio rep=1 attempt=1: ['pf cpu40=27 kv=0']
+[2026-11-27T02:24:56Z]   [PASS] A1_F256_s4ms       ceio        rep=1 | RPC p50/p99=  39.0/   65.5us (SLO100= 99.8%, gap=   742us) | DDIO=100.0% IMC=0.28GB/s KV_p99= 63.0ns | bp_stalls=0 h_stage_pk=512 pf_q_pk=0 slow=96.3%
+[2026-11-27T02:24:57Z] Starting mrv228_host mode=ceio bp=0x0000 stall=10/60 bulk_rate=0.0
+[2026-11-27T02:25:00Z]   [RETRY] A2_F256_s10ms ceio rep=1 attempt=1: ['pf cpu40=32 kv=0', 'cpu_ghz=3.818']
+[2026-11-27T02:25:03Z]   [PASS] A2_F256_s10ms      ceio        rep=1 | RPC p50/p99=  40.9/   68.3us (SLO100= 99.8%, gap=   249us) | DDIO=100.0% IMC=0.14GB/s KV_p99= 65.0ns | bp_stalls=0 h_stage_pk=512 pf_q_pk=0 slow=96.4%
+[2026-11-27T02:25:04Z] Starting mrv228_card mode=ceio lcores=3-7 sdp_tx_desc=2048 --ceio-inactive-us 40800...
+[2026-11-27T02:25:06Z] Starting mrv228_host mode=ceio bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T02:25:10Z]   [PASS] B1_F1024_b64m      ceio        rep=1 | RPC p50/p99=  49.5/24500.0us (SLO100= 50.7%, gap=  3989us) | DDIO= 99.9% IMC=0.16GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=476 pf_q_pk=0 slow=96.8%
+[2026-11-27T02:25:10Z] Starting mrv228_host mode=ceio bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T02:25:14Z]   [PASS] A1_F1024_s4ms      ceio        rep=1 | RPC p50/p99=  44.9/ 3945.0us (SLO100= 61.0%, gap=  4027us) | DDIO= 99.9% IMC=0.36GB/s KV_p99= 69.0ns | bp_stalls=0 h_stage_pk=509 pf_q_pk=0 slow=99.0%
+[2026-11-27T02:25:15Z] Starting mrv228_card mode=large-sdp lcores=3-6 sdp_tx_desc=2048...
+[2026-11-27T02:25:16Z] Starting mrv228_host mode=large-sdp bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T02:25:20Z]   [PASS] B1_F16_b64m        large_sdp   rep=1 | RPC p50/p99=  11.8/   95.8us (SLO100= 99.1%, gap=   318us) | DDIO=  9.0% IMC=4.25GB/s KV_p99=237.0ns | bp_stalls=0 h_stage_pk=43798 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:25:24Z]   [PASS] B1_F64_b64m        large_sdp   rep=1 | RPC p50/p99=  11.8/   94.8us (SLO100= 99.2%, gap=   304us) | DDIO=  9.7% IMC=4.33GB/s KV_p99=231.0ns | bp_stalls=0 h_stage_pk=43832 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:25:27Z]   [PASS] B1_F256_b64m       large_sdp   rep=1 | RPC p50/p99=  11.9/   97.0us (SLO100= 99.1%, gap=   740us) | DDIO=  8.3% IMC=4.37GB/s KV_p99=239.0ns | bp_stalls=0 h_stage_pk=43778 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:25:30Z]   [PASS] B2_F256_b16m       large_sdp   rep=1 | RPC p50/p99=  11.4/  104.0us (SLO100= 98.8%, gap=   741us) | DDIO=  6.4% IMC=2.68GB/s KV_p99=229.0ns | bp_stalls=0 h_stage_pk=11021 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:25:33Z]   [PASS] B1_F1024_b64m      large_sdp   rep=1 | RPC p50/p99=  11.8/   95.8us (SLO100= 99.1%, gap=   726us) | DDIO=  9.9% IMC=4.10GB/s KV_p99=231.0ns | bp_stalls=0 h_stage_pk=43899 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:25:34Z] Starting mrv228_host mode=large-sdp bp=0x0000 stall=1/20 bulk_rate=0.0
+[2026-11-27T02:25:38Z]   [PASS] A2_F256_s1ms       large_sdp   rep=1 | RPC p50/p99=  11.1/ 2265.0us (SLO100= 95.6%, gap=   366us) | DDIO= 11.4% IMC=0.64GB/s KV_p99=105.0ns | bp_stalls=0 h_stage_pk=15028 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:25:39Z] Starting mrv228_host mode=large-sdp bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T02:25:43Z]   [PASS] A1_F16_s4ms        large_sdp   rep=1 | RPC p50/p99=  11.1/ 2345.0us (SLO100= 96.1%, gap=   256us) | DDIO= 15.8% IMC=0.62GB/s KV_p99=105.0ns | bp_stalls=0 h_stage_pk=21534 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:25:48Z]   [RETRY] A1_F64_s4ms large_sdp rep=1 attempt=1: ['pf cpu40=2 kv=1', 'cpu_ghz=3.847']
+[2026-11-27T02:25:52Z]   [PASS] A1_F64_s4ms        large_sdp   rep=1 | RPC p50/p99=  11.1/ 2505.0us (SLO100= 95.2%, gap=   322us) | DDIO= 10.8% IMC=0.64GB/s KV_p99=107.0ns | bp_stalls=0 h_stage_pk=28323 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:25:56Z]   [PASS] A1_F256_s4ms       large_sdp   rep=1 | RPC p50/p99=  11.1/ 2735.0us (SLO100= 96.3%, gap=   293us) | DDIO= 12.1% IMC=0.53GB/s KV_p99=105.0ns | bp_stalls=0 h_stage_pk=21618 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:26:00Z]   [PASS] A1_F1024_s4ms      large_sdp   rep=1 | RPC p50/p99=  11.1/ 2065.0us (SLO100= 95.1%, gap=   257us) | DDIO= 10.8% IMC=0.50GB/s KV_p99=103.0ns | bp_stalls=0 h_stage_pk=28508 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:26:00Z] Starting mrv228_host mode=large-sdp bp=0x0000 stall=10/60 bulk_rate=0.0
+[2026-11-27T02:26:05Z]   [RETRY] A2_F256_s10ms large_sdp rep=1 attempt=1: ['pf cpu40=71 kv=0']
+[2026-11-27T02:26:09Z]   [PASS] A2_F256_s10ms      large_sdp   rep=1 | RPC p50/p99=  11.1/ 2655.0us (SLO100= 96.4%, gap=   318us) | DDIO= 16.6% IMC=0.86GB/s KV_p99=109.0ns | bp_stalls=0 h_stage_pk=53896 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:26:10Z] Starting mrv228_card mode=native-bp lcores=3-6 sdp_tx_desc=256...
+[2026-11-27T02:26:13Z] Starting mrv228_host mode=bp1-drain bp=0xff00 stall=0/40 bulk_rate=16.0
+[2026-11-27T02:26:16Z]   [PASS] B1_F16_b64m        bp1_drain   rep=1 | RPC p50/p99=  11.7/   95.5us (SLO100= 99.1%, gap=   769us) | DDIO= 63.1% IMC=2.53GB/s KV_p99=233.0ns | bp_stalls=0 h_stage_pk=43574 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:26:20Z]   [PASS] B1_F64_b64m        bp1_drain   rep=1 | RPC p50/p99=  11.7/   96.2us (SLO100= 99.1%, gap=   756us) | DDIO= 63.2% IMC=2.53GB/s KV_p99=233.0ns | bp_stalls=0 h_stage_pk=43775 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:26:23Z]   [PASS] B1_F256_b64m       bp1_drain   rep=1 | RPC p50/p99=  11.7/   95.8us (SLO100= 99.1%, gap=   756us) | DDIO= 63.0% IMC=2.57GB/s KV_p99=233.0ns | bp_stalls=0 h_stage_pk=43769 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:26:27Z]   [PASS] B2_F256_b16m       bp1_drain   rep=1 | RPC p50/p99=  11.3/  103.0us (SLO100= 98.9%, gap=   280us) | DDIO= 98.7% IMC=0.34GB/s KV_p99=131.0ns | bp_stalls=0 h_stage_pk=10950 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:26:30Z]   [PASS] B1_F1024_b64m      bp1_drain   rep=1 | RPC p50/p99=  11.7/   95.8us (SLO100= 99.1%, gap=   752us) | DDIO= 63.0% IMC=2.57GB/s KV_p99=233.0ns | bp_stalls=0 h_stage_pk=43813 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:26:30Z] Starting mrv228_host mode=bp1-drain bp=0xff00 stall=1/20 bulk_rate=0.0
+[2026-11-27T02:26:34Z]   [PASS] A2_F256_s1ms       bp1_drain   rep=1 | RPC p50/p99=1075.0/24500.0us (SLO100=  3.5%, gap=  1107us) | DDIO= 90.6% IMC=8.28GB/s KV_p99=263.0ns | bp_stalls=787281 h_stage_pk=130736 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:26:35Z] Starting mrv228_host mode=bp1-drain bp=0xff00 stall=4/40 bulk_rate=0.0
+[2026-11-27T02:26:38Z]   [PASS] A1_F16_s4ms        bp1_drain   rep=1 | RPC p50/p99=1725.0/13255.0us (SLO100=  6.5%, gap=  3823us) | DDIO= 89.5% IMC=8.13GB/s KV_p99=261.0ns | bp_stalls=1485886 h_stage_pk=130700 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:26:42Z]   [PASS] A1_F64_s4ms        bp1_drain   rep=1 | RPC p50/p99=1775.0/16195.0us (SLO100=  6.3%, gap=  3782us) | DDIO= 88.6% IMC=7.75GB/s KV_p99=259.0ns | bp_stalls=1521343 h_stage_pk=130710 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:26:45Z]   [PASS] A1_F256_s4ms       bp1_drain   rep=1 | RPC p50/p99=1775.0/16955.0us (SLO100=  7.2%, gap=  3822us) | DDIO= 88.8% IMC=7.76GB/s KV_p99=259.0ns | bp_stalls=1515069 h_stage_pk=130688 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:26:49Z]   [PASS] A1_F1024_s4ms      bp1_drain   rep=1 | RPC p50/p99=1765.0/16335.0us (SLO100=  6.8%, gap=  3788us) | DDIO= 89.0% IMC=7.72GB/s KV_p99=259.0ns | bp_stalls=1509828 h_stage_pk=130681 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:26:49Z] Starting mrv228_host mode=bp1-drain bp=0xff00 stall=10/60 bulk_rate=0.0
+[2026-11-27T02:26:53Z]   [PASS] A2_F256_s10ms      bp1_drain   rep=1 | RPC p50/p99=2265.0/18075.0us (SLO100= 11.6%, gap=  9427us) | DDIO= 88.8% IMC=7.53GB/s KV_p99=259.0ns | bp_stalls=1748309 h_stage_pk=130702 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:26:53Z] Starting mrv228_host mode=bp1-stop bp=0xff00 stall=0/40 bulk_rate=16.0
+[2026-11-27T02:26:57Z]   [PASS] B1_F16_b64m        bp1_stop    rep=1 | RPC p50/p99=9075.0/29500.0us (SLO100= 28.6%, gap=   657us) | DDIO=100.0% IMC=0.30GB/s KV_p99= 41.0ns | bp_stalls=2084554 h_stage_pk=249 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:27:00Z]   [RETRY] B1_F64_b64m bp1_stop rep=1 attempt=1: ['cpu_ghz=3.806']
+[2026-11-27T02:27:03Z]   [PASS] B1_F64_b64m        bp1_stop    rep=1 | RPC p50/p99=8975.0/29500.0us (SLO100= 28.8%, gap=   812us) | DDIO=100.0% IMC=0.13GB/s KV_p99= 41.0ns | bp_stalls=2086314 h_stage_pk=248 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:27:07Z]   [PASS] B1_F256_b64m       bp1_stop    rep=1 | RPC p50/p99=9085.0/29500.0us (SLO100= 28.5%, gap=   736us) | DDIO=100.0% IMC=0.10GB/s KV_p99= 41.0ns | bp_stalls=2085592 h_stage_pk=249 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:27:10Z]   [PASS] B2_F256_b16m       bp1_stop    rep=1 | RPC p50/p99=  11.9/ 7245.0us (SLO100= 57.8%, gap=   870us) | DDIO=100.0% IMC=0.21GB/s KV_p99= 41.0ns | bp_stalls=932546 h_stage_pk=247 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:27:13Z]   [PASS] B1_F1024_b64m      bp1_stop    rep=1 | RPC p50/p99=9035.0/29500.0us (SLO100= 28.6%, gap=   851us) | DDIO=100.0% IMC=0.22GB/s KV_p99= 41.0ns | bp_stalls=2082811 h_stage_pk=249 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:27:14Z] Starting mrv228_host mode=bp1-stop bp=0xff00 stall=1/20 bulk_rate=0.0
+[2026-11-27T02:27:17Z]   [PASS] A2_F256_s1ms       bp1_stop    rep=1 | RPC p50/p99=  22.2/ 1025.0us (SLO100= 82.5%, gap=  1181us) | DDIO=100.0% IMC=0.25GB/s KV_p99= 51.0ns | bp_stalls=69177 h_stage_pk=139 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:27:18Z] Starting mrv228_host mode=bp1-stop bp=0xff00 stall=4/40 bulk_rate=0.0
+[2026-11-27T02:27:21Z]   [PASS] A1_F16_s4ms        bp1_stop    rep=1 | RPC p50/p99=  23.6/ 3925.0us (SLO100= 65.2%, gap=  4175us) | DDIO=100.0% IMC=0.23GB/s KV_p99= 51.0ns | bp_stalls=394125 h_stage_pk=186 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:27:25Z]   [PASS] A1_F64_s4ms        bp1_stop    rep=1 | RPC p50/p99=  23.4/ 3935.0us (SLO100= 65.5%, gap=  4175us) | DDIO=100.0% IMC=0.13GB/s KV_p99= 51.0ns | bp_stalls=391737 h_stage_pk=243 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:27:28Z]   [PASS] A1_F256_s4ms       bp1_stop    rep=1 | RPC p50/p99=  23.4/ 3945.0us (SLO100= 65.5%, gap=  4190us) | DDIO=100.0% IMC=0.34GB/s KV_p99= 53.0ns | bp_stalls=391631 h_stage_pk=244 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:27:31Z]   [PASS] A1_F1024_s4ms      bp1_stop    rep=1 | RPC p50/p99=  23.4/ 3935.0us (SLO100= 65.8%, gap=  4188us) | DDIO=100.0% IMC=0.16GB/s KV_p99= 51.0ns | bp_stalls=389285 h_stage_pk=246 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:27:32Z] Starting mrv228_host mode=bp1-stop bp=0xff00 stall=10/60 bulk_rate=0.0
+[2026-11-27T02:27:35Z]   [PASS] A2_F256_s10ms      bp1_stop    rep=1 | RPC p50/p99=1445.0/ 9895.0us (SLO100= 42.4%, gap= 10192us) | DDIO=100.0% IMC=0.12GB/s KV_p99= 51.0ns | bp_stalls=651651 h_stage_pk=249 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:27:39Z]   [PASS] kv_solo rep=2: KV p50=31.0 p99=41.0 p999=43.0 ns IMC=0.18 GB/s
+[2026-11-27T02:27:39Z] Starting mrv228_card mode=ceio lcores=3-7 sdp_tx_desc=2048 --ceio-inactive-us 10000...
+[2026-11-27T02:27:41Z] Starting mrv228_host mode=ceio bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T02:27:45Z]   [PASS] B1_F16_b64m        ceio        rep=2 | RPC p50/p99=  13.3/   78.5us (SLO100= 99.4%, gap=   727us) | DDIO= 99.5% IMC=0.13GB/s KV_p99= 43.0ns | bp_stalls=0 h_stage_pk=623 pf_q_pk=0 slow=83.8%
+[2026-11-27T02:27:48Z]   [PASS] B1_F64_b64m        ceio        rep=2 | RPC p50/p99=  13.2/   77.7us (SLO100= 99.4%, gap=   753us) | DDIO= 99.8% IMC=0.12GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=477 pf_q_pk=0 slow=84.2%
+[2026-11-27T02:27:49Z] Starting mrv228_host mode=ceio bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T02:27:52Z]   [PASS] A1_F16_s4ms        ceio        rep=2 | RPC p50/p99=  38.8/   67.7us (SLO100= 99.8%, gap=   246us) | DDIO= 99.9% IMC=0.42GB/s KV_p99=105.0ns | bp_stalls=0 h_stage_pk=904 pf_q_pk=0 slow=94.8%
+[2026-11-27T02:27:55Z]   [PASS] A1_F64_s4ms        ceio        rep=2 | RPC p50/p99=  39.0/   65.0us (SLO100= 99.8%, gap=   239us) | DDIO=100.0% IMC=0.12GB/s KV_p99= 63.0ns | bp_stalls=0 h_stage_pk=512 pf_q_pk=0 slow=96.3%
+[2026-11-27T02:27:56Z] Starting mrv228_card mode=ceio lcores=3-7 sdp_tx_desc=2048 --ceio-inactive-us 10080...
+[2026-11-27T02:27:58Z] Starting mrv228_host mode=ceio bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T02:28:02Z]   [PASS] B1_F256_b64m       ceio        rep=2 | RPC p50/p99=  13.3/15225.0us (SLO100= 96.8%, gap=   711us) | DDIO= 99.6% IMC=1.72GB/s KV_p99=119.0ns | bp_stalls=0 h_stage_pk=477 pf_q_pk=0 slow=85.0%
+[2026-11-27T02:28:05Z]   [PASS] B2_F256_b16m       ceio        rep=2 | RPC p50/p99=  12.6/ 1635.0us (SLO100= 98.0%, gap=   686us) | DDIO= 99.6% IMC=0.12GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=474 pf_q_pk=0 slow=76.8%
+[2026-11-27T02:28:05Z] Starting mrv228_host mode=ceio bp=0x0000 stall=1/20 bulk_rate=0.0
+[2026-11-27T02:28:09Z]   [RETRY] A2_F256_s1ms ceio rep=2 attempt=1: ['pf cpu40=4 kv=0']
+[2026-11-27T02:28:12Z]   [PASS] A2_F256_s1ms       ceio        rep=2 | RPC p50/p99=  38.6/   68.8us (SLO100= 99.8%, gap=   753us) | DDIO=100.0% IMC=0.22GB/s KV_p99= 95.0ns | bp_stalls=0 h_stage_pk=512 pf_q_pk=0 slow=96.3%
+[2026-11-27T02:28:13Z] Starting mrv228_host mode=ceio bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T02:28:16Z]   [RETRY] A1_F256_s4ms ceio rep=2 attempt=1: ['pf cpu40=24 kv=0']
+[2026-11-27T02:28:19Z]   [PASS] A1_F256_s4ms       ceio        rep=2 | RPC p50/p99=  39.0/   65.5us (SLO100= 99.8%, gap=   764us) | DDIO=100.0% IMC=0.23GB/s KV_p99= 67.0ns | bp_stalls=0 h_stage_pk=512 pf_q_pk=0 slow=96.3%
+[2026-11-27T02:28:20Z] Starting mrv228_host mode=ceio bp=0x0000 stall=10/60 bulk_rate=0.0
+[2026-11-27T02:28:24Z]   [PASS] A2_F256_s10ms      ceio        rep=2 | RPC p50/p99=  40.9/   68.3us (SLO100= 99.8%, gap=   246us) | DDIO=100.0% IMC=0.24GB/s KV_p99= 61.0ns | bp_stalls=0 h_stage_pk=512 pf_q_pk=0 slow=96.4%
+[2026-11-27T02:28:25Z] Starting mrv228_card mode=ceio lcores=3-7 sdp_tx_desc=2048 --ceio-inactive-us 40800...
+[2026-11-27T02:28:27Z] Starting mrv228_host mode=ceio bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T02:28:30Z]   [PASS] B1_F1024_b64m      ceio        rep=2 | RPC p50/p99=  46.0/24500.0us (SLO100= 50.9%, gap=  3855us) | DDIO= 99.9% IMC=0.17GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=471 pf_q_pk=0 slow=96.8%
+[2026-11-27T02:28:31Z] Starting mrv228_host mode=ceio bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T02:28:35Z]   [RETRY] A1_F1024_s4ms ceio rep=2 attempt=1: ['pf cpu40=5 kv=0']
+[2026-11-27T02:28:38Z]   [PASS] A1_F1024_s4ms      ceio        rep=2 | RPC p50/p99=  45.0/ 3935.0us (SLO100= 60.9%, gap=  3971us) | DDIO= 99.9% IMC=0.17GB/s KV_p99= 71.0ns | bp_stalls=0 h_stage_pk=509 pf_q_pk=0 slow=99.0%
+[2026-11-27T02:28:38Z] Starting mrv228_card mode=per-flow-cr lcores=3-6 sdp_tx_desc=256...
+[2026-11-27T02:28:40Z] Starting mrv228_host mode=per-flow-cr bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T02:28:44Z]   [PASS] B1_F16_b64m        per_flow_cr rep=2 | RPC p50/p99=  12.1/   97.2us (SLO100= 99.1%, gap=   294us) | DDIO=100.0% IMC=0.17GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=11017 slow=0.0%
+[2026-11-27T02:28:47Z]   [PASS] B1_F64_b64m        per_flow_cr rep=2 | RPC p50/p99=  12.1/   99.0us (SLO100= 99.0%, gap=   788us) | DDIO=100.0% IMC=0.11GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=11018 slow=0.0%
+[2026-11-27T02:28:50Z]   [PASS] B1_F256_b64m       per_flow_cr rep=2 | RPC p50/p99=  12.1/   98.5us (SLO100= 99.0%, gap=   256us) | DDIO=100.0% IMC=0.17GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=11019 slow=0.0%
+[2026-11-27T02:28:54Z]   [PASS] B2_F256_b16m       per_flow_cr rep=2 | RPC p50/p99=  11.4/  100.8us (SLO100= 99.0%, gap=   259us) | DDIO=100.0% IMC=0.12GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=2747 slow=0.0%
+[2026-11-27T02:28:57Z]   [PASS] B1_F1024_b64m      per_flow_cr rep=2 | RPC p50/p99=  12.1/   98.8us (SLO100= 99.0%, gap=   740us) | DDIO=100.0% IMC=0.17GB/s KV_p99= 41.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=11020 slow=0.0%
+[2026-11-27T02:28:57Z] Starting mrv228_host mode=per-flow-cr bp=0x0000 stall=1/20 bulk_rate=0.0
+[2026-11-27T02:29:01Z]   [RETRY] A2_F256_s1ms per_flow_cr rep=2 attempt=1: ['cpu_ghz=3.766']
+[2026-11-27T02:29:04Z]   [RETRY] A2_F256_s1ms per_flow_cr rep=2 attempt=2: ['pf cpu40=1 kv=2', 'cpu_ghz=3.844']
+[2026-11-27T02:29:07Z]   [PASS] A2_F256_s1ms       per_flow_cr rep=2 | RPC p50/p99=  23.6/   49.2us (SLO100= 99.7%, gap=   262us) | DDIO=100.0% IMC=0.10GB/s KV_p99= 53.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=1813 slow=0.0%
+[2026-11-27T02:29:08Z] Starting mrv228_host mode=per-flow-cr bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T02:29:11Z]   [PASS] A1_F16_s4ms        per_flow_cr rep=2 | RPC p50/p99=  25.2/   51.8us (SLO100= 99.7%, gap=   812us) | DDIO=100.0% IMC=0.14GB/s KV_p99= 55.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=6585 slow=0.0%
+[2026-11-27T02:29:15Z]   [PASS] A1_F64_s4ms        per_flow_cr rep=2 | RPC p50/p99=  25.4/   52.2us (SLO100= 99.7%, gap=   251us) | DDIO=100.0% IMC=0.10GB/s KV_p99= 55.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=7203 slow=0.0%
+[2026-11-27T02:29:18Z]   [PASS] A1_F256_s4ms       per_flow_cr rep=2 | RPC p50/p99=  25.4/   52.0us (SLO100= 99.7%, gap=   278us) | DDIO=100.0% IMC=0.14GB/s KV_p99= 55.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=6693 slow=0.0%
+[2026-11-27T02:29:21Z]   [PASS] A1_F1024_s4ms      per_flow_cr rep=2 | RPC p50/p99=  25.4/   51.5us (SLO100= 99.7%, gap=   724us) | DDIO=100.0% IMC=0.14GB/s KV_p99= 57.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=7098 slow=0.0%
+[2026-11-27T02:29:22Z] Starting mrv228_host mode=per-flow-cr bp=0x0000 stall=10/60 bulk_rate=0.0
+[2026-11-27T02:29:26Z]   [PASS] A2_F256_s10ms      per_flow_cr rep=2 | RPC p50/p99=  29.4/   58.5us (SLO100= 99.7%, gap=   252us) | DDIO=100.0% IMC=0.12GB/s KV_p99= 57.0ns | bp_stalls=0 h_stage_pk=128 pf_q_pk=32686 slow=0.0%
+[2026-11-27T02:29:26Z] Starting mrv228_card mode=native-bp lcores=3-6 sdp_tx_desc=256...
+[2026-11-27T02:29:30Z] Starting mrv228_host mode=bp1-stop bp=0xff00 stall=0/40 bulk_rate=16.0
+[2026-11-27T02:29:33Z]   [PASS] B1_F16_b64m        bp1_stop    rep=2 | RPC p50/p99=8905.0/29500.0us (SLO100= 28.7%, gap=   800us) | DDIO=100.0% IMC=0.13GB/s KV_p99= 41.0ns | bp_stalls=2087508 h_stage_pk=246 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:29:37Z]   [PASS] B1_F64_b64m        bp1_stop    rep=2 | RPC p50/p99=8915.0/29500.0us (SLO100= 28.6%, gap=   816us) | DDIO=100.0% IMC=0.13GB/s KV_p99= 41.0ns | bp_stalls=2089891 h_stage_pk=246 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:29:40Z]   [PASS] B1_F256_b64m       bp1_stop    rep=2 | RPC p50/p99=8975.0/29500.0us (SLO100= 28.4%, gap=   885us) | DDIO=100.0% IMC=0.14GB/s KV_p99= 41.0ns | bp_stalls=2090705 h_stage_pk=248 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:29:43Z]   [PASS] B2_F256_b16m       bp1_stop    rep=2 | RPC p50/p99=  11.9/ 7265.0us (SLO100= 57.4%, gap=   727us) | DDIO=100.0% IMC=0.16GB/s KV_p99= 41.0ns | bp_stalls=932078 h_stage_pk=250 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:29:46Z]   [PASS] B1_F1024_b64m      bp1_stop    rep=2 | RPC p50/p99=8965.0/29500.0us (SLO100= 28.5%, gap=   780us) | DDIO=100.0% IMC=0.14GB/s KV_p99= 41.0ns | bp_stalls=2089223 h_stage_pk=250 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:29:47Z] Starting mrv228_host mode=bp1-stop bp=0xff00 stall=1/20 bulk_rate=0.0
+[2026-11-27T02:29:50Z]   [PASS] A2_F256_s1ms       bp1_stop    rep=2 | RPC p50/p99=  22.1/ 1045.0us (SLO100= 82.7%, gap=  1236us) | DDIO=100.0% IMC=0.16GB/s KV_p99= 53.0ns | bp_stalls=74786 h_stage_pk=141 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:29:51Z] Starting mrv228_host mode=bp1-stop bp=0xff00 stall=4/40 bulk_rate=0.0
+[2026-11-27T02:29:54Z]   [PASS] A1_F16_s4ms        bp1_stop    rep=2 | RPC p50/p99=  23.4/ 3935.0us (SLO100= 65.7%, gap=  4196us) | DDIO=100.0% IMC=0.11GB/s KV_p99= 51.0ns | bp_stalls=391255 h_stage_pk=244 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:29:58Z]   [PASS] A1_F64_s4ms        bp1_stop    rep=2 | RPC p50/p99=  23.6/ 3945.0us (SLO100= 65.6%, gap=  4211us) | DDIO=100.0% IMC=0.24GB/s KV_p99= 99.0ns | bp_stalls=392577 h_stage_pk=185 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:30:01Z]   [RETRY] A1_F256_s4ms bp1_stop rep=2 attempt=1: ['cpu_ghz=3.788']
+[2026-11-27T02:30:04Z]   [PASS] A1_F256_s4ms       bp1_stop    rep=2 | RPC p50/p99=  23.4/ 3935.0us (SLO100= 65.6%, gap=  4179us) | DDIO=100.0% IMC=0.14GB/s KV_p99= 53.0ns | bp_stalls=392375 h_stage_pk=203 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:30:07Z]   [PASS] A1_F1024_s4ms      bp1_stop    rep=2 | RPC p50/p99=  23.4/ 3935.0us (SLO100= 65.9%, gap=  4191us) | DDIO=100.0% IMC=0.10GB/s KV_p99= 51.0ns | bp_stalls=388637 h_stage_pk=219 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:30:08Z] Starting mrv228_host mode=bp1-stop bp=0xff00 stall=10/60 bulk_rate=0.0
+[2026-11-27T02:30:11Z]   [PASS] A2_F256_s10ms      bp1_stop    rep=2 | RPC p50/p99=1165.0/ 9865.0us (SLO100= 43.9%, gap= 10172us) | DDIO=100.0% IMC=0.11GB/s KV_p99= 51.0ns | bp_stalls=633223 h_stage_pk=141 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:30:12Z] Starting mrv228_host mode=bp1-drain bp=0xff00 stall=0/40 bulk_rate=16.0
+[2026-11-27T02:30:15Z]   [PASS] B1_F16_b64m        bp1_drain   rep=2 | RPC p50/p99=  11.7/   95.5us (SLO100= 99.1%, gap=   754us) | DDIO= 63.1% IMC=2.49GB/s KV_p99=235.0ns | bp_stalls=0 h_stage_pk=43857 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:30:19Z]   [PASS] B1_F64_b64m        bp1_drain   rep=2 | RPC p50/p99=  11.8/   96.0us (SLO100= 99.1%, gap=   778us) | DDIO= 62.6% IMC=2.52GB/s KV_p99=235.0ns | bp_stalls=0 h_stage_pk=43807 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:30:22Z]   [PASS] B1_F256_b64m       bp1_drain   rep=2 | RPC p50/p99=  11.7/   95.8us (SLO100= 99.1%, gap=   749us) | DDIO= 63.3% IMC=2.47GB/s KV_p99=235.0ns | bp_stalls=0 h_stage_pk=43792 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:30:26Z]   [PASS] B2_F256_b16m       bp1_drain   rep=2 | RPC p50/p99=  11.3/  103.8us (SLO100= 98.8%, gap=   815us) | DDIO= 98.8% IMC=0.32GB/s KV_p99=129.0ns | bp_stalls=0 h_stage_pk=11003 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:30:29Z]   [PASS] B1_F1024_b64m      bp1_drain   rep=2 | RPC p50/p99=  11.8/   95.2us (SLO100= 99.1%, gap=   763us) | DDIO= 63.2% IMC=2.61GB/s KV_p99=235.0ns | bp_stalls=0 h_stage_pk=43737 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:30:30Z] Starting mrv228_host mode=bp1-drain bp=0xff00 stall=1/20 bulk_rate=0.0
+[2026-11-27T02:30:33Z]   [PASS] A2_F256_s1ms       bp1_drain   rep=2 | RPC p50/p99=1055.0/24500.0us (SLO100=  3.3%, gap=  1223us) | DDIO= 90.8% IMC=8.37GB/s KV_p99=265.0ns | bp_stalls=775442 h_stage_pk=130796 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:30:34Z] Starting mrv228_host mode=bp1-drain bp=0xff00 stall=4/40 bulk_rate=0.0
+[2026-11-27T02:30:37Z]   [PASS] A1_F16_s4ms        bp1_drain   rep=2 | RPC p50/p99=1675.0/13745.0us (SLO100=  7.2%, gap=  3781us) | DDIO= 89.6% IMC=8.20GB/s KV_p99=261.0ns | bp_stalls=1468502 h_stage_pk=130705 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:30:41Z]   [PASS] A1_F64_s4ms        bp1_drain   rep=2 | RPC p50/p99=1725.0/16075.0us (SLO100=  6.3%, gap=  3882us) | DDIO= 88.9% IMC=7.96GB/s KV_p99=259.0ns | bp_stalls=1501767 h_stage_pk=130704 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:30:44Z]   [PASS] A1_F256_s4ms       bp1_drain   rep=2 | RPC p50/p99=1725.0/16285.0us (SLO100=  7.0%, gap=  3836us) | DDIO= 89.0% IMC=7.92GB/s KV_p99=259.0ns | bp_stalls=1497581 h_stage_pk=130662 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:30:47Z]   [PASS] A1_F1024_s4ms      bp1_drain   rep=2 | RPC p50/p99=1715.0/16625.0us (SLO100=  6.6%, gap=  3775us) | DDIO= 89.1% IMC=7.91GB/s KV_p99=259.0ns | bp_stalls=1495723 h_stage_pk=130785 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:30:48Z] Starting mrv228_host mode=bp1-drain bp=0xff00 stall=10/60 bulk_rate=0.0
+[2026-11-27T02:30:52Z]   [PASS] A2_F256_s10ms      bp1_drain   rep=2 | RPC p50/p99=2245.0/18015.0us (SLO100= 11.6%, gap=  9483us) | DDIO= 88.9% IMC=7.66GB/s KV_p99=259.0ns | bp_stalls=1737481 h_stage_pk=130642 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:30:52Z] Starting mrv228_card mode=large-sdp lcores=3-6 sdp_tx_desc=2048...
+[2026-11-27T02:30:55Z] Starting mrv228_host mode=large-sdp bp=0x0000 stall=0/40 bulk_rate=16.0
+[2026-11-27T02:30:59Z]   [PASS] B1_F16_b64m        large_sdp   rep=2 | RPC p50/p99=  11.8/   95.5us (SLO100= 99.1%, gap=   301us) | DDIO= 10.1% IMC=4.03GB/s KV_p99=231.0ns | bp_stalls=0 h_stage_pk=43825 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:31:02Z]   [PASS] B1_F64_b64m        large_sdp   rep=2 | RPC p50/p99=  11.8/   97.0us (SLO100= 99.1%, gap=   756us) | DDIO=  9.9% IMC=4.09GB/s KV_p99=231.0ns | bp_stalls=0 h_stage_pk=43938 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:31:06Z]   [PASS] B1_F256_b64m       large_sdp   rep=2 | RPC p50/p99=  11.8/   95.0us (SLO100= 99.2%, gap=   283us) | DDIO= 10.0% IMC=3.99GB/s KV_p99=231.0ns | bp_stalls=0 h_stage_pk=43796 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:31:09Z]   [PASS] B2_F256_b16m       large_sdp   rep=2 | RPC p50/p99=  11.4/  104.0us (SLO100= 98.8%, gap=   272us) | DDIO=  6.6% IMC=2.50GB/s KV_p99=221.0ns | bp_stalls=0 h_stage_pk=11016 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:31:12Z]   [PASS] B1_F1024_b64m      large_sdp   rep=2 | RPC p50/p99=  11.8/   96.7us (SLO100= 99.1%, gap=   739us) | DDIO= 10.0% IMC=4.00GB/s KV_p99=231.0ns | bp_stalls=0 h_stage_pk=43936 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:31:13Z] Starting mrv228_host mode=large-sdp bp=0x0000 stall=1/20 bulk_rate=0.0
+[2026-11-27T02:31:17Z]   [PASS] A2_F256_s1ms       large_sdp   rep=2 | RPC p50/p99=  11.1/ 2275.0us (SLO100= 95.5%, gap=   261us) | DDIO= 11.1% IMC=0.53GB/s KV_p99=103.0ns | bp_stalls=0 h_stage_pk=15840 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:31:18Z] Starting mrv228_host mode=large-sdp bp=0x0000 stall=4/40 bulk_rate=0.0
+[2026-11-27T02:31:22Z]   [PASS] A1_F16_s4ms        large_sdp   rep=2 | RPC p50/p99=  11.1/ 2325.0us (SLO100= 95.9%, gap=   292us) | DDIO= 15.9% IMC=0.64GB/s KV_p99=105.0ns | bp_stalls=0 h_stage_pk=21559 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:31:26Z]   [PASS] A1_F64_s4ms        large_sdp   rep=2 | RPC p50/p99=  11.1/ 2605.0us (SLO100= 96.1%, gap=   337us) | DDIO= 13.7% IMC=0.59GB/s KV_p99=105.0ns | bp_stalls=0 h_stage_pk=21594 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:31:31Z]   [PASS] A1_F256_s4ms       large_sdp   rep=2 | RPC p50/p99=  11.1/ 2665.0us (SLO100= 96.1%, gap=   736us) | DDIO= 13.0% IMC=0.55GB/s KV_p99=105.0ns | bp_stalls=0 h_stage_pk=21534 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:31:35Z]   [PASS] A1_F1024_s4ms      large_sdp   rep=2 | RPC p50/p99=  11.1/ 1975.0us (SLO100= 95.1%, gap=   312us) | DDIO= 10.7% IMC=0.51GB/s KV_p99=103.0ns | bp_stalls=0 h_stage_pk=28723 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:31:35Z] Starting mrv228_host mode=large-sdp bp=0x0000 stall=10/60 bulk_rate=0.0
+[2026-11-27T02:31:39Z]   [PASS] A2_F256_s10ms      large_sdp   rep=2 | RPC p50/p99=  11.1/ 2355.0us (SLO100= 96.1%, gap=   755us) | DDIO= 18.1% IMC=0.77GB/s KV_p99=107.0ns | bp_stalls=0 h_stage_pk=53878 pf_q_pk=0 slow=0.0%
+[2026-11-27T02:31:40Z] Restoring all 3 nodes to exact clean baseline...
+[2026-11-27T02:31:44Z] Waiting 21 s for post-restore EDAC / PCIe AER audit...
+[2026-11-27T02:32:06Z] Restore audit written to /home/hongtao/dev/marvell-mrv228/logs/mrv228-2026-11-27/env.json: baseline_restored_ok=True csrs_exact=True edac_zero_delta=True uncore_2200=True cpu40_3900=True merc_clean=True
