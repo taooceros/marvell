@@ -60,7 +60,7 @@ def main() -> None:
     by_arm = load_verified_runs()
     order = ["B1", "S1", "S2", "S3"]
     labels = [
-        "B1 单核基线\n(WC1 稳态\n仅核3)",
+        "B1 单核基线\n(WC1 无戳\n仅核3)",
         "S1 影子守私有行\n(读SHADOW_NEXT\n自旋私有128 B)",
         "S2 影子守前沿格\n(自旋环格\nfront+0)",
         "S3 影子守前沿+4\n(自旋环格\nfront+4)",
@@ -137,7 +137,7 @@ def main() -> None:
     ax2.legend(loc="upper left", fontsize=8.2, frameon=True, facecolor="white", framealpha=0.92)
 
     fig.suptitle(
-        "MRV-236 S 组单变量对照（WC1, next_publish=exit, 64 B, batch=1, W=64, 稳态无戳, 主机 3.90 GHz / 卡 2.00 GHz, n=3）",
+        "MRV-236 S 组单变量对照（WC1, next_publish=exit, 64 B, batch=1, W=64, 静置 12 s 无戳, 主机 3.90 GHz / 卡 2.00 GHz, n=3）",
         fontsize=10.6,
         fontweight="bold",
         y=0.98,
