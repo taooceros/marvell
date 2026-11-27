@@ -86,7 +86,7 @@ def main():
     ax1.axvspan(6.6, 12.65, color="#fef2f2", alpha=0.55, zorder=0)
     ax1.text(
         9.65, 18,
-        f"卡核超配区（K ≥ 8 对 H=1）\nNC 与 WB 均出现吞吐回落 &\n主机 CHA > 330（NC 达 {cha_nc_u4_k8:.0f}–{cha_nc_u1_k8:.0f}）",
+        f"卡核超配区（K ≥ 8 对 H=1）\n前沿 EXLMN 冲撞溢出 ~383 槽缓冲\n主机 CHA > 330（NC 达 {cha_nc_u4_k8:.0f}–{cha_nc_u1_k8:.0f}）",
         ha="center", va="bottom", fontsize=7.8, color="#991b1b",
         bbox=dict(boxstyle="round,pad=0.35", fc="#fff1f2", ec="#fca5a5", lw=0.8),
     )
@@ -157,7 +157,7 @@ def main():
         arrowprops=dict(arrowstyle="->", color="#0369a1", lw=1.0),
     )
     ax1.annotate(
-        f"WB 单向可达 {s_wb_h1[1]:.0f}–{s_wb_h1[8]:.0f} M/s\n(无 13.4 悬崖，但 K≥2 CHA 达 305–546)",
+        f"WB 宽窗 W=6144 可达 {s_wb_h1[1]:.0f}–{s_wb_h1[8]:.0f} M/s\n(突发摊薄嗅探；K≥2 CHA 达 305–546)",
         xy=(4, s_wb_h1[4]), xytext=(4.35, 73.0),
         fontsize=7.6, color="#b91c1c",
         bbox=dict(boxstyle="round,pad=0.22", fc="white", ec="#fecaca", lw=0.7, alpha=0.95),
@@ -216,10 +216,11 @@ def main():
 
     for i, (b, c_m, mp, l2, sn) in enumerate(zip(bars, chas, mops_l, l2i_l, snp_l)):
         top = c_m + cha_hi[i]
-        badge = f"CHA {c_m:.0f}\n{mp:.1f}M/s\nL2 {l2:.2f}\n嗅探 {sn:.2f}"
+        extra = "\n(r1=309,余量薄)" if i == 2 else ""
+        badge = f"CHA {c_m:.0f}{extra}\n{mp:.1f}M/s\nL2 {l2:.2f}\n嗅探 {sn:.2f}"
         y_pos = top + 16
         if i == 2:
-            y_pos = top + 30
+            y_pos = top + 24
         elif i == 4:
             y_pos = top + 14
         ax2.text(

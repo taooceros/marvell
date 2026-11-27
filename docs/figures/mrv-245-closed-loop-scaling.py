@@ -89,7 +89,7 @@ def main():
     # ------------------------------------------------------------------
     # Panel B: High-concurrency closed-loop throughput across W=64, 256, 512
     # ------------------------------------------------------------------
-    wx = np.array([0.0, 1.0, 2.0])
+    wx = np.log2([64.0, 256.0, 512.0])  # [6.0, 8.0, 9.0] proportional log2 scale
 
     def plot_w_curve(conds, xs, label, color, marker, ls="-", lw=2.3, ms=7.0, z=4):
         meds, lo, hi = [], [], []
@@ -126,7 +126,7 @@ def main():
     u1q_p99 = stats(by["cl_nc_u1q_h1_k2_w256"], lambda r: r["rtt_p99_ns"])[0]
     u1q_cha = stats(by["cl_nc_u1q_h1_k2_w256"], lambda r: r["host_pmu"]["cha_inflight"])[0]
     ax2.errorbar(
-        [1.0], [u1q_m], yerr=[[u1q_m - u1q_mn], [u1q_mx - u1q_m]],
+        [8.0], [u1q_m], yerr=[[u1q_m - u1q_mn], [u1q_mx - u1q_m]],
         color="#16a34a", marker="*", markersize=12, ls="none", capsize=3.5, zorder=7,
         label="MT_NORMAL_NC u1q (NEON) · H=1, K=2",
     )
@@ -134,28 +134,28 @@ def main():
     u4_h2_m, u4_h2_mn, u4_h2_mx = stats(by["cl_nc_u4_h2_k2_w512"], lambda r: r["mops"])
     u4_h2_cha = stats(by["cl_nc_u4_h2_k2_w512"], lambda r: r["host_pmu"]["cha_inflight"])[0]
     ax2.errorbar(
-        [2.0], [u4_h2_m], yerr=[[u4_h2_m - u4_h2_mn], [u4_h2_mx - u4_h2_m]],
+        [9.0], [u4_h2_m], yerr=[[u4_h2_m - u4_h2_mn], [u4_h2_mx - u4_h2_m]],
         color="#10b981", marker="P", markersize=8.5, ls="none", capsize=3.5, zorder=7,
         label="MT_NORMAL_NC u4 · H=2, K=2 (CHA=8.9)",
     )
 
     over_pts = [
-        (0.94, "cl_nc_u1_h1_k8_w256"),
-        (1.06, "cl_nc_u4_h1_k2_w256"),
-        (2.0, "cl_nc_u1_h2_k8_w512"),
+        (7.92, "cl_nc_u1_h1_k8_w256"),
+        (8.08, "cl_nc_u4_h1_k2_w256"),
+        (9.0, "cl_nc_u1_h2_k8_w512"),
     ]
     ox = [p[0] for p in over_pts]
     om = [stats(by[p[1]], lambda r: r["mops"])[0] for p in over_pts]
     ax2.scatter(
         ox, om, facecolors="#fffbeb", edgecolors="#d97706", marker="o", s=58, lw=1.8, zorder=6,
-        label="工程边界：卡核超配闭环坍缩 (exlmn≈0.8–1.1, l2i=0)",
+        label="工程边界：前沿 EXLMN 冲撞坍缩 (l2i=0)",
     )
 
     h2_p50 = stats(by["cl_nc_u1_h2_k4_w512"], lambda r: r["rtt_p50_ns"])[0]
     h2_max = stats(by["cl_nc_u1_h2_k4_w512"], lambda r: r["mops"])[2]
     ax2.annotate(
         f"H=2, K=4 达 {m_h2_k4[2]:.1f} M/s\n(峰 {h2_max:.1f}, p50 {h2_p50/1000:.2f} µs)",
-        xy=(2.0, m_h2_k4[2]), xytext=(1.15, 130.5),
+        xy=(9.0, m_h2_k4[2]), xytext=(7.55, 130.5),
         fontsize=8.3, fontweight="bold", color="#047857",
         bbox=dict(boxstyle="round,pad=0.22", fc="white", ec="#a7f3d0", lw=0.7, alpha=0.95),
         arrowprops=dict(arrowstyle="->", color="#047857", lw=1.2),
@@ -163,36 +163,36 @@ def main():
     wb_ratio = u1q_m / m_wb_k4[1]
     ax2.annotate(
         f"H=1 最优 (u1q): {u1q_m:.1f} M/s ({wb_ratio:.1f}× WB)\np50 {u1q_p50/1000:.2f} / p99 {u1q_p99/1000:.2f} µs, CHA {u1q_cha:.1f}",
-        xy=(1.0, u1q_m), xytext=(-0.14, 79.0),
+        xy=(8.0, u1q_m), xytext=(5.82, 79.0),
         fontsize=7.9, fontweight="bold", color="#15803d",
         bbox=dict(boxstyle="round,pad=0.22", fc="white", ec="#bbf7d0", lw=0.7, alpha=0.95),
         arrowprops=dict(arrowstyle="->", color="#15803d", lw=1.2),
     )
     ax2.annotate(
         f"H=2, K=2 u4: {u4_h2_m:.1f} M/s\n仅 2 卡核, CHA {u4_h2_cha:.1f}",
-        xy=(2.0, u4_h2_m), xytext=(1.22, 74.5),
+        xy=(9.0, u4_h2_m), xytext=(8.22, 71.0),
         fontsize=8.0, color="#059669",
         bbox=dict(boxstyle="round,pad=0.22", fc="white", ec="#a7f3d0", lw=0.7, alpha=0.95),
         arrowprops=dict(arrowstyle="->", color="#059669", lw=1.0),
     )
     ax2.annotate(
-        f"超配闭环坍缩 ({om[0]:.1f} / {om[1]:.1f} / {om[2]:.1f} M/s)\n观测：l2i=0, exlmn=0.82–1.07/p",
-        xy=(1.06, om[1]), xytext=(1.10, 31.0),
-        fontsize=7.6, color="#b45309",
+        f"超配坍缩 ({om[0]:.1f} / u4:{om[1]:.1f} / {om[2]:.1f} M/s)\nW=256 CHA=1.8; W=512 溢出 CHA=121",
+        xy=(8.08, om[1]), xytext=(7.20, 31.0),
+        fontsize=7.5, color="#b45309",
         bbox=dict(boxstyle="round,pad=0.2", fc="#fffbeb", ec="#fcd34d", lw=0.7, alpha=0.95),
         arrowprops=dict(arrowstyle="->", color="#d97706", lw=1.0),
     )
     ax2.text(
-        1.42, m_wb_k4[1] - 7.5,
-        f"Normal-WB 闭环墙：{m_wb_k4[1]:.1f} M/s",
-        fontsize=8.0, color="#b91c1c", fontweight="bold",
+        7.85, m_wb_k4[1] - 7.5,
+        f"Normal-WB 闭环墙：{m_wb_k4[1]:.1f} M/s (W=512 CHA=125)",
+        fontsize=7.6, color="#b91c1c", fontweight="bold",
     )
 
     ax2.set_xticks(wx)
     ax2.set_xticklabels(["W = 64", "W = 256", "W = 512"], fontsize=9.6)
-    ax2.set_xlim(-0.22, 2.25)
+    ax2.set_xlim(5.65, 9.45)
     ax2.set_ylim(0, 152)
-    ax2.set_xlabel("闭环并发窗口 W（在途请求数，每包 64 B 双向校验）", fontsize=10)
+    ax2.set_xlabel("闭环并发窗口 W（log2 比例刻度，每包 64 B 双向校验）", fontsize=10)
     ax2.set_ylabel("闭环乒乓吞吐（Mpps）", fontsize=10)
     ax2.set_title("B. 高并发闭环吞吐：按主机供给配卡核最高 76–120 M/s", fontsize=10.6, fontweight="bold", pad=8)
     ax2.legend(loc="upper left", fontsize=7.1, frameon=True, framealpha=0.95)

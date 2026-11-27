@@ -50,7 +50,7 @@ def main():
     cha_nc_u1_k8 = stats(by["tx_nc_u1_h1_k8"], lambda r: r["host_pmu"]["cha_inflight"])[0]
 
     fig, (ax1, ax2, ax3) = plt.subplots(
-        1, 3, figsize=(16.0, 5.8), gridspec_kw={"width_ratios": [0.90, 1.06, 1.38]}
+        1, 3, figsize=(17.4, 6.0), gridspec_kw={"width_ratios": [0.85, 1.15, 1.62]}
     )
 
     # ------------------------------------------------------------------
@@ -96,9 +96,10 @@ def main():
     b_specs = [
         ("cl_wb_raw_k4_w256", "WB 无控\n(K=4)", "#dc2626"),
         ("cl_wb_hyst32b16_k4_w256", "软件 pacing\n(C32 B16, K=4)", "#d97706"),
-        ("cl_wb_db32_k4_w256", "解耦门铃\n(B=32, K=4)", "#60a5fa"),
-        ("cl_wb_db32_k1_w256", "解耦门铃\n(B=32, K=1)", "#2563eb"),
-        ("cl_nc_u1q_h1_k2_w256", "MT_NORMAL_NC\n(u1q, K=2) ★", "#16a34a"),
+        ("cl_wb_db32_k4_w256", "解耦门铃\nB32 (K=4)", "#60a5fa"),
+        ("cl_wb_db32_k1_w256", "解耦门铃\nB32 (K=1)", "#2563eb"),
+        ("cl_nc_u1_h1_k2_w256", "NC 标量\nu1 (K=2)", "#0ea5e9"),
+        ("cl_nc_u1q_h1_k2_w256", "NC NEON\nu1q (K=2) ★", "#16a34a"),
     ]
     xb = np.arange(len(b_specs))
     bm, blo, bhi = [], [], []
@@ -120,7 +121,7 @@ def main():
             xi, m + hi + 2.2,
             f"{m:.1f} M/s\np50 {p5:.1f}µs\np99 {p9:.1f}µs\nCHA {ch:.1f}",
             ha="center", va="bottom", fontsize=7.4, color="#0f172a",
-            fontweight="bold" if xi == 4 else "normal",
+            fontweight="bold" if xi == 5 else "normal",
             linespacing=1.18,
         )
 
@@ -134,11 +135,13 @@ def main():
     # Panel C: Track 3 — One-Way TX (H=1, full 64 B verify), symmetric CHA disclosure
     # ------------------------------------------------------------------
     c_specs = [
-        ("tx_wb_pace32g200_k4", "软件 pacing\nB32 g200\n(K=4)", "#d97706"),
+        ("tx_wb_pace32g200_k4", "pacing\nB32 g200\n(K=4)", "#d97706"),
         ("tx_wb_u1_h1_k4", "WB 无控\n(K=4)", "#dc2626"),
-        ("tx_wb_db32_k4", "解耦门铃\nB=32\n(K=4)", "#93c5fd"),
-        ("tx_wb_db64_k2", "解耦门铃\nB=64\n(K=2)", "#60a5fa"),
-        ("tx_wb_db128_k2", "解耦门铃\nB=128\n(K=2)", "#2563eb"),
+        ("tx_wb_db32_k4", "门铃 B32\n(K=4)", "#bfdbfe"),
+        ("tx_wb_db32_k2", "门铃 B32\n(K=2)", "#93c5fd"),
+        ("tx_wb_db64_k4", "门铃 B64\n(K=4)", "#60a5fa"),
+        ("tx_wb_db64_k2", "门铃 B64\n(K=2)", "#3b82f6"),
+        ("tx_wb_db128_k2", "门铃 B128\n(K=2)", "#1d4ed8"),
         ("tx_nc_u4_h1_k8", "NC 超配\nu4 (K=8)", "#ea580c"),
         ("tx_nc_u4_h1_k4", "NC 匹配\nu4 (K=4) ★", "#16a34a"),
     ]
@@ -164,35 +167,35 @@ def main():
     for xi, m, hi, ch in zip(xc, cm, chi, ccha):
         danger = ch >= 330
         cha_txt = f"CHA {ch:.0f}\n(超330)" if danger else f"CHA {ch:.1f}\n(安全)"
-        txt_col = "#b91c1c" if danger else ("#15803d" if xi == 6 else "#0f172a")
+        txt_col = "#b91c1c" if danger else ("#15803d" if xi == 8 else "#0f172a")
         ax3.text(
             xi, m + hi + 2.8,
             f"{m:.1f}\n{cha_txt}",
-            ha="center", va="bottom", fontsize=7.1, color=txt_col,
-            fontweight="bold" if (danger or xi == 6) else "normal",
-            linespacing=1.15,
-            bbox=dict(boxstyle="round,pad=0.10", fc="white", ec="none", alpha=0.90),
+            ha="center", va="bottom", fontsize=6.8, color=txt_col,
+            fontweight="bold" if (danger or xi == 8) else "normal",
+            linespacing=1.14,
+            bbox=dict(boxstyle="round,pad=0.08", fc="white", ec="none", alpha=0.90),
             zorder=6,
         )
 
     ax3.set_xticks(xc)
-    ax3.set_xticklabels([s[1] for s in c_specs], fontsize=7.7)
-    ax3.set_ylim(0, 206)
+    ax3.set_xticklabels([s[1] for s in c_specs], fontsize=7.2)
+    ax3.set_ylim(0, 212)
     ax3.set_ylabel("单向校验吞吐（Mpps，越高越好）", fontsize=9.8)
-    ax3.set_title("赛道 3 · 单向直推（H=1，含 NC 超配对照）", fontsize=10.6, fontweight="bold", pad=8)
+    ax3.set_title("赛道 3 · 单向直推（H=1，补齐同批 B32/B64 门铃与 NC 超配）", fontsize=10.4, fontweight="bold", pad=8)
 
     fig.suptitle(
         "MRV-245 · 三方正面对决：MT_NORMAL_NC (0x44) vs 软件 pacing vs 解耦合并门铃",
         fontsize=12.6, fontweight="bold", y=0.99,
     )
     fig.text(
-        0.5, 0.01,
+        0.5, 0.008,
         (
-            f"结论速览：软件 pacing 锁死吞吐（闭环 {bm[1]:.1f} / 单向 {cm[0]:.1f} M/s，单向 CHA 仍达 {ccha[0]:.0f}）；"
-            f"解耦门铃全核数低 CHA（9–13）但空载 +{tax_ns:.0f} ns、单向封顶 {cm[4]:.1f} M/s；"
-            f"MT_NORMAL_NC 在核数匹配下三赛道领先（{p50_a[0]:.0f} ns / {bm[4]:.1f} M/s / {cm[6]:.1f} M/s, CHA {ccha[6]:.1f}；超配 K=8 时 CHA 升至 {cha_nc_u4_k8:.0f}–{cha_nc_u1_k8:.0f}）"
+            f"公平性披露：赛道 2 同标量 u1 下 2核 NC ({bm[4]:.1f}) 与 1核门铃 ({bm[3]:.1f}) 持平，u1q NEON 达 {bm[5]:.1f} M/s；"
+            f"赛道 3 门铃走慢分支 (72.4 ins/p vs NC 31.9，同紧循环 B=128 理论 ~138 M/s，真实 SFENCE+门铃约 ~135 ns)；"
+            f"pacing B32 g200 因 200 ns 空隙诱发卡核追平背压致 CHA={ccha[0]:.0f}"
         ),
-        ha="center", fontsize=7.9, color="#334155", fontweight="bold",
+        ha="center", fontsize=7.6, color="#334155", fontweight="bold",
     )
     fig.tight_layout(rect=[0, 0.04, 1, 0.945])
     png = mrvplot.HERE / "mrv-245-vs-pacing-doorbell.png"
