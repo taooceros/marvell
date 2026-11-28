@@ -1,0 +1,406 @@
+% Primary verified references (audited against official PDFs / Crossref in MRV-113, MRV-173 & MRV-194)
+
+% --- Coherent NICs, PCIe PIO & Hardware-Integrated NICs ---
+@inproceedings{schuh2024ccnic,
+  author    = {Schuh, Henry N. and Krishnamurthy, Arvind and Culler, David and Levy, Henry M. and Rizzo, Luigi and Khan, Samira and Stephens, Brent E.},
+  title     = {{CC-NIC}: a Cache-Coherent Interface to the {NIC}},
+  booktitle = {Proceedings of the 29th ACM International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS '24)},
+  volume    = {1},
+  pages     = {52--68},
+  year      = {2024},
+  doi       = {10.1145/3617232.3624868}
+}
+
+@inproceedings{cxlnic2025,
+  author    = {Ji, Houxiang and Yuan, Yifan and Zhou, Yang and Jeong, Ipoom and Wang, Ren and Agarwal, Saksham and Kim, Nam Sung},
+  title     = {Re-architecting End-host Networking with {CXL}: Coherence, Memory, and Offloading},
+  booktitle = {Proceedings of the 58th IEEE/ACM International Symposium on Microarchitecture (MICRO '25)},
+  pages     = {1809--1823},
+  year      = {2025},
+  doi       = {10.1145/3725843.3756102}
+}
+
+@inproceedings{liew2025hotos,
+  author    = {Liew, Wei Siew and Rahaman, Md Ashfaqur and McMahon, James and Stutsman, Ryan and Nagarajan, Vijay},
+  title     = {Stop Taking the Scenic Route: the Shortest Distance Between the {CPU} and the {NIC} is {MMIO}},
+  booktitle = {Proceedings of the 20th Workshop on Hot Topics in Operating Systems (HotOS '25)},
+  pages     = {1--7},
+  year      = {2025},
+  doi       = {10.1145/3713082.3730389}
+}
+
+@inproceedings{liew2026asplos,
+  author    = {Liew, Wei Siew and Rahaman, Md Ashfaqur and Patil, Adarsh and Stutsman, Ryan and Nagarajan, Vijay},
+  title     = {Efficient Remote Memory Ordering for Non-Coherent Interconnects},
+  booktitle = {Proceedings of the 31st ACM International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS '26)},
+  volume    = {2},
+  year      = {2026},
+  doi       = {10.1145/3779212.3790156}
+}
+
+@inproceedings{sadok2023enso,
+  author    = {Sadok, Hugo and Atre, Nirav and Zhao, Zhipeng and Berger, Daniel S. and Hoe, James C. and Panda, Aurojit and Sherry, Justine and Wang, Ren},
+  title     = {Ens\={o}: A Streaming Interface for {NIC}-Application Communication},
+  booktitle = {Proceedings of the 17th USENIX Symposium on Operating Systems Design and Implementation (OSDI '23)},
+  pages     = {1005--1025},
+  year      = {2023}
+}
+
+@inproceedings{liu2025ceio,
+  author    = {Liu, Bowen and Huang, Xinyang and Li, Qijing and Huang, Zhuobin and Sun, Yijun and Li, Wenxue and Zhang, Junxue and Yin, Ping and Chen, Kai},
+  title     = {{CEIO}: A Cache-Efficient Network {I/O} Architecture for {NIC}-{CPU} Data Paths},
+  booktitle = {Proceedings of the ACM SIGCOMM 2025 Conference},
+  pages     = {381--394},
+  year      = {2025},
+  doi       = {10.1145/3718958.3750488}
+}
+
+@inproceedings{lazarev2021dagger,
+  author    = {Lazarev, Nikita and Xiang, Shaojie and Adit, Neil and Zhang, Zhiru and Delimitrou, Christina},
+  title     = {Dagger: Efficient and Fast {RPCs} in Cloud Microservices with Near-Memory Reconfigurable {NICs}},
+  booktitle = {Proceedings of the 26th ACM International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS '21)},
+  year      = {2021}
+}
+
+@inproceedings{cock2022enzian,
+  author    = {Cock, David and Ramdas, Abishek and Kowalski, Daniel and Achermann, Reto and Roscoe, Timothy},
+  title     = {Enzian: an Open, General, {CPU/FPGA} Platform for Systems Software Research},
+  booktitle = {Proceedings of the 27th ACM International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS '22)},
+  year      = {2022}
+}
+
+@misc{ruzhanskaia2024pio,
+  author       = {Ruzhanskaia, Anastasiia and Xu, Pengcheng and Cock, David and Roscoe, Timothy},
+  title        = {Rethinking Programmed {I/O} for Fast Devices, Cheap Cores, and Coherent Interconnects},
+  howpublished = {arXiv:2409.08141v2},
+  year         = {2024}
+}
+
+@inproceedings{ibanez2021nanopu,
+  author    = {Ibanez, Stephen and Mallery, Alex and Arslan, Serhat and Jepsen, Theo and Shahbaz, Muhammad and Kim, Changhoon and McKeown, Nick},
+  title     = {The {nanoPU}: A Nanosecond Network Stack for Datacenters},
+  booktitle = {Proceedings of the 15th USENIX Symposium on Operating Systems Design and Implementation (OSDI '21)},
+  pages     = {239--256},
+  year      = {2021}
+}
+
+@inproceedings{kalia2016rdma,
+  author    = {Kalia, Anuj and Kaminsky, Michael and Andersen, David G.},
+  title     = {Design Guidelines for High Performance {RDMA} Systems},
+  booktitle = {Proceedings of the 2016 USENIX Annual Technical Conference (USENIX ATC '16)},
+  pages     = {437--450},
+  year      = {2016}
+}
+
+@inproceedings{kalia2016fasst,
+  author    = {Kalia, Anuj and Kaminsky, Michael and Andersen, David G.},
+  title     = {{FaSST}: Fast, Scalable and Simple Distributed Transactions with Two-Sided ({RDMA}) Datagram {RPCs}},
+  booktitle = {Proceedings of the 12th USENIX Symposium on Operating Systems Design and Implementation (OSDI '16)},
+  pages     = {185--201},
+  year      = {2016}
+}
+
+% --- SPSC Lock-Free Queues & Asymmetric Synchronization ---
+@article{lamport1977concurrent,
+  author  = {Lamport, Leslie},
+  title   = {Concurrent Reading and Writing},
+  journal = {Communications of the ACM},
+  volume  = {20},
+  number  = {11},
+  pages   = {806--811},
+  year    = {1977},
+  doi     = {10.1145/359863.359878}
+}
+
+@article{lamport1983specifying,
+  author  = {Lamport, Leslie},
+  title   = {Specifying Concurrent Program Modules},
+  journal = {ACM Transactions on Programming Languages and Systems (TOPLAS)},
+  volume  = {5},
+  number  = {2},
+  pages   = {190--222},
+  year    = {1983},
+  doi     = {10.1145/69624.357207}
+}
+
+@inproceedings{giacomoni2008fastforward,
+  author    = {Giacomoni, John and Moseley, Tipp and Vachharajani, Manish},
+  title     = {{FastForward} for Efficient Pipeline Parallelism: A Cache-Optimized Concurrent Lock-Free Queue},
+  booktitle = {Proceedings of the 13th ACM SIGPLAN Symposium on Principles and Practice of Parallel Programming (PPoPP '08)},
+  pages     = {43--52},
+  year      = {2008},
+  doi       = {10.1145/1345206.1345215}
+}
+
+@inproceedings{lee2010mcringbuffer,
+  author    = {Lee, Patrick P. C. and Bu, Tian and Chandranmenon, Girish},
+  title     = {A Lock-Free, Cache-Efficient Multi-Core Synchronization Mechanism for Line-Rate Network Traffic Monitoring},
+  booktitle = {Proceedings of the 24th IEEE International Parallel and Distributed Processing Symposium (IPDPS '10)},
+  year      = {2010},
+  doi       = {10.1109/ipdps.2010.5470368}
+}
+
+@article{wang2013bqueue,
+  author  = {Wang, Junchang and Zhang, Kai and Tang, Xinan and Hua, Bei},
+  title   = {{B-Queue}: Efficient and Practical Queuing for Fast Core-to-Core Communication},
+  journal = {International Journal of Parallel Programming (IJPP)},
+  volume  = {41},
+  number  = {1},
+  pages   = {137--159},
+  year    = {2013},
+  doi     = {10.1007/s10766-012-0213-x}
+}
+
+@inproceedings{le2013weakrb,
+  author    = {L\^{e}, Nhat Minh and Guatto, Adrien and Cohen, Albert and Pop, Antoniu},
+  title     = {Correct and Efficient Bounded {FIFO} Queues},
+  booktitle = {Proceedings of the 25th International Symposium on Computer Architecture and High Performance Computing (SBAC-PAD '13)},
+  year      = {2013},
+  doi       = {10.1109/sbac-pad.2013.8}
+}
+
+@article{maffione2019spsc,
+  author  = {Maffione, Vincenzo and Lettieri, Giuseppe and Rizzo, Luigi},
+  title   = {Cache-Aware Design of General-Purpose Single-Producer--Single-Consumer Queues},
+  journal = {Software: Practice and Experience},
+  volume  = {49},
+  number  = {5},
+  pages   = {748--779},
+  year    = {2019},
+  doi     = {10.1002/spe.2675}
+}
+
+@article{anderson1990spinlock,
+  author  = {Anderson, Thomas E.},
+  title   = {The Performance of Spin Lock Alternatives for Shared-Memory Multiprocessors},
+  journal = {IEEE Transactions on Parallel and Distributed Systems (TPDS)},
+  volume  = {1},
+  number  = {1},
+  pages   = {6--16},
+  year    = {1990},
+  doi     = {10.1109/71.80120}
+}
+
+@article{mellorcrummey1991mcs,
+  author  = {Mellor-Crummey, John M. and Scott, Michael L.},
+  title   = {Algorithms for Scalable Synchronization on Shared-Memory Multiprocessors},
+  journal = {ACM Transactions on Computer Systems (TOCS)},
+  volume  = {9},
+  number  = {1},
+  pages   = {21--65},
+  year    = {1991},
+  doi     = {10.1145/103727.103729}
+}
+
+@inproceedings{karlin1991competitive,
+  author    = {Karlin, Anna R. and Li, Kai and Manasse, Mark S. and Owicki, Susan},
+  title     = {Empirical Studies of Competitive Spinning for a Shared-Memory Multiprocessor},
+  booktitle = {Proceedings of the 13th ACM Symposium on Operating Systems Principles (SOSP '91)},
+  pages     = {41--55},
+  year      = {1991},
+  doi       = {10.1145/121132.286599}
+}
+
+@inproceedings{boehm2012seqlock,
+  author    = {Boehm, Hans-J.},
+  title     = {Can Seqlocks Get Along with Programming Language Memory Models?},
+  booktitle = {Proceedings of the 2012 ACM SIGPLAN Workshop on Memory Systems Performance and Correctness (MSPC '12)},
+  pages     = {12--20},
+  year      = {2012},
+  doi       = {10.1145/2247684.2247688}
+}
+
+% --- PCIe, DDIO, Host Interconnect Congestion & SmartNIC Characterization ---
+@inproceedings{neugebauer2018pcie,
+  author    = {Neugebauer, Rolf and Antichi, Gianni and Zazo, Jos\'{e} Fernando and Audzevich, Yury and L\'{o}pez-Buedo, Sergio and Moore, Andrew W.},
+  title     = {Understanding {PCIe} Performance for End Host Networking},
+  booktitle = {Proceedings of the ACM SIGCOMM 2018 Conference},
+  pages     = {327--341},
+  year      = {2018},
+  doi       = {10.1145/3230543.3230560}
+}
+
+@inproceedings{tootoonchian2018resq,
+  author    = {Tootoonchian, Amin and Panda, Aurojit and Lan, Chang and Walls, Melvin and Argyraki, Katerina and Ratnasamy, Sylvia and Shenker, Scott},
+  title     = {{ResQ}: Enabling {SLOs} in Network Function Virtualization},
+  booktitle = {Proceedings of the 15th USENIX Symposium on Networked Systems Design and Implementation (NSDI '18)},
+  pages     = {283--297},
+  year      = {2018}
+}
+
+@inproceedings{farshin2020ddio,
+  author    = {Farshin, Alireza and Roozbeh, Amir and Maguire, Jr., Gerald Q. and Kosti\'{c}, Dejan},
+  title     = {Reexamining Direct Cache Access to Optimize {I/O} Intensive Applications for Multi-Hundred-Gigabit Networks},
+  booktitle = {Proceedings of the 2020 USENIX Annual Technical Conference (USENIX ATC '20)},
+  pages     = {673--689},
+  year      = {2020}
+}
+
+@inproceedings{agarwal2023hostcc,
+  author    = {Agarwal, Saksham and Krishnamurthy, Arvind and Agarwal, Rachit},
+  title     = {Host Congestion Control},
+  booktitle = {Proceedings of the ACM SIGCOMM 2023 Conference},
+  pages     = {275--287},
+  year      = {2023},
+  doi       = {10.1145/3603269.3604878}
+}
+
+@inproceedings{vuppalapati2024hostnet,
+  author    = {Vuppalapati, Midhul and Agarwal, Saksham and Schuh, Henry N. and Kasikci, Baris and Krishnamurthy, Arvind and Agarwal, Rachit},
+  title     = {Understanding the Host Network},
+  booktitle = {Proceedings of the ACM SIGCOMM 2024 Conference},
+  pages     = {581--594},
+  year      = {2024},
+  doi       = {10.1145/3651890.3672271}
+}
+
+@inproceedings{liu2023hostping,
+  author    = {Liu, Kefei and Jiang, Zhuo and Zhang, Jiao and Wei, Haoran and Zhong, Xiaolong and Tan, Lizhuang and Pan, Tian and Huang, Tao},
+  title     = {Hostping: Diagnosing Intra-Host Network Bottlenecks in {RDMA} Servers},
+  booktitle = {Proceedings of the 20th USENIX Symposium on Networked Systems Design and Implementation (NSDI '23)},
+  pages     = {15--29},
+  year      = {2023}
+}
+
+@article{wan2025rhcc,
+  author  = {Wan, Zirui and Zhang, Jiao and Wang, Yuxiang and Liu, Kefei and Pan, Haoyu and Huang, Tao},
+  title   = {Rethinking Intra-Host Congestion Control in {RDMA} Networks},
+  journal = {IEEE/ACM Transactions on Networking (ToN)},
+  volume  = {33},
+  number  = {3},
+  pages   = {1189--1202},
+  year    = {2025},
+  doi     = {10.1109/ton.2024.3524247}
+}
+
+@inproceedings{wei2023smartnic,
+  author    = {Wei, Xingda and Cheng, Rongxin and Yang, Yuhan and Chen, Rong and Chen, Haibo},
+  title     = {Characterizing Off-Path {SmartNIC} for Accelerating Distributed Systems},
+  booktitle = {Proceedings of the 17th USENIX Symposium on Operating Systems Design and Implementation (OSDI '23)},
+  pages     = {987--1004},
+  year      = {2023}
+}
+
+@article{liu2026smartnic,
+  author  = {Liu, Siqi and Tahmasbi Arashloo, Mina and Boutaba, Raouf},
+  title   = {The Hidden Cost of Heterogeneity: Navigating Internal Contention in {SoC} {SmartNICs}},
+  journal = {Proceedings of the ACM on Measurement and Analysis of Computing Systems (POMACS / SIGMETRICS '26)},
+  volume  = {10},
+  number  = {3},
+  pages   = {1--27},
+  year    = {2026},
+  doi     = {10.1145/3857384}
+}
+
+@inproceedings{pismenny2023shring,
+  author    = {Pismenny, Boris and Morrison, Adam and Tsafrir, Dan},
+  title     = {{ShRing}: Networking with Shared Receive Rings},
+  booktitle = {Proceedings of the 17th USENIX Symposium on Operating Systems Design and Implementation (OSDI '23)},
+  pages     = {949--968},
+  year      = {2023}
+}
+
+@inproceedings{pismenny2025rxbisect,
+  author    = {Pismenny, Boris and Morrison, Adam and Tsafrir, Dan},
+  title     = {Disentangling the Dual Role of {NIC} Receive Rings},
+  booktitle = {Proceedings of the 19th USENIX Symposium on Operating Systems Design and Implementation (OSDI '25)},
+  pages     = {651--669},
+  year      = {2025}
+}
+
+@article{wang2026sumeru,
+  author  = {Wang, Minhu and Xu, Mingwei and Wu, Jianping},
+  title   = {Sumeru: Towards Understanding and Achieving Cache-Optimal Inbound Network {I/O}},
+  journal = {Proceedings of the ACM on Measurement and Analysis of Computing Systems (POMACS / SIGMETRICS '26)},
+  volume  = {10},
+  number  = {1},
+  pages   = {1--34},
+  year    = {2026},
+  doi     = {10.1145/3788104}
+}
+
+@inproceedings{song2026sepia,
+  author    = {Song, Changwoo and Kim, Sanghyun and Oh, Jinhyeok and Cai, Qizhe and Kim, Joonsung and Hwang, Jaehyun},
+  title     = {When {DDIO} Meets Page Coloring: Revisiting {DDIO} Performance with {Sepia}},
+  booktitle = {Proceedings of the 20th USENIX Symposium on Operating Systems Design and Implementation (OSDI '26)},
+  pages     = {1547--1562},
+  year      = {2026}
+}
+
+% --- Workload & Architecture Anchors ---
+@inproceedings{singhvi2021cliquemap,
+  author    = {Singhvi, Arjun and Akella, Aditya and Anderson, Maggie and Cauble, Rob and Deshmukh, Harshad and Gibson, Dan and Kaffes, Kostis and Kalia, Anuj and Khandelwal, Anurag and Krishnamurthy, Arvind and others},
+  title     = {{CliqueMap}: Productionizing an {RMA}-Based Distributed Caching System},
+  booktitle = {Proceedings of the ACM SIGCOMM 2021 Conference},
+  year      = {2021}
+}
+
+@misc{intelddio,
+  author = {{Intel Corporation}},
+  title  = {Intel Data Direct {I/O} Technology ({Intel DDIO})},
+  year   = {2023}
+}
+
+@inproceedings{kalia2019erpc,
+  author    = {Kalia, Anuj and Kaminsky, Michael and Andersen, David G.},
+  title     = {Datacenter {RPCs} can be General and Fast},
+  booktitle = {Proceedings of the 16th USENIX Symposium on Networked Systems Design and Implementation (NSDI '19)},
+  pages     = {1--16},
+  year      = {2019}
+}
+
+@inproceedings{atikoglu2012memcached,
+  author    = {Atikoglu, Berk and Xu, Yuehai and Frachtenberg, Eitan and Jiang, Song and Paleczny, Mike},
+  title     = {Workload Analysis of a Large-Scale Key-Value Store},
+  booktitle = {Proceedings of the 12th ACM SIGMETRICS/PERFORMANCE Joint International Conference on Measurement and Modeling of Computer Systems (SIGMETRICS '12)},
+  pages     = {53--64},
+  year      = {2012},
+  doi       = {10.1145/2254756.2254766}
+}
+
+@article{mccalpin1995stream,
+  author  = {McCalpin, John D.},
+  title   = {Memory Bandwidth and Machine Balance in Current High Performance Computers},
+  journal = {IEEE Computer Society Technical Committee on Computer Architecture (TCCA) Newsletter},
+  pages   = {19--25},
+  year    = {1995}
+}
+
+@misc{mccalpin2023spr,
+  author       = {McCalpin, John D.},
+  title        = {Bandwidth Limits in the {Intel Xeon Max} ({Sapphire Rapids} with {HBM}) Processors},
+  howpublished = {arXiv:2311.04797},
+  year         = {2023}
+}
+
+@manual{inteldsa2023,
+  organization = {{Intel Corporation}},
+  title        = {Intel Data Streaming Accelerator ({Intel DSA}) Architecture Specification},
+  note         = {Revision 2.0, Document 341204},
+  year         = {2023}
+}
+
+@manual{intelmovdir2024,
+  organization = {{Intel Corporation}},
+  title        = {Intel 64 and {IA-32} Architectures Software Developer's Manual, Volume 2 ({MOVDIR64B}) and Volume 3 (Memory Cache Control)},
+  year         = {2024}
+}
+
+@manual{arm2024v8,
+  organization = {{Arm Limited}},
+  title        = {Arm Architecture Reference Manual for {A}-profile Architecture ({MAIR\_EL1} and Memory Types)},
+  year         = {2024}
+}
+
+@manual{pcisig2019pcie5,
+  organization = {{PCI-SIG}},
+  title        = {{PCI Express} Base Specification Revision 5.0},
+  year         = {2019}
+}
+
+@misc{memcached2025,
+  author       = {{Memcached Project}},
+  title        = {Memcached 1.6.45},
+  howpublished = {\url{https://github.com/memcached/memcached}},
+  year         = {2025}
+}

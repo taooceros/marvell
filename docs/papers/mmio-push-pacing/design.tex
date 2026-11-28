@@ -1,0 +1,68 @@
+\section{Pacing and Consumption Principles}
+\label{sec:design}
+
+Our dual-target analysis yields a unified design goal: \emph{keep aggregate in-flight posted MMIO writes safely below the host \texttt{CHA TOR} cliff (\texttt{WCiLF\,$\le$\,330}) while preventing device receivers from colliding with the unwritten write frontier.} We organize the required mechanisms into three lightweight primitives spanning the host producer, the MMIO portal layout, and the device consumer (\autoref{tab:primitives}).
+
+\begin{table}[t]
+  \centering
+  \scriptsize
+  \setlength{\tabcolsep}{2.5pt}
+  \begin{tabularx}{\columnwidth}{@{}>{\raggedright\arraybackslash}p{0.58in} >{\raggedright\arraybackslash}p{0.86in} Y@{}}
+    \toprule
+    \textbf{Layer} & \textbf{Primitive} & \textbf{Guarantee \& Trade-off} \\
+    \midrule
+    Host TX (SW) & Rate + burst (\texttt{b\,$\le$\,128}) & Bounds sustained injection ($\le$94\% link cap) and multi-core micro-bursts; restores 0\% neighbor loss at 8c 165\,Mpps. \\
+    Portal (HW) & Disjoint split ($K=64/N$) & Uses x86 \texttt{(LP, 64\,B line)} serialization ($\sum K_i \le 64 < 200$) for zero-SW-overhead \texttt{TOR} bound (validation pending). \\
+    Device RX (A) & \texttt{MT\_NORMAL\_NC} + backoff & Zero \texttt{SFENCE}, zero L1/L2 snoop, 901\,ns \texttt{W=1} RTT, 160--174\,Mpps; requires \texttt{TAD} PoC + empty-poll backoff against \texttt{EXLMN}. \\
+    Device RX (B) & Coalesced DB + \texttt{SFENCE} & Portable across cacheable NICs; 1 card core, \texttt{CHA\,=\,6--12}, strict multi-line ordering; pays +195\,ns at \texttt{W=1}. \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Summary of host-side pacing and device-side consumption primitives for safe MMIO direct push.}
+  \label{tab:primitives}
+\end{table}
+
+\subsection{Host-Side Coupled Rate and Micro-Burst Pacing}
+\label{sec:design_host}
+
+A natural first attempt to protect co-located workloads is macro-level rate limiting---capping aggregate MMIO injection just below the PCIe link ceiling (\eg{} 165\,Mpps across 8 cores vs. the 175.5\,Mpps Gen5\,$\times$4 limit). Surprisingly, \emph{aggregate rate pacing alone fails}. When 8 cores each issue bursts of \texttt{b\,=\,512} \texttt{MOVDIR64B} stores between \texttt{SFENCE} boundaries at an aggregate 165\,Mpps, phase alignment across cores still injects transient multi-thousand-line waves into \texttt{IRP1} and \texttt{M2PCIe1}, driving \texttt{CHA TOR} to 535.2 entries (\S\ref{sec:eval_pacing}), cutting co-located STREAM Triad by $-$39.5\%, and inflating L3 \texttt{p99} by 8.6$\times$.
+
+Safe host pacing therefore couples two controls:
+\begin{enumerate}
+  \item \textbf{Aggregate credit or rate budget below egress capacity:} Maintain $\sum_i R_i \le 0.94\,R_{\text{egress}}$ (or bound total unacknowledged credits $C_{\text{line}}$ per ring below the device's $\sim$387-slot posted buffer) so \texttt{M2PCIe}/\texttt{IRP} drains continuously without sustained backlog.
+  \item \textbf{Bounded per-core micro-burst step (\texttt{b\,$\le$\,128}):} Limit the number of un-fenced \texttt{MOVDIR64B} writes a core emits before synchronizing or checking credits to \texttt{b\,=\,128} (or tighter for higher core counts). Smaller micro-bursts bound the worst-case instantaneous \texttt{WCiLF} spike across concurrent cores below the 330-entry knee while amortizing \texttt{SFENCE} cost to $<$1\,ns per 64\,B message.
+\end{enumerate}
+
+\subsection{Zero-Overhead Portal Partitioning (\texorpdfstring{$K=64/N$}{K=64/N})}
+\label{sec:design_portal}
+
+For shared narrow portals such as Intel DSA's 4\,KiB (64-line) \texttt{DWQ} or NIC doorbell/BlueFlame pages, software rate coordination across 16--64 independent producer threads adds shared-state overhead and fails against misbehaving tenants. Equation~(\ref{eq:concurrency}) suggests a hardware-enforced alternative that requires \emph{zero} runtime coordination: \textbf{static per-LP disjoint cache-line partitioning}.
+
+Because x86 allows at most one in-flight \texttt{WCiLF} per \texttt{(LP, 64\,B line)} pair (\S\ref{sec:host_law}), assigning each of $N$ active logical processors a disjoint slice of $K_i = \lfloor 64 / N \rfloor$ cache lines within the same 4\,KiB portal page (for $N \le 64$, or 1 shared line per small group for $N > 64$) structurally bounds the socket-wide concurrency product to:
+\begin{equation}
+  \sum_{i=1}^{N} K_i \;\le\; 64 \;<\; 200,
+  \label{eq:partition}
+\end{equation}
+regardless of how fast the cores spin or whether the downstream engine drops 95\% of requests. Because each LP still pipelines across $K_i \ge 2$ distinct lines (or 1 line at $N = 32$--$64$, where our \texttt{noop-fixed} measurements already hit 134--137\,Mpps across 24--32 cores), aggregate portal throughput should remain near the 143\,Mpps \texttt{IIO0} ceiling while hard-clamping \texttt{CHA WCiLF} far below the 330-entry cliff. \emph{Status hook:} Direct silicon validation of disjoint $K\,=\,64/N$ partitioning across 16--32 cores on Socket~1 Intel DSA \texttt{wq2.0} is currently in progress and will be integrated into \S\ref{sec:eval_pacing} once verified.
+
+\subsection{Receiver Consumption: \texttt{MT\_NORMAL\_NC} vs. Coalesced Doorbell}
+\label{sec:design_rx}
+
+Preventing host-side overload is futile if the device collapses internally and reflects backpressure across PCIe. Our measurements in \S\ref{sec:device_collapse} establish two viable, complementary device consumption designs, together with a clean rule for choosing between them:
+
+\para{Option A: \texttt{MT\_NORMAL\_NC} (\texttt{0x44}) with empty-poll backoff.}
+On SmartNICs whose shared L3 acts as the coherence point for non-cacheable loads (such as OCTEON~10's \texttt{TAD}), mapping the receive ring with standard Linux \texttt{MT\_NORMAL\_NC} eliminates L1/L2 snoop locks with zero \texttt{SFENCE} on 64\,B slots and preserves 901\,ns unloaded RTT. To eliminate the static conflict observed in \S\ref{sec:dev_nc}---where aggressive \texttt{u4} polling wins one-way TX (160.1\,Mpps) but triggers \texttt{EXLMN} collapse in closed loop (18.0\,Mmsg/s)---we propose a simple adaptive receiver loop:
+\begin{enumerate}
+  \item Poll the head slot with a single-pass \texttt{1-pass 4$\times$ldp} (\texttt{u1}) when empty, inserting a lightweight 50--100\,ns empty-poll backoff (\eg{} \texttt{isb}/\texttt{yield} spin) on consecutive misses so idle cores stop hammering \texttt{TAD} at the unwritten frontier.
+  \item Upon a hit, opportunistically promote to 4-slot unrolled \texttt{u4\_ldpq} while the ring stays non-empty, dropping back to backed-off \texttt{u1} as soon as a batch drains.
+\end{enumerate}
+For arbitrary multi-word payloads read via four \texttt{ldp} instructions under \texttt{MT\_NORMAL\_NC}, folding a lightweight hardware \texttt{crc32cx} checksum into the tail word provides architectural tear detection without reintroducing \texttt{SFENCE}. \emph{Status hook:} Single-binary validation of adaptive empty-poll backoff plus \texttt{u4\_ldpq} promotion---alongside co-located 6-core STREAM measurements comparing right-sized ($K\,=\,4$, \texttt{CHA\,=\,14--28}) vs. over-provisioned ($K\,=\,8$, \texttt{CHA\,=\,428--521}) \texttt{MT\_NORMAL\_NC}---is queued next on our testbed and will be added to \S\ref{sec:eval_rx}.
+
+\para{Option B: Adaptive coalesced decoupled doorbell + batch \texttt{SFENCE}.}
+On devices where \texttt{MT\_NORMAL\_NC} misses L3 to slow DRAM, where only 1--2 card cores can be spared, or where multi-line payloads (128--256\,B) require strict arrival ordering, the receiver must stay completely off the data ring until notified via a physically separated doorbell cache line (\texttt{prod\_idx}). To avoid both the per-packet doorbell collapse (4.7--6.6\,M/s from 1-writer/4-reader doorbell contention) and light-load batching delay, we use \emph{adaptive coalescing}:
+\begin{itemize}
+  \item \textbf{Light load (in-flight $\le 4$):} Issue \texttt{SFENCE} and ring the doorbell immediately, bounding isolated \texttt{W\,=\,1} RTT overhead to +195--210\,ns (1.10\,\textmu s total).
+  \item \textbf{Busy load:} Coalesce doorbells to once per 32--128 messages (or 250--500\,ns timer), issuing a single batch-tail \texttt{SFENCE} before updating \texttt{prod\_idx}. Because card cores never touch unwritten data slots, snoop collisions vanish, 1--2 card cores sustain 105--118\,Mmsg/s one-way and 55--67\,Mmsg/s closed-loop, and host \texttt{CHA TOR} remains locked at 6--12 entries.
+\end{itemize}
+
+\para{Payload-size split for end-to-end networking.}
+Finally, in full RPC/KV servers (\S\ref{sec:eval_e2e}), MMIO direct push shines on small messages ($\le$\,256\,B, 1--4 cache lines) where descriptor-ring DMA wastes 2--3$\times$ PCIe round trips and CPU cycles, whereas multi-kilobyte values (\eg{} 3.8--4\,KiB) are bandwidth-bound and better served by zero-copy device DMA (\texttt{OP\_DMA}) from a bounded LLC-resident buffer pool. Splitting small responses onto paced \texttt{BAR4} \texttt{MOVDIR64B} and large responses onto \texttt{OP\_DMA} lets both paths coexist without head-of-line blocking small RPC tails.

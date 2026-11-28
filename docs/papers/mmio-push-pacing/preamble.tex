@@ -1,0 +1,51 @@
+% Preamble for "The Missing Piece of MMIO Direct Push: Pacing"
+% Official USENIX/OSDI/SOSP-style 2-column template (usenix-2020-09.sty)
+\PassOptionsToPackage{dvipsnames,table}{xcolor}
+\usepackage{iftex}
+\ifPDFTeX
+  \expandafter\def\csname ver@breakurl.sty\endcsname{9999/12/31}
+\fi
+\usepackage{silence}
+\WarningFilter{latex}{Command \showhyphens}
+\usepackage{usenix-2020-09}
+\frenchspacing
+
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{microtype}
+
+\definecolor{linkblue}{HTML}{1D4ED8}
+\definecolor{citeblue}{HTML}{1B4F9C}
+\definecolor{urlteal}{HTML}{0F766E}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=linkblue,
+  citecolor=citeblue,
+  urlcolor=urlteal,
+  pdftitle={The Missing Piece of MMIO Direct Push: Pacing},
+}
+
+% Clean float spacing for 2-column USENIX/OSDI layout
+\setcounter{dbltopnumber}{1}
+\renewcommand{\dbltopfraction}{0.68}
+\renewcommand{\topfraction}{0.85}
+\setlength{\textfloatsep}{8.5pt plus 2pt minus 2pt}
+\setlength{\dbltextfloatsep}{9.5pt plus 2pt minus 2pt}
+\setlength{\floatsep}{7.5pt plus 2pt minus 2pt}
+\interfootnotelinepenalty=10000
+\raggedbottom
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+\setlist[itemize]{leftmargin=1.35em, itemsep=2pt, topsep=3pt, parsep=0pt}
+\setlist[enumerate]{leftmargin=1.5em, itemsep=2pt, topsep=3pt, parsep=0pt}
+
+\newcommand{\para}[1]{\vspace{3pt}\noindent\textbf{#1}}
+\newcommand{\eg}{e.g.,}
+\newcommand{\ie}{i.e.,}
+\newcommand{\etal}{et al.}
