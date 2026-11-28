@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate all 6 publication-grade English vector PDF figures for
+"""Generate all 8 publication-grade English vector PDF figures for
 'The Missing Piece of MMIO Direct Push: Pacing' directly from raw runs.jsonl logs.
 """
 import json
@@ -13,8 +13,8 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
 import numpy as np
 
-LOG_BASE = "/home/hongtao/dev/marvell/logs"
 OUT_DIR = os.path.dirname(os.path.abspath(__file__))
+LOG_BASE = os.path.abspath(os.path.join(OUT_DIR, "../../../../logs"))
 
 plt.rcParams.update({
     "font.family": "DejaVu Sans",
@@ -708,6 +708,342 @@ def make_fig5_e2e_apps():
     plt.close(fig)
     print("Wrote", out_pdf)
 
+# =====================================================================
+# Figure 7: Spatial Disjoint Line-Budgeting on 4 KiB Intel DSA Portal
+# =====================================================================
+def make_fig7_disjoint_portal_budget():
+    r253 = load_jsonl("mrv253-2026-11-28/runs.jsonl")
+    g = defaultdict(list)
+    for r in r253:
+        key = (r["victim"], r["topo"], r["aggr"], r["partition_mode"], r["lines_per_core"])
+        g[key].append(r)
+
+    fig = plt.figure(figsize=(7.2, 2.95))
+    gs = fig.add_gridspec(2, 2, width_ratios=[1.12, 1.0], height_ratios=[1.0, 1.0],
+                          wspace=0.30, hspace=0.46)
+    ax1 = fig.add_subplot(gs[:, 0])
+    ax2 = fig.add_subplot(gs[0, 1])
+    ax3 = fig.add_subplot(gs[1, 1])
+
+    # --- Panel (a): Measured CHA WCiLF vs Active Budget Sum K ---
+    pts_linear = []
+    pts_smt_coll = []
+    pts_early = []
+    pts_shared = []
+
+    for (v, topo, aggr, pmode, K), rs in g.items():
+        if aggr != "noop-stride":
+            continue
+        if v not in ("llc-chase", "none"):
+            continue
+        sum_k = rs[0]["budget_sum_k"]
+        cha = med([r["cha"]["occ_entries"] for r in rs])
+        maxb = med([r["cha"]["occ_max_box"] for r in rs])
+        ratio = cha / sum_k if sum_k > 0 else 0.0
+        if pmode == "shared":
+            pts_shared.append((sum_k, cha, topo, K, maxb))
+        elif topo == "62t_31x2" and K == 8:
+            pts_early.append((sum_k, cha, topo, K, maxb))
+        elif (topo == "32t_16x2" and K in (4, 8)) or (topo == "48t_24x2" and K == 8):
+            pts_smt_coll.append((sum_k, cha, topo, K, ratio))
+        else:
+            pts_linear.append((sum_k, cha, topo, K, ratio))
+
+    ax1.axhspan(330, 430, color=C_CLIFF, alpha=0.68, zorder=1)
+    ax1.text(28, 380, "330-430 CHA Cliff", fontsize=6.0, fontweight="bold",
+             color=C_RED, ha="left", va="center")
+
+    xs_ref = np.logspace(np.log10(7), np.log10(330), 200)
+    ax1.plot(xs_ref, xs_ref, "--", color=C_GRAY, linewidth=1.0, zorder=2,
+             label="Linear bound: WCiLF = $\\Sigma K$")
+
+    ax1.scatter([p[0] for p in pts_linear], [p[1] for p in pts_linear],
+                s=22, color=C_TEAL, edgecolor="#145A32", linewidth=0.5, zorder=4,
+                label="Disjoint (no SMT line collision)")
+    ax1.scatter([p[0] for p in pts_smt_coll], [p[1] for p in pts_smt_coll],
+                marker="D", s=28, color=C_ORANGE, edgecolor="#7E2F00", linewidth=0.55, zorder=5,
+                label="SMT sibling WCB wrap (0.64-0.68x)")
+    ax1.scatter([p[0] for p in pts_early], [p[1] for p in pts_early],
+                marker="*", s=78, color=C_PURPLE, edgecolor="#2C1A4A", linewidth=0.5, zorder=6,
+                label="62t K=8 onset (307.5, L3 +8.6%)")
+    ax1.scatter([p[0] for p in pts_shared], [p[1] for p in pts_shared],
+                marker="s", s=24, color=C_RED, edgecolor="#641E16", linewidth=0.5, zorder=5,
+                label="Shared-64 (8c-62t, cliff)")
+
+    p_16k4 = [p for p in pts_linear if p[2] == "16c" and p[3] == 4][0]
+    p_62k2 = [p for p in pts_linear if p[2] == "62t_31x2" and p[3] == 2][0]
+    p_48k8 = [p for p in pts_smt_coll if p[2] == "48t_24x2" and p[3] == 8][0]
+    p_62k8 = pts_early[0]
+
+    ax1.annotate("16c K=4 (62.8)\n32c K=2 (63.0)", xy=(p_16k4[0], p_16k4[1]),
+                 xytext=(12, 138), fontsize=5.4, fontweight="bold", color="#145A32",
+                 arrowprops=dict(arrowstyle="->", color=C_TEAL, lw=0.75))
+    ax1.annotate("62t K=2\n(122.9)", xy=(p_62k2[0], p_62k2[1]),
+                 xytext=(24, 215), fontsize=5.4, fontweight="bold", color="#145A32",
+                 arrowprops=dict(arrowstyle="->", color=C_TEAL, lw=0.75))
+    ax1.annotate("SMT WCB\ncoalescing\n(0.64-0.68x)", xy=(p_48k8[0], p_48k8[1]),
+                 xytext=(780, 128), fontsize=5.4, fontweight="bold", color="#A04000",
+                 arrowprops=dict(arrowstyle="->", color=C_ORANGE, lw=0.75))
+    ax1.annotate("62t K=8: 307.5\nmax_box=15.3\n(L3 p99 +8.6%)", xy=(p_62k8[0], p_62k8[1]),
+                 xytext=(920, 260), fontsize=5.3, fontweight="bold", color=C_PURPLE,
+                 arrowprops=dict(arrowstyle="->", color=C_PURPLE, lw=0.75))
+
+    ax1.set_xscale("log")
+    ax1.set_xticks([8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096])
+    ax1.set_xticklabels(["8", "16", "32", "64", "128", "256", "512", "1K", "2K", "4K"], fontsize=6.0)
+    ax1.set_xlim(6, 5200)
+    ax1.set_ylim(0, 610)
+    ax1.set_xlabel("Active Nominal Line Budget $\\Sigma K$ (log scale)")
+    ax1.set_ylabel("Socket-Wide CHA WCiLF (entries)")
+    ax1.set_title("(a) (Physical Core WCB, 64 B) Budget Law")
+    style_ax(ax1)
+    ax1.legend(loc="upper left", frameon=True, facecolor="white", framealpha=0.94,
+               fontsize=5.3, handletextpad=0.35, borderpad=0.3)
+
+    # --- Panel (b1): 6c STREAM Retention (%) at full 142.7-142.9 Mpps ---
+    def stream_ret(victim, topo, pmode, K, use_imc=False):
+        key_base = (victim, topo, "l1-spin", "shared", 0)
+        key_run  = (victim, topo, "noop-stride", pmode, K)
+        if use_imc:
+            b = med([r["imc"]["tot_gb_s"] for r in g[key_base]])
+            v = med([r["imc"]["tot_gb_s"] for r in g[key_run]])
+        else:
+            b = med([r["stream"]["mean_gb_s"] for r in g[key_base]])
+            v = med([r["stream"]["mean_gb_s"] for r in g[key_run]])
+        return 100.0 * v / b
+
+    b1_specs = [
+        ("16c\nWB",   "stream-triad",    "16c",      False),
+        ("24c\nWB",   "stream-triad",    "24c",      False),
+        ("24c\nNT",   "stream-triad-nt", "24c",      False),
+        ("48t\nRO",   "stream-ro",       "48t_24x2", False),
+        ("48t\nIMC",  "stream-ro",       "48t_24x2", True),
+    ]
+    sh_ret = [stream_ret(v, t, "shared", 64, imc) for _, v, t, imc in b1_specs]
+    dk_ret = [stream_ret(v, t, "disjoint", 2, imc) for _, v, t, imc in b1_specs]
+
+    x2 = np.arange(len(b1_specs))
+    w = 0.36
+    b_sh = ax2.bar(x2 - w/2, sh_ret, width=w, color=C_RED, edgecolor="#641E16", linewidth=0.5, label="Shared-64")
+    b_dk = ax2.bar(x2 + w/2, dk_ret, width=w, color=C_TEAL, edgecolor="#145A32", linewidth=0.5, label="Disjoint K=2")
+    ax2.axhline(100.0, color=C_GRAY, linestyle=":", linewidth=0.8)
+    for bar, val in zip(b_sh, sh_ret):
+        ax2.text(bar.get_x() + bar.get_width()/2, val + 2.5, f"{val:.1f}%",
+                 ha="center", va="bottom", fontsize=5.1, fontweight="bold", color=C_RED)
+    for bar, val in zip(b_dk, dk_ret):
+        ax2.text(bar.get_x() + bar.get_width()/2, val + 2.5, f"{val:.0f}%",
+                 ha="center", va="bottom", fontsize=5.1, fontweight="bold", color="#145A32")
+
+    ax2.set_xticks(x2)
+    ax2.set_xticklabels([s[0] for s in b1_specs], fontsize=5.6)
+    ax2.set_ylabel("STREAM Ret. (%)")
+    ax2.set_ylim(0, 152)
+    ax2.set_yticks([0, 50, 100])
+    ax2.set_title("(b) Isolation at 142.7-142.9 Mpps Wire Rate")
+    style_ax(ax2)
+    ax2.legend(loc="upper center", ncol=2, frameon=True, facecolor="white",
+               fontsize=5.2, bbox_to_anchor=(0.50, 1.03))
+
+    # --- Panel (b2): L3 / DRAM Chase p99 Slowdown (x baseline) ---
+    def chase_mult(victim, topo, pmode, K):
+        b = med([r["chase"]["p99_ns"] for r in g[(victim, topo, "l1-spin", "shared", 0)]])
+        v = med([r["chase"]["p99_ns"] for r in g[(victim, topo, "noop-stride", pmode, K)]])
+        return v / b
+
+    b2_specs = [
+        ("16c\nL3",   "llc-chase",  "16c"),
+        ("24c\nL3",   "llc-chase",  "24c"),
+        ("48t\nL3",   "llc-chase",  "48t_24x2"),
+        ("48t\nDRAM", "dram-chase", "48t_24x2"),
+        ("62t\nL3",   "llc-chase",  "62t_31x2"),
+    ]
+    sh_mult = [chase_mult(v, t, "shared", 64) for _, v, t in b2_specs]
+    dk_mult = [chase_mult(v, t, "disjoint", 2) for _, v, t in b2_specs]
+
+    x3 = np.arange(len(b2_specs))
+    b3_sh = ax3.bar(x3 - w/2, sh_mult, width=w, color=C_RED, edgecolor="#641E16", linewidth=0.5)
+    b3_dk = ax3.bar(x3 + w/2, dk_mult, width=w, color=C_TEAL, edgecolor="#145A32", linewidth=0.5)
+    ax3.axhline(1.0, color=C_GRAY, linestyle=":", linewidth=0.8)
+    for bar, val in zip(b3_sh, sh_mult):
+        lbl = f"{val:.0f}x" if val >= 20 else f"{val:.1f}x"
+        ax3.text(bar.get_x() + bar.get_width()/2, val * 1.15, lbl,
+                 ha="center", va="bottom", fontsize=5.1, fontweight="bold", color=C_RED)
+    for bar, val in zip(b3_dk, dk_mult):
+        ax3.text(bar.get_x() + bar.get_width()/2, val * 1.18, f"{val:.2f}x",
+                 ha="center", va="bottom", fontsize=4.9, fontweight="bold", color="#145A32")
+
+    ax3.set_yscale("log")
+    ax3.set_ylim(0.5, 420)
+    ax3.set_yticks([1, 10, 100])
+    ax3.set_yticklabels(["1x", "10x", "100x"])
+    ax3.set_xticks(x3)
+    ax3.set_xticklabels([s[0] for s in b2_specs], fontsize=5.6)
+    ax3.set_ylabel("p99 Slowdown")
+    style_ax(ax3)
+
+    out_pdf = os.path.join(OUT_DIR, "fig7_disjoint_portal_budget.pdf")
+    fig.savefig(out_pdf)
+    plt.close(fig)
+    print("Wrote", out_pdf)
+
+
+# =====================================================================
+# Figure 8: Single-Binary Zero-Lookahead u1q & Direct CN106 Neighbor Check
+# =====================================================================
+def make_fig8_single_binary_and_cn106_neighbor():
+    r252 = load_jsonl("mrv252-2026-11-28/runs.jsonl")
+    g = defaultdict(list)
+    for r in r252:
+        g[(r["exp"], r["cond"])].append(r)
+
+    fig = plt.figure(figsize=(7.2, 3.05))
+    gs = fig.add_gridspec(2, 2, width_ratios=[1.12, 1.05], height_ratios=[1.12, 0.92],
+                          wspace=0.38, hspace=0.52)
+    ax1 = fig.add_subplot(gs[0, 0])
+    ax2 = fig.add_subplot(gs[1, 0])
+    ax3 = fig.add_subplot(gs[:, 1])
+
+    # --- Panel (a1): Single-Binary Regimes (H=1, K=4) ---
+    modes = [
+        ("u4_ldpq",   "static-u4",  C_RED),
+        ("adapt-50",  "adapt-50",   C_ORANGE),
+        ("adapt-100", "adapt-100",  "#E67E22"),
+        ("adapt-exp", "adapt-exp",  C_PURPLE),
+        ("u1_ldpq",   "static-u1q", C_TEAL),
+    ]
+    regimes = [
+        ("CL\nW=64",   "g1_cl", "k4_cl_w64_"),
+        ("CL\nW=256",  "g1_cl", "k4_cl_w256_"),
+        ("CL\nW=512",  "g1_cl", "k4_cl_w512_"),
+        ("One-Way\nW=6144", "g1_ow", "k4_ow_"),
+    ]
+    x1 = np.arange(len(regimes))
+    bw = 0.155
+    for idx, (mkey, mlabel, col) in enumerate(modes):
+        vals = [med([r["mops"] for r in g[(exp, pref + mkey)]]) for _, exp, pref in regimes]
+        off = (idx - 2) * bw
+        bars = ax1.bar(x1 + off, vals, width=bw, color=col, edgecolor="#2C3E50", linewidth=0.4, label=mlabel)
+        if mkey == "u1_ldpq":
+            for b, v in zip(bars, vals):
+                ax1.text(b.get_x() + b.get_width()/2, v + 3.0, f"{v:.1f}",
+                         ha="center", va="bottom", fontsize=5.0, fontweight="bold", color="#145A32")
+
+    w1_u1 = med([r["rtt_p50_ns"] for r in g[("g1_w1", "k4_w1_u1_ldpq")]])
+    w1_u4 = med([r["rtt_p50_ns"] for r in g[("g1_w1", "k4_w1_u4_ldpq")]])
+    w1_ad = med([r["rtt_p50_ns"] for r in g[("g1_w1", "k4_w1_adapt-50")]])
+    ax1.text(0.02, 0.96,
+             f"W=1 RTT: u1q {w1_u1:.1f} ns | u4 {w1_u4:.1f} | adapt {w1_ad:.0f}-1218\n"
+             f"CL W=256 EXLMN/pkt: u1q 0.33 vs. adapt/u4 1.07-1.08",
+             transform=ax1.transAxes, fontsize=4.8, va="top", ha="left",
+             bbox=dict(boxstyle="round,pad=0.20", fc="#F8F9FA", ec="#BDC3C7", lw=0.55))
+
+    ax1.set_xticks(x1)
+    ax1.set_xticklabels([r[0] for r in regimes], fontsize=5.5)
+    ax1.set_ylabel("Throughput (M/s)")
+    ax1.set_ylim(0, 240)
+    ax1.set_yticks([0, 50, 100, 150, 200])
+    ax1.set_title("(a) Single-Binary Evaluation (H=1, K=4)")
+    style_ax(ax1)
+    ax1.legend(loc="upper left", ncol=2, frameon=True, facecolor="white", framealpha=0.95,
+               fontsize=4.6, handletextpad=0.3, columnspacing=0.55, bbox_to_anchor=(0.01, 0.72))
+
+    # --- Panel (a2): Wide-Window (W=6144) Partial-Load CHA Surge ---
+    ol_specs = [
+        ("10M\nOL",    "g1_ol", "k4_ol_10m_"),
+        ("40.4M\nOL",  "g1_ol", "k4_ol_40m_"),
+        ("45-47M*\nOL","g1_ol", "k4_ol_80m_"),
+        ("160M\nFull", "g1_ow", "k4_ow_"),
+    ]
+    x2 = np.arange(len(ol_specs))
+    u1_cha = [med([r["host_pmu"]["cha_inflight"] for r in g[(e, p + "u1_ldpq")]]) for _, e, p in ol_specs]
+    ad_cha = [med([r["host_pmu"]["cha_inflight"] for r in g[(e, p + "adapt-exp")]]) for _, e, p in ol_specs]
+    u4_cha = [med([r["host_pmu"]["cha_inflight"] for r in g[(e, p + "u4_ldpq")]]) for _, e, p in ol_specs]
+
+    ax2.axhspan(330, 435, color=C_CLIFF, alpha=0.65, zorder=1)
+    ax2.text(0.02, 382, "330+ Cliff", fontsize=5.1, fontweight="bold", color=C_RED, va="center")
+    w2 = 0.25
+    ax2.bar(x2 - w2, u1_cha, width=w2, color=C_TEAL, edgecolor="#145A32", linewidth=0.45, label="static-u1q")
+    ax2.bar(x2,      ad_cha, width=w2, color=C_PURPLE, edgecolor="#2C1A4A", linewidth=0.45, label="adapt-exp")
+    ax2.bar(x2 + w2, u4_cha, width=w2, color=C_RED, edgecolor="#641E16", linewidth=0.45, label="static-u4")
+
+    ax2.text(x2[0], u1_cha[0] + 12, "1.0", ha="center", va="bottom",
+             fontsize=4.9, fontweight="bold", color="#145A32")
+    for i in [1, 2]:
+        ax2.text(x2[i] - w2, u1_cha[i] + 10, f"{u1_cha[i]:.0f}", ha="center", va="bottom",
+                 fontsize=4.9, fontweight="bold", color="#145A32")
+        ax2.text(x2[i] + w2, u4_cha[i] + 10, f"{u4_cha[i]:.0f}", ha="center", va="bottom",
+                 fontsize=4.9, fontweight="bold", color=C_RED)
+    ax2.text(x2[3] - w2, u1_cha[3] + 12, f"{u1_cha[3]:.1f}", ha="center", va="bottom",
+             fontsize=4.9, fontweight="bold", color="#145A32")
+
+    ax2.set_xticks(x2)
+    ax2.set_xticklabels([s[0] for s in ol_specs], fontsize=5.4)
+    ax2.set_ylabel("Host CHA WCiLF")
+    ax2.set_ylim(0, 435)
+    ax2.set_yticks([0, 150, 300])
+    ax2.set_title("Wide-Window (W=6144) Partial-Load Surge (*f64::ln cap)", fontsize=7.2)
+    style_ax(ax2)
+    ax2.legend(loc="center left", ncol=1, frameon=True, facecolor="white", framealpha=0.94,
+               fontsize=4.5, handletextpad=0.3, borderpad=0.22, bbox_to_anchor=(0.01, 0.45))
+    # --- Panel (b): Direct CN106 Co-located Socket-1 Neighbor Validation ---
+    nb_specs = [
+        ("Idle",       "nb_idle",            C_GRAY),
+        ("K=4\nu4",    "nb_k4_ow_u4_ldpq",   C_TEAL),
+        ("K=4\nad50",  "nb_k4_ow_adapt-50",  C_TEAL),
+        ("K=4\nadExp", "nb_k4_ow_adapt-exp", C_TEAL),
+        ("K=8\nu4",    "nb_k8_ow_u4_ldpq",   C_RED),
+        ("K=8\nad50",  "nb_k8_ow_adapt-50",  C_RED),
+        ("K=8\nadExp", "nb_k8_ow_adapt-exp", C_RED),
+    ]
+    st_vals = [med([r["stream_gbps"] for r in g[("g3_nb", c)]]) for _, c, _ in nb_specs]
+    ch_vals = [med([r["l3_p99_ns"] for r in g[("g3_nb", c)]]) for _, c, _ in nb_specs]
+    cha_nb  = [med([r["host_pmu"]["cha_inflight"] for r in g[("g3_nb", c)]]) for _, c, _ in nb_specs]
+
+    x3 = np.arange(len(nb_specs))
+    bars3 = ax3.bar(x3, st_vals, width=0.56, color=[s[2] for s in nb_specs],
+                    edgecolor="#2C3E50", linewidth=0.55, alpha=0.90)
+    for idx_b, (bar, v, cval) in enumerate(zip(bars3, st_vals, cha_nb)):
+        y_lbl = (v - 3.2) if idx_b <= 3 else 22.0
+        ax3.text(bar.get_x() + bar.get_width()/2, y_lbl, f"{v:.1f}",
+                 ha="center", va="center", fontsize=5.1, fontweight="bold", color="white")
+        if cval > 1:
+            ax3.text(bar.get_x() + bar.get_width()/2, 2.2, f"CHA\n{cval:.0f}",
+                     ha="center", va="bottom", fontsize=4.6, fontweight="bold", color="white")
+
+    ax3.axvline(3.5, color=C_GRAY, linestyle="--", linewidth=0.8)
+    ax3.text(1.9, 66.5, "K=4 (158-159 M/s)\n99.5-100.0% STREAM", ha="center", va="top",
+             fontsize=5.0, fontweight="bold", color="#145A32",
+             bbox=dict(boxstyle="round,pad=0.18", fc="#E8F8F5", ec=C_TEAL, lw=0.55))
+    ax3.text(5.1, 66.5, "K=8 (CHA 374-383)\n-11.4% to -12.6%", ha="center", va="top",
+             fontsize=5.0, fontweight="bold", color=C_RED,
+             bbox=dict(boxstyle="round,pad=0.18", fc="#FDEDEC", ec=C_RED, lw=0.55))
+
+    ax3.set_xticks(x3)
+    ax3.set_xticklabels([s[0] for s in nb_specs], fontsize=5.5)
+    ax3.set_ylabel("6c STREAM WB (GB/s)")
+    ax3.set_ylim(0, 69)
+    ax3.set_title("(b) CN106 Socket-1 Neighbor Validation")
+    style_ax(ax3)
+
+    ax3r = ax3.twinx()
+    ax3r.spines["top"].set_visible(False)
+    ax3r.plot(x3, ch_vals, "--D", color="#900C3F", markersize=4.0, linewidth=1.3)
+    ax3r.set_ylabel("Co-located 16 MiB Chase p99 (ns)\n(LLC-flushed DDR5+STLB)",
+                    color="#900C3F", fontsize=6.4, labelpad=3)
+    ax3r.tick_params(axis="y", labelcolor="#900C3F")
+    ax3r.set_ylim(180, 690)
+    ax3r.annotate("305 ns\nbase", xy=(0, ch_vals[0]), xytext=(0.18, 375),
+                  fontsize=5.0, fontweight="bold", color="#900C3F",
+                  arrowprops=dict(arrowstyle="->", color="#900C3F", lw=0.7))
+    ax3r.annotate("450-492 ns\n(+48% to +61%)", xy=(4, ch_vals[4]), xytext=(5.15, 535),
+                  ha="center", fontsize=5.0, fontweight="bold", color="#900C3F",
+                  arrowprops=dict(arrowstyle="->", color="#900C3F", lw=0.7))
+
+    out_pdf = os.path.join(OUT_DIR, "fig8_single_binary_and_cn106_neighbor.pdf")
+    fig.savefig(out_pdf)
+    plt.close(fig)
+    print("Wrote", out_pdf)
+
 
 if __name__ == "__main__":
     make_fig0_architecture()
@@ -716,4 +1052,6 @@ if __name__ == "__main__":
     make_fig3_ordering_and_doorbell()
     make_fig4_pacing_recovery()
     make_fig5_e2e_apps()
-    print("All 6 figures regenerated successfully.")
+    make_fig7_disjoint_portal_budget()
+    make_fig8_single_binary_and_cn106_neighbor()
+    print("All 8 figures regenerated successfully.")

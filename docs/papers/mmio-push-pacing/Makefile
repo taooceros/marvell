@@ -16,7 +16,8 @@ main.pdf: main.tex preamble.tex abstract.tex intro.tex background.tex \
           related.tex conclusion.tex refs.bib \
           figures/fig0_architecture.pdf figures/fig1_host_tor_collapse.pdf \
           figures/fig2_device_self_collapse.pdf figures/fig3_ordering_and_doorbell.pdf \
-          figures/fig4_pacing_recovery.pdf figures/fig5_e2e_apps.pdf
+          figures/fig4_pacing_recovery.pdf figures/fig5_e2e_apps.pdf \
+          figures/fig7_disjoint_portal_budget.pdf figures/fig8_single_binary_and_cn106_neighbor.pdf
 	$(TEX) main.tex
 	$(BIB) main
 	$(TEX) main.tex
