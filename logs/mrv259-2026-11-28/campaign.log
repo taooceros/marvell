@@ -1,0 +1,187 @@
+kv direct_wb     H=1 K=4 get64   W=  1 rep=0 |   0.20 Mrps  p50=  4.84us p99=  5.00us  host_rtt= 0.00us  busy=146.7ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=1 K=4 get64   W=  1 rep=0 |   0.20 Mrps  p50=  4.91us p99=  5.05us  host_rtt= 0.00us  busy=144.6ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=1 K=4 get64   W=  1 rep=0 |   0.10 Mrps  p50=  9.46us p99= 10.11us  host_rtt= 0.00us  busy= 62.7ns  exlmn/rpc= 0.00 OK
+kv direct_wb     H=1 K=4 get256  W=  1 rep=0 |   0.19 Mrps  p50=  5.05us p99=  5.24us  host_rtt= 0.00us  busy=183.0ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=1 K=4 get256  W=  1 rep=0 |   0.19 Mrps  p50=  5.11us p99=  5.29us  host_rtt= 0.00us  busy=184.0ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=1 K=4 get256  W=  1 rep=0 |   0.10 Mrps  p50=  9.68us p99= 10.34us  host_rtt= 0.00us  busy= 76.5ns  exlmn/rpc= 0.00 OK
+kv direct_wb     H=1 K=4 put4096 W=  1 rep=0 |   0.12 Mrps  p50=  8.51us p99=  9.04us  host_rtt= 0.00us  busy=491.3ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=1 K=4 put4096 W=  1 rep=0 |   0.11 Mrps  p50=  8.61us p99=  9.12us  host_rtt= 0.00us  busy=491.6ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=1 K=4 put4096 W=  1 rep=0 |   0.07 Mrps  p50= 13.27us p99= 14.14us  host_rtt= 0.00us  busy=364.8ns  exlmn/rpc= 0.00 OK
+RETRY(0) kv direct_wb H=1 get64: client rc=2:
+kv direct_wb     H=1 K=4 get64   W=256 rep=0 |  17.47 Mrps  p50= 13.79us p99= 20.55us  host_rtt= 0.00us  busy= 52.5ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=1 K=4 get64   W=256 rep=0 |  14.95 Mrps  p50= 16.55us p99= 20.65us  host_rtt= 0.00us  busy= 57.2ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=1 K=2 get64   W=256 rep=0 |   7.63 Mrps  p50= 32.95us p99= 39.35us  host_rtt= 0.00us  busy= 84.7ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=1 K=4 get64   W=256 rep=0 |  11.23 Mrps  p50= 22.25us p99= 29.85us  host_rtt= 0.00us  busy= 30.9ns  exlmn/rpc= 0.00 OK
+kv direct_wb     H=1 K=4 get256  W=256 rep=0 |  13.32 Mrps  p50= 18.73us p99= 26.25us  host_rtt= 0.00us  busy= 74.1ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=1 K=4 get256  W=256 rep=0 |  11.34 Mrps  p50= 21.75us p99= 29.65us  host_rtt= 0.00us  busy= 77.9ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=1 K=4 get256  W=256 rep=0 |   9.92 Mrps  p50= 25.05us p99= 34.05us  host_rtt= 0.00us  busy= 69.1ns  exlmn/rpc= 0.00 OK
+kv direct_wb     H=1 K=4 put64   W=256 rep=0 |  17.50 Mrps  p50= 13.79us p99= 20.55us  host_rtt= 0.00us  busy= 52.5ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=1 K=4 put64   W=256 rep=0 |  14.95 Mrps  p50= 16.57us p99= 20.65us  host_rtt= 0.00us  busy= 57.3ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=1 K=4 put64   W=256 rep=0 |  11.22 Mrps  p50= 22.25us p99= 29.85us  host_rtt= 0.00us  busy= 29.6ns  exlmn/rpc= 0.00 OK
+kv direct_wb     H=1 K=4 put4096 W= 64 rep=0 |   2.80 Mrps  p50= 22.65us p99= 28.25us  host_rtt= 0.00us  busy=342.6ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=1 K=4 put4096 W= 64 rep=0 |   2.80 Mrps  p50= 22.75us p99= 28.95us  host_rtt= 0.00us  busy=340.2ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=1 K=4 put4096 W= 64 rep=0 |   2.25 Mrps  p50= 27.85us p99= 41.05us  host_rtt= 0.00us  busy=351.4ns  exlmn/rpc= 0.00 OK
+RETRY(0) kv direct_wb H=1 mix: client rc=2:
+RETRY(1) kv direct_wb H=1 mix: client rc=2:
+RETRY(2) kv direct_wb H=1 mix: client rc=2:
+kv direct_nc_u1q H=1 K=4 mix     W=256 rep=0 |   6.38 Mrps  p50= 38.35us p99= 62.15us  host_rtt= 0.00us  busy=156.5ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=1 K=4 mix     W=256 rep=0 |   5.22 Mrps  p50= 47.55us p99= 67.55us  host_rtt= 0.00us  busy=168.6ns  exlmn/rpc= 0.00 OK
+kv direct_wb     H=2 K=4 get64   W=256 rep=0 |  17.63 Mrps  p50= 13.63us p99= 20.35us  host_rtt= 0.00us  busy= 77.5ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=2 K=4 get64   W=256 rep=0 |  14.98 Mrps  p50= 16.54us p99= 20.35us  host_rtt= 0.00us  busy= 85.1ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=2 K=4 get64   W=256 rep=0 |  11.35 Mrps  p50= 22.05us p99= 29.55us  host_rtt= 0.00us  busy= 36.7ns  exlmn/rpc= 0.00 OK
+RETRY(0) kv direct_wb H=4 get64: client rc=2:
+RETRY(1) kv direct_wb H=4 get64: client rc=2:
+kv direct_wb     H=4 K=4 get64   W=256 rep=0 |  17.68 Mrps  p50= 13.59us p99= 20.35us  host_rtt= 0.00us  busy=100.0ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=4 K=4 get64   W=256 rep=0 |  14.93 Mrps  p50= 16.57us p99= 20.35us  host_rtt= 0.00us  busy=111.0ns  exlmn/rpc= 0.00 OK
+RETRY(0) kv sdp_fair H=4 get64: client rc=2:
+kv sdp_fair      H=4 K=4 get64   W=256 rep=0 |  11.29 Mrps  p50= 22.15us p99= 29.95us  host_rtt= 0.00us  busy= 56.9ns  exlmn/rpc= 0.00 OK
+RETRY(0) kv direct_wb H=4 get256: client rc=2:
+kv direct_wb     H=4 K=4 get256  W=256 rep=0 |  12.57 Mrps  p50= 18.02us p99= 56.55us  host_rtt= 0.00us  busy=127.7ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=4 K=4 get256  W=256 rep=0 |  11.36 Mrps  p50= 21.75us p99= 26.65us  host_rtt= 0.00us  busy=119.0ns  exlmn/rpc= 0.00 OK
+RETRY(0) kv sdp_fair H=4 get256: client rc=2:
+kv sdp_fair      H=4 K=4 get256  W=256 rep=0 |  10.05 Mrps  p50= 24.75us p99= 33.65us  host_rtt= 0.00us  busy=121.0ns  exlmn/rpc= 0.00 OK
+kv direct_wb     H=4 K=4 mix     W=256 rep=0 |   7.48 Mrps  p50= 31.85us p99= 59.65us  host_rtt= 0.00us  busy=201.4ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=4 K=4 mix     W=256 rep=0 |   6.71 Mrps  p50= 36.15us p99= 64.55us  host_rtt= 0.00us  busy=200.9ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=4 K=4 mix     W=256 rep=0 |   5.84 Mrps  p50= 42.35us p99= 60.35us  host_rtt= 0.00us  busy=214.5ns  exlmn/rpc= 0.00 OK
+mc direct_wb     H=1 K=4 get8    W=  1 rep=0 |   0.19 Mrps  p50=  5.08us p99=  5.33us  host_rtt= 0.00us  busy=446.9ns  exlmn/rpc= 0.00 OK
+mc direct_nc_u1q H=1 K=4 get8    W=  1 rep=0 |   0.19 Mrps  p50=  5.16us p99=  5.39us  host_rtt= 0.00us  busy=451.2ns  exlmn/rpc= 0.00 OK
+mc sdp_fair      H=1 K=4 get8    W=  1 rep=0 |   0.10 Mrps  p50=  9.65us p99= 10.43us  host_rtt= 0.00us  busy=316.8ns  exlmn/rpc= 0.00 OK
+mc direct_wb     H=1 K=4 get8    W=256 rep=0 |   3.76 Mrps  p50= 66.45us p99= 84.45us  host_rtt= 0.00us  busy=265.5ns  exlmn/rpc= 0.00 OK
+mc direct_nc_u1q H=1 K=4 get8    W=256 rep=0 |   3.92 Mrps  p50= 65.35us p99= 83.45us  host_rtt= 0.00us  busy=255.1ns  exlmn/rpc= 0.00 OK
+mc sdp_fair      H=1 K=4 get8    W=256 rep=0 |   3.54 Mrps  p50= 71.45us p99= 85.45us  host_rtt= 0.00us  busy=262.9ns  exlmn/rpc= 0.00 OK
+mc direct_wb     H=1 K=4 etc_mix W=256 rep=0 |   3.32 Mrps  p50= 75.35us p99= 95.55us  host_rtt= 0.00us  busy=300.7ns  exlmn/rpc= 0.00 OK
+mc direct_nc_u1q H=1 K=4 etc_mix W=256 rep=0 |   3.37 Mrps  p50= 74.45us p99= 93.15us  host_rtt= 0.00us  busy=297.0ns  exlmn/rpc= 0.00 OK
+mc sdp_fair      H=1 K=4 etc_mix W=256 rep=0 |   3.15 Mrps  p50= 78.85us p99=101.75us  host_rtt= 0.00us  busy=294.9ns  exlmn/rpc= 0.00 OK
+mc direct_wb     H=4 K=4 get8    W=256 rep=0 |  11.77 Mrps  p50= 21.45us p99= 26.25us  host_rtt= 0.00us  busy=277.4ns  exlmn/rpc= 0.00 OK
+mc direct_nc_u1q H=4 K=4 get8    W=256 rep=0 |  10.63 Mrps  p50= 23.55us p99= 26.55us  host_rtt= 0.00us  busy=270.1ns  exlmn/rpc= 0.00 OK
+mc sdp_fair      H=4 K=4 get8    W=256 rep=0 |  10.46 Mrps  p50= 23.55us p99= 32.95us  host_rtt= 0.00us  busy=263.8ns  exlmn/rpc= 0.00 OK
+mc direct_wb     H=4 K=4 etc_mix W=256 rep=0 |   6.73 Mrps  p50= 35.75us p99= 60.65us  host_rtt= 0.00us  busy=372.7ns  exlmn/rpc= 0.00 OK
+RETRY(0) mc direct_nc_u1q H=4 etc_mix: client rc=2:
+RETRY(1) mc direct_nc_u1q H=4 etc_mix: client rc=2:
+RETRY(2) mc direct_nc_u1q H=4 etc_mix: client rc=2:
+mc sdp_fair      H=4 K=4 etc_mix W=256 rep=0 |   5.67 Mrps  p50= 42.75us p99= 62.25us  host_rtt= 0.00us  busy=380.3ns  exlmn/rpc= 0.00 OK
+kv direct_wb     H=1 K=4 get64   W=  1 rep=1 |   0.20 Mrps  p50=  4.84us p99=  5.00us  host_rtt= 0.00us  busy=147.6ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=1 K=4 get64   W=  1 rep=1 |   0.20 Mrps  p50=  4.91us p99=  5.05us  host_rtt= 0.00us  busy=147.3ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=1 K=4 get64   W=  1 rep=1 |   0.10 Mrps  p50=  9.46us p99= 10.12us  host_rtt= 0.00us  busy= 48.1ns  exlmn/rpc= 0.00 OK
+kv direct_wb     H=1 K=4 get256  W=  1 rep=1 |   0.19 Mrps  p50=  5.05us p99=  5.22us  host_rtt= 0.00us  busy=183.0ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=1 K=4 get256  W=  1 rep=1 |   0.19 Mrps  p50=  5.11us p99=  5.29us  host_rtt= 0.00us  busy=183.5ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=1 K=4 get256  W=  1 rep=1 |   0.10 Mrps  p50=  9.68us p99= 10.31us  host_rtt= 0.00us  busy= 84.8ns  exlmn/rpc= 0.00 OK
+kv direct_wb     H=1 K=4 put4096 W=  1 rep=1 |   0.12 Mrps  p50=  8.52us p99=  8.99us  host_rtt= 0.00us  busy=491.4ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=1 K=4 put4096 W=  1 rep=1 |   0.11 Mrps  p50=  8.61us p99=  9.12us  host_rtt= 0.00us  busy=491.7ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=1 K=4 put4096 W=  1 rep=1 |   0.07 Mrps  p50= 13.27us p99= 14.16us  host_rtt= 0.00us  busy=363.7ns  exlmn/rpc= 0.00 OK
+RETRY(0) kv direct_wb H=1 get64: client rc=2:
+kv direct_wb     H=1 K=4 get64   W=256 rep=1 |  17.48 Mrps  p50= 13.79us p99= 20.55us  host_rtt= 0.00us  busy= 52.5ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=1 K=4 get64   W=256 rep=1 |  14.95 Mrps  p50= 16.55us p99= 20.55us  host_rtt= 0.00us  busy= 57.3ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=1 K=2 get64   W=256 rep=1 |   7.65 Mrps  p50= 32.95us p99= 39.35us  host_rtt= 0.00us  busy= 83.8ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=1 K=4 get64   W=256 rep=1 |  11.23 Mrps  p50= 22.25us p99= 29.75us  host_rtt= 0.00us  busy= 30.9ns  exlmn/rpc= 0.00 OK
+RETRY(0) kv direct_wb H=1 get256: client rc=2:
+RETRY(1) kv direct_wb H=1 get256: client rc=2:
+RETRY(2) kv direct_wb H=1 get256: client rc=2:
+kv direct_nc_u1q H=1 K=4 get256  W=256 rep=1 |  11.33 Mrps  p50= 21.75us p99= 29.75us  host_rtt= 0.00us  busy= 78.2ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=1 K=4 get256  W=256 rep=1 |   9.92 Mrps  p50= 25.05us p99= 34.15us  host_rtt= 0.00us  busy= 69.0ns  exlmn/rpc= 0.00 OK
+kv direct_wb     H=1 K=4 put64   W=256 rep=1 |  17.49 Mrps  p50= 13.80us p99= 20.55us  host_rtt= 0.00us  busy= 52.5ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=1 K=4 put64   W=256 rep=1 |  14.95 Mrps  p50= 16.57us p99= 20.55us  host_rtt= 0.00us  busy= 57.3ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=1 K=4 put64   W=256 rep=1 |  11.21 Mrps  p50= 22.25us p99= 30.15us  host_rtt= 0.00us  busy= 29.9ns  exlmn/rpc= 0.00 OK
+RETRY(0) kv direct_wb H=1 put4096: client rc=2:
+kv direct_wb     H=1 K=4 put4096 W= 64 rep=1 |   2.80 Mrps  p50= 22.65us p99= 28.25us  host_rtt= 0.00us  busy=343.1ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=1 K=4 put4096 W= 64 rep=1 |   2.80 Mrps  p50= 22.75us p99= 29.05us  host_rtt= 0.00us  busy=340.1ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=1 K=4 put4096 W= 64 rep=1 |   2.25 Mrps  p50= 27.85us p99= 40.85us  host_rtt= 0.00us  busy=351.8ns  exlmn/rpc= 0.00 OK
+RETRY(0) kv direct_wb H=1 mix: client rc=2:
+kv direct_wb     H=1 K=4 mix     W=256 rep=1 |   6.42 Mrps  p50= 38.75us p99= 56.55us  host_rtt= 0.00us  busy=155.6ns  exlmn/rpc= 0.00 OK
+RETRY(0) kv direct_nc_u1q H=1 mix: client rc=2:
+RETRY(1) kv direct_nc_u1q H=1 mix: client rc=2:
+kv direct_nc_u1q H=1 K=4 mix     W=256 rep=1 |   6.40 Mrps  p50= 38.15us p99= 62.25us  host_rtt= 0.00us  busy=156.0ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=1 K=4 mix     W=256 rep=1 |   5.24 Mrps  p50= 47.45us p99= 67.05us  host_rtt= 0.00us  busy=168.0ns  exlmn/rpc= 0.00 OK
+kv direct_wb     H=2 K=4 get64   W=256 rep=1 |  17.61 Mrps  p50= 13.64us p99= 20.35us  host_rtt= 0.00us  busy= 77.3ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=2 K=4 get64   W=256 rep=1 |  14.96 Mrps  p50= 16.54us p99= 20.35us  host_rtt= 0.00us  busy= 85.0ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=2 K=4 get64   W=256 rep=1 |  11.33 Mrps  p50= 22.15us p99= 29.55us  host_rtt= 0.00us  busy= 36.7ns  exlmn/rpc= 0.00 OK
+kv direct_wb     H=4 K=4 get64   W=256 rep=1 |  17.70 Mrps  p50= 13.56us p99= 20.25us  host_rtt= 0.00us  busy= 99.9ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=4 K=4 get64   W=256 rep=1 |  14.97 Mrps  p50= 16.52us p99= 20.35us  host_rtt= 0.00us  busy=110.1ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=4 K=4 get64   W=256 rep=1 |  11.29 Mrps  p50= 22.15us p99= 29.85us  host_rtt= 0.00us  busy= 56.7ns  exlmn/rpc= 0.00 OK
+RETRY(0) kv direct_wb H=4 get256: client rc=2:
+kv direct_wb     H=4 K=4 get256  W=256 rep=1 |  12.45 Mrps  p50= 18.07us p99= 57.15us  host_rtt= 0.00us  busy=128.6ns  exlmn/rpc= 0.00 OK
+RETRY(0) kv direct_nc_u1q H=4 get256: client rc=2:
+kv direct_nc_u1q H=4 K=4 get256  W=256 rep=1 |  11.37 Mrps  p50= 21.75us p99= 26.65us  host_rtt= 0.00us  busy=119.0ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=4 K=4 get256  W=256 rep=1 |  10.05 Mrps  p50= 24.75us p99= 33.65us  host_rtt= 0.00us  busy=121.3ns  exlmn/rpc= 0.00 OK
+kv direct_wb     H=4 K=4 mix     W=256 rep=1 |   7.48 Mrps  p50= 31.85us p99= 59.55us  host_rtt= 0.00us  busy=202.5ns  exlmn/rpc= 0.00 OK
+RETRY(0) kv direct_nc_u1q H=4 mix: client rc=2:
+kv direct_nc_u1q H=4 K=4 mix     W=256 rep=1 |   6.71 Mrps  p50= 36.15us p99= 64.55us  host_rtt= 0.00us  busy=201.4ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=4 K=4 mix     W=256 rep=1 |   5.85 Mrps  p50= 42.25us p99= 60.05us  host_rtt= 0.00us  busy=213.9ns  exlmn/rpc= 0.00 OK
+mc direct_wb     H=1 K=4 get8    W=  1 rep=1 |   0.19 Mrps  p50=  5.08us p99=  5.32us  host_rtt= 0.00us  busy=444.4ns  exlmn/rpc= 0.00 OK
+mc direct_nc_u1q H=1 K=4 get8    W=  1 rep=1 |   0.19 Mrps  p50=  5.17us p99=  5.39us  host_rtt= 0.00us  busy=453.7ns  exlmn/rpc= 0.00 OK
+mc sdp_fair      H=1 K=4 get8    W=  1 rep=1 |   0.10 Mrps  p50=  9.66us p99= 10.46us  host_rtt= 0.00us  busy=326.6ns  exlmn/rpc= 0.00 OK
+mc direct_wb     H=1 K=4 get8    W=256 rep=1 |   3.54 Mrps  p50= 74.05us p99= 85.25us  host_rtt= 0.00us  busy=282.5ns  exlmn/rpc= 0.00 OK
+mc direct_nc_u1q H=1 K=4 get8    W=256 rep=1 |   3.59 Mrps  p50= 72.95us p99= 83.35us  host_rtt= 0.00us  busy=278.0ns  exlmn/rpc= 0.00 OK
+mc sdp_fair      H=1 K=4 get8    W=256 rep=1 |   3.76 Mrps  p50= 67.25us p99= 84.25us  host_rtt= 0.00us  busy=246.1ns  exlmn/rpc= 0.00 OK
+RETRY(0) mc direct_wb H=1 etc_mix: client rc=2:
+mc direct_wb     H=1 K=4 etc_mix W=256 rep=1 |   3.35 Mrps  p50= 74.75us p99= 94.15us  host_rtt= 0.00us  busy=298.1ns  exlmn/rpc= 0.00 OK
+mc direct_nc_u1q H=1 K=4 etc_mix W=256 rep=1 |   3.37 Mrps  p50= 74.35us p99= 93.25us  host_rtt= 0.00us  busy=296.3ns  exlmn/rpc= 0.00 OK
+mc sdp_fair      H=1 K=4 etc_mix W=256 rep=1 |   3.24 Mrps  p50= 76.85us p99= 96.85us  host_rtt= 0.00us  busy=286.2ns  exlmn/rpc= 0.00 OK
+RETRY(0) mc direct_wb H=4 get8: client rc=2:
+mc direct_wb     H=4 K=4 get8    W=256 rep=1 |  11.86 Mrps  p50= 21.25us p99= 25.45us  host_rtt= 0.00us  busy=271.9ns  exlmn/rpc= 0.00 OK
+mc direct_nc_u1q H=4 K=4 get8    W=256 rep=1 |  10.62 Mrps  p50= 23.55us p99= 26.55us  host_rtt= 0.00us  busy=270.7ns  exlmn/rpc= 0.00 OK
+mc sdp_fair      H=4 K=4 get8    W=256 rep=1 |  10.45 Mrps  p50= 23.55us p99= 32.95us  host_rtt= 0.00us  busy=263.4ns  exlmn/rpc= 0.00 OK
+mc direct_wb     H=4 K=4 etc_mix W=256 rep=1 |   6.74 Mrps  p50= 35.75us p99= 60.65us  host_rtt= 0.00us  busy=369.5ns  exlmn/rpc= 0.00 OK
+mc direct_nc_u1q H=4 K=4 etc_mix W=256 rep=1 |   6.03 Mrps  p50= 40.35us p99= 67.55us  host_rtt= 0.00us  busy=365.8ns  exlmn/rpc= 0.00 OK
+mc sdp_fair      H=4 K=4 etc_mix W=256 rep=1 |   5.66 Mrps  p50= 42.75us p99= 62.75us  host_rtt= 0.00us  busy=385.4ns  exlmn/rpc= 0.00 OK
+kv direct_wb     H=1 K=4 get64   W=  1 rep=2 |   0.20 Mrps  p50=  4.84us p99=  5.00us  host_rtt= 0.00us  busy=149.0ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=1 K=4 get64   W=  1 rep=2 |   0.20 Mrps  p50=  4.91us p99=  5.05us  host_rtt= 0.00us  busy=148.0ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=1 K=4 get64   W=  1 rep=2 |   0.10 Mrps  p50=  9.47us p99= 10.16us  host_rtt= 0.00us  busy= 51.1ns  exlmn/rpc= 0.00 OK
+kv direct_wb     H=1 K=4 get256  W=  1 rep=2 |   0.19 Mrps  p50=  5.05us p99=  5.24us  host_rtt= 0.00us  busy=184.2ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=1 K=4 get256  W=  1 rep=2 |   0.19 Mrps  p50=  5.12us p99=  5.29us  host_rtt= 0.00us  busy=184.7ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=1 K=4 get256  W=  1 rep=2 |   0.10 Mrps  p50=  9.65us p99= 10.32us  host_rtt= 0.00us  busy= 73.7ns  exlmn/rpc= 0.00 OK
+kv direct_wb     H=1 K=4 put4096 W=  1 rep=2 |   0.12 Mrps  p50=  8.52us p99=  9.02us  host_rtt= 0.00us  busy=495.0ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=1 K=4 put4096 W=  1 rep=2 |   0.11 Mrps  p50=  8.61us p99=  9.12us  host_rtt= 0.00us  busy=490.5ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=1 K=4 put4096 W=  1 rep=2 |   0.07 Mrps  p50= 13.28us p99= 14.15us  host_rtt= 0.00us  busy=353.0ns  exlmn/rpc= 0.00 OK
+kv direct_wb     H=1 K=4 get64   W=256 rep=2 |  17.48 Mrps  p50= 13.79us p99= 20.55us  host_rtt= 0.00us  busy= 52.5ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=1 K=4 get64   W=256 rep=2 |  14.94 Mrps  p50= 16.55us p99= 20.55us  host_rtt= 0.00us  busy= 57.5ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=1 K=2 get64   W=256 rep=2 |   7.70 Mrps  p50= 32.75us p99= 39.25us  host_rtt= 0.00us  busy= 82.8ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=1 K=4 get64   W=256 rep=2 |  11.23 Mrps  p50= 22.25us p99= 29.95us  host_rtt= 0.00us  busy= 30.8ns  exlmn/rpc= 0.00 OK
+kv direct_wb     H=1 K=4 get256  W=256 rep=2 |  13.33 Mrps  p50= 18.73us p99= 26.25us  host_rtt= 0.00us  busy= 74.0ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=1 K=4 get256  W=256 rep=2 |  11.33 Mrps  p50= 21.75us p99= 29.65us  host_rtt= 0.00us  busy= 78.0ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=1 K=4 get256  W=256 rep=2 |   9.92 Mrps  p50= 25.05us p99= 33.95us  host_rtt= 0.00us  busy= 69.1ns  exlmn/rpc= 0.00 OK
+kv direct_wb     H=1 K=4 put64   W=256 rep=2 |  17.49 Mrps  p50= 13.79us p99= 20.55us  host_rtt= 0.00us  busy= 52.5ns  exlmn/rpc= 0.00 OK
+RETRY(0) kv direct_nc_u1q H=1 put64: client rc=2:
+kv direct_nc_u1q H=1 K=4 put64   W=256 rep=2 |  14.95 Mrps  p50= 16.57us p99= 20.55us  host_rtt= 0.00us  busy= 57.3ns  exlmn/rpc= 0.00 OK
+RETRY(0) kv sdp_fair H=1 put64: client rc=2:
+kv sdp_fair      H=1 K=4 put64   W=256 rep=2 |  11.22 Mrps  p50= 22.25us p99= 29.95us  host_rtt= 0.00us  busy= 29.6ns  exlmn/rpc= 0.00 OK
+kv direct_wb     H=1 K=4 put4096 W= 64 rep=2 |   2.80 Mrps  p50= 22.65us p99= 28.25us  host_rtt= 0.00us  busy=343.4ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=1 K=4 put4096 W= 64 rep=2 |   2.80 Mrps  p50= 22.75us p99= 29.05us  host_rtt= 0.00us  busy=339.6ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=1 K=4 put4096 W= 64 rep=2 |   2.25 Mrps  p50= 27.85us p99= 40.85us  host_rtt= 0.00us  busy=351.2ns  exlmn/rpc= 0.00 OK
+RETRY(0) kv direct_wb H=1 mix: client rc=2:
+RETRY(1) kv direct_wb H=1 mix: client rc=2:
+RETRY(2) kv direct_wb H=1 mix: client rc=2:
+kv direct_nc_u1q H=1 K=4 mix     W=256 rep=2 |   6.39 Mrps  p50= 38.25us p99= 62.05us  host_rtt= 0.00us  busy=156.3ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=1 K=4 mix     W=256 rep=2 |   5.23 Mrps  p50= 47.45us p99= 67.25us  host_rtt= 0.00us  busy=168.2ns  exlmn/rpc= 0.00 OK
+kv direct_wb     H=2 K=4 get64   W=256 rep=2 |  17.62 Mrps  p50= 13.64us p99= 20.35us  host_rtt= 0.00us  busy= 77.5ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=2 K=4 get64   W=256 rep=2 |  14.98 Mrps  p50= 16.54us p99= 20.25us  host_rtt= 0.00us  busy= 85.1ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=2 K=4 get64   W=256 rep=2 |  11.33 Mrps  p50= 22.05us p99= 29.65us  host_rtt= 0.00us  busy= 36.7ns  exlmn/rpc= 0.00 OK
+kv direct_wb     H=4 K=4 get64   W=256 rep=2 |  17.70 Mrps  p50= 13.56us p99= 20.25us  host_rtt= 0.00us  busy= 99.9ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=4 K=4 get64   W=256 rep=2 |  14.98 Mrps  p50= 16.54us p99= 20.35us  host_rtt= 0.00us  busy=110.1ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=4 K=4 get64   W=256 rep=2 |  11.29 Mrps  p50= 22.15us p99= 29.75us  host_rtt= 0.00us  busy= 56.8ns  exlmn/rpc= 0.00 OK
+RETRY(0) kv direct_wb H=4 get256: client rc=2:
+RETRY(1) kv direct_wb H=4 get256: client rc=2:
+kv direct_wb     H=4 K=4 get256  W=256 rep=2 |  12.56 Mrps  p50= 18.02us p99= 56.55us  host_rtt= 0.00us  busy=127.9ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=4 K=4 get256  W=256 rep=2 |  11.38 Mrps  p50= 21.75us p99= 26.65us  host_rtt= 0.00us  busy=118.9ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=4 K=4 get256  W=256 rep=2 |  10.04 Mrps  p50= 24.75us p99= 33.85us  host_rtt= 0.00us  busy=121.2ns  exlmn/rpc= 0.00 OK
+kv direct_wb     H=4 K=4 mix     W=256 rep=2 |   7.48 Mrps  p50= 31.85us p99= 59.55us  host_rtt= 0.00us  busy=201.5ns  exlmn/rpc= 0.00 OK
+kv direct_nc_u1q H=4 K=4 mix     W=256 rep=2 |   6.71 Mrps  p50= 36.15us p99= 64.55us  host_rtt= 0.00us  busy=200.8ns  exlmn/rpc= 0.00 OK
+kv sdp_fair      H=4 K=4 mix     W=256 rep=2 |   5.84 Mrps  p50= 42.35us p99= 60.25us  host_rtt= 0.00us  busy=214.6ns  exlmn/rpc= 0.00 OK
+mc direct_wb     H=1 K=4 get8    W=  1 rep=2 |   0.19 Mrps  p50=  5.08us p99=  5.33us  host_rtt= 0.00us  busy=450.7ns  exlmn/rpc= 0.00 OK
+mc direct_nc_u1q H=1 K=4 get8    W=  1 rep=2 |   0.19 Mrps  p50=  5.16us p99=  5.39us  host_rtt= 0.00us  busy=452.3ns  exlmn/rpc= 0.00 OK
+mc sdp_fair      H=1 K=4 get8    W=  1 rep=2 |   0.10 Mrps  p50=  9.68us p99= 10.45us  host_rtt= 0.00us  busy=332.2ns  exlmn/rpc= 0.00 OK
+mc direct_wb     H=1 K=4 get8    W=256 rep=2 |   3.89 Mrps  p50= 65.75us p99= 81.95us  host_rtt= 0.00us  busy=257.0ns  exlmn/rpc= 0.00 OK
+mc direct_nc_u1q H=1 K=4 get8    W=256 rep=2 |   3.89 Mrps  p50= 65.55us p99= 82.75us  host_rtt= 0.00us  busy=257.0ns  exlmn/rpc= 0.00 OK
+mc sdp_fair      H=1 K=4 get8    W=256 rep=2 |   3.54 Mrps  p50= 71.05us p99= 85.75us  host_rtt= 0.00us  busy=262.7ns  exlmn/rpc= 0.00 OK
+mc direct_wb     H=1 K=4 etc_mix W=256 rep=2 |   3.37 Mrps  p50= 74.55us p99= 93.25us  host_rtt= 0.00us  busy=296.6ns  exlmn/rpc= 0.00 OK
+RETRY(0) mc direct_nc_u1q H=1 etc_mix: client rc=2:
+mc direct_nc_u1q H=1 K=4 etc_mix W=256 rep=2 |   3.37 Mrps  p50= 74.45us p99= 93.15us  host_rtt= 0.00us  busy=296.7ns  exlmn/rpc= 0.00 OK
+mc sdp_fair      H=1 K=4 etc_mix W=256 rep=2 |   3.29 Mrps  p50= 75.45us p99= 95.15us  host_rtt= 0.00us  busy=281.4ns  exlmn/rpc= 0.00 OK
+RETRY(0) mc direct_wb H=4 get8: client rc=2:
+mc direct_wb     H=4 K=4 get8    W=256 rep=2 |  11.82 Mrps  p50= 21.35us p99= 25.65us  host_rtt= 0.00us  busy=274.1ns  exlmn/rpc= 0.00 OK
+RETRY(0) mc direct_nc_u1q H=4 get8: client rc=2:
+mc direct_nc_u1q H=4 K=4 get8    W=256 rep=2 |  10.59 Mrps  p50= 23.65us p99= 26.75us  host_rtt= 0.00us  busy=272.8ns  exlmn/rpc= 0.00 OK
+mc sdp_fair      H=4 K=4 get8    W=256 rep=2 |  10.45 Mrps  p50= 23.55us p99= 33.05us  host_rtt= 0.00us  busy=265.4ns  exlmn/rpc= 0.00 OK
+mc direct_wb     H=4 K=4 etc_mix W=256 rep=2 |   6.73 Mrps  p50= 35.75us p99= 60.65us  host_rtt= 0.00us  busy=374.6ns  exlmn/rpc= 0.00 OK
+mc direct_nc_u1q H=4 K=4 etc_mix W=256 rep=2 |   6.02 Mrps  p50= 40.45us p99= 67.65us  host_rtt= 0.00us  busy=368.5ns  exlmn/rpc= 0.00 OK
+mc sdp_fair      H=4 K=4 etc_mix W=256 rep=2 |   5.65 Mrps  p50= 42.85us p99= 62.85us  host_rtt= 0.00us  busy=394.1ns  exlmn/rpc= 0.00 OK
