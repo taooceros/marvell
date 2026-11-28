@@ -87,6 +87,7 @@ def main():
     ax1.set_xticks(x)
     ax1.set_xticklabels([g[2] for g in groups], fontsize=8.8)
     ax1.set_ylim(0, 118)
+    ax1.set_xlabel("攻击端拓扑与 6 核 STREAM 受害者类型（24核基线: 50.0 / 58.1 / 70.6 / 75.0 GB/s）", fontsize=9.2, fontweight="bold")
     ax1.set_ylabel("相对同核 l1-spin 基线的带宽保留率（%）", fontsize=10.5, fontweight="bold")
     ax1.set_title("A. 6 核 STREAM 带宽保留（含 DDR5 物理带宽与 NT/纯读对照）", fontsize=11.0, fontweight="bold", pad=8)
     ax1.grid(True, axis="y", ls="--", alpha=0.3)
@@ -121,6 +122,12 @@ def main():
     ax2.set_title("B. 16 MiB L3 邻居尾延迟：专属切分几乎完全贴合控温基线", fontsize=11.0, fontweight="bold", pad=8)
     ax2.grid(True, axis="y", which="major", ls="--", alpha=0.3)
     ax2.legend(loc="upper left", fontsize=8.5, framealpha=0.95, edgecolor="#D1D5DB")
+    ax2.text(
+        0.98, 0.04,
+        "注：62线程 K=8 (max_box=15.3) p99=34.8 ns (+8.6%) 已现悬崖前兆",
+        transform=ax2.transAxes, ha="right", va="bottom", fontsize=7.5, color="#9A3412",
+        bbox=dict(boxstyle="round,pad=0.22", fc="#FFF7ED", ec="#EA580C", alpha=0.95),
+    )
 
     plt.tight_layout(rect=[0, 0, 1, 0.94])
     fig.savefig(OUT_PNG, dpi=180, facecolor="white")
