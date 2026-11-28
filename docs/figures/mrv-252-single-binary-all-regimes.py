@@ -52,9 +52,9 @@ for i, (m, c) in enumerate(zip(mops_ow, cha_ow)):
 ax.set_xticks(range(len(MODES)))
 ax.set_xticklabels(LABELS, fontsize=8.5)
 ax.set_ylabel("单向满载吞吐 (Mmsg/s)")
-ax.set_ylim(0, 195)
+ax.set_ylim(0, 212)
 ax.set_title("(b) 单向满载 W=6144（五者均保住 ~160 M/s）", fontsize=10.5)
-ax.legend(frameon=False, fontsize=8.5, loc="lower right")
+ax.legend(frameon=False, fontsize=8.5, loc="upper right")
 ax.grid(axis="y", alpha=0.3)
 
 # (c) Closed-loop W=64/256/512
@@ -81,26 +81,28 @@ ax.grid(axis="y", alpha=0.3)
 ax = axes[1, 1]
 tad_req = [med(f"k4_cl_w256_{m}", lambda r: r["card_pmu"]["tad"]["tad_req_msh_in_any"]["val"] / 1e6) for m in MODES]
 exlmn = [med(f"k4_cl_w256_{m}", lambda r: r["card_pmu"]["tad"]["tad_snp_msh_out_exlmn"]["val"] / 1e6) for m in MODES]
+exlmn_per_pkt = [med(f"k4_cl_w256_{m}", lambda r: r["card_pmu"]["tad"]["tad_snp_msh_out_exlmn"]["val"] / r["sent_win"]) for m in MODES]
 x = np.arange(len(MODES))
 ax.bar(x - 0.18, tad_req, width=0.35, color="#5dade2", label="TAD 总请求 (M/0.8s)")
 ax2 = ax.twinx()
-ax2.bar(x + 0.18, exlmn, width=0.35, color="#e74c3c", label="EXLMN 冲突 (M/0.8s)")
-for i, (tr, ex) in enumerate(zip(tad_req, exlmn)):
+ax2.bar(x + 0.18, exlmn, width=0.35, color="#e74c3c", label="EXLMN 冲突 (M/0.8s; 括号为/pkt)")
+for i, (tr, ex, ep) in enumerate(zip(tad_req, exlmn, exlmn_per_pkt)):
     ax.text(i - 0.18, tr + 5, f"{tr:.0f}", ha="center", va="bottom", fontsize=8, color="#2471a3")
-    ax2.text(i + 0.18, ex + 0.35, f"{ex:.1f}", ha="center", va="bottom", fontsize=8, color="#c0392b")
+    ax2.text(i + 0.18, ex + 0.35, f"{ex:.1f}\n({ep:.2f}/p)", ha="center", va="bottom", fontsize=7.5, color="#c0392b")
 ax.set_xticks(x)
 ax.set_xticklabels(LABELS, fontsize=8.5)
 ax.set_ylabel("TAD 总请求 (M / 0.8 s)", color="#2471a3")
 ax2.set_ylabel("EXLMN 冲突 (M / 0.8 s)", color="#c0392b")
-ax.set_ylim(0, 320)
-ax2.set_ylim(0, 22)
-ax.set_title("(d) 闭环 W=256：adapt 砍半 TAD 请求但未降 EXLMN", fontsize=10.5)
+ax.set_ylim(0, 330)
+ax2.set_ylim(0, 24.5)
+ax.set_title("(d) 闭环 W=256：u1_ldpq 单包 EXLMN 低 3.2×（0.33 vs 1.07）", fontsize=10.2)
 lines1, labels1 = ax.get_legend_handles_labels()
 lines2, labels2 = ax2.get_legend_handles_labels()
 ax.legend(lines1 + lines2, labels1 + labels2, frameon=False, fontsize=8, loc="upper right")
 ax.grid(axis="y", alpha=0.3)
 
-fig.tight_layout(rect=[0, 0, 1, 0.95])
+fig.text(0.5, 0.008, "注：开环 Poisson 目标 80 M/s 受主机单核 f64::ln() 算力封顶（实测 44.8–47.0 M/s），宽窗 W=6144 部分负载下即使 u1_ldpq 主机 CHA 也升至 250–307。", ha="center", fontsize=8.2, color="#555555")
+fig.tight_layout(rect=[0, 0.03, 1, 0.95])
 out_base = ROOT / "docs/figures/mrv-252-single-binary-all-regimes"
 fig.savefig(f"{out_base}.png", dpi=180)
 fig.savefig(f"{out_base}.svg")

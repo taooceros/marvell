@@ -20,7 +20,7 @@ def med(cond, fn):
     return statistics.median([fn(r) for r in BY_COND[cond]])
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11.5, 4.6), facecolor="white")
-fig.suptitle("MRV-252：过配 K=8 的主机 CHA 占用与 Socket 1 邻居实测（6c STREAM + 16 MiB L3, n=3）", fontsize=12.5, fontweight="bold", y=0.98)
+fig.suptitle("MRV-252：过配 K=8 的主机 CHA 占用与 Socket 1 邻居实测（6c STREAM + 共置 16 MiB 随机追逐, n=3）", fontsize=12.0, fontweight="bold", y=0.98)
 
 # (a) Host CHA WCiLF occupancy: K=4 vs K=8 one-way
 conds_a = ["k4_ow_u4_ldpq", "k4_ow_u1_ldpq", "k4_ow_adapt-exp", "k8_ow_u4_ldpq", "k8_ow_adapt-50", "k8_ow_adapt-exp"]
@@ -51,7 +51,7 @@ idle_str = str_vals[0]
 x = np.arange(len(conds_b))
 b1 = ax2.bar(x - 0.18, str_vals, width=0.35, color="#2e86c1", label="6c STREAM 带宽 (GB/s)")
 ax2_r = ax2.twinx()
-b2 = ax2_r.bar(x + 0.18, l3_vals, width=0.35, color="#e67e22", label="16 MiB L3 p99 (ns)")
+b2 = ax2_r.bar(x + 0.18, l3_vals, width=0.35, color="#e67e22", label="16 MiB 共置随机追逐 p99 (ns)")
 
 for i, (sv, lv) in enumerate(zip(str_vals, l3_vals)):
     pct = (sv / idle_str) * 100.0
@@ -61,16 +61,17 @@ for i, (sv, lv) in enumerate(zip(str_vals, l3_vals)):
 ax2.set_xticks(x)
 ax2.set_xticklabels(lbls_b, fontsize=8.5)
 ax2.set_ylabel("6c STREAM Triad 带宽 (GB/s)", color="#1b4f72")
-ax2_r.set_ylabel("16 MiB L3 指针追踪 p99 (ns)", color="#a04000")
-ax2.set_ylim(0, 62)
-ax2_r.set_ylim(0, 600)
+ax2_r.set_ylabel("STREAM 共置下 16 MiB 随机追逐 p99 (ns)", color="#a04000")
+ax2.set_ylim(0, 66)
+ax2_r.set_ylim(0, 640)
 ax2.set_title("(b) Socket 1 邻居影响：K=4 零干扰，K=8 带宽 -12% / p99 +61%", fontsize=10.5)
 l1, lb1 = ax2.get_legend_handles_labels()
 l2, lb2 = ax2_r.get_legend_handles_labels()
 ax2.legend(l1 + l2, lb1 + lb2, frameon=False, fontsize=8, loc="upper left")
 ax2.grid(axis="y", alpha=0.3)
 
-fig.tight_layout(rect=[0, 0, 1, 0.93])
+fig.text(0.5, 0.01, "注：图(b) 基线 305 ns 为 576 MiB WB STREAM 冲刷 LLC 后的 DDR5+STLB 共置随机追逐延迟（非单跑纯 L3 命中 ~29.5 ns）；单跑 CHA 432–445 与共置 374–383 反映 TOR 分摊。", ha="center", fontsize=8.0, color="#555555")
+fig.tight_layout(rect=[0, 0.04, 1, 0.93])
 out_base = ROOT / "docs/figures/mrv-252-k8-cha-and-neighbor"
 fig.savefig(f"{out_base}.png", dpi=180)
 fig.savefig(f"{out_base}.svg")
