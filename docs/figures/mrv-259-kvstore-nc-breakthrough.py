@@ -34,9 +34,9 @@ def agg(rows, app, pol, wl, hc, kc, w_cond, metric_fn):
             if w_cond(r["window"]):
                 vals.append(metric_fn(r))
     if not vals:
-        return None, 0.0, 0.0
+        return None, 0.0, 0.0, 0
     med = statistics.median(vals)
-    return med, med - min(vals), max(vals) - med
+    return med, med - min(vals), max(vals) - med, len(vals)
 
 
 def main():
@@ -62,23 +62,26 @@ def main():
     x = np.arange(len(groups))
     w = 0.26
     for pi, (pol, label, col) in enumerate(policies):
-        ys, lo, hi = [], [], []
+        ys, lo, hi, ns = [], [], [], []
         for _, wl, hc in groups:
-            m, l, h = agg(rows, "kv", pol, wl, hc, 4, lambda win: win > 1, lambda r: r["client"]["achieved_mrps"])
+            m, l, h, n = agg(rows, "kv", pol, wl, hc, 4, lambda win: win > 1, lambda r: r["client"]["achieved_mrps"])
             ys.append(m if m is not None else 0.0)
             lo.append(l)
             hi.append(h)
+            ns.append(n)
         bars = ax1.bar(x + (pi - 1) * w, ys, w, yerr=[lo, hi], capsize=2.5, label=label, color=col, alpha=0.9)
-        for b, val in zip(bars, ys):
+        for b, val, h_err, n in zip(bars, ys, hi, ns):
             if val > 0:
-                ax1.text(b.get_x() + b.get_width() / 2, val + 0.35, f"{val:.1f}", ha="center", va="bottom", fontsize=7.5)
-
+                if n < 3:
+                    ax1.text(b.get_x() + b.get_width() / 2 - 0.04, val + h_err + 0.35, f"{val:.1f}\n(n={n})", ha="center", va="bottom", fontsize=6.6)
+                else:
+                    ax1.text(b.get_x() + b.get_width() / 2, val + h_err + 0.35, f"{val:.1f}", ha="center", va="bottom", fontsize=7.2)
     ax1.set_xticks(x)
     ax1.set_xticklabels([g[0] for g in groups], fontsize=8.5)
     ax1.set_ylabel("饱和吞吐 (Mrps)")
-    ax1.set_title("KvStore 100GbE 饱和吞吐（K=4 卡核，H=1/2/4 主机核）")
+    ax1.set_title("KvStore 100GbE 饱和吞吐（K=4 卡核，W=256, uniform）")
     ax1.legend(fontsize=8, loc="upper right")
-    ax1.set_ylim(0, max(22.0, ax1.get_ylim()[1] * 1.15))
+    ax1.set_ylim(0, max(22.5, ax1.get_ylim()[1] * 1.18))
 
     # Right: W=1 Low-Load RTT (p50)
     w1_groups = [
@@ -90,7 +93,7 @@ def main():
     for pi, (pol, label, col) in enumerate(policies):
         ys, lo, hi = [], [], []
         for _, wl in w1_groups:
-            m, l, h = agg(rows, "kv", pol, wl, 1, 4, lambda win: win == 1, lambda r: r["client"]["tot_p50_us"])
+            m, l, h, _ = agg(rows, "kv", pol, wl, 1, 4, lambda win: win == 1, lambda r: r["client"]["tot_p50_us"])
             ys.append(m if m is not None else 0.0)
             lo.append(l)
             hi.append(h)
