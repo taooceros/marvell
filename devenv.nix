@@ -104,4 +104,120 @@ in
     ln -s usr/lib "${sysroot}/lib"
     du -sh "${sysroot}"
   '';
+
+  # Scaffold a minimal experiment crate under testbed/experiments/mrv<N>/.
+  # Usage: mrv-new <issue-num|mrvN|MRV-N> [short description]
+  scripts.mrv-new.exec = ''
+    set -euo pipefail
+    if [ "$#" -lt 1 ]; then
+      echo "usage: mrv-new <issue-num|mrvN|MRV-N> [short description]" >&2
+      exit 1
+    fi
+    raw="$1"
+    shift
+    num="$(printf '%s' "$raw" | sed -E 's/^[Mm][Rr][Vv]-?//')"
+    if ! printf '%s' "$num" | grep -Eq '^[0-9]+$'; then
+      echo "error: expected issue number (e.g. 265, mrv265, MRV-265), got '$raw'" >&2
+      exit 1
+    fi
+    crate="mrv$num"
+    issue="MRV-$num"
+    desc="''${*:-$issue experiment}"
+    dir="$DEVENV_ROOT/testbed/experiments/$crate"
+    if [ -e "$dir" ]; then
+      echo "error: $dir already exists" >&2
+      exit 1
+    fi
+    mkdir -p "$dir/src/bin"
+    cat > "$dir/Cargo.toml" <<EOF
+[package]
+name = "$crate"
+description = "$issue: $desc"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+dpdk.workspace = true
+testbed.workspace = true
+clap.workspace = true
+ctrlc.workspace = true
+libc.workspace = true
+EOF
+    cat > "$dir/src/bin/''${crate}_host.rs" <<EOF
+//! $issue host binary.
+//! Put reusable helpers/workarounds in \`testbed/crates/*\` instead of duplicating them here.
+
+use clap::Parser;
+
+#[derive(Parser, Debug)]
+#[command(about = "$issue host driver")]
+struct Args {}
+
+fn main() {
+    let _args = Args::parse();
+}
+EOF
+    cat > "$dir/src/bin/''${crate}_card.rs" <<EOF
+//! $issue card binary.
+//! Put reusable helpers/workarounds in \`testbed/crates/*\` instead of duplicating them here.
+
+use clap::Parser;
+
+#[derive(Parser, Debug)]
+#[command(about = "$issue card driver")]
+struct Args {}
+
+fn main() {
+    let _args = Args::parse();
+}
+EOF
+    echo "Created $dir (auto-discovered by testbed/Cargo.toml)."
+    echo "Next:"
+    echo "  devenv shell -- mrv-build $crate"
+    echo "  devenv shell -- mrv-check"
+  '';
+
+  # Build release binaries for host (x86_64) and card (aarch64) in one step.
+  # Usage: mrv-build [--host|--card] [crate]
+  scripts.mrv-build.exec = ''
+    set -euo pipefail
+    build_host=1
+    build_card=1
+    pkg=""
+    while [ "$#" -gt 0 ]; do
+      case "$1" in
+        --host) build_card=0 ;;
+        --card) build_host=0 ;;
+        -h|--help)
+          echo "usage: mrv-build [--host|--card] [crate]"
+          exit 0
+          ;;
+        -*)
+          echo "error: unknown flag '$1'" >&2
+          exit 1
+          ;;
+        *)
+          pkg="$1"
+          ;;
+      esac
+      shift
+    done
+    cd "$DEVENV_ROOT/testbed"
+    if [ -n "$pkg" ]; then
+      [ "$build_host" -eq 1 ] && cargo build --release -p "$pkg"
+      [ "$build_card" -eq 1 ] && cargo build --release --target aarch64-unknown-linux-gnu -p "$pkg"
+    else
+      [ "$build_host" -eq 1 ] && cargo build --release
+      [ "$build_card" -eq 1 ] && cargo build --release --target aarch64-unknown-linux-gnu
+    fi
+  '';
+
+  # Pre-land verification gate for main: check all workspace targets + run lib tests.
+  scripts.mrv-check.exec = ''
+    set -euo pipefail
+    cd "$DEVENV_ROOT/testbed"
+    cargo check --workspace --all-targets
+    cargo test --workspace --lib
+  '';
 }
