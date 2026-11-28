@@ -1,0 +1,13 @@
+[package]
+name = "mrv230"
+description = "MRV-230: Intel DSA portal backpressure"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+dpdk.workspace = true
+testbed.workspace = true
+clap.workspace = true
+ctrlc.workspace = true
+libc.workspace = true

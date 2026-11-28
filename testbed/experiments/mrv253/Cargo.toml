@@ -1,0 +1,13 @@
+[package]
+name = "mrv253"
+description = "MRV-253: Disjoint 4 KiB DSA portal line partitioning"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+dpdk.workspace = true
+testbed.workspace = true
+clap.workspace = true
+ctrlc.workspace = true
+libc.workspace = true

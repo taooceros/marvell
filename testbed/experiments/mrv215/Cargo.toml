@@ -1,0 +1,13 @@
+[package]
+name = "mrv215"
+description = "MRV-215: Linux kernel octeon_ep_vf Memcached control"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+dpdk.workspace = true
+testbed.workspace = true
+clap.workspace = true
+ctrlc.workspace = true
+libc.workspace = true

@@ -1,0 +1,13 @@
+[package]
+name = "mrv212"
+description = "MRV-212: E1 unfenced BAR4 MMIO credit signaling"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+dpdk.workspace = true
+testbed.workspace = true
+clap.workspace = true
+ctrlc.workspace = true
+libc.workspace = true

@@ -1,12 +1,18 @@
 //! Shared pieces of the host <-> card benchmarks: the ping-pong wire format,
-//! latency summaries, the closed-loop driver, the BAR4 inline path and the
-//! lease that guards it.
+//! latency summaries & histograms, the closed-loop driver, the BAR4 inline path
+//! and lease, MMIO/BAR4-NC mappings, Intel DSA portal helpers, non-multiplexed
+//! Linux PMU sampling, and zero-page-fault runtime setup.
 
+pub mod bar4_nc;
 pub mod closed_loop;
+#[cfg(target_arch = "x86_64")]
+pub mod dsa;
+pub mod hist;
 pub mod inline;
 pub mod lease;
 pub mod mmio;
-
+pub mod pmu;
+pub mod rt;
 use std::fmt;
 use std::str::FromStr;
 

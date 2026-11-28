@@ -1,0 +1,13 @@
+[package]
+name = "mrv195"
+description = "MRV-195: Dual-host 100GbE RPC/KV benchmark"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+dpdk.workspace = true
+testbed.workspace = true
+clap.workspace = true
+ctrlc.workspace = true
+libc.workspace = true

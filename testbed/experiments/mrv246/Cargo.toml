@@ -1,0 +1,13 @@
+[package]
+name = "mrv246"
+description = "MRV-246: Intel DSA portal 1-32c core scaling"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+dpdk.workspace = true
+testbed.workspace = true
+clap.workspace = true
+ctrlc.workspace = true
+libc.workspace = true

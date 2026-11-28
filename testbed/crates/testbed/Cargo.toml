@@ -1,6 +1,6 @@
 [package]
 name = "testbed"
-description = "Host <-> OCTEON card datapath benchmarks"
+description = "Host <-> OCTEON card datapath shared library and baseline benchmarks"
 version.workspace = true
 edition.workspace = true
 publish.workspace = true
@@ -8,7 +8,5 @@ publish.workspace = true
 [dependencies]
 dpdk.workspace = true
 clap.workspace = true
-# termination: SIGTERM and SIGHUP (tmux kill-session) also stop the reflectors
-# cleanly, so card CSR windows are restored.
-ctrlc = { version = "3", features = ["termination"] }
-libc = "0.2"
+ctrlc.workspace = true
+libc.workspace = true

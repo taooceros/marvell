@@ -1,0 +1,15 @@
+[package]
+name = "mrv217"
+description = "MRV-217: CN106 SDPX_OUT_BP_EN hardware backpressure vs BAR4 credit"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+dpdk.workspace = true
+testbed.workspace = true
+clap.workspace = true
+ctrlc.workspace = true
+libc.workspace = true
+mrv212 = { path = "../mrv212" }
+mrv213 = { path = "../mrv213" }

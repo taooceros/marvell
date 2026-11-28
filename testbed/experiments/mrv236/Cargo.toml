@@ -1,0 +1,13 @@
+[package]
+name = "mrv236"
+description = "MRV-236: Card cache-resident trigger and sparse arrival-order stamps"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+dpdk.workspace = true
+testbed.workspace = true
+clap.workspace = true
+ctrlc.workspace = true
+libc.workspace = true

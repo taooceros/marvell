@@ -1,6 +1,10 @@
 [workspace]
 resolver = "3"
-members = ["crates/*"]
+members = [
+    "crates/*",
+    "experiments/*",
+]
+default-members = ["crates/*"]
 
 [workspace.package]
 version = "0.1.0"
@@ -10,7 +14,12 @@ publish = false
 [workspace.dependencies]
 dpdk-sys = { path = "crates/dpdk-sys" }
 dpdk = { path = "crates/dpdk" }
+testbed = { path = "crates/testbed" }
 clap = { version = "4", features = ["derive"] }
+# termination: SIGTERM and SIGHUP (tmux kill-session) also stop reflectors
+# cleanly, so card CSR windows are restored.
+ctrlc = { version = "3", features = ["termination"] }
+libc = "0.2"
 
 [profile.release]
 debug = true # keep symbols for perf

@@ -1,0 +1,13 @@
+[package]
+name = "mrv231"
+description = "MRV-231: PEM0/IOBN vs TAD snoop ceiling"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+dpdk.workspace = true
+testbed.workspace = true
+clap.workspace = true
+ctrlc.workspace = true
+libc.workspace = true

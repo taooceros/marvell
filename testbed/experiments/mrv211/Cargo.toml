@@ -1,0 +1,13 @@
+[package]
+name = "mrv211"
+description = "MRV-211: E3 same-CN106 SDP credit ring vs CEIO"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+dpdk.workspace = true
+testbed.workspace = true
+clap.workspace = true
+ctrlc.workspace = true
+libc.workspace = true

@@ -1,0 +1,13 @@
+[package]
+name = "mrv206"
+description = "MRV-206: Dual-host 100GbE unmodified Memcached 1.6.45"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+dpdk.workspace = true
+testbed.workspace = true
+clap.workspace = true
+ctrlc.workspace = true
+libc.workspace = true

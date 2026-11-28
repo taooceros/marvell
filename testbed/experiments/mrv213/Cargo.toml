@@ -1,0 +1,13 @@
+[package]
+name = "mrv213"
+description = "MRV-213: E2 100GbE standard-SDP burst protection"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+dpdk.workspace = true
+testbed.workspace = true
+clap.workspace = true
+ctrlc.workspace = true
+libc.workspace = true

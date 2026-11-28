@@ -1,0 +1,13 @@
+[package]
+name = "mrv214"
+description = "MRV-214: E6 credit-ring design-space sensitivity sweep"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+dpdk.workspace = true
+testbed.workspace = true
+clap.workspace = true
+ctrlc.workspace = true
+libc.workspace = true

@@ -1,0 +1,13 @@
+[package]
+name = "mrv252"
+description = "MRV-252: Adaptive backoff, open-loop pacing & Socket-1 neighbor"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+dpdk.workspace = true
+testbed.workspace = true
+clap.workspace = true
+ctrlc.workspace = true
+libc.workspace = true

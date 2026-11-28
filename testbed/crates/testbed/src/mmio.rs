@@ -282,7 +282,22 @@ mod card {
 
         /// Point the region at host bus addresses `[base, base + 2 GiB)`.
         pub fn retarget(&mut self, base: u64) -> io::Result<()> {
+            self.retarget_range(base, 0, OUTBOUND_REGION_BYTES as usize)
+        }
+
+        /// Point the region at host bus addresses `[base, base + 2 GiB)` and, when
+        /// write-combining, map only `[map_off, map_off + map_len)` of the 2 GiB
+        /// region so Normal Non-cacheable speculative loads can never touch host
+        /// IOVAs outside the mapped VFIO buffer.
+        pub fn retarget_range(&mut self, base: u64, map_off: usize, map_len: usize) -> io::Result<()> {
             assert!(base.is_multiple_of(OUTBOUND_REGION_BYTES));
+            assert!(map_off.is_multiple_of(4096) && map_len.is_multiple_of(4096));
+            assert!(map_off + map_len <= OUTBOUND_REGION_BYTES as usize);
+            if self.wc {
+                // Drain buffered WC stores and unmap old VMA before changing PEM0_REG_NORM_ACC.
+                unsafe { std::arch::asm!("dsb sy", options(nostack, preserves_flags)) };
+                self.region = None;
+            }
             let reg = REG_NORM_ACC + 16 * self.index;
             let new = self.attrs | base >> 31;
             self.csr.write_u64(reg, new);
@@ -290,11 +305,17 @@ mod card {
             if now != new {
                 return Err(io::Error::other(format!("PEM0_REG_NORM_ACC{} reads {now:#x} after writing {new:#x}", self.index)));
             }
-            if self.wc && self.region.is_none() && base != 0 {
-                let offset = self.index as u64 * OUTBOUND_REGION_BYTES;
-                self.region = Some(Mapping::new("/dev/pem_wc", offset, OUTBOUND_REGION_BYTES as usize, false)?);
+            if self.wc && base != 0 && map_len > 0 {
+                let offset = self.index as u64 * OUTBOUND_REGION_BYTES + map_off as u64;
+                self.region = Some(Mapping::new("/dev/pem_wc", offset, map_len, false)?);
             }
             Ok(())
+        }
+
+        /// Drain pending WC stores, unmap `/dev/pem_wc`, and zero `PEM0_REG_NORM_ACC`
+        /// before the host unmaps its VFIO memory.
+        pub fn detach(&mut self) -> io::Result<()> {
+            self.retarget_range(0, 0, 0)
         }
 
         /// Start of the region in this process (device memory: store only).

@@ -1,0 +1,13 @@
+[package]
+name = "mrv209"
+description = "MRV-209: E5 unmodified Memcached 1.6.45 & stateful NFV with credit ring"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+dpdk.workspace = true
+testbed.workspace = true
+clap.workspace = true
+ctrlc.workspace = true
+libc.workspace = true

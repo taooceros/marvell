@@ -63,9 +63,23 @@ in
     "-C link-arg=-B${pkgs.llvmPackages.bintools}/bin" # wrapped ld.lld, not on PATH
   ];
 
-  # Host target: the in-tree (uninstalled) DPDK build.
+  # Host target: the in-tree (uninstalled) DPDK build. In secondary jj
+  # workspaces (`../marvell-<issue>`), fall back to the sibling main checkout
+  # (`../marvell`) for the gitignored `marvell-dpdk/` and `sysroot-card/` trees.
   enterShell = ''
-    export PKG_CONFIG_PATH="${root}/marvell-dpdk/build-host/meson-uninstalled''${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+    _mrv_dpdk_root="${root}"
+    if [ ! -d "$_mrv_dpdk_root/marvell-dpdk/build-host/meson-uninstalled" ] && [ -d "${root}/../marvell/marvell-dpdk/build-host/meson-uninstalled" ]; then
+      _mrv_dpdk_root="$(cd "${root}/../marvell" && pwd)"
+    fi
+    export PKG_CONFIG_PATH="$_mrv_dpdk_root/marvell-dpdk/build-host/meson-uninstalled''${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+
+    _mrv_sysroot="${sysroot}"
+    if [ ! -d "$_mrv_sysroot/usr/lib/aarch64-linux-gnu/pkgconfig" ] && [ -d "${root}/../marvell/sysroot-card/usr/lib/aarch64-linux-gnu/pkgconfig" ]; then
+      _mrv_sysroot="$(cd "${root}/../marvell/sysroot-card" && pwd)"
+      export PKG_CONFIG_SYSROOT_DIR_aarch64_unknown_linux_gnu="$_mrv_sysroot"
+      export PKG_CONFIG_LIBDIR_aarch64_unknown_linux_gnu="$_mrv_sysroot/usr/lib/aarch64-linux-gnu/pkgconfig:$_mrv_sysroot/usr/share/pkgconfig"
+      export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUSTFLAGS="-C link-arg=--sysroot=$_mrv_sysroot"
+    fi
   '';
 
   scripts.dpdk-host-build.exec = ''

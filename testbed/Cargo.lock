@@ -307,6 +307,263 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "68354c5c6bd36d73ff3feceb05efa59b6acb7626617f4962be322a825e61f79a"
 
 [[package]]
+name = "mrv177"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ctrlc",
+ "dpdk",
+ "libc",
+ "testbed",
+]
+
+[[package]]
+name = "mrv190"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ctrlc",
+ "dpdk",
+ "libc",
+ "testbed",
+]
+
+[[package]]
+name = "mrv195"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ctrlc",
+ "dpdk",
+ "libc",
+ "testbed",
+]
+
+[[package]]
+name = "mrv196"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ctrlc",
+ "dpdk",
+ "libc",
+ "testbed",
+]
+
+[[package]]
+name = "mrv206"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ctrlc",
+ "dpdk",
+ "libc",
+ "testbed",
+]
+
+[[package]]
+name = "mrv209"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ctrlc",
+ "dpdk",
+ "libc",
+ "testbed",
+]
+
+[[package]]
+name = "mrv210"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ctrlc",
+ "dpdk",
+ "libc",
+ "testbed",
+]
+
+[[package]]
+name = "mrv211"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ctrlc",
+ "dpdk",
+ "libc",
+ "testbed",
+]
+
+[[package]]
+name = "mrv212"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ctrlc",
+ "dpdk",
+ "libc",
+ "testbed",
+]
+
+[[package]]
+name = "mrv213"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ctrlc",
+ "dpdk",
+ "libc",
+ "testbed",
+]
+
+[[package]]
+name = "mrv214"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ctrlc",
+ "dpdk",
+ "libc",
+ "testbed",
+]
+
+[[package]]
+name = "mrv215"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ctrlc",
+ "dpdk",
+ "libc",
+ "testbed",
+]
+
+[[package]]
+name = "mrv217"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ctrlc",
+ "dpdk",
+ "libc",
+ "mrv212",
+ "mrv213",
+ "testbed",
+]
+
+[[package]]
+name = "mrv228"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ctrlc",
+ "dpdk",
+ "libc",
+ "testbed",
+]
+
+[[package]]
+name = "mrv230"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ctrlc",
+ "dpdk",
+ "libc",
+ "testbed",
+]
+
+[[package]]
+name = "mrv231"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ctrlc",
+ "dpdk",
+ "libc",
+ "testbed",
+]
+
+[[package]]
+name = "mrv235"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ctrlc",
+ "dpdk",
+ "libc",
+ "testbed",
+]
+
+[[package]]
+name = "mrv236"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ctrlc",
+ "dpdk",
+ "libc",
+ "testbed",
+]
+
+[[package]]
+name = "mrv245"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ctrlc",
+ "dpdk",
+ "libc",
+ "testbed",
+]
+
+[[package]]
+name = "mrv246"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ctrlc",
+ "dpdk",
+ "libc",
+ "testbed",
+]
+
+[[package]]
+name = "mrv252"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ctrlc",
+ "dpdk",
+ "libc",
+ "testbed",
+]
+
+[[package]]
+name = "mrv253"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ctrlc",
+ "dpdk",
+ "libc",
+ "testbed",
+]
+
+[[package]]
+name = "mrv259"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ctrlc",
+ "dpdk",
+ "libc",
+ "mrv195",
+ "mrv206",
+ "testbed",
+]
+
+[[package]]
 name = "nix"
 version = "0.31.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"

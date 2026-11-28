@@ -1,0 +1,13 @@
+[package]
+name = "mrv245"
+description = "MRV-245: MT_NORMAL_NC 170 Mpps TX, closed-loop & pacing/doorbell"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+dpdk.workspace = true
+testbed.workspace = true
+clap.workspace = true
+ctrlc.workspace = true
+libc.workspace = true

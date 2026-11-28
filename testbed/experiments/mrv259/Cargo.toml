@@ -1,0 +1,15 @@
+[package]
+name = "mrv259"
+description = "MRV-259: E2E MT_NORMAL_NC + u1_ldpq KvStore & Memcached"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+dpdk.workspace = true
+testbed.workspace = true
+clap.workspace = true
+ctrlc.workspace = true
+libc.workspace = true
+mrv195 = { path = "../mrv195" }
+mrv206 = { path = "../mrv206" }
